@@ -22,8 +22,8 @@ class ExerciseDaoTest {
     private lateinit var exerciseDao: ExerciseDao
     private lateinit var exerciseDatabase: ExerciseDatabase
 
-    private val exercise1 = Exercise(1, "Curls")
-    private val exercise2 = Exercise(2, "Dips")
+    private val exercise1 = Exercise(1, "Curls", "Biceps")
+    private val exercise2 = Exercise(2, "Dips", "Triceps")
 
     @Before
     fun createDb() {
@@ -48,12 +48,21 @@ class ExerciseDaoTest {
     }
 
     @Test
-    fun daoSelect_RetrieveMultipleExerciseFromDB() = runBlocking {
+    fun daoSelectAll_RetrieveMultipleExerciseFromDB() = runBlocking {
         exerciseDao.insert(exercise1)
         exerciseDao.insert(exercise2)
         val savedExercise = exerciseDao.getAllExercises().first()
         assertEquals(exercise1, savedExercise[0])
         assertEquals(exercise2, savedExercise[1])
+    }
+
+    @Test
+    fun daoSelectByMuscleGroup_RetrieveMultipleExerciseFromDB() = runBlocking {
+        exerciseDao.insert(exercise1)
+        exerciseDao.insert(exercise2)
+        val savedExercise = exerciseDao.getAllExercisesByMuscleGroup(exercise1.muscleGroup).first()
+        assertEquals(exercise1, savedExercise[0])
+        assertEquals(1, savedExercise.size)
     }
 
     @Test
