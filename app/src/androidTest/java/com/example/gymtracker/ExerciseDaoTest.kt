@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.gymtracker.data.Exercise
-import com.example.gymtracker.data.ExerciseDao
-import com.example.gymtracker.data.ExerciseDatabase
+import com.example.gymtracker.data.exercise.Exercise
+import com.example.gymtracker.data.exercise.ExerciseDao
+import com.example.gymtracker.data.exercise.ExerciseDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -22,8 +22,8 @@ class ExerciseDaoTest {
     private lateinit var exerciseDao: ExerciseDao
     private lateinit var exerciseDatabase: ExerciseDatabase
 
-    private val exercise1 = Exercise(1, "Curls", "Biceps")
-    private val exercise2 = Exercise(2, "Dips", "Triceps")
+    private val exercise1 = Exercise(1, "Curls", "Biceps", "Dumbbells")
+    private val exercise2 = Exercise(2, "Dips", "Triceps", "Dumbbells")
 
     @Before
     fun createDb() {
