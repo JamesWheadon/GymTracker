@@ -4,8 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.gymtracker.converters.DateConverter
 
 @Database(entities = [ExerciseHistory::class], version = 1, exportSchema = false)
+@TypeConverters(DateConverter::class)
 abstract class HistoryDatabase : RoomDatabase() {
 
     abstract fun historyDao(): HistoryDao

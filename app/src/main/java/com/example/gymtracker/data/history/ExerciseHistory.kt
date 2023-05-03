@@ -2,6 +2,7 @@ package com.example.gymtracker.data.history
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 @Entity(tableName = "history")
 data class ExerciseHistory(
@@ -11,5 +12,6 @@ data class ExerciseHistory(
     val weight: Int,
     val sets: Int,
     val reps: Int,
-    val rest: Int
+    val rest: Int,
+    val date: Date
 )
