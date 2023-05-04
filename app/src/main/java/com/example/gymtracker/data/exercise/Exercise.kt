@@ -8,6 +8,6 @@ data class Exercise(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     var name: String,
-    val muscleGroup: String,
-    val equipment: String
+    var muscleGroup: String,
+    var equipment: String
 )

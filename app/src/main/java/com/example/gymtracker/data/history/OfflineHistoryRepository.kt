@@ -13,4 +13,8 @@ class OfflineHistoryRepository(private val historyDao: HistoryDao) : HistoryRepo
     override fun getRecentHistoryStream(id: Int, days: Int): Flow<List<ExerciseHistory>?> = historyDao.getRecentExerciseHistory(id, days)
 
     override suspend fun insertHistory(history: ExerciseHistory) = historyDao.insert(history)
+
+    override suspend fun update(history: ExerciseHistory) = historyDao.update(history)
+
+    override suspend fun delete(history: ExerciseHistory) = historyDao.delete(history)
 }

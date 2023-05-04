@@ -13,4 +13,8 @@ interface HistoryRepository {
     fun getRecentHistoryStream(id: Int, days: Int): Flow<List<ExerciseHistory>?>
 
     suspend fun insertHistory(history: ExerciseHistory)
+
+    suspend fun update(history: ExerciseHistory)
+
+    suspend fun delete(history: ExerciseHistory)
 }

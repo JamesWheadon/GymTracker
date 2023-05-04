@@ -8,10 +8,10 @@ import java.util.Date
 data class ExerciseHistory(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val exerciseId: Int,
-    val weight: Int,
-    val sets: Int,
-    val reps: Int,
-    val rest: Int,
+    var exerciseId: Int,
+    var weight: Int,
+    var sets: Int,
+    var reps: Int,
+    var rest: Int,
     val date: Date
 )

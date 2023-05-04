@@ -22,7 +22,9 @@ class HistoryDaoTest {
 
     private lateinit var historyDao: HistoryDao
     private lateinit var historyDatabase: HistoryDatabase
+
     private var calendar = Calendar.getInstance()
+    private var newWeight = 20
 
     @Before
     fun createDb() {
@@ -83,6 +85,29 @@ class HistoryDaoTest {
         val savedExerciseHistory = historyDao.getRecentExerciseHistory(1, 31).first()
 
         assertThat(savedExerciseHistory.size, equalTo(2))
+    }
+
+    @Test
+    fun daoDelete_DeleteHistoryFromDB() = runBlocking {
+        val exerciseHistory = getExerciseHistory(1, 1)
+        historyDao.insert(exerciseHistory)
+
+        historyDao.delete(exerciseHistory)
+
+        val savedHistory = historyDao.getHistory(1).first()
+        assertThat(savedHistory, equalTo(null))
+    }
+
+    @Test
+    fun daoUpdate_UpdateHistoryInDB() = runBlocking {
+        val exerciseHistory = getExerciseHistory(1, 1)
+        historyDao.insert(exerciseHistory)
+
+        exerciseHistory.weight = newWeight
+        historyDao.update(exerciseHistory)
+
+        val savedHistory = historyDao.getHistory(1).first()
+        assertThat(savedHistory.weight, equalTo(newWeight))
     }
 
     private fun getExerciseHistory(id: Int, exerciseId: Int, time: Date = calendar.time) = ExerciseHistory(id, exerciseId, 10, 10, 10, 10, time)
