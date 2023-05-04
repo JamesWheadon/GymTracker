@@ -1,4 +1,4 @@
-package com.example.gymtracker.data
+package com.example.gymtracker.data.exercise
 
 import android.content.Context
 import androidx.room.Database
