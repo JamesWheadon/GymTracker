@@ -1,16 +1,21 @@
 package com.example.gymtracker.ui.exercise
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,18 +51,29 @@ fun ExerciseScreen(
     uiState: ExerciseScreenUiState,
     modifier: Modifier = Modifier
 ) {
-    Card() {
-        Column() {
+    val customCardElevation = CardDefaults.cardElevation(
+        defaultElevation = 16. dp
+    )
+    Card(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
+            .padding(vertical = 10.dp, horizontal = 10.dp),
+        elevation = customCardElevation
+    ) {
+        Column {
             Text(
                 text = "My Exercises",
                 textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(CenterHorizontally)
                     .padding(vertical = 16.dp, horizontal = 16.dp)
             )
             LazyColumn(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primary),
                 contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -74,8 +90,14 @@ fun ExerciseCard(
     exercise: Exercise,
     modifier: Modifier = Modifier
 ) {
+    val customCardElevation = CardDefaults.cardElevation(
+        defaultElevation = 8. dp,
+        pressedElevation = 2. dp,
+        focusedElevation = 4. dp
+    )
     Card(
-        modifier = modifier
+        modifier = modifier,
+        elevation = customCardElevation
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -86,15 +108,18 @@ fun ExerciseCard(
         ) {
             Text(
                 text = exercise.name,
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.fillMaxWidth(0.6f)
             )
             Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
                 ExerciseDetail(
                     exerciseInfo = exercise.muscleGroup,
                     iconId = R.drawable.info_48px,
                     iconDescription = "exercise icon"
                 )
+                Spacer(modifier = Modifier.height(8.dp))
                 ExerciseDetail(
                     exerciseInfo = exercise.equipment,
                     iconId = R.drawable.exercise_filled_48px,
@@ -118,21 +143,25 @@ fun ExerciseDetail(
         Icon(
             painter = painterResource(id = iconId),
             contentDescription = iconDescription,
+            tint = MaterialTheme.colorScheme.tertiary,
             modifier = Modifier.size(20.dp)
         )
-        Text(text = exerciseInfo)
+        Text(
+            text = exerciseInfo,
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ItemDetailsScreenPreview() {
-    GymTrackerTheme {
+    GymTrackerTheme(darkTheme = false) {
         ExerciseScreen(
             uiState = ExerciseScreenUiState(
                 exerciseList = listOf(
                     Exercise(0, "Curls", "Biceps", "Dumbbells"),
-                    Exercise(1, "Dips", "Triceps", "Dumbbells"),
+                    Exercise(1, "Dips", "Triceps", "Dumbbells And Bars"),
                     Exercise(
                         2,
                         "Testing what happens if someone decides to have a ridiculously long exercise name",
