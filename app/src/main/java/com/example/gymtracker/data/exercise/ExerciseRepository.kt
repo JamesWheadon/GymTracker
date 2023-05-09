@@ -2,13 +2,13 @@ package com.example.gymtracker.data.exercise
 
 import kotlinx.coroutines.flow.Flow
 
-interface ExercisesRepository {
+interface ExerciseRepository {
 
     fun getExerciseStream(id: Int): Flow<Exercise?>
 
-    fun getAllExercisesStream(): Flow<List<Exercise?>>
+    fun getAllExercisesStream(): Flow<List<Exercise>>
 
-    fun getAllMuscleGroupExercisesStream(muscleGroup: String): Flow<List<Exercise?>>
+    fun getAllMuscleGroupExercisesStream(muscleGroup: String): Flow<List<Exercise>>
 
     suspend fun insertExercise(exercise: Exercise)
 
