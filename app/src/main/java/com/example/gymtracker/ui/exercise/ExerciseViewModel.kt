@@ -2,7 +2,6 @@ package com.example.gymtracker.ui.exercise
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class ExerciseViewModel(
-    private val exerciseRepository: ExerciseRepository
+    exerciseRepository: ExerciseRepository
 ) : ViewModel() {
 
     companion object {
@@ -27,5 +26,3 @@ class ExerciseViewModel(
             )
 
 }
-
-data class ExerciseScreenUiState(val exerciseList: List<Exercise> = listOf())

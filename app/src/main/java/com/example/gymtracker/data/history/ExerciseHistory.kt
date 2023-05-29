@@ -9,7 +9,7 @@ data class ExerciseHistory(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     var exerciseId: Int,
-    var weight: Int,
+    var weight: Double,
     var sets: Int,
     var reps: Int,
     var rest: Int,
