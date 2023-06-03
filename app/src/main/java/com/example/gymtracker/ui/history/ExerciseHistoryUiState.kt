@@ -1,7 +1,7 @@
 package com.example.gymtracker.ui.history
 
 import com.example.gymtracker.data.history.ExerciseHistory
-import java.util.Date
+import java.time.LocalDate
 
 data class ExerciseHistoryUiState(
     val id: Int = 0,
@@ -9,7 +9,7 @@ data class ExerciseHistoryUiState(
     var sets: Int = 0,
     var reps: Int = 0,
     var rest: Int = 0,
-    val date: Date = Date()
+    val date: LocalDate = LocalDate.now()
 )
 
 fun ExerciseHistory.toExerciseHistoryUiState(): ExerciseHistoryUiState = ExerciseHistoryUiState(

@@ -1,6 +1,7 @@
 package com.example.gymtracker.ui.exercise.details
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,15 +12,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -41,15 +56,10 @@ import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
-import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Date
 import kotlin.math.ceil
 import kotlin.math.floor
-
-private const val DAYS_TO_MILLIS = 86400000L
 
 @Composable
 fun ExerciseDetailsScreen(
@@ -71,6 +81,20 @@ fun ExerciseDetailsScreen(
     uiState: ExerciseDetailsUiState,
     modifier: Modifier = Modifier
 ) {
+    val timeOptions = listOf("7 Days", "30 Days", "Past Year", "All Time")
+    val detailOptions = listOf("Max Weight", "Max Reps", "Max Sets", "Total Weight")
+    val currentDate = LocalDate.now()
+    val optionsToSpans = mapOf<String, LocalDate>(
+        Pair(timeOptions[0], currentDate.minusDays(7)),
+        Pair(timeOptions[1], currentDate.minusDays(30)),
+        Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
+        Pair(
+            timeOptions[3],
+            uiState.history?.minBy { history -> history.date.toEpochDay() }?.date ?: currentDate
+        ),
+    )
+    var detail by remember { mutableStateOf(detailOptions[0]) }
+    var timeSpan by remember { mutableStateOf(optionsToSpans[timeOptions[0]]) }
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 16.dp
     )
@@ -78,7 +102,7 @@ fun ExerciseDetailsScreen(
     val best = uiState.history
         ?.filter { history -> history.weight == bestWeight }
         ?.maxBy { history -> history.reps }
-    val recent = uiState.history?.maxBy { history -> history.date.time }
+    val recent = uiState.history?.maxBy { history -> history.date.toEpochDay() }
     Card(
         modifier = modifier
             .padding(vertical = 10.dp, horizontal = 10.dp),
@@ -143,13 +167,73 @@ fun ExerciseDetailsScreen(
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Spacer(modifier = Modifier.weight(2f))
+                DropdownBox(
+                    options = detailOptions,
+                    onChange = { newDetail ->
+                        detail = newDetail
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                DropdownBox(
+                    options = timeOptions,
+                    onChange = { newSpan ->
+                        timeSpan = optionsToSpans[newSpan]
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
+            }
             Graph(
                 points = uiState.history!!.map { history ->
-                    Pair(
-                        history.date.time,
-                        history.weight
-                    )
-                }
+                    when (detail) {
+                        detailOptions[0] -> {
+                            Pair(
+                                history.date,
+                                history.weight
+                            )
+                        }
+                        detailOptions[1] -> {
+                            Pair(
+                                history.date,
+                                history.reps.toDouble()
+                            )
+                        }
+                        detailOptions[2] -> {
+                            Pair(
+                                history.date,
+                                history.sets.toDouble()
+                            )
+                        }
+                        detailOptions[3] -> {
+                            Pair(
+                                history.date,
+                                history.weight * history.reps * history.sets
+                            )
+                        }
+                        else -> {
+                            Pair(
+                                history.date,
+                                history.weight
+                            )
+                        }
+                    }
+                },
+                startDate = timeSpan ?: currentDate
             )
         }
     }
@@ -180,10 +264,84 @@ fun ExerciseDetail(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownBox(
+    options: List<String>,
+    onChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf(options.first()) }
+
+    Box(
+        modifier = modifier
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            }
+        ) {
+            BasicTextField(
+                value = selectedOption,
+                onValueChange = { onChange(it) },
+                readOnly = true,
+                textStyle = MaterialTheme.typography.labelSmall.copy(textAlign = TextAlign.Center),
+                singleLine = true,
+                decorationBox = { innerTextField ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        Spacer(modifier = Modifier.weight(0.5f))
+                        innerTextField()
+                        Spacer(modifier = Modifier.weight(0.5f))
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(20.dp)
+                                .aspectRatio(1f)
+                                .rotate(if (expanded) 180f else 0f)
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .menuAnchor()
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { item ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = item,
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        },
+                        onClick = {
+                            selectedOption = item
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun Graph(
-    points: List<Pair<Long, Double>>,
+    points: List<Pair<LocalDate, Double>>,
+    startDate: LocalDate,
     modifier: Modifier = Modifier
 ) {
     val customFormatter = DateTimeFormatter.ofPattern("dd/MM")
@@ -208,6 +366,7 @@ fun Graph(
             val weightGradient = ceil((weightMax - weightMin) / 5).toInt()
             val steps = ceil((weightMax - weightMin) / weightGradient).toInt()
             val yAxisSpace = (canvasHeight - 100F) / steps
+            val currentDate = LocalDate.now().toEpochDay()
 
             // Draw x-axis
             drawLine(
@@ -252,49 +411,55 @@ fun Graph(
                     textMeasurer = textMeasurer,
                     text = label,
                     style = TextStyle(fontSize = fontSize),
-                    topLeft = Offset(0F, (size.height - 75F) - (index * yAxisSpace) - textSize.height / 2),
+                    topLeft = Offset(
+                        0F,
+                        (size.height - 75F) - (index * yAxisSpace) - textSize.height / 2
+                    ),
                     maxSize = IntSize(50, yAxisSpace.toInt())
                 )
             }
+            val date = LocalDate.now().format(customFormatter)
+            var fontSize = 14.sp
+            var textSize: IntSize
+            do {
+                fontSize = fontSize.times(0.9)
+                val textLayoutResult = textMeasurer.measure(
+                    text = AnnotatedString(date),
+                    style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
+                )
+                textSize = textLayoutResult.size
+            } while (textSize.height > 50F)
 
-            val sectionWidth = (canvasWidth - 100F) / 7
-            (0 until 7).forEach { index ->
-                val date = LocalDate.now().minusDays(index.toLong()).format(customFormatter)
-                drawLine(
-                    color = Color.Black,
-                    start = Offset(75F + sectionWidth * (6 - index), canvasHeight - 50F),
-                    end = Offset(75F + sectionWidth * (6 - index), canvasHeight - 40F),
-                    strokeWidth = 2f
-                )
-                var fontSize = 14.sp
-                var textSize: IntSize
-                do {
-                    fontSize = fontSize.times(0.9)
-                    val textLayoutResult = textMeasurer.measure(
-                        text = AnnotatedString(date),
-                        style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
-                    )
-                    textSize = textLayoutResult.size
-                } while (textSize.width > sectionWidth)
-                drawText(
-                    textMeasurer = textMeasurer,
-                    text = date,
-                    style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
-                    topLeft = Offset(75F + sectionWidth * (6 - index) + (sectionWidth - textSize.width) / 2, canvasHeight - 50F),
-                    maxSize = IntSize((canvasWidth - 100F / 7).toInt(), 50)
-                )
-            }
-            drawLine(
-                color = Color.Black,
-                start = Offset(canvasWidth - 25F, canvasHeight - 50F),
-                end = Offset(canvasWidth - 25F, canvasHeight - 40F),
-                strokeWidth = 2f
+            drawText(
+                textMeasurer = textMeasurer,
+                text = startDate.format(customFormatter),
+                style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
+                topLeft = Offset(75F, canvasHeight - 50F)
             )
 
-            val dataPoints = points.map { point -> Pair(
-                75F + sectionWidth * ((point.first - (LocalDate.now().minusDays(7).atStartOfDay().toEpochSecond(ZoneOffset.MIN) * 1000)) / DAYS_TO_MILLIS),
-                ((size.height - 75F) - ((point.second - weightMin) / weightGradient * yAxisSpace)).toFloat()
-            ) }.sortedBy { point -> point.first }
+            drawText(
+                textMeasurer = textMeasurer,
+                text = LocalDate.ofEpochDay(
+                    (LocalDate.now().toEpochDay() + startDate.toEpochDay()) / 2
+                ).format(customFormatter),
+                style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
+                topLeft = Offset(25F + (canvasWidth - textSize.width) / 2, canvasHeight - 50F)
+            )
+
+            drawText(
+                textMeasurer = textMeasurer,
+                text = date,
+                style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
+                topLeft = Offset(canvasWidth - 25F - textSize.width, canvasHeight - 50F)
+            )
+
+            val dataPoints =
+                points.filter { point -> !point.first.isBefore(startDate) }.map { point ->
+                    Pair(
+                        75F + (canvasWidth - 100F) * (point.first.toEpochDay() - startDate.toEpochDay()) / (currentDate - startDate.toEpochDay()),
+                        ((size.height - 75F) - ((point.second - weightMin) / weightGradient * yAxisSpace)).toFloat()
+                    )
+                }.sortedBy { point -> point.first }
 
             val path = Path()
             path.moveTo(dataPoints[0].first, dataPoints[0].second)
@@ -333,7 +498,7 @@ fun ItemDetailsScreenPreview() {
                         sets = 1,
                         reps = 2,
                         rest = 1,
-                        date = Date.from(Instant.now().minusSeconds(60 * 60 * 24 * 5))
+                        date = LocalDate.now().minusDays(5)
                     ),
                     ExerciseHistoryUiState(
                         id = 1,
@@ -341,7 +506,7 @@ fun ItemDetailsScreenPreview() {
                         sets = 1,
                         reps = 2,
                         rest = 1,
-                        date = Date.from(Instant.now().minusSeconds(60 * 60 * 24 * 3))
+                        date = LocalDate.now().minusDays(3)
                     ),
                     ExerciseHistoryUiState(
                         id = 1,
@@ -349,7 +514,15 @@ fun ItemDetailsScreenPreview() {
                         sets = 1,
                         reps = 1,
                         rest = 1,
-                        date = Date()
+                        date = LocalDate.now().minusDays(20)
+                    ),
+                    ExerciseHistoryUiState(
+                        id = 1,
+                        weight = 10.0,
+                        sets = 1,
+                        reps = 1,
+                        rest = 1,
+                        date = LocalDate.now()
                     )
                 )
             )
