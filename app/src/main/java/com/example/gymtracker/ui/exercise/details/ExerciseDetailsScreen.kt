@@ -2,6 +2,7 @@ package com.example.gymtracker.ui.exercise.details
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,10 +36,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -58,8 +63,10 @@ import com.example.gymtracker.ui.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.max
 
 @Composable
 fun ExerciseDetailsScreen(
@@ -176,6 +183,8 @@ fun ExerciseDetailsScreen(
                     options = detailOptions,
                     onChange = { newDetail ->
                         detail = newDetail
+                        print(newDetail)
+                        print(detail)
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -189,6 +198,8 @@ fun ExerciseDetailsScreen(
                     options = timeOptions,
                     onChange = { newSpan ->
                         timeSpan = optionsToSpans[newSpan]
+                        print(newSpan)
+                        print(timeSpan)
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -233,7 +244,8 @@ fun ExerciseDetailsScreen(
                         }
                     }
                 },
-                startDate = timeSpan ?: currentDate
+                startDate = timeSpan ?: currentDate,
+                xLabel = detail
             )
         }
     }
@@ -285,7 +297,7 @@ fun DropdownBox(
         ) {
             BasicTextField(
                 value = selectedOption,
-                onValueChange = { onChange(it) },
+                onValueChange = { onChange(selectedOption) },
                 readOnly = true,
                 textStyle = MaterialTheme.typography.labelSmall.copy(textAlign = TextAlign.Center),
                 singleLine = true,
@@ -329,6 +341,7 @@ fun DropdownBox(
                         onClick = {
                             selectedOption = item
                             expanded = false
+                            onChange(item)
                         }
                     )
                 }
@@ -342,8 +355,11 @@ fun DropdownBox(
 fun Graph(
     points: List<Pair<LocalDate, Double>>,
     startDate: LocalDate,
+    xLabel: String,
     modifier: Modifier = Modifier
 ) {
+    var tappedLocation by remember { mutableStateOf(Offset.Zero) }
+
     val customFormatter = DateTimeFormatter.ofPattern("dd/MM")
     val lineColor = MaterialTheme.colorScheme.primary
     val textMeasurer = rememberTextMeasurer()
@@ -357,26 +373,37 @@ fun Graph(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1F)
+                .pointerInput(Unit) {
+                    detectTapGestures { offset ->
+                        tappedLocation = offset
+                    }
+                }
         ) {
             val canvasWidth = size.width
             val canvasHeight = size.height
-            val weight = points.map { point -> point.second }
-            val weightMin = floor(weight.min())
-            val weightMax = ceil(weight.max())
-            val weightGradient = ceil((weightMax - weightMin) / 5).toInt()
-            val steps = ceil((weightMax - weightMin) / weightGradient).toInt()
-            val yAxisSpace = (canvasHeight - 100F) / steps
+            val yValues = points.map { point -> point.second }
+            val yMin = floor(yValues.min())
+            val yMax = ceil(yValues.max())
+            var yGradient = ceil((yMax - yMin) / 5).toInt()
+            val ySteps: Int
+            val yAxisSpace: Float
+            if (yGradient == 0) {
+                ySteps = 0
+                yAxisSpace = 100F
+                yGradient = 1
+            } else {
+                ySteps = ceil((yMax - yMin) / yGradient).toInt()
+                yAxisSpace = (canvasHeight - 100F) / ySteps
+            }
+
             val currentDate = LocalDate.now().toEpochDay()
 
-            // Draw x-axis
             drawLine(
                 color = Color.Black,
                 start = Offset(50F, canvasHeight - 50F),
                 end = Offset(canvasWidth, canvasHeight - 50F),
                 strokeWidth = 2f
             )
-
-            // Draw y-axis
             drawLine(
                 color = Color.Black,
                 start = Offset(50F, 0F),
@@ -384,8 +411,8 @@ fun Graph(
                 strokeWidth = 2f
             )
 
-            (0..steps).forEach { index ->
-                val labelValue = weightMin + (index * weightGradient)
+            (0..ySteps).forEach { index ->
+                val labelValue = yMin + (index * yGradient)
                 val label = if (labelValue.rem(1) == 0.0) {
                     labelValue.toInt().toString()
                 } else {
@@ -457,7 +484,7 @@ fun Graph(
                 points.filter { point -> !point.first.isBefore(startDate) }.map { point ->
                     Pair(
                         75F + (canvasWidth - 100F) * (point.first.toEpochDay() - startDate.toEpochDay()) / (currentDate - startDate.toEpochDay()),
-                        ((size.height - 75F) - ((point.second - weightMin) / weightGradient * yAxisSpace)).toFloat()
+                        ((size.height - 75F) - ((point.second - yMin) / yGradient * yAxisSpace)).toFloat()
                     )
                 }.sortedBy { point -> point.first }
 
@@ -478,6 +505,95 @@ fun Graph(
                 color = lineColor,
                 style = Stroke(width = 2f)
             )
+
+            val selected =
+                dataPoints.firstOrNull { point -> abs(point.first - tappedLocation.x) + abs(point.second - tappedLocation.y) < 20 }
+            if (selected != null) {
+                val dataPoint = points[dataPoints.indexOf(selected)]
+
+                val xLabelSize = textMeasurer.measure(
+                    text = AnnotatedString(xLabel),
+                    style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
+                )
+
+                val xDataSize = textMeasurer.measure(
+                    text = AnnotatedString(dataPoint.second.toString()),
+                    style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
+                )
+
+                val yLabelSize = textMeasurer.measure(
+                    text = AnnotatedString("Date"),
+                    style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
+                )
+
+                val yDataSize = textMeasurer.measure(
+                    text = AnnotatedString(dataPoint.first.format(customFormatter)),
+                    style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
+                )
+
+                val textWidth = max(xLabelSize.size.width, yLabelSize.size.width) + max(xDataSize.size.width, yDataSize.size.width) + 20F
+                val textHeight = max(xLabelSize.size.height, yLabelSize.size.height) + max(xDataSize.size.height, yDataSize.size.height) + 20F
+                val topRowHeight = max(xLabelSize.size.height, xDataSize.size.height)
+                val frontColumnWidth = max(xLabelSize.size.width, yLabelSize.size.width)
+
+                val boxWidth = textWidth + 20F
+                val boxHeight = textHeight + 20F
+                val cornerRadius = 8.dp.toPx()
+
+                val boxTopLeft = if (tappedLocation.x + 20F + boxWidth < canvasWidth && tappedLocation.y + 20F + boxHeight < canvasHeight) {
+                    Offset(selected.first + 20F, selected.second + 20F)
+                } else if (tappedLocation.x + 20F + boxWidth < canvasWidth) {
+                    Offset(selected.first + 20F, selected.second - 20F - boxHeight)
+                } else if (tappedLocation.y + 20F + boxHeight < canvasHeight) {
+                    Offset(selected.first - 20F - boxWidth, selected.second + 20F)
+                } else {
+                    Offset(selected.first - 20F - boxWidth, selected.second - 20F - boxHeight)
+                }
+
+                drawRoundRect(
+                    color = Color.White,
+                    topLeft = boxTopLeft,
+                    size = Size(boxWidth, boxHeight),
+                    cornerRadius = CornerRadius(cornerRadius),
+                    style = Fill
+                )
+
+                drawRoundRect(
+                    color = lineColor,
+                    topLeft = boxTopLeft,
+                    size = Size(boxWidth, boxHeight),
+                    cornerRadius = CornerRadius(cornerRadius),
+                    style = Stroke(width = 4F)
+                )
+
+                drawText(
+                    textMeasurer = textMeasurer,
+                    text = xLabel,
+                    style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
+                    topLeft = boxTopLeft.plus(Offset(15f, 15f))
+                )
+
+                drawText(
+                    textMeasurer = textMeasurer,
+                    text = "Date",
+                    style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
+                    topLeft = boxTopLeft.plus(Offset(15f, 15f + topRowHeight + 10f))
+                )
+
+                drawText(
+                    textMeasurer = textMeasurer,
+                    text = dataPoint.second.toString(),
+                    style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
+                    topLeft = boxTopLeft.plus(Offset(15f + frontColumnWidth + 15f, 15f))
+                )
+
+                drawText(
+                    textMeasurer = textMeasurer,
+                    text = dataPoint.first.format(customFormatter),
+                    style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
+                    topLeft = boxTopLeft.plus(Offset(15f + frontColumnWidth + 10f, 15f + topRowHeight + 10f))
+                )
+            }
         }
     }
 }
