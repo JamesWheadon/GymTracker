@@ -160,13 +160,14 @@ fun ItemDetailsScreenPreview() {
         ExerciseScreen(
             uiState = ExerciseScreenUiState(
                 exerciseList = listOf(
-                    Exercise(0, "Curls", "Biceps", "Dumbbells"),
-                    Exercise(1, "Dips", "Triceps", "Dumbbells And Bars"),
+                    Exercise(0, "Curls", "Biceps", "Dumbbells", "kg"),
+                    Exercise(1, "Dips", "Triceps", "Dumbbells And Bars", "kg"),
                     Exercise(
                         2,
                         "Testing what happens if someone decides to have a ridiculously long exercise name",
                         "Lats",
-                        "Dumbbells"
+                        "Dumbbells",
+                        "kg"
                     ),
                 )
             )

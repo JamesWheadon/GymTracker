@@ -157,7 +157,7 @@ fun ExerciseDetailsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 ExerciseDetail(
-                    exerciseInfo = "${best?.weight} kg for ${best?.reps} reps",
+                    exerciseInfo = "${best?.weight} ${uiState.measurement} for ${best?.reps} reps",
                     iconId = R.drawable.trophy_48dp,
                     iconDescription = "exercise icon",
                     modifier = Modifier
@@ -165,7 +165,7 @@ fun ExerciseDetailsScreen(
                         .weight(1f)
                 )
                 ExerciseDetail(
-                    exerciseInfo = "${recent?.weight} kg for ${recent?.reps} reps",
+                    exerciseInfo = "${recent?.weight} ${uiState.measurement} for ${recent?.reps} reps",
                     iconId = R.drawable.history_48px,
                     iconDescription = "exercise icon",
                     modifier = Modifier
@@ -183,8 +183,6 @@ fun ExerciseDetailsScreen(
                     options = detailOptions,
                     onChange = { newDetail ->
                         detail = newDetail
-                        print(newDetail)
-                        print(detail)
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -198,8 +196,6 @@ fun ExerciseDetailsScreen(
                     options = timeOptions,
                     onChange = { newSpan ->
                         timeSpan = optionsToSpans[newSpan]
-                        print(newSpan)
-                        print(timeSpan)
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -245,7 +241,8 @@ fun ExerciseDetailsScreen(
                     }
                 },
                 startDate = timeSpan ?: currentDate,
-                xLabel = detail
+                yLabel = detail,
+                yUnit = if (detail == detailOptions[0]) uiState.measurement else ""
             )
         }
     }
@@ -355,8 +352,9 @@ fun DropdownBox(
 fun Graph(
     points: List<Pair<LocalDate, Double>>,
     startDate: LocalDate,
-    xLabel: String,
-    modifier: Modifier = Modifier
+    yLabel: String,
+    modifier: Modifier = Modifier,
+    yUnit: String = ""
 ) {
     var tappedLocation by remember { mutableStateOf(Offset.Zero) }
 
@@ -511,13 +509,19 @@ fun Graph(
             if (selected != null) {
                 val dataPoint = points[dataPoints.indexOf(selected)]
 
+                val xDataLabel = if (yUnit == "") {
+                    dataPoint.second.toString()
+                } else {
+                    "${dataPoint.second} $yUnit"
+                }
+
                 val xLabelSize = textMeasurer.measure(
-                    text = AnnotatedString(xLabel),
+                    text = AnnotatedString(yLabel),
                     style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
                 )
 
                 val xDataSize = textMeasurer.measure(
-                    text = AnnotatedString(dataPoint.second.toString()),
+                    text = AnnotatedString(xDataLabel),
                     style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
                 )
 
@@ -568,7 +572,7 @@ fun Graph(
 
                 drawText(
                     textMeasurer = textMeasurer,
-                    text = xLabel,
+                    text = yLabel,
                     style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
                     topLeft = boxTopLeft.plus(Offset(15f, 15f))
                 )
@@ -582,9 +586,9 @@ fun Graph(
 
                 drawText(
                     textMeasurer = textMeasurer,
-                    text = dataPoint.second.toString(),
+                    text = xDataLabel,
                     style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
-                    topLeft = boxTopLeft.plus(Offset(15f + frontColumnWidth + 15f, 15f))
+                    topLeft = boxTopLeft.plus(Offset(15f + frontColumnWidth + 10f, 15f))
                 )
 
                 drawText(
@@ -607,6 +611,7 @@ fun ItemDetailsScreenPreview() {
                 name = "Curls",
                 muscleGroup = "Biceps",
                 equipment = "Dumbbells",
+                measurement = "kg",
                 history = listOf(
                     ExerciseHistoryUiState(
                         id = 1,

@@ -9,5 +9,6 @@ data class Exercise(
     val id: Int = 0,
     var name: String,
     var muscleGroup: String,
-    var equipment: String
+    var equipment: String,
+    var measurement: String
 )
