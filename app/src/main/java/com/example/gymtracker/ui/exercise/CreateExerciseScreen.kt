@@ -31,11 +31,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymtracker.data.exercise.Exercise
+import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
 fun CreateExerciseScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ExerciseViewModel = viewModel(
+        factory = AppViewModelProvider.Factory
+    )
+) {
+    CreateExerciseScreen(
+        modifier = modifier,
+        createFunction = { exercise ->
+            viewModel.saveExercise(exercise)
+        }
+    )
+}
+
+@Composable
+fun CreateExerciseScreen(
+    modifier: Modifier = Modifier,
+    createFunction:  (Exercise) -> Unit
 ) {
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 16.dp
@@ -109,8 +128,30 @@ fun CreateExerciseScreen(
                         supportText = "Weight conversion is not supported for custom measurements"
                     )
                 }
-                Button(onClick = {  }) {
-                    Text("Create")
+                if (nameState != "" && equipmentState != "" && muscleState != "" && measurementState != "") {
+                    Button(onClick = {
+                        val measurement = if (measurementState != "custom") {
+                            measurementState
+                        } else {
+                            customMeasurementState
+                        }
+                        saveExercise(
+                            createFunction = createFunction,
+                            name = nameState,
+                            equipment = equipmentState,
+                            muscle = muscleState,
+                            measurement = measurement
+                        )
+                    }) {
+                        Text("Create")
+                    }
+                } else {
+                    Button(
+                        onClick = { },
+                        enabled = false
+                    ) {
+                        Text("Create")
+                    }
                 }
                 Spacer(modifier = Modifier.height(6.dp))
             }
@@ -213,10 +254,28 @@ fun DropdownBox(
     }
 }
 
+fun saveExercise(
+    createFunction: (Exercise) -> Unit,
+    name: String,
+    equipment: String,
+    muscle: String,
+    measurement: String
+) {
+    val newExercise = Exercise(
+        name = name,
+        muscleGroup = muscle,
+        equipment = equipment,
+        measurement = measurement
+    )
+    createFunction(newExercise)
+}
+
 @Preview(showBackground = true)
 @Composable
 fun CreateExerciseDetailsScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
-        CreateExerciseScreen()
+        CreateExerciseScreen(
+            createFunction = {}
+        )
     }
 }
