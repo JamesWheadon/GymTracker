@@ -75,7 +75,7 @@ fun ExerciseScreen(
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.primary),
                 contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(uiState.exerciseList) { exercise ->
                     ExerciseCard(exercise = exercise)
@@ -155,7 +155,7 @@ fun ExerciseDetail(
 
 @Preview(showBackground = true)
 @Composable
-fun ItemDetailsScreenPreview() {
+fun ExerciseScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         ExerciseScreen(
             uiState = ExerciseScreenUiState(
