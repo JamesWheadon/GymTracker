@@ -12,6 +12,5 @@ data class ExerciseHistory(
     var weight: Double,
     var sets: Int,
     var reps: Int,
-    var rest: Int,
     val date: LocalDate
 )
