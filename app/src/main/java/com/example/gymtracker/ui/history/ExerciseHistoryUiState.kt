@@ -17,6 +17,5 @@ fun ExerciseHistory.toExerciseHistoryUiState(): ExerciseHistoryUiState = Exercis
     weight = weight,
     sets = sets,
     reps = reps,
-    rest = rest,
     date = date
 )

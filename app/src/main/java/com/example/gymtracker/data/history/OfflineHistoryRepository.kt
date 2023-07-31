@@ -6,11 +6,14 @@ class OfflineHistoryRepository(private val historyDao: HistoryDao) : HistoryRepo
 
     override fun getHistoryStream(id: Int): Flow<ExerciseHistory?> = historyDao.getHistory(id)
 
-    override fun getFullExerciseHistoryStream(exerciseId: Int): Flow<List<ExerciseHistory>?> = historyDao.getFullExerciseHistory(exerciseId)
+    override fun getFullExerciseHistoryStream(exerciseId: Int): Flow<List<ExerciseHistory>?> =
+        historyDao.getFullExerciseHistory(exerciseId)
 
-    override fun getLatestHistoryStream(id: Int): Flow<ExerciseHistory?> = historyDao.getLatestExerciseHistory(id)
+    override fun getLatestHistoryStream(id: Int): Flow<ExerciseHistory?> =
+        historyDao.getLatestExerciseHistory(id)
 
-    override fun getRecentHistoryStream(id: Int, days: Int): Flow<List<ExerciseHistory>?> = historyDao.getRecentExerciseHistory(id, days)
+    override fun getRecentHistoryStream(id: Int, days: Int): Flow<List<ExerciseHistory>?> =
+        historyDao.getRecentExerciseHistory(id, days)
 
     override suspend fun insertHistory(history: ExerciseHistory) = historyDao.insert(history)
 
