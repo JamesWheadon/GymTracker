@@ -22,13 +22,12 @@ class ExerciseViewModel(
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
-    val allExercisesUiState: StateFlow<ExerciseScreenUiState> =
-        exerciseRepository.getAllExercisesStream()
-            .map { ExerciseScreenUiState(it) }
+    val exerciseListUiState: StateFlow<ExerciseListUiState> =
+        exerciseRepository.getAllExercisesStream().map { ExerciseListUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = ExerciseScreenUiState()
+                initialValue = ExerciseListUiState()
             )
 
     fun getExerciseStream(id: Int): Flow<ExerciseUiState?> =
@@ -52,3 +51,5 @@ class ExerciseViewModel(
         }
     }
 }
+
+data class ExerciseListUiState(val exerciseList: List<Exercise> = listOf())

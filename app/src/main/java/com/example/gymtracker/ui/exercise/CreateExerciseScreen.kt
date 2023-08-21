@@ -29,6 +29,7 @@ import com.example.gymtracker.ui.theme.GymTrackerTheme
 @Composable
 fun CreateExerciseScreen(
     modifier: Modifier = Modifier,
+    navigateFunction: () -> Unit,
     viewModel: ExerciseViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
@@ -37,14 +38,16 @@ fun CreateExerciseScreen(
         modifier = modifier,
         createFunction = { exercise ->
             viewModel.saveExercise(exercise)
-        }
+        },
+        navigateFunction = navigateFunction
     )
 }
 
 @Composable
 fun CreateExerciseScreen(
     modifier: Modifier = Modifier,
-    createFunction:  (Exercise) -> Unit
+    createFunction: (Exercise) -> Unit,
+    navigateFunction: () -> Unit
 ) {
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 16.dp
@@ -108,6 +111,7 @@ fun CreateExerciseScreen(
                             equipment = equipmentState,
                             muscle = muscleState
                         )
+                        navigateFunction()
                     }) {
                         Text("Create")
                     }
@@ -144,7 +148,8 @@ fun saveExercise(
 fun CreateExerciseDetailsScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         CreateExerciseScreen(
-            createFunction = {}
+            createFunction = {},
+            navigateFunction = {}
         )
     }
 }

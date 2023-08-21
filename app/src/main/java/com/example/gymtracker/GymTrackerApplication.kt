@@ -4,7 +4,7 @@ import android.app.Application
 import com.example.gymtracker.data.AppContainer
 import com.example.gymtracker.data.AppDataContainer
 
-class ExerciseApplication : Application() {
+class GymTrackerApplication : Application() {
 
     lateinit var container: AppContainer
     override fun onCreate() {
