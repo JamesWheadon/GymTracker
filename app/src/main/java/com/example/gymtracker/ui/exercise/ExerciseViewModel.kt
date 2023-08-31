@@ -51,5 +51,3 @@ class ExerciseViewModel(
         }
     }
 }
-
-data class ExerciseListUiState(val exerciseList: List<Exercise> = listOf())

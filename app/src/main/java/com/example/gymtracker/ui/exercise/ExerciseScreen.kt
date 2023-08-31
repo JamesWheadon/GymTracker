@@ -44,12 +44,14 @@ import com.example.gymtracker.ui.theme.GymTrackerTheme
 @Composable
 fun ExerciseScreen(
     newExerciseFunction: () -> Unit,
+    exerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val exerciseListUiState by viewModel.exerciseListUiState.collectAsState()
     ExerciseScreen(
         newExerciseFunction = newExerciseFunction,
+        exerciseNavigationFunction = exerciseNavigationFunction,
         exerciseListUiState = exerciseListUiState,
         modifier
     )
@@ -58,6 +60,7 @@ fun ExerciseScreen(
 @Composable
 fun ExerciseScreen(
     newExerciseFunction: () -> Unit,
+    exerciseNavigationFunction: (Int) -> Unit,
     exerciseListUiState: ExerciseListUiState,
     modifier: Modifier = Modifier
 ) {
@@ -89,7 +92,10 @@ fun ExerciseScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(exerciseListUiState.exerciseList) { exercise ->
-                        ExerciseCard(exercise = exercise)
+                        ExerciseCard(
+                            exercise = exercise,
+                            navigationFunction = exerciseNavigationFunction
+                        )
                     }
                 }
             }
@@ -123,6 +129,7 @@ fun ExerciseScreen(
 @Composable
 fun ExerciseCard(
     exercise: Exercise,
+    navigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val customCardElevation = CardDefaults.cardElevation(
@@ -130,36 +137,38 @@ fun ExerciseCard(
         pressedElevation = 2.dp,
         focusedElevation = 4.dp
     )
-    Card(
-        modifier = modifier,
-        elevation = customCardElevation
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+    Button(onClick = { navigationFunction(exercise.id) }) {
+        Card(
+            modifier = modifier,
+            elevation = customCardElevation
         ) {
-            Text(
-                text = exercise.name,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.fillMaxWidth(0.6f)
-            )
-            Column(
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                ExerciseDetail(
-                    exerciseInfo = exercise.muscleGroup,
-                    iconId = R.drawable.info_48px,
-                    iconDescription = "exercise icon"
+                Text(
+                    text = exercise.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth(0.6f)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                ExerciseDetail(
-                    exerciseInfo = exercise.equipment,
-                    iconId = R.drawable.exercise_filled_48px,
-                    iconDescription = "exercise icon"
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    ExerciseDetail(
+                        exerciseInfo = exercise.muscleGroup,
+                        iconId = R.drawable.info_48px,
+                        iconDescription = "exercise icon"
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ExerciseDetail(
+                        exerciseInfo = exercise.equipment,
+                        iconId = R.drawable.exercise_filled_48px,
+                        iconDescription = "exercise icon"
+                    )
+                }
             }
         }
     }
@@ -193,6 +202,7 @@ fun ExerciseDetail(
 fun ExerciseScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         ExerciseScreen(
+            {},
             {},
             exerciseListUiState = ExerciseListUiState(
                 listOf(
