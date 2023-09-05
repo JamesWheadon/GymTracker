@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,10 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -41,6 +46,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
@@ -59,6 +65,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
+import com.example.gymtracker.ui.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -69,14 +76,17 @@ import kotlin.math.max
 
 @Composable
 fun ExerciseDetailsScreen(
+    recordExerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExerciseDetailsViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {
     val uiState = viewModel.uiState.collectAsState().value
+    uiState.history = viewModel.exerciseHistory.collectAsState().value
     ExerciseDetailsScreen(
         uiState = uiState,
+        recordExerciseNavigationFunction = recordExerciseNavigationFunction,
         modifier
     )
 }
@@ -85,6 +95,7 @@ fun ExerciseDetailsScreen(
 @Composable
 fun ExerciseDetailsScreen(
     uiState: ExerciseDetailsUiState,
+    recordExerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val customCardElevation = CardDefaults.cardElevation(
@@ -95,43 +106,68 @@ fun ExerciseDetailsScreen(
             .padding(vertical = 10.dp, horizontal = 10.dp),
         elevation = customCardElevation
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 16.dp)
-        ) {
-            Text(
-                text = uiState.name,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineLarge,
+        Box {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
                     .padding(vertical = 16.dp, horizontal = 16.dp)
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
             ) {
-                ExerciseDetail(
-                    exerciseInfo = uiState.muscleGroup,
-                    iconId = R.drawable.info_48px,
-                    iconDescription = "exercise icon",
+                Text(
+                    text = uiState.name,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .align(Alignment.CenterHorizontally)
+                        .padding(vertical = 16.dp, horizontal = 16.dp)
                 )
-                ExerciseDetail(
-                    exerciseInfo = uiState.equipment,
-                    iconId = R.drawable.exercise_filled_48px,
-                    iconDescription = "exercise icon",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    ExerciseDetail(
+                        exerciseInfo = uiState.muscleGroup,
+                        iconId = R.drawable.info_48px,
+                        iconDescription = "exercise icon",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    ExerciseDetail(
+                        exerciseInfo = uiState.equipment,
+                        iconId = R.drawable.exercise_filled_48px,
+                        iconDescription = "exercise icon",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                }
+                if (uiState.history?.isNotEmpty() == true) {
+                    ExerciseHistoryDetails(uiState = uiState)
+                }
             }
-            if (uiState.history?.isNotEmpty() == true) {
-                ExerciseHistoryDetails(uiState = uiState)
+            Button(
+                onClick = { recordExerciseNavigationFunction(uiState.id) },
+                modifier = Modifier
+                    .size(80.dp)
+                    .align(Alignment.BottomEnd)
+                    .padding(20.dp, 20.dp, 20.dp, 20.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary
+                            .copy(alpha = 0.75f)
+                            .compositeOver(Color.White),
+                        shape = CircleShape
+                    ),
+                shape = CircleShape,
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray.copy(alpha = 0.85f),
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 16.dp
+                )
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "save new workout")
             }
         }
     }
@@ -622,40 +658,17 @@ fun ItemDetailsScreenPreview() {
                 muscleGroup = "Biceps",
                 equipment = "Dumbbells",
                 history = listOf(
-//                    ExerciseHistoryUiState(
-//                        id = 1,
-//                        weight = 13.0,
-//                        sets = 1,
-//                        reps = 2,
-//                        rest = 1,
-//                        date = LocalDate.now().minusDays(5)
-//                    ),
-//                    ExerciseHistoryUiState(
-//                        id = 1,
-//                        weight = 15.0,
-//                        sets = 1,
-//                        reps = 2,
-//                        rest = 1,
-//                        date = LocalDate.now().minusDays(3)
-//                    ),
-//                    ExerciseHistoryUiState(
-//                        id = 1,
-//                        weight = 10.0,
-//                        sets = 1,
-//                        reps = 1,
-//                        rest = 1,
-//                        date = LocalDate.now().minusDays(20)
-//                    ),
-//                    ExerciseHistoryUiState(
-//                        id = 1,
-//                        weight = 10.0,
-//                        sets = 1,
-//                        reps = 1,
-//                        rest = 1,
-//                        date = LocalDate.now()
-//                    )
+                    ExerciseHistoryUiState(
+                        id = 1,
+                        weight = 13.0,
+                        sets = 1,
+                        reps = 2,
+                        rest = 1,
+                        date = LocalDate.now().minusDays(5)
+                    )
                 )
-            )
+            ),
+            recordExerciseNavigationFunction = { }
         )
     }
 }

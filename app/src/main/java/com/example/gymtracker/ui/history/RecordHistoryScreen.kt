@@ -30,23 +30,23 @@ import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.DropdownBox
 import com.example.gymtracker.ui.exercise.ExerciseInformationField
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.ExerciseViewModel
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 
 
 @Composable
 fun RecordHistoryScreen(
+    returnNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ExerciseViewModel = viewModel(
+    viewModel: RecordHistoryViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {
-    val uiState = viewModel.getExerciseStream(1).collectAsState(initial = null).value!!
     RecordHistoryScreen(
-        exercise = uiState,
+        exercise = viewModel.exerciseUiState.collectAsState().value,
         saveFunction = { history ->
             viewModel.saveHistory(history)
+            returnNavigationFunction(history.exerciseId)
         },
         modifier = modifier
     )

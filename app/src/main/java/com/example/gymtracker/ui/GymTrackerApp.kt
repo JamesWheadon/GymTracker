@@ -7,9 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.gymtracker.ui.exercise.CreateExerciseScreen
+import com.example.gymtracker.ui.exercise.create.CreateExerciseScreen
 import com.example.gymtracker.ui.exercise.ExerciseScreen
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsScreen
+import com.example.gymtracker.ui.history.RecordHistoryScreen
 
 @Composable
 fun GymTrackerApp(
@@ -32,7 +33,15 @@ fun GymTrackerApp(
         }
         composable("exercises/{exerciseId}",
             arguments = listOf(navArgument("exerciseId") { type = NavType.IntType })) {
-            ExerciseDetailsScreen()
+            ExerciseDetailsScreen(
+                recordExerciseNavigationFunction = { id: Int -> navController.navigate("exercises/$id/new") }
+            )
+        }
+        composable("exercises/{exerciseId}/new",
+            arguments = listOf(navArgument("exerciseId") { type = NavType.IntType })) {
+            RecordHistoryScreen (
+                returnNavigationFunction = { id: Int -> navController.navigate("exercises/$id") }
+            )
         }
     }
 }

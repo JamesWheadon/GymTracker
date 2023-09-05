@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui.exercise
+package com.example.gymtracker.ui.exercise.create
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,13 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
+import com.example.gymtracker.ui.exercise.ExerciseInformationField
+import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
 fun CreateExerciseScreen(
     modifier: Modifier = Modifier,
     navigateFunction: () -> Unit,
-    viewModel: ExerciseViewModel = viewModel(
+    viewModel: ExercisesScreenViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {

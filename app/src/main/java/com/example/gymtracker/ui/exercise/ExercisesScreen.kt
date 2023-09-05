@@ -46,7 +46,7 @@ fun ExerciseScreen(
     newExerciseFunction: () -> Unit,
     exerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ExercisesScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val exerciseListUiState by viewModel.exerciseListUiState.collectAsState()
     ExerciseScreen(
