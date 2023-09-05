@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,10 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -41,6 +46,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
@@ -70,14 +76,17 @@ import kotlin.math.max
 
 @Composable
 fun ExerciseDetailsScreen(
+    recordExerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExerciseDetailsViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {
     val uiState = viewModel.uiState.collectAsState().value
+    uiState.history = viewModel.exerciseHistory.collectAsState().value
     ExerciseDetailsScreen(
         uiState = uiState,
+        recordExerciseNavigationFunction = recordExerciseNavigationFunction,
         modifier
     )
 }
@@ -86,164 +95,80 @@ fun ExerciseDetailsScreen(
 @Composable
 fun ExerciseDetailsScreen(
     uiState: ExerciseDetailsUiState,
+    recordExerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val timeOptions = listOf("7 Days", "30 Days", "Past Year", "All Time")
-    val detailOptions = listOf("Max Weight", "Max Reps", "Max Sets", "Total Weight")
-    val currentDate = LocalDate.now()
-    val optionsToSpans = mapOf<String, LocalDate>(
-        Pair(timeOptions[0], currentDate.minusDays(7)),
-        Pair(timeOptions[1], currentDate.minusDays(30)),
-        Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
-        Pair(
-            timeOptions[3],
-            uiState.history?.minBy { history -> history.date.toEpochDay() }?.date ?: currentDate
-        ),
-    )
-    var detail by remember { mutableStateOf(detailOptions[0]) }
-    var timeSpan by remember { mutableStateOf(optionsToSpans[timeOptions[0]]) }
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 16.dp
     )
-    val bestWeight = uiState.history?.maxOf { history -> history.weight }
-    val best = uiState.history
-        ?.filter { history -> history.weight == bestWeight }
-        ?.maxBy { history -> history.reps }
-    val recent = uiState.history?.maxBy { history -> history.date.toEpochDay() }
     Card(
         modifier = modifier
             .padding(vertical = 10.dp, horizontal = 10.dp),
         elevation = customCardElevation
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 16.dp)
-        ) {
-            Text(
-                text = uiState.name,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineLarge,
+        Box {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
                     .padding(vertical = 16.dp, horizontal = 16.dp)
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
             ) {
-                ExerciseDetail(
-                    exerciseInfo = uiState.muscleGroup,
-                    iconId = R.drawable.info_48px,
-                    iconDescription = "exercise icon",
+                Text(
+                    text = uiState.name,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .align(Alignment.CenterHorizontally)
+                        .padding(vertical = 16.dp, horizontal = 16.dp)
                 )
-                ExerciseDetail(
-                    exerciseInfo = uiState.equipment,
-                    iconId = R.drawable.exercise_filled_48px,
-                    iconDescription = "exercise icon",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    ExerciseDetail(
+                        exerciseInfo = uiState.muscleGroup,
+                        iconId = R.drawable.info_48px,
+                        iconDescription = "exercise icon",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    ExerciseDetail(
+                        exerciseInfo = uiState.equipment,
+                        iconId = R.drawable.exercise_filled_48px,
+                        iconDescription = "exercise icon",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                }
+                if (uiState.history?.isNotEmpty() == true) {
+                    ExerciseHistoryDetails(uiState = uiState)
+                }
             }
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
+            Button(
+                onClick = { recordExerciseNavigationFunction(uiState.id) },
+                modifier = Modifier
+                    .size(80.dp)
+                    .align(Alignment.BottomEnd)
+                    .padding(20.dp, 20.dp, 20.dp, 20.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary
+                            .copy(alpha = 0.75f)
+                            .compositeOver(Color.White),
+                        shape = CircleShape
+                    ),
+                shape = CircleShape,
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray.copy(alpha = 0.85f),
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 16.dp
+                )
             ) {
-                ExerciseDetail(
-                    exerciseInfo = "${best?.weight} ${uiState.measurement} for ${best?.reps} reps",
-                    iconId = R.drawable.trophy_48dp,
-                    iconDescription = "exercise icon",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
-                ExerciseDetail(
-                    exerciseInfo = "${recent?.weight} ${uiState.measurement} for ${recent?.reps} reps",
-                    iconId = R.drawable.history_48px,
-                    iconDescription = "exercise icon",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
+                Icon(Icons.Default.Add, contentDescription = "save new workout")
             }
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Spacer(modifier = Modifier.weight(2f))
-                DropdownBox(
-                    options = detailOptions,
-                    onChange = { newDetail ->
-                        detail = newDetail
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                DropdownBox(
-                    options = timeOptions,
-                    onChange = { newSpan ->
-                        timeSpan = optionsToSpans[newSpan]
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                )
-            }
-            Graph(
-                points = uiState.history!!.map { history ->
-                    when (detail) {
-                        detailOptions[0] -> {
-                            Pair(
-                                history.date,
-                                history.weight
-                            )
-                        }
-                        detailOptions[1] -> {
-                            Pair(
-                                history.date,
-                                history.reps.toDouble()
-                            )
-                        }
-                        detailOptions[2] -> {
-                            Pair(
-                                history.date,
-                                history.sets.toDouble()
-                            )
-                        }
-                        detailOptions[3] -> {
-                            Pair(
-                                history.date,
-                                history.weight * history.reps * history.sets
-                            )
-                        }
-                        else -> {
-                            Pair(
-                                history.date,
-                                history.weight
-                            )
-                        }
-                    }
-                },
-                startDate = timeSpan ?: currentDate,
-                yLabel = detail,
-                yUnit = if (detail == detailOptions[0]) uiState.measurement else ""
-            )
         }
     }
 }
@@ -271,6 +196,127 @@ fun ExerciseDetail(
             style = MaterialTheme.typography.bodyLarge
         )
     }
+}
+
+@Composable
+fun ExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
+    val timeOptions = listOf("7 Days", "30 Days", "Past Year", "All Time")
+    val detailOptions = listOf("Max Weight", "Max Reps", "Max Sets", "Total Weight")
+    val currentDate = LocalDate.now()
+    val optionsToSpans = mapOf<String, LocalDate>(
+        Pair(timeOptions[0], currentDate.minusDays(7)),
+        Pair(timeOptions[1], currentDate.minusDays(30)),
+        Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
+        Pair(
+            timeOptions[3],
+            uiState.history?.minBy { history -> history.date.toEpochDay() }?.date ?: currentDate
+        ),
+    )
+    var detail by remember { mutableStateOf(detailOptions[0]) }
+    var timeSpan by remember { mutableStateOf(optionsToSpans[timeOptions[0]]) }
+    val bestWeight = uiState.history?.maxOf { history -> history.weight }
+    val best = uiState.history
+        ?.filter { history -> history.weight == bestWeight }
+        ?.maxBy { history -> history.reps }
+    val recent = uiState.history?.maxBy { history -> history.date.toEpochDay() }
+    Spacer(modifier = Modifier.height(10.dp))
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        ExerciseDetail(
+            exerciseInfo = "${best?.weight} kg for ${best?.reps} reps",
+            iconId = R.drawable.trophy_48dp,
+            iconDescription = "exercise icon",
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
+        ExerciseDetail(
+            exerciseInfo = "${recent?.weight} kg for ${recent?.reps} reps",
+            iconId = R.drawable.history_48px,
+            iconDescription = "exercise icon",
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+    Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Spacer(modifier = Modifier.weight(2f))
+        DropdownBox(
+            options = detailOptions,
+            onChange = { newDetail ->
+                detail = newDetail
+            },
+            modifier = Modifier
+                .weight(1f)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(8.dp)
+                )
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        DropdownBox(
+            options = timeOptions,
+            onChange = { newSpan ->
+                timeSpan = optionsToSpans[newSpan]
+            },
+            modifier = Modifier
+                .weight(1f)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(8.dp)
+                )
+        )
+    }
+    Graph(
+        points = uiState.history!!.map { history ->
+            when (detail) {
+                detailOptions[0] -> {
+                    Pair(
+                        history.date,
+                        history.weight
+                    )
+                }
+
+                detailOptions[1] -> {
+                    Pair(
+                        history.date,
+                        history.reps.toDouble()
+                    )
+                }
+
+                detailOptions[2] -> {
+                    Pair(
+                        history.date,
+                        history.sets.toDouble()
+                    )
+                }
+
+                detailOptions[3] -> {
+                    Pair(
+                        history.date,
+                        history.weight * history.reps * history.sets
+                    )
+                }
+
+                else -> {
+                    Pair(
+                        history.date,
+                        history.weight
+                    )
+                }
+            }
+        },
+        startDate = timeSpan ?: currentDate,
+        yLabel = detail,
+        yUnit = if (detail == detailOptions[0]) "kg" else ""
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -611,7 +657,6 @@ fun ItemDetailsScreenPreview() {
                 name = "Curls",
                 muscleGroup = "Biceps",
                 equipment = "Dumbbells",
-                measurement = "kg",
                 history = listOf(
                     ExerciseHistoryUiState(
                         id = 1,
@@ -620,33 +665,10 @@ fun ItemDetailsScreenPreview() {
                         reps = 2,
                         rest = 1,
                         date = LocalDate.now().minusDays(5)
-                    ),
-                    ExerciseHistoryUiState(
-                        id = 1,
-                        weight = 15.0,
-                        sets = 1,
-                        reps = 2,
-                        rest = 1,
-                        date = LocalDate.now().minusDays(3)
-                    ),
-                    ExerciseHistoryUiState(
-                        id = 1,
-                        weight = 10.0,
-                        sets = 1,
-                        reps = 1,
-                        rest = 1,
-                        date = LocalDate.now().minusDays(20)
-                    ),
-                    ExerciseHistoryUiState(
-                        id = 1,
-                        weight = 10.0,
-                        sets = 1,
-                        reps = 1,
-                        rest = 1,
-                        date = LocalDate.now()
                     )
                 )
-            )
+            ),
+            recordExerciseNavigationFunction = { }
         )
     }
 }

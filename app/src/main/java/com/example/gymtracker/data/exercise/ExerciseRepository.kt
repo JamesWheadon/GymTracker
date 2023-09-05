@@ -3,7 +3,6 @@ package com.example.gymtracker.data.exercise
 import kotlinx.coroutines.flow.Flow
 
 interface ExerciseRepository {
-
     fun getExerciseStream(id: Int): Flow<Exercise?>
 
     fun getAllExercisesStream(): Flow<List<Exercise>>

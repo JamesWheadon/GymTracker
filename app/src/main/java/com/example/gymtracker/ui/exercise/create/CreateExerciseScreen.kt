@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui.exercise
+package com.example.gymtracker.ui.exercise.create
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,12 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
+import com.example.gymtracker.ui.exercise.ExerciseInformationField
+import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
 fun CreateExerciseScreen(
     modifier: Modifier = Modifier,
-    viewModel: ExerciseViewModel = viewModel(
+    navigateFunction: () -> Unit,
+    viewModel: ExercisesScreenViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {
@@ -37,14 +40,16 @@ fun CreateExerciseScreen(
         modifier = modifier,
         createFunction = { exercise ->
             viewModel.saveExercise(exercise)
-        }
+        },
+        navigateFunction = navigateFunction
     )
 }
 
 @Composable
 fun CreateExerciseScreen(
     modifier: Modifier = Modifier,
-    createFunction:  (Exercise) -> Unit
+    createFunction: (Exercise) -> Unit,
+    navigateFunction: () -> Unit
 ) {
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 16.dp
@@ -108,6 +113,7 @@ fun CreateExerciseScreen(
                             equipment = equipmentState,
                             muscle = muscleState
                         )
+                        navigateFunction()
                     }) {
                         Text("Create")
                     }
@@ -144,7 +150,8 @@ fun saveExercise(
 fun CreateExerciseDetailsScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         CreateExerciseScreen(
-            createFunction = {}
+            createFunction = {},
+            navigateFunction = {}
         )
     }
 }

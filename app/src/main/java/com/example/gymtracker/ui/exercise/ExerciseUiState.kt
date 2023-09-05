@@ -15,11 +15,10 @@ data class ExerciseDetailsUiState(
     val name: String = "",
     val muscleGroup: String = "",
     val equipment: String = "",
-    val measurement: String = "",
     var history: List<ExerciseHistoryUiState>? = listOf()
 )
 
-data class ExerciseScreenUiState(val exerciseList: List<Exercise> = listOf())
+data class ExerciseListUiState(val exerciseList: List<Exercise> = listOf())
 
 fun Exercise.toExerciseUiState(): ExerciseUiState = ExerciseUiState(
     id = id,
