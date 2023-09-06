@@ -34,7 +34,8 @@ fun GymTrackerApp(
         composable("exercises/{exerciseId}",
             arguments = listOf(navArgument("exerciseId") { type = NavType.IntType })) {
             ExerciseDetailsScreen(
-                recordExerciseNavigationFunction = { id: Int -> navController.navigate("exercises/$id/new") }
+                recordExerciseNavigationFunction = { id: Int -> navController.navigate("exercises/$id/new") },
+                backNavigationFunction = { navController.navigate("exercises") }
             )
         }
         composable("exercises/{exerciseId}/new",

@@ -6,7 +6,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -15,23 +14,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,9 +43,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -66,6 +63,7 @@ import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -77,6 +75,7 @@ import kotlin.math.max
 @Composable
 fun ExerciseDetailsScreen(
     recordExerciseNavigationFunction: (Int) -> Unit,
+    backNavigationFunction: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExerciseDetailsViewModel = viewModel(
         factory = AppViewModelProvider.Factory
@@ -87,87 +86,74 @@ fun ExerciseDetailsScreen(
     ExerciseDetailsScreen(
         uiState = uiState,
         recordExerciseNavigationFunction = recordExerciseNavigationFunction,
+        backNavigationFunction = backNavigationFunction,
         modifier
     )
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseDetailsScreen(
     uiState: ExerciseDetailsUiState,
     recordExerciseNavigationFunction: (Int) -> Unit,
+    backNavigationFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val customCardElevation = CardDefaults.cardElevation(
-        defaultElevation = 16.dp
-    )
-    Card(
-        modifier = modifier
-            .padding(vertical = 10.dp, horizontal = 10.dp),
-        elevation = customCardElevation
-    ) {
-        Box {
-            Column(
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopBar(
+                text = uiState.name,
+                backEnabled = true,
+                navigateBack = backNavigationFunction
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { recordExerciseNavigationFunction(uiState.id) },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(20.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    tint = Color.Black,
+                    contentDescription = "Add Exercise"
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp, horizontal = 16.dp)
+                    .padding(innerPadding)
             ) {
-                Text(
-                    text = uiState.name,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.headlineLarge,
+                ExerciseDetail(
+                    exerciseInfo = uiState.muscleGroup,
+                    iconId = R.drawable.info_48px,
+                    iconDescription = "exercise icon",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = 16.dp, horizontal = 16.dp)
+                        .weight(1f)
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    ExerciseDetail(
-                        exerciseInfo = uiState.muscleGroup,
-                        iconId = R.drawable.info_48px,
-                        iconDescription = "exercise icon",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                    ExerciseDetail(
-                        exerciseInfo = uiState.equipment,
-                        iconId = R.drawable.exercise_filled_48px,
-                        iconDescription = "exercise icon",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                }
-                if (uiState.history?.isNotEmpty() == true) {
-                    ExerciseHistoryDetails(uiState = uiState)
-                }
+                ExerciseDetail(
+                    exerciseInfo = uiState.equipment,
+                    iconId = R.drawable.exercise_filled_48px,
+                    iconDescription = "exercise icon",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
             }
-            Button(
-                onClick = { recordExerciseNavigationFunction(uiState.id) },
-                modifier = Modifier
-                    .size(80.dp)
-                    .align(Alignment.BottomEnd)
-                    .padding(20.dp, 20.dp, 20.dp, 20.dp)
-                    .background(
-                        MaterialTheme.colorScheme.primary
-                            .copy(alpha = 0.75f)
-                            .compositeOver(Color.White),
-                        shape = CircleShape
-                    ),
-                shape = CircleShape,
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray.copy(alpha = 0.85f),
-                ),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 16.dp
-                )
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "save new workout")
+            if (uiState.history?.isNotEmpty() == true) {
+                ExerciseHistoryDetails(uiState = uiState)
             }
         }
     }
@@ -581,8 +567,14 @@ fun Graph(
                     style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
                 )
 
-                val textWidth = max(xLabelSize.size.width, yLabelSize.size.width) + max(xDataSize.size.width, yDataSize.size.width) + 20F
-                val textHeight = max(xLabelSize.size.height, yLabelSize.size.height) + max(xDataSize.size.height, yDataSize.size.height) + 20F
+                val textWidth = max(xLabelSize.size.width, yLabelSize.size.width) + max(
+                    xDataSize.size.width,
+                    yDataSize.size.width
+                ) + 20F
+                val textHeight = max(xLabelSize.size.height, yLabelSize.size.height) + max(
+                    xDataSize.size.height,
+                    yDataSize.size.height
+                ) + 20F
                 val topRowHeight = max(xLabelSize.size.height, xDataSize.size.height)
                 val frontColumnWidth = max(xLabelSize.size.width, yLabelSize.size.width)
 
@@ -590,15 +582,16 @@ fun Graph(
                 val boxHeight = textHeight + 20F
                 val cornerRadius = 8.dp.toPx()
 
-                val boxTopLeft = if (tappedLocation.x + 20F + boxWidth < canvasWidth && tappedLocation.y + 20F + boxHeight < canvasHeight) {
-                    Offset(selected.first + 20F, selected.second + 20F)
-                } else if (tappedLocation.x + 20F + boxWidth < canvasWidth) {
-                    Offset(selected.first + 20F, selected.second - 20F - boxHeight)
-                } else if (tappedLocation.y + 20F + boxHeight < canvasHeight) {
-                    Offset(selected.first - 20F - boxWidth, selected.second + 20F)
-                } else {
-                    Offset(selected.first - 20F - boxWidth, selected.second - 20F - boxHeight)
-                }
+                val boxTopLeft =
+                    if (tappedLocation.x + 20F + boxWidth < canvasWidth && tappedLocation.y + 20F + boxHeight < canvasHeight) {
+                        Offset(selected.first + 20F, selected.second + 20F)
+                    } else if (tappedLocation.x + 20F + boxWidth < canvasWidth) {
+                        Offset(selected.first + 20F, selected.second - 20F - boxHeight)
+                    } else if (tappedLocation.y + 20F + boxHeight < canvasHeight) {
+                        Offset(selected.first - 20F - boxWidth, selected.second + 20F)
+                    } else {
+                        Offset(selected.first - 20F - boxWidth, selected.second - 20F - boxHeight)
+                    }
 
                 drawRoundRect(
                     color = Color.White,
@@ -641,7 +634,12 @@ fun Graph(
                     textMeasurer = textMeasurer,
                     text = dataPoint.first.format(customFormatter),
                     style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
-                    topLeft = boxTopLeft.plus(Offset(15f + frontColumnWidth + 10f, 15f + topRowHeight + 10f))
+                    topLeft = boxTopLeft.plus(
+                        Offset(
+                            15f + frontColumnWidth + 10f,
+                            15f + topRowHeight + 10f
+                        )
+                    )
                 )
             }
         }
@@ -668,7 +666,8 @@ fun ItemDetailsScreenPreview() {
                     )
                 )
             ),
-            recordExerciseNavigationFunction = { }
+            recordExerciseNavigationFunction = { },
+            backNavigationFunction = { }
         )
     }
 }
