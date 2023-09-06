@@ -1,14 +1,20 @@
 package com.example.gymtracker.ui.exercise.create
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +37,7 @@ import com.example.gymtracker.ui.theme.GymTrackerTheme
 @Composable
 fun CreateExerciseScreen(
     modifier: Modifier = Modifier,
-    navigateFunction: () -> Unit,
+    onDismiss: () -> Unit,
     viewModel: ExercisesScreenViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
@@ -41,15 +47,15 @@ fun CreateExerciseScreen(
         createFunction = { exercise ->
             viewModel.saveExercise(exercise)
         },
-        navigateFunction = navigateFunction
+        onDismiss = onDismiss
     )
 }
 
 @Composable
 fun CreateExerciseScreen(
     modifier: Modifier = Modifier,
-    createFunction: (Exercise) -> Unit,
-    navigateFunction: () -> Unit
+    onDismiss: () -> Unit,
+    createFunction: (Exercise) -> Unit
 ) {
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 16.dp
@@ -57,92 +63,88 @@ fun CreateExerciseScreen(
     var nameState by remember { mutableStateOf("") }
     var equipmentState by remember { mutableStateOf("") }
     var muscleState by remember { mutableStateOf("") }
-
-    Card(
-        modifier = modifier
-            .padding(vertical = 10.dp, horizontal = 10.dp),
-        elevation = customCardElevation
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    Box {
+        Card(
+            modifier = modifier
+                .padding(vertical = 10.dp, horizontal = 10.dp),
+            elevation = customCardElevation
         ) {
-            Text(
-                text = "Create New Exercise",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 16.dp, horizontal = 16.dp)
-            )
-
             Column(
-                modifier = modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Spacer(modifier = Modifier.height(6.dp))
-                ExerciseInformationField(
-                    label = "Exercise Name",
-                    value = nameState,
-                    onChange = { entry ->
-                        nameState = entry
-                    }
+                Text(
+                    text = "Create New Exercise",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .padding(vertical = 16.dp, horizontal = 16.dp)
                 )
-                ExerciseInformationField(
-                    label = "Equipment",
-                    value = equipmentState,
-                    onChange = { entry ->
-                        equipmentState = entry
-                    }
-                )
-                ExerciseInformationField(
-                    label = "Muscle Group",
-                    value = muscleState,
-                    onChange = { entry ->
-                        muscleState = entry
-                    }
-                )
-                if (nameState != "" && equipmentState != "" && muscleState != "") {
-                    Button(onClick = {
-                        saveExercise(
-                            createFunction = createFunction,
-                            name = nameState,
-                            equipment = equipmentState,
-                            muscle = muscleState
-                        )
-                        navigateFunction()
-                    }) {
-                        Text("Create")
-                    }
-                } else {
-                    Button(
-                        onClick = { },
-                        enabled = false
-                    ) {
-                        Text("Create")
+
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    ExerciseInformationField(
+                        label = "Exercise Name",
+                        value = nameState,
+                        onChange = { entry ->
+                            nameState = entry
+                        }
+                    )
+                    ExerciseInformationField(
+                        label = "Equipment",
+                        value = equipmentState,
+                        onChange = { entry ->
+                            equipmentState = entry
+                        }
+                    )
+                    ExerciseInformationField(
+                        label = "Muscle Group",
+                        value = muscleState,
+                        onChange = { entry ->
+                            muscleState = entry
+                        }
+                    )
+                    if (nameState != "" && equipmentState != "" && muscleState != "") {
+                        Button(onClick = {
+                            createFunction(
+                                Exercise(
+                                    name = nameState,
+                                    muscleGroup = muscleState,
+                                    equipment = equipmentState
+                                )
+                            )
+                            onDismiss()
+                        }) {
+                            Text("Create")
+                        }
+                    } else {
+                        Button(
+                            onClick = { },
+                            enabled = false
+                        ) {
+                            Text("Create")
+                        }
                     }
                 }
-                Spacer(modifier = Modifier.height(6.dp))
             }
         }
+        IconButton(
+            modifier = Modifier.align(Alignment.TopEnd).offset((-8).dp, 8.dp),
+            onClick = { onDismiss() }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Close"
+            )
+        }
     }
-}
-
-fun saveExercise(
-    createFunction: (Exercise) -> Unit,
-    name: String,
-    equipment: String,
-    muscle: String
-) {
-    val newExercise = Exercise(
-        name = name,
-        muscleGroup = muscle,
-        equipment = equipment
-    )
-    createFunction(newExercise)
 }
 
 @Preview(showBackground = true)
@@ -151,7 +153,7 @@ fun CreateExerciseDetailsScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         CreateExerciseScreen(
             createFunction = {},
-            navigateFunction = {}
+            onDismiss = {}
         )
     }
 }

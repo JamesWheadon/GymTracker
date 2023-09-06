@@ -7,10 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.gymtracker.ui.exercise.create.CreateExerciseScreen
 import com.example.gymtracker.ui.exercise.ExerciseScreen
+import com.example.gymtracker.ui.exercise.ExercisesRoute
+import com.example.gymtracker.ui.exercise.details.ExerciseDetailsRoute
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsScreen
-import com.example.gymtracker.ui.history.RecordHistoryScreen
 
 @Composable
 fun GymTrackerApp(
@@ -18,29 +18,17 @@ fun GymTrackerApp(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "exercises",
+        startDestination = ExercisesRoute.route,
     ) {
-        composable(route = "exercises") {
+        composable(route = ExercisesRoute.route) {
             ExerciseScreen(
-                newExerciseFunction = { navController.navigate("newExercise") },
-                exerciseNavigationFunction = { id: Int -> navController.navigate("exercises/$id") }
+                exerciseNavigationFunction = { id: Int -> navController.navigate(ExerciseDetailsRoute.getRouteForNavArgument(id)) }
             )
         }
-        composable(route = "newExercise") {
-            CreateExerciseScreen(
-                navigateFunction = { navController.navigate("exercises") }
-            )
-        }
-        composable("exercises/{exerciseId}",
-            arguments = listOf(navArgument("exerciseId") { type = NavType.IntType })) {
+        composable(ExerciseDetailsRoute.route,
+            arguments = listOf(navArgument(ExerciseDetailsRoute.navArgument) { type = NavType.IntType })) {
             ExerciseDetailsScreen(
-                recordExerciseNavigationFunction = { id: Int -> navController.navigate("exercises/$id/new") }
-            )
-        }
-        composable("exercises/{exerciseId}/new",
-            arguments = listOf(navArgument("exerciseId") { type = NavType.IntType })) {
-            RecordHistoryScreen (
-                returnNavigationFunction = { id: Int -> navController.navigate("exercises/$id") }
+                backNavigationFunction = { navController.navigate(ExercisesRoute.route) }
             )
         }
     }
