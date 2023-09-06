@@ -27,9 +27,7 @@ object AppViewModelProvider {
         }
         initializer {
             RecordHistoryViewModel(
-                gymTrackerApplication().container.exerciseRepository,
-                gymTrackerApplication().container.historyRepository,
-                this.createSavedStateHandle(),
+                gymTrackerApplication().container.historyRepository
             )
         }
     }

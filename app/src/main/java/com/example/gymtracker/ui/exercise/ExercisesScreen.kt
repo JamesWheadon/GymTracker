@@ -25,6 +25,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,23 +37,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
+import com.example.gymtracker.ui.exercise.create.CreateExerciseScreen
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
 fun ExerciseScreen(
-    newExerciseFunction: () -> Unit,
     exerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExercisesScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val exerciseListUiState by viewModel.exerciseListUiState.collectAsState()
     ExerciseScreen(
-        newExerciseFunction = newExerciseFunction,
         exerciseNavigationFunction = exerciseNavigationFunction,
         exerciseListUiState = exerciseListUiState,
         modifier
@@ -60,11 +63,11 @@ fun ExerciseScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseScreen(
-    newExerciseFunction: () -> Unit,
     exerciseNavigationFunction: (Int) -> Unit,
     exerciseListUiState: ExerciseListUiState,
     modifier: Modifier = Modifier
 ) {
+    var showCreate by remember { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -76,7 +79,7 @@ fun ExerciseScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = newExerciseFunction,
+                onClick = { showCreate = true },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(20.dp)
             ) {
@@ -100,6 +103,15 @@ fun ExerciseScreen(
                     navigationFunction = exerciseNavigationFunction
                 )
             }
+        }
+    }
+    if (showCreate) {
+        Dialog(
+            onDismissRequest = { showCreate = false }
+        ) {
+            CreateExerciseScreen(
+                onDismiss = { showCreate = false }
+            )
         }
     }
 }
@@ -187,7 +199,6 @@ fun ExerciseDetail(
 fun ExerciseScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         ExerciseScreen(
-            {},
             {},
             exerciseListUiState = ExerciseListUiState(
                 listOf(

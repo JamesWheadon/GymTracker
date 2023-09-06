@@ -1,21 +1,24 @@
 package com.example.gymtracker.ui.history
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,18 +39,19 @@ import java.time.LocalDate
 
 @Composable
 fun RecordHistoryScreen(
-    returnNavigationFunction: (Int) -> Unit,
+    exercise: ExerciseUiState,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RecordHistoryViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {
     RecordHistoryScreen(
-        exercise = viewModel.exerciseUiState.collectAsState().value,
+        exercise = exercise,
         saveFunction = { history ->
             viewModel.saveHistory(history)
-            returnNavigationFunction(history.exerciseId)
         },
+        onDismiss = onDismiss,
         modifier = modifier
     )
 }
@@ -56,6 +60,7 @@ fun RecordHistoryScreen(
 fun RecordHistoryScreen(
     exercise: ExerciseUiState,
     saveFunction: (ExerciseHistory) -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val customCardElevation = CardDefaults.cardElevation(
@@ -65,107 +70,118 @@ fun RecordHistoryScreen(
     var repsState by remember { mutableStateOf("") }
     var weightState by remember { mutableStateOf("") }
     var unitState by remember { mutableStateOf("kg") }
-    Card(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.background)
-            .padding(vertical = 10.dp, horizontal = 10.dp),
-        elevation = customCardElevation
-    ) {
-        Column {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = "New ${exercise.name} Workout"
-                )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically,
+    Box {
+        Card(
+            modifier = modifier
+                .padding(vertical = 10.dp, horizontal = 10.dp),
+            elevation = customCardElevation
+        ) {
+            Column {
+                Column(
                     modifier = modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 0.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    ExerciseInformationField(
-                        label = "Sets",
-                        value = setsState,
-                        onChange = { entry ->
-                            setsState = entry
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(0.dp)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "New ${exercise.name} Workout"
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    ExerciseInformationField(
-                        label = "Reps",
-                        value = repsState,
-                        onChange = { entry ->
-                            repsState = entry
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(0.dp)
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 0.dp)
-                ) {
-                    ExerciseInformationField(
-                        label = "Weight",
-                        value = weightState,
-                        onChange = { entry ->
-                            weightState = entry
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(0.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    DropdownBox(
-                        options = listOf("kg", "lb"),
-                        onChange = { value ->
-                            unitState = value
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(0.dp)
-                    )
-                }
-                if (setsState != "" && repsState != "" && weightState != "" && unitState != "") {
-                    Button(onClick = {
-                        var weight = weightState.toDouble()
-                        if (unitState == "lb") {
-                            weight *= 2.2
-                        }
-                        val history = ExerciseHistory(
-                            exerciseId = exercise.id,
-                            weight = weight,
-                            sets = setsState.toInt(),
-                            reps = repsState.toInt(),
-                            date = LocalDate.now()
-                        )
-                        saveFunction(history)
-                    }) {
-                        Text("Save")
-                    }
-                } else {
-                    Button(
-                        onClick = { },
-                        enabled = false
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 0.dp)
                     ) {
-                        Text("Save")
+                        ExerciseInformationField(
+                            label = "Sets",
+                            value = setsState,
+                            onChange = { entry ->
+                                setsState = entry
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(0.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        ExerciseInformationField(
+                            label = "Reps",
+                            value = repsState,
+                            onChange = { entry ->
+                                repsState = entry
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(0.dp)
+                        )
                     }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 0.dp)
+                    ) {
+                        ExerciseInformationField(
+                            label = "Weight",
+                            value = weightState,
+                            onChange = { entry ->
+                                weightState = entry
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(0.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        DropdownBox(
+                            options = listOf("kg", "lb"),
+                            onChange = { value ->
+                                unitState = value
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(0.dp)
+                        )
+                    }
+                    if (setsState != "" && repsState != "" && weightState != "" && unitState != "") {
+                        Button(onClick = {
+                            var weight = weightState.toDouble()
+                            if (unitState == "lb") {
+                                weight *= 2.2
+                            }
+                            val history = ExerciseHistory(
+                                exerciseId = exercise.id,
+                                weight = weight,
+                                sets = setsState.toInt(),
+                                reps = repsState.toInt(),
+                                date = LocalDate.now()
+                            )
+                            saveFunction(history)
+                            onDismiss()
+                        }) {
+                            Text("Save")
+                        }
+                    } else {
+                        Button(
+                            onClick = { },
+                            enabled = false
+                        ) {
+                            Text("Save")
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
-                Spacer(modifier = Modifier.height(6.dp))
             }
+        }
+        IconButton(
+            modifier = Modifier.align(Alignment.TopEnd).offset((-8).dp, 8.dp),
+            onClick = { onDismiss() }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Close"
+            )
         }
     }
 }
@@ -179,7 +195,9 @@ fun ExerciseScreenPreview() {
                 name = "Curls",
                 muscleGroup = "Biceps",
                 equipment = "Dumbbells"
-            ), saveFunction = {}
+            ),
+            saveFunction = {},
+            onDismiss = {}
         )
     }
 }

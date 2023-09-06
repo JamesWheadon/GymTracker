@@ -58,11 +58,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
+import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.history.RecordHistoryScreen
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
@@ -74,7 +77,6 @@ import kotlin.math.max
 
 @Composable
 fun ExerciseDetailsScreen(
-    recordExerciseNavigationFunction: (Int) -> Unit,
     backNavigationFunction: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExerciseDetailsViewModel = viewModel(
@@ -85,7 +87,6 @@ fun ExerciseDetailsScreen(
     uiState.history = viewModel.exerciseHistory.collectAsState().value
     ExerciseDetailsScreen(
         uiState = uiState,
-        recordExerciseNavigationFunction = recordExerciseNavigationFunction,
         backNavigationFunction = backNavigationFunction,
         modifier
     )
@@ -96,10 +97,10 @@ fun ExerciseDetailsScreen(
 @Composable
 fun ExerciseDetailsScreen(
     uiState: ExerciseDetailsUiState,
-    recordExerciseNavigationFunction: (Int) -> Unit,
     backNavigationFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showRecord by remember { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -112,7 +113,7 @@ fun ExerciseDetailsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { recordExerciseNavigationFunction(uiState.id) },
+                onClick = { showRecord = true },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(20.dp)
             ) {
@@ -155,6 +156,16 @@ fun ExerciseDetailsScreen(
             if (uiState.history?.isNotEmpty() == true) {
                 ExerciseHistoryDetails(uiState = uiState)
             }
+        }
+    }
+    if (showRecord) {
+        Dialog(
+            onDismissRequest = { showRecord = false }
+        ) {
+            RecordHistoryScreen(
+                exercise = uiState.toExerciseUiState(),
+                onDismiss = { showRecord = false }
+            )
         }
     }
 }
@@ -666,7 +677,6 @@ fun ItemDetailsScreenPreview() {
                     )
                 )
             ),
-            recordExerciseNavigationFunction = { },
             backNavigationFunction = { }
         )
     }
