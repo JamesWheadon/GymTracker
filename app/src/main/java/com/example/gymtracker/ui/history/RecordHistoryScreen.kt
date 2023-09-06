@@ -28,6 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymtracker.converters.WeightUnits
+import com.example.gymtracker.converters.convertToKilograms
+import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.data.history.ExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.DropdownBox
@@ -69,7 +72,7 @@ fun RecordHistoryScreen(
     var setsState by remember { mutableStateOf("") }
     var repsState by remember { mutableStateOf("") }
     var weightState by remember { mutableStateOf("") }
-    var unitState by remember { mutableStateOf("kg") }
+    var unitState by remember { mutableStateOf(WeightUnits.KILOGRAMS.shortForm) }
     Box {
         Card(
             modifier = modifier
@@ -135,7 +138,7 @@ fun RecordHistoryScreen(
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         DropdownBox(
-                            options = listOf("kg", "lb"),
+                            options = listOf(WeightUnits.KILOGRAMS.shortForm, WeightUnits.POUNDS.shortForm),
                             onChange = { value ->
                                 unitState = value
                             },
@@ -146,13 +149,11 @@ fun RecordHistoryScreen(
                     }
                     if (setsState != "" && repsState != "" && weightState != "" && unitState != "") {
                         Button(onClick = {
-                            var weight = weightState.toDouble()
-                            if (unitState == "lb") {
-                                weight *= 2.2
-                            }
+                            val weight = weightState.toDouble()
+                            val unit = getWeightUnitFromShortForm(unitState)
                             val history = ExerciseHistory(
                                 exerciseId = exercise.id,
-                                weight = weight,
+                                weight = convertToKilograms(unit, weight),
                                 sets = setsState.toInt(),
                                 reps = repsState.toInt(),
                                 date = LocalDate.now()

@@ -113,11 +113,12 @@ fun CreateExerciseScreen(
                     )
                     if (nameState != "" && equipmentState != "" && muscleState != "") {
                         Button(onClick = {
-                            saveExercise(
-                                createFunction = createFunction,
-                                name = nameState,
-                                equipment = equipmentState,
-                                muscle = muscleState
+                            createFunction(
+                                Exercise(
+                                    name = nameState,
+                                    muscleGroup = muscleState,
+                                    equipment = equipmentState
+                                )
                             )
                             onDismiss()
                         }) {
@@ -131,7 +132,6 @@ fun CreateExerciseScreen(
                             Text("Create")
                         }
                     }
-                    Spacer(modifier = Modifier.height(6.dp))
                 }
             }
         }
@@ -145,20 +145,6 @@ fun CreateExerciseScreen(
             )
         }
     }
-}
-
-fun saveExercise(
-    createFunction: (Exercise) -> Unit,
-    name: String,
-    equipment: String,
-    muscle: String
-) {
-    val newExercise = Exercise(
-        name = name,
-        muscleGroup = muscle,
-        equipment = equipment
-    )
-    createFunction(newExercise)
 }
 
 @Preview(showBackground = true)

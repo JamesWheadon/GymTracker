@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.gymtracker.ui.exercise.ExerciseScreen
+import com.example.gymtracker.ui.exercise.ExercisesRoute
+import com.example.gymtracker.ui.exercise.details.ExerciseDetailsRoute
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsScreen
 
 @Composable
@@ -16,17 +18,17 @@ fun GymTrackerApp(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "exercises",
+        startDestination = ExercisesRoute.route,
     ) {
-        composable(route = "exercises") {
+        composable(route = ExercisesRoute.route) {
             ExerciseScreen(
-                exerciseNavigationFunction = { id: Int -> navController.navigate("exercises/$id") }
+                exerciseNavigationFunction = { id: Int -> navController.navigate(ExerciseDetailsRoute.getRouteForNavArgument(id)) }
             )
         }
-        composable("exercises/{exerciseId}",
-            arguments = listOf(navArgument("exerciseId") { type = NavType.IntType })) {
+        composable(ExerciseDetailsRoute.route,
+            arguments = listOf(navArgument(ExerciseDetailsRoute.navArgument) { type = NavType.IntType })) {
             ExerciseDetailsScreen(
-                backNavigationFunction = { navController.navigate("exercises") }
+                backNavigationFunction = { navController.navigate(ExercisesRoute.route) }
             )
         }
     }

@@ -43,8 +43,14 @@ import com.example.gymtracker.R
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.create.CreateExerciseScreen
+import com.example.gymtracker.ui.navigation.NavigationArguments
+import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+
+object ExercisesRoute : NavigationRoute {
+    override val route = NavigationArguments.EXERCISES_SCREEN.routeName
+}
 
 @Composable
 fun ExerciseScreen(

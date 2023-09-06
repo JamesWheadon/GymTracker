@@ -61,11 +61,15 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
+import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
+import com.example.gymtracker.ui.exercise.ExercisesRoute
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.history.RecordHistoryScreen
+import com.example.gymtracker.ui.navigation.NavigationArguments
+import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
@@ -74,6 +78,13 @@ import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
+
+object ExerciseDetailsRoute : NavigationRoute {
+    val navArgument = NavigationArguments.EXERCISE_DETAILS_NAV_ARGUMENT.routeName
+    override val route = "${ExercisesRoute.route}/{${navArgument}}"
+
+    fun getRouteForNavArgument(navArgument: Int): String = "${ExercisesRoute.route}/${navArgument}"
+}
 
 @Composable
 fun ExerciseDetailsScreen(
@@ -120,7 +131,7 @@ fun ExerciseDetailsScreen(
                 Icon(
                     imageVector = Icons.Default.Add,
                     tint = Color.Black,
-                    contentDescription = "Add Exercise"
+                    contentDescription = "Add Workout"
                 )
             }
         }
@@ -223,7 +234,7 @@ fun ExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
         modifier = Modifier.fillMaxWidth()
     ) {
         ExerciseDetail(
-            exerciseInfo = "${best?.weight} kg for ${best?.reps} reps",
+            exerciseInfo = "${best?.weight} ${WeightUnits.KILOGRAMS.shortForm} for ${best?.reps} reps",
             iconId = R.drawable.trophy_48dp,
             iconDescription = "exercise icon",
             modifier = Modifier
@@ -231,7 +242,7 @@ fun ExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
                 .weight(1f)
         )
         ExerciseDetail(
-            exerciseInfo = "${recent?.weight} kg for ${recent?.reps} reps",
+            exerciseInfo = "${recent?.weight} ${WeightUnits.KILOGRAMS.shortForm} for ${recent?.reps} reps",
             iconId = R.drawable.history_48px,
             iconDescription = "exercise icon",
             modifier = Modifier
@@ -312,7 +323,7 @@ fun ExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
         },
         startDate = timeSpan ?: currentDate,
         yLabel = detail,
-        yUnit = if (detail == detailOptions[0]) "kg" else ""
+        yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) " ${WeightUnits.KILOGRAMS.shortForm}" else ""
     )
 }
 
