@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -139,31 +140,10 @@ fun ExerciseDetailsScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 16.dp)
+                .padding(vertical = 16.dp, horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(innerPadding)
-            ) {
-                ExerciseDetail(
-                    exerciseInfo = uiState.muscleGroup,
-                    iconId = R.drawable.info_48px,
-                    iconDescription = "exercise icon",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
-                ExerciseDetail(
-                    exerciseInfo = uiState.equipment,
-                    iconId = R.drawable.exercise_filled_48px,
-                    iconDescription = "exercise icon",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
-            }
+            ExerciseInformation(innerPadding, uiState)
             if (uiState.history?.isNotEmpty() == true) {
                 ExerciseHistoryDetails(uiState = uiState)
             }
@@ -178,6 +158,36 @@ fun ExerciseDetailsScreen(
                 onDismiss = { showRecord = false }
             )
         }
+    }
+}
+
+@Composable
+private fun ExerciseInformation(
+    innerPadding: PaddingValues,
+    uiState: ExerciseDetailsUiState
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(innerPadding)
+    ) {
+        ExerciseDetail(
+            exerciseInfo = uiState.muscleGroup,
+            iconId = R.drawable.info_48px,
+            iconDescription = "exercise icon",
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
+        ExerciseDetail(
+            exerciseInfo = uiState.equipment,
+            iconId = R.drawable.exercise_filled_48px,
+            iconDescription = "exercise icon",
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
     }
 }
 
@@ -222,12 +232,25 @@ fun ExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
     )
     var detail by remember { mutableStateOf(detailOptions[0]) }
     var timeSpan by remember { mutableStateOf(optionsToSpans[timeOptions[0]]) }
+    ExerciseDetailsBestAndRecent(uiState)
+    val graphOptions = graphOptions(detailOptions, detail, timeOptions, timeSpan, optionsToSpans)
+    detail = graphOptions.first
+    timeSpan = graphOptions.second
+    Graph(
+        points = getGraphDetails(uiState, detail, detailOptions),
+        startDate = timeSpan ?: currentDate,
+        yLabel = detail,
+        yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) " ${WeightUnits.KILOGRAMS.shortForm}" else ""
+    )
+}
+
+@Composable
+private fun ExerciseDetailsBestAndRecent(uiState: ExerciseDetailsUiState) {
     val bestWeight = uiState.history?.maxOf { history -> history.weight }
     val best = uiState.history
         ?.filter { history -> history.weight == bestWeight }
         ?.maxBy { history -> history.reps }
     val recent = uiState.history?.maxBy { history -> history.date.toEpochDay() }
-    Spacer(modifier = Modifier.height(10.dp))
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -250,7 +273,18 @@ fun ExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
                 .weight(1f)
         )
     }
-    Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
+private fun graphOptions(
+    detailOptions: List<String>,
+    detail: String,
+    timeOptions: List<String>,
+    timeSpan: LocalDate?,
+    optionsToSpans: Map<String, LocalDate>
+): Pair<String, LocalDate?> {
+    var localDetail = detail
+    var localTimeSpan = timeSpan
     Row(
         horizontalArrangement = Arrangement.End,
         modifier = Modifier.fillMaxWidth()
@@ -259,7 +293,7 @@ fun ExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
         DropdownBox(
             options = detailOptions,
             onChange = { newDetail ->
-                detail = newDetail
+                localDetail = newDetail
             },
             modifier = Modifier
                 .weight(1f)
@@ -272,7 +306,7 @@ fun ExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
         DropdownBox(
             options = timeOptions,
             onChange = { newSpan ->
-                timeSpan = optionsToSpans[newSpan]
+                localTimeSpan = optionsToSpans[newSpan]
             },
             modifier = Modifier
                 .weight(1f)
@@ -282,49 +316,47 @@ fun ExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
                 )
         )
     }
-    Graph(
-        points = uiState.history!!.map { history ->
-            when (detail) {
-                detailOptions[0] -> {
-                    Pair(
-                        history.date,
-                        history.weight
-                    )
-                }
+    return Pair(localDetail, localTimeSpan)
+}
 
-                detailOptions[1] -> {
-                    Pair(
-                        history.date,
-                        history.reps.toDouble()
-                    )
-                }
-
-                detailOptions[2] -> {
-                    Pair(
-                        history.date,
-                        history.sets.toDouble()
-                    )
-                }
-
-                detailOptions[3] -> {
-                    Pair(
-                        history.date,
-                        history.weight * history.reps * history.sets
-                    )
-                }
-
-                else -> {
-                    Pair(
-                        history.date,
-                        history.weight
-                    )
-                }
-            }
-        },
-        startDate = timeSpan ?: currentDate,
-        yLabel = detail,
-        yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) " ${WeightUnits.KILOGRAMS.shortForm}" else ""
-    )
+@Composable
+private fun getGraphDetails(
+    uiState: ExerciseDetailsUiState,
+    detail: String,
+    detailOptions: List<String>
+) = uiState.history!!.map { history ->
+    when (detail) {
+        detailOptions[0] -> {
+            Pair(
+                history.date,
+                history.weight
+            )
+        }
+        detailOptions[1] -> {
+            Pair(
+                history.date,
+                history.reps.toDouble()
+            )
+        }
+        detailOptions[2] -> {
+            Pair(
+                history.date,
+                history.sets.toDouble()
+            )
+        }
+        detailOptions[3] -> {
+            Pair(
+                history.date,
+                history.weight * history.reps * history.sets
+            )
+        }
+        else -> {
+            Pair(
+                history.date,
+                history.weight
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -3,9 +3,7 @@ package com.example.gymtracker.ui.exercise
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -156,14 +154,14 @@ fun ExerciseCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Column(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     ExerciseDetail(
                         exerciseInfo = exercise.muscleGroup,
                         iconId = R.drawable.info_48px,
                         iconDescription = "exercise icon"
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     ExerciseDetail(
                         exerciseInfo = exercise.equipment,
                         iconId = R.drawable.exercise_filled_48px,
