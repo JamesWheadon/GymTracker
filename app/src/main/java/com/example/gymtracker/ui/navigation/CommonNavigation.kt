@@ -2,6 +2,7 @@ package com.example.gymtracker.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,8 +18,10 @@ import androidx.compose.ui.Modifier
 fun TopBar(
     text: String,
     backEnabled: Boolean,
+    editEnabled: Boolean,
     modifier: Modifier = Modifier,
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    editFunction: () -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -33,6 +36,16 @@ fun TopBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "Back Button"
+                    )
+                }
+            }
+        },
+        actions = {
+            if (editEnabled) {
+                IconButton(onClick = editFunction) {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = "Edit feature"
                     )
                 }
             }

@@ -85,6 +85,7 @@ fun ExerciseDetailsScreen(
             TopBar(
                 text = uiState.name,
                 backEnabled = true,
+                editEnabled = true,
                 navigateBack = backNavigationFunction
             )
         },
