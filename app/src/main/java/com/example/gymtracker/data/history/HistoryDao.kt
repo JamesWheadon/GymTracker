@@ -29,6 +29,6 @@ interface HistoryDao {
     @Query("SELECT * from history WHERE exerciseId = :exerciseId ORDER BY date DESC LIMIT 1")
     fun getLatestExerciseHistory(exerciseId: Int): Flow<ExerciseHistory>
 
-    @Query("SELECT * from history WHERE exerciseId = :exerciseId AND date > strftime('%s','now') * 1000 - :days * 604800000")
+    @Query("SELECT * from history WHERE exerciseId = :exerciseId AND date > strftime('%s','now') / 86400 - :days")
     fun getRecentExerciseHistory(exerciseId: Int, days: Int): Flow<List<ExerciseHistory>>
 }

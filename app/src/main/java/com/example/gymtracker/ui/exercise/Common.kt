@@ -19,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
 
@@ -46,7 +48,7 @@ fun ExerciseInformationField(
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
             ),
-            modifier = modifier
+            modifier = modifier.semantics { contentDescription = label }
         )
     } else {
         TextField(
@@ -69,7 +71,7 @@ fun ExerciseInformationField(
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            modifier = modifier
+            modifier = modifier.semantics { contentDescription = label }
         )
     }
 }
@@ -114,7 +116,6 @@ fun DropdownBox(
                 modifier = Modifier
                     .menuAnchor()
             )
-
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }

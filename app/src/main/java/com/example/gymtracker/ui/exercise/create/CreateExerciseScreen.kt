@@ -111,27 +111,7 @@ fun CreateExerciseScreen(
                             muscleState = entry
                         }
                     )
-                    if (nameState != "" && equipmentState != "" && muscleState != "") {
-                        Button(onClick = {
-                            createFunction(
-                                Exercise(
-                                    name = nameState,
-                                    muscleGroup = muscleState,
-                                    equipment = equipmentState
-                                )
-                            )
-                            onDismiss()
-                        }) {
-                            Text("Create")
-                        }
-                    } else {
-                        Button(
-                            onClick = { },
-                            enabled = false
-                        ) {
-                            Text("Create")
-                        }
-                    }
+                    CreateExerciseButton(nameState, equipmentState, muscleState, createFunction, onDismiss)
                 }
             }
         }
@@ -143,6 +123,37 @@ fun CreateExerciseScreen(
                 imageVector = Icons.Default.Close,
                 contentDescription = "Close"
             )
+        }
+    }
+}
+
+@Composable
+private fun CreateExerciseButton(
+    nameState: String,
+    equipmentState: String,
+    muscleState: String,
+    createFunction: (Exercise) -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (nameState != "" && equipmentState != "" && muscleState != "") {
+        Button(onClick = {
+            createFunction(
+                Exercise(
+                    name = nameState,
+                    muscleGroup = muscleState,
+                    equipment = equipmentState
+                )
+            )
+            onDismiss()
+        }) {
+            Text("Create")
+        }
+    } else {
+        Button(
+            onClick = { },
+            enabled = false
+        ) {
+            Text("Create")
         }
     }
 }
