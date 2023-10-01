@@ -72,5 +72,18 @@ class ExerciseDetailsViewModelTest {
         verify(mockExerciseRepository).updateExercise(exercise1)
     }
 
+    @Test
+    fun deleteExerciseInRepository() = runTest {
+        viewModel = ExerciseDetailsViewModel(
+            exerciseRepository = mockExerciseRepository,
+            historyRepository = fakeHistoryRepository,
+            savedStateHandle = savedState
+        )
+
+        viewModel.deleteExercise(exercise1)
+
+        verify(mockExerciseRepository).deleteExercise(exercise1)
+    }
+
     private fun getExerciseHistory(id: Int) = ExerciseHistory(id, 1, 10.0, 10, 10, LocalDate.now())
 }

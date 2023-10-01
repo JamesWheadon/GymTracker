@@ -51,4 +51,10 @@ class ExerciseDetailsViewModel(
             exerciseRepository.updateExercise(exercise)
         }
     }
+
+    fun deleteExercise(exercise: Exercise) {
+        viewModelScope.launch {
+            exerciseRepository.deleteExercise(exercise)
+        }
+    }
 }
