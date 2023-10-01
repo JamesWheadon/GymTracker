@@ -15,5 +15,5 @@ class OfflineExerciseRepository(private val exerciseDao: ExerciseDao) : Exercise
 
     override suspend fun deleteExercise(exercise: Exercise) = exerciseDao.delete(exercise)
 
-    override suspend fun updateExercise(exercise: Exercise) = exerciseDao.delete(exercise)
+    override suspend fun updateExercise(exercise: Exercise) = exerciseDao.update(exercise)
 }

@@ -20,6 +20,13 @@ data class ExerciseDetailsUiState(
 
 data class ExerciseListUiState(val exerciseList: List<Exercise> = listOf())
 
+fun Exercise.toExerciseUiState(): ExerciseUiState = ExerciseUiState(
+    id = id,
+    name = name,
+    muscleGroup = muscleGroup,
+    equipment = equipment
+)
+
 fun Exercise.toExerciseDetailsUiState(): ExerciseDetailsUiState = ExerciseDetailsUiState(
     id = id,
     name = name,

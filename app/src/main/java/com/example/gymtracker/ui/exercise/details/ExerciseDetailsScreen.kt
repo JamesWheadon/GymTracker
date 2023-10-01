@@ -33,9 +33,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
 import com.example.gymtracker.converters.WeightUnits
+import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.ExercisesRoute
+import com.example.gymtracker.ui.exercise.create.ExerciseInformationForm
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.history.RecordHistoryScreen
@@ -65,7 +67,8 @@ fun ExerciseDetailsScreen(
     ExerciseDetailsScreen(
         uiState = uiState,
         backNavigationFunction = backNavigationFunction,
-        modifier
+        updateFunction = { exercise -> viewModel.updateExercise(exercise) },
+        modifier = modifier
     )
 }
 
@@ -75,9 +78,11 @@ fun ExerciseDetailsScreen(
 fun ExerciseDetailsScreen(
     uiState: ExerciseDetailsUiState,
     backNavigationFunction: () -> Unit,
+    updateFunction: (Exercise) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showRecord by remember { mutableStateOf(false) }
+    var updateExercise by remember { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -86,7 +91,8 @@ fun ExerciseDetailsScreen(
                 text = uiState.name,
                 backEnabled = true,
                 editEnabled = true,
-                navigateBack = backNavigationFunction
+                navigateBack = backNavigationFunction,
+                editFunction = { updateExercise = true }
             )
         },
         floatingActionButton = {
@@ -122,6 +128,19 @@ fun ExerciseDetailsScreen(
             RecordHistoryScreen(
                 exercise = uiState.toExerciseUiState(),
                 onDismiss = { showRecord = false }
+            )
+        }
+    }
+    if (updateExercise) {
+        Dialog(
+            onDismissRequest = { updateExercise = false }
+        ) {
+            ExerciseInformationForm(
+                formTitle = "Update Exercise",
+                buttonText = "Save",
+                onDismiss = { updateExercise = false },
+                createFunction = updateFunction,
+                exercise = uiState.toExerciseUiState()
             )
         }
     }
@@ -263,7 +282,8 @@ fun ItemDetailsScreenPreview() {
                     )
                 )
             ),
-            backNavigationFunction = { }
+            backNavigationFunction = { },
+            updateFunction = { }
         )
     }
 }
@@ -279,7 +299,8 @@ fun ItemDetailsScreenPreviewNoHistory() {
                 equipment = "Dumbbells",
                 history = listOf()
             ),
-            backNavigationFunction = { }
+            backNavigationFunction = { },
+            updateFunction = { }
         )
     }
 }

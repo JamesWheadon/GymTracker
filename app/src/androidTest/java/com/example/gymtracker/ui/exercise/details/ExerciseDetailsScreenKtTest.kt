@@ -42,22 +42,25 @@ class ExerciseDetailsScreenKtTest {
         )
     )
 
-    private val exerciseName = rule.onNode(hasText(NAME))
-    private val exerciseMuscleGroup = rule.onNode(hasText(MUSCLE_GROUP))
+    private val exerciseName = rule.onNode(hasText(NAME) and hasContentDescription("Exercise Name").not())
+    private val exerciseEquipment = rule.onNode(hasText(EQUIPMENT) and hasContentDescription("Equipment").not())
+    private val exerciseMuscleGroup = rule.onNode(hasText(MUSCLE_GROUP) and hasContentDescription("Muscle Group").not())
     private val exerciseMuscleGroupIcon = rule.onNode(hasContentDescription("exercise icon"))
-    private val exerciseEquipment = rule.onNode(hasText(EQUIPMENT))
     private val exerciseEquipmentIcon = rule.onNode(hasContentDescription("equipment icon"))
     private val bestExerciseIcon = rule.onNode(hasContentDescription("best exercise icon"))
     private val recentExerciseIcon = rule.onNode(hasContentDescription("recent exercise icon"))
     private val addHistoryButton = rule.onNode(hasContentDescription("Add Workout"))
     private val newHistoryTitle = rule.onNode(hasText("New $NAME Workout"))
+    private val editExerciseButton = rule.onNode(hasContentDescription("Edit feature"))
+    private val updateExerciseTitle = rule.onNode(hasText("Update Exercise"))
 
     @Test
     fun rendersExerciseDetailsWithNoHistory() {
         rule.setContent {
             ExerciseDetailsScreen(
                 uiState = exerciseNoHistory,
-                backNavigationFunction = { }
+                backNavigationFunction = { },
+                updateFunction = { }
             )
         }
 
@@ -76,7 +79,8 @@ class ExerciseDetailsScreenKtTest {
         rule.setContent {
             ExerciseDetailsScreen(
                 uiState = exercise,
-                backNavigationFunction = { }
+                backNavigationFunction = { },
+                updateFunction = { }
             )
         }
 
@@ -95,7 +99,8 @@ class ExerciseDetailsScreenKtTest {
         rule.setContent {
             ExerciseDetailsScreen(
                 uiState = exercise,
-                backNavigationFunction = { }
+                backNavigationFunction = { },
+                updateFunction = { }
             )
         }
 
@@ -104,6 +109,30 @@ class ExerciseDetailsScreenKtTest {
         addHistoryButton.performClick()
 
         newHistoryTitle.assertExists()
+        exerciseName.assertExists()
+        exerciseMuscleGroup.assertExists()
+        exerciseMuscleGroupIcon.assertExists()
+        exerciseEquipment.assertExists()
+        exerciseEquipmentIcon.assertExists()
+        bestExerciseIcon.assertExists()
+        recentExerciseIcon.assertExists()
+    }
+
+    @Test
+    fun rendersEditExerciseDialog() {
+        rule.setContent {
+            ExerciseDetailsScreen(
+                uiState = exercise,
+                backNavigationFunction = { },
+                updateFunction = { }
+            )
+        }
+
+        updateExerciseTitle.assertDoesNotExist()
+
+        editExerciseButton.performClick()
+
+        updateExerciseTitle.assertExists()
         exerciseName.assertExists()
         exerciseMuscleGroup.assertExists()
         exerciseMuscleGroupIcon.assertExists()
