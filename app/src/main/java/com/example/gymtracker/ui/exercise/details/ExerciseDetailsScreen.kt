@@ -91,6 +91,7 @@ fun ExerciseDetailsScreen(
                 text = uiState.name,
                 backEnabled = true,
                 editEnabled = true,
+                deleteEnabled = true,
                 navigateBack = backNavigationFunction,
                 editFunction = { updateExercise = true }
             )

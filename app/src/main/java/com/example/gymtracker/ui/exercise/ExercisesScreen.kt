@@ -79,7 +79,8 @@ fun ExerciseScreen(
             TopBar(
                 text = "My Exercises",
                 backEnabled = false,
-                editEnabled = false
+                editEnabled = false,
+                deleteEnabled = false
             )
         },
         floatingActionButton = {
