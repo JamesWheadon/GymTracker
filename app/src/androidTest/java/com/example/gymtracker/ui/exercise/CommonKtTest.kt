@@ -65,4 +65,74 @@ class CommonKtTest {
         dropdownBox.assertTextEquals("second")
         assertThat(selected, equalTo("second"))
     }
+
+    @Test
+    fun shouldRenderActionConfirmationCardWithTitleYesNoOptionsAndCloseButton() {
+        rule.setContent {
+            ActionConfirmation(
+                actionTitle = "Test Title",
+                confirmFunction = {  },
+                cancelFunction = {  }
+            )
+        }
+
+        rule.onNode(hasText("Test Title")).assertExists()
+        rule.onNode(hasText("Yes")).assertExists()
+        rule.onNode(hasText("No")).assertExists()
+        rule.onNode(hasContentDescription("Close")).assertExists()
+    }
+
+    @Test
+    fun actionConfirmationClickYesCallsConfirmFunction() {
+        var yesClicked = false
+        var noClicked = false
+        rule.setContent {
+            ActionConfirmation(
+                actionTitle = "Test Title",
+                confirmFunction = { yesClicked = true },
+                cancelFunction = { noClicked = true }
+            )
+        }
+
+        rule.onNode(hasText("Yes")).performClick()
+
+        assertThat(yesClicked, equalTo(true))
+        assertThat(noClicked, equalTo(false))
+    }
+
+    @Test
+    fun actionConfirmationClickNoCallsCancelFunction() {
+        var yesClicked = false
+        var noClicked = false
+        rule.setContent {
+            ActionConfirmation(
+                actionTitle = "Test Title",
+                confirmFunction = { yesClicked = true },
+                cancelFunction = { noClicked = true }
+            )
+        }
+
+        rule.onNode(hasText("No")).performClick()
+
+        assertThat(yesClicked, equalTo(false))
+        assertThat(noClicked, equalTo(true))
+    }
+
+    @Test
+    fun actionConfirmationClickCloseButtonCallsCancelFunction() {
+        var yesClicked = false
+        var noClicked = false
+        rule.setContent {
+            ActionConfirmation(
+                actionTitle = "Test Title",
+                confirmFunction = { yesClicked = true },
+                cancelFunction = { noClicked = true }
+            )
+        }
+
+        rule.onNode(hasContentDescription("Close")).performClick()
+
+        assertThat(yesClicked, equalTo(false))
+        assertThat(noClicked, equalTo(true))
+    }
 }
