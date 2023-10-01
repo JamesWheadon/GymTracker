@@ -31,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseInformationField
+import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
@@ -42,27 +43,33 @@ fun CreateExerciseScreen(
         factory = AppViewModelProvider.Factory
     )
 ) {
-    CreateExerciseScreen(
-        modifier = modifier,
+    ExerciseInformationForm(
+        formTitle = "Create New Exercise",
+        buttonText = "Create",
+        onDismiss = onDismiss,
         createFunction = { exercise ->
             viewModel.saveExercise(exercise)
         },
-        onDismiss = onDismiss
+        modifier = modifier
     )
 }
 
 @Composable
-fun CreateExerciseScreen(
-    modifier: Modifier = Modifier,
+fun ExerciseInformationForm(
+    formTitle: String,
+    buttonText: String,
     onDismiss: () -> Unit,
-    createFunction: (Exercise) -> Unit
+    createFunction: (Exercise) -> Unit,
+    modifier: Modifier = Modifier,
+    exercise: ExerciseUiState = ExerciseUiState()
 ) {
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 16.dp
     )
-    var nameState by remember { mutableStateOf("") }
-    var equipmentState by remember { mutableStateOf("") }
-    var muscleState by remember { mutableStateOf("") }
+    val idState by remember { mutableStateOf(exercise.id) }
+    var nameState by remember { mutableStateOf(exercise.name) }
+    var equipmentState by remember { mutableStateOf(exercise.equipment) }
+    var muscleState by remember { mutableStateOf(exercise.muscleGroup) }
     Box {
         Card(
             modifier = modifier
@@ -74,7 +81,7 @@ fun CreateExerciseScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Create New Exercise",
+                    text = formTitle,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier
@@ -111,12 +118,22 @@ fun CreateExerciseScreen(
                             muscleState = entry
                         }
                     )
-                    CreateExerciseButton(nameState, equipmentState, muscleState, createFunction, onDismiss)
+                    SaveExerciseFormButton(
+                        exerciseId = idState,
+                        exerciseName = nameState,
+                        exerciseEquipment = equipmentState,
+                        exerciseMuscleGroup = muscleState,
+                        buttonText = buttonText,
+                        saveFunction = createFunction,
+                        closeForm = onDismiss
+                    )
                 }
             }
         }
         IconButton(
-            modifier = Modifier.align(Alignment.TopEnd).offset((-8).dp, 8.dp),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset((-8).dp, 8.dp),
             onClick = { onDismiss() }
         ) {
             Icon(
@@ -128,32 +145,35 @@ fun CreateExerciseScreen(
 }
 
 @Composable
-private fun CreateExerciseButton(
-    nameState: String,
-    equipmentState: String,
-    muscleState: String,
-    createFunction: (Exercise) -> Unit,
-    onDismiss: () -> Unit
+private fun SaveExerciseFormButton(
+    exerciseId: Int,
+    exerciseName: String,
+    exerciseEquipment: String,
+    exerciseMuscleGroup: String,
+    buttonText: String,
+    saveFunction: (Exercise) -> Unit,
+    closeForm: () -> Unit
 ) {
-    if (nameState != "" && equipmentState != "" && muscleState != "") {
+    if (exerciseName != "" && exerciseEquipment != "" && exerciseMuscleGroup != "") {
         Button(onClick = {
-            createFunction(
+            saveFunction(
                 Exercise(
-                    name = nameState,
-                    muscleGroup = muscleState,
-                    equipment = equipmentState
+                    id = exerciseId,
+                    name = exerciseName,
+                    muscleGroup = exerciseMuscleGroup,
+                    equipment = exerciseEquipment
                 )
             )
-            onDismiss()
+            closeForm()
         }) {
-            Text("Create")
+            Text(buttonText)
         }
     } else {
         Button(
             onClick = { },
             enabled = false
         ) {
-            Text("Create")
+            Text(buttonText)
         }
     }
 }
@@ -162,9 +182,11 @@ private fun CreateExerciseButton(
 @Composable
 fun CreateExerciseDetailsScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
-        CreateExerciseScreen(
+        ExerciseInformationForm(
+            formTitle = "Create New Exercise",
+            onDismiss = {},
             createFunction = {},
-            onDismiss = {}
+            buttonText = "Create"
         )
     }
 }

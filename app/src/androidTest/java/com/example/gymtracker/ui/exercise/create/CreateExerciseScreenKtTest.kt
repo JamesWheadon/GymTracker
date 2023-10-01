@@ -1,12 +1,14 @@
 package com.example.gymtracker.ui.exercise.create
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.example.gymtracker.data.exercise.Exercise
+import com.example.gymtracker.ui.exercise.toExerciseUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
@@ -18,7 +20,7 @@ class CreateExerciseScreenKtTest {
     val rule = createAndroidComposeRule<ComponentActivity>()
 
     private val createButton = rule.onNode(hasText("Create"))
-    private val exerciseNameField = rule.onNode(hasContentDescription("Exercise Name"))
+    private val nameField = rule.onNode(hasContentDescription("Exercise Name"))
     private val equipmentField = rule.onNode(hasContentDescription("Equipment"))
     private val muscleField = rule.onNode(hasContentDescription("Muscle Group"))
     private val closeButton = rule.onNode(hasContentDescription("Close"))
@@ -28,14 +30,16 @@ class CreateExerciseScreenKtTest {
     @Test
     fun rendersEmptyCreateForm() {
         rule.setContent {
-            CreateExerciseScreen(
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
                 onDismiss = {},
-                createFunction = {}
+                createFunction = {},
+                buttonText = "Create"
             )
         }
 
         createButton.assertExists()
-        exerciseNameField.assertExists()
+        nameField.assertExists()
         equipmentField.assertExists()
         muscleField.assertExists()
         closeButton.assertExists()
@@ -44,9 +48,11 @@ class CreateExerciseScreenKtTest {
     fun clickCloseButtonToDismiss() {
         var dismissed = false
         rule.setContent {
-            CreateExerciseScreen(
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
                 onDismiss = { dismissed = true },
-                createFunction = {}
+                createFunction = {},
+                buttonText = "Create"
             )
         }
 
@@ -60,9 +66,11 @@ class CreateExerciseScreenKtTest {
         var created: Exercise? = null
         var dismissed = false
         rule.setContent {
-            CreateExerciseScreen(
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
                 onDismiss = { dismissed = true },
-                createFunction = { created = it }
+                createFunction = { created = it },
+                buttonText = "Create"
             )
         }
 
@@ -80,13 +88,15 @@ class CreateExerciseScreenKtTest {
         var created: Exercise? = null
         var dismissed = false
         rule.setContent {
-            CreateExerciseScreen(
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
                 onDismiss = { dismissed = true },
-                createFunction = { created = it }
+                createFunction = { created = it },
+                buttonText = "Create"
             )
         }
 
-        exerciseNameField.performTextInput(exercise.name)
+        nameField.performTextInput(exercise.name)
         muscleField.performTextInput(exercise.muscleGroup)
 
         createButton.performClick()
@@ -100,13 +110,15 @@ class CreateExerciseScreenKtTest {
         var created: Exercise? = null
         var dismissed = false
         rule.setContent {
-            CreateExerciseScreen(
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
                 onDismiss = { dismissed = true },
-                createFunction = { created = it }
+                createFunction = { created = it },
+                buttonText = "Create"
             )
         }
 
-        exerciseNameField.performTextInput(exercise.name)
+        nameField.performTextInput(exercise.name)
         equipmentField.performTextInput(exercise.equipment)
 
         createButton.performClick()
@@ -120,13 +132,15 @@ class CreateExerciseScreenKtTest {
         var created: Exercise? = null
         var dismissed = false
         rule.setContent {
-            CreateExerciseScreen(
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
                 onDismiss = { dismissed = true },
-                createFunction = { created = it }
+                createFunction = { created = it },
+                buttonText = "Create"
             )
         }
 
-        exerciseNameField.performTextInput(exercise.name)
+        nameField.performTextInput(exercise.name)
         equipmentField.performTextInput(exercise.equipment)
         muscleField.performTextInput(exercise.muscleGroup)
 
@@ -134,5 +148,22 @@ class CreateExerciseScreenKtTest {
 
         assertThat(created, equalTo(exercise))
         assertThat(dismissed, equalTo(true))
+    }
+
+    @Test
+    fun fillsInFieldsWithInformationOfExercisePassedIn() {
+        rule.setContent {
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
+                onDismiss = { },
+                createFunction = { },
+                buttonText = "Create",
+                exercise = exercise.toExerciseUiState()
+            )
+        }
+
+        nameField.assertTextContains(exercise.name)
+        equipmentField.assertTextContains(exercise.equipment)
+        muscleField.assertTextContains(exercise.muscleGroup)
     }
 }

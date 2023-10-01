@@ -14,26 +14,72 @@ class CommonNavigationTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
+    private val backButton = rule.onNode(hasContentDescription("Back Button"))
+    private val editButton = rule.onNode(hasContentDescription("Edit feature"))
+    private val deleteButton = rule.onNode(hasContentDescription("Delete feature"))
+
+    @Test
+    fun backButtonDoesNotExistsAndEditButtonDoesNotExistWhenDisabled() {
+        rule.setContent { TopBar(text = "text test", backEnabled = false, editEnabled = false, deleteEnabled = false) }
+
+        backButton.assertDoesNotExist()
+        editButton.assertDoesNotExist()
+        deleteButton.assertDoesNotExist()
+    }
+
     @Test
     fun backButtonExistsWhenBackEnabled() {
-        rule.setContent { TopBar(text = "text test", backEnabled = true) }
+        rule.setContent { TopBar(text = "text test", backEnabled = true, editEnabled = false, deleteEnabled = false) }
 
-        rule.onNode(hasContentDescription("Back Button")).assertExists()
+        backButton.assertExists()
+        editButton.assertDoesNotExist()
+        deleteButton.assertDoesNotExist()
     }
 
     @Test
-    fun backButtonDoesNotExistsWhenBackDisabled() {
-        rule.setContent { TopBar(text = "text test", backEnabled = false) }
-
-        rule.onNode(hasContentDescription("Back Button")).assertDoesNotExist()
-    }
-
-    @Test
-    fun clickingBackButtonExecutesBackButton() {
+    fun clickingBackButtonExecutesNavigateBack() {
         var clicked = false
-        rule.setContent { TopBar(text = "text test", backEnabled = true, navigateBack = { clicked = true }) }
+        rule.setContent { TopBar(text = "text test", backEnabled = true, navigateBack = { clicked = true }, editEnabled = false, deleteEnabled = false) }
 
-        rule.onNode(hasContentDescription("Back Button")).performClick()
+        backButton.performClick()
+
+        assertThat(clicked, equalTo(true))
+    }
+
+    @Test
+    fun editButtonExistsWhenEditEnabled() {
+        rule.setContent { TopBar(text = "text test", backEnabled = false, editEnabled = true, deleteEnabled = false) }
+
+        backButton.assertDoesNotExist()
+        editButton.assertExists()
+        deleteButton.assertDoesNotExist()
+    }
+
+    @Test
+    fun clickingEditButtonExecutesEditFunction() {
+        var clicked = false
+        rule.setContent { TopBar(text = "text test", backEnabled = false, editEnabled = true, editFunction = { clicked = true }, deleteEnabled = false) }
+
+        editButton.performClick()
+
+        assertThat(clicked, equalTo(true))
+    }
+
+    @Test
+    fun deleteButtonExistsWhenDeleteEnabled() {
+        rule.setContent { TopBar(text = "text test", backEnabled = false, editEnabled = false, deleteEnabled = true) }
+
+        backButton.assertDoesNotExist()
+        editButton.assertDoesNotExist()
+        deleteButton.assertExists()
+    }
+
+    @Test
+    fun clickingDeleteButtonExecutesDeleteFunction() {
+        var clicked = false
+        rule.setContent { TopBar(text = "text test", backEnabled = false, editEnabled = false, deleteEnabled = true, deleteFunction = { clicked = true }) }
+
+        deleteButton.performClick()
 
         assertThat(clicked, equalTo(true))
     }

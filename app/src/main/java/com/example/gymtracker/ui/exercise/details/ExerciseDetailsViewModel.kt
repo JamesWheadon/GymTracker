@@ -3,6 +3,7 @@ package com.example.gymtracker.ui.exercise.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseRepository
 import com.example.gymtracker.data.history.HistoryRepository
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
@@ -13,9 +14,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class ExerciseDetailsViewModel(
-    exerciseRepository: ExerciseRepository,
+    private val exerciseRepository: ExerciseRepository,
     historyRepository: HistoryRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -43,4 +45,16 @@ class ExerciseDetailsViewModel(
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
             initialValue = listOf()
         )
+
+    fun updateExercise(exercise: Exercise) {
+        viewModelScope.launch {
+            exerciseRepository.updateExercise(exercise)
+        }
+    }
+
+    fun deleteExercise(exercise: Exercise) {
+        viewModelScope.launch {
+            exerciseRepository.deleteExercise(exercise)
+        }
+    }
 }

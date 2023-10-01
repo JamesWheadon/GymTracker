@@ -8,14 +8,19 @@ import kotlinx.coroutines.flow.flowOf
 
 class FakeExerciseRepository : ExerciseRepository {
 
+    val exercise = Exercise(
+        id = 1,
+        name = "testName",
+        muscleGroup = "muscleGroup",
+        equipment = "equipment"
+    )
     private val allExercisesFlow = MutableSharedFlow<List<Exercise>>()
+
     suspend fun emitAllExercises(value: List<Exercise>) {
         allExercisesFlow.emit(value)
     }
 
-    override fun getExerciseStream(id: Int): Flow<Exercise?> {
-        return flowOf(null)
-    }
+    override fun getExerciseStream(id: Int): Flow<Exercise?> = flowOf(exercise)
 
     override fun getAllExercisesStream(): Flow<List<Exercise>> = allExercisesFlow
 
