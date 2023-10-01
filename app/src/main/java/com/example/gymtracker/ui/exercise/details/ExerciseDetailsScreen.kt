@@ -35,9 +35,11 @@ import com.example.gymtracker.R
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
+import com.example.gymtracker.ui.exercise.ActionConfirmation
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.ExercisesRoute
 import com.example.gymtracker.ui.exercise.create.ExerciseInformationForm
+import com.example.gymtracker.ui.exercise.toExercise
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.history.RecordHistoryScreen
@@ -68,6 +70,7 @@ fun ExerciseDetailsScreen(
         uiState = uiState,
         backNavigationFunction = backNavigationFunction,
         updateFunction = { exercise -> viewModel.updateExercise(exercise) },
+        deleteFunction = { exercise -> viewModel.deleteExercise(exercise) },
         modifier = modifier
     )
 }
@@ -79,10 +82,12 @@ fun ExerciseDetailsScreen(
     uiState: ExerciseDetailsUiState,
     backNavigationFunction: () -> Unit,
     updateFunction: (Exercise) -> Unit,
+    deleteFunction: (Exercise) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showRecord by remember { mutableStateOf(false) }
     var updateExercise by remember { mutableStateOf(false) }
+    var deleteExercise by remember { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -93,7 +98,8 @@ fun ExerciseDetailsScreen(
                 editEnabled = true,
                 deleteEnabled = true,
                 navigateBack = backNavigationFunction,
-                editFunction = { updateExercise = true }
+                editFunction = { updateExercise = true },
+                deleteFunction = { deleteExercise = true }
             )
         },
         floatingActionButton = {
@@ -143,6 +149,19 @@ fun ExerciseDetailsScreen(
                 createFunction = updateFunction,
                 exercise = uiState.toExerciseUiState()
             )
+        }
+    }
+    if (deleteExercise) {
+        Dialog(
+            onDismissRequest = { deleteExercise = false }
+        ) {
+            ActionConfirmation(
+                actionTitle = "Delete ${uiState.name} Exercise?",
+                confirmFunction = {
+                    deleteFunction(uiState.toExercise())
+                    backNavigationFunction()
+                },
+                cancelFunction = { deleteExercise = false })
         }
     }
 }
@@ -284,7 +303,8 @@ fun ItemDetailsScreenPreview() {
                 )
             ),
             backNavigationFunction = { },
-            updateFunction = { }
+            updateFunction = { },
+            deleteFunction = { }
         )
     }
 }
@@ -301,7 +321,8 @@ fun ItemDetailsScreenPreviewNoHistory() {
                 history = listOf()
             ),
             backNavigationFunction = { },
-            updateFunction = { }
+            updateFunction = { },
+            deleteFunction = { }
         )
     }
 }

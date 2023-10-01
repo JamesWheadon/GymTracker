@@ -41,3 +41,10 @@ fun ExerciseDetailsUiState.toExerciseUiState(): ExerciseUiState = ExerciseUiStat
     muscleGroup = muscleGroup,
     equipment = equipment
 )
+
+fun ExerciseDetailsUiState.toExercise(): Exercise = Exercise(
+    id = id,
+    name = name,
+    equipment = equipment,
+    muscleGroup = muscleGroup
+)

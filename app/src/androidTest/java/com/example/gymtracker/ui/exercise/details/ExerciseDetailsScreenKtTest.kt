@@ -7,6 +7,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
@@ -53,6 +55,8 @@ class ExerciseDetailsScreenKtTest {
     private val newHistoryTitle = rule.onNode(hasText("New $NAME Workout"))
     private val editExerciseButton = rule.onNode(hasContentDescription("Edit feature"))
     private val updateExerciseTitle = rule.onNode(hasText("Update Exercise"))
+    private val deleteExerciseButton = rule.onNode(hasContentDescription("Delete feature"))
+    private val deleteExerciseTitle = rule.onNode(hasText("Delete $NAME Exercise?"))
 
     @Test
     fun rendersExerciseDetailsWithNoHistory() {
@@ -60,7 +64,8 @@ class ExerciseDetailsScreenKtTest {
             ExerciseDetailsScreen(
                 uiState = exerciseNoHistory,
                 backNavigationFunction = { },
-                updateFunction = { }
+                updateFunction = { },
+                deleteFunction = { }
             )
         }
 
@@ -80,7 +85,8 @@ class ExerciseDetailsScreenKtTest {
             ExerciseDetailsScreen(
                 uiState = exercise,
                 backNavigationFunction = { },
-                updateFunction = { }
+                updateFunction = { },
+                deleteFunction = { }
             )
         }
 
@@ -100,7 +106,8 @@ class ExerciseDetailsScreenKtTest {
             ExerciseDetailsScreen(
                 uiState = exercise,
                 backNavigationFunction = { },
-                updateFunction = { }
+                updateFunction = { },
+                deleteFunction = { }
             )
         }
 
@@ -124,7 +131,8 @@ class ExerciseDetailsScreenKtTest {
             ExerciseDetailsScreen(
                 uiState = exercise,
                 backNavigationFunction = { },
-                updateFunction = { }
+                updateFunction = { },
+                deleteFunction = { }
             )
         }
 
@@ -140,5 +148,52 @@ class ExerciseDetailsScreenKtTest {
         exerciseEquipmentIcon.assertExists()
         bestExerciseIcon.assertExists()
         recentExerciseIcon.assertExists()
+    }
+
+    @Test
+    fun rendersDeleteExerciseDialog() {
+        rule.setContent {
+            ExerciseDetailsScreen(
+                uiState = exercise,
+                backNavigationFunction = { },
+                updateFunction = { },
+                deleteFunction = { }
+            )
+        }
+
+        deleteExerciseTitle.assertDoesNotExist()
+
+        deleteExerciseButton.performClick()
+
+        deleteExerciseTitle.assertExists()
+        exerciseName.assertExists()
+        exerciseMuscleGroup.assertExists()
+        exerciseMuscleGroupIcon.assertExists()
+        exerciseEquipment.assertExists()
+        exerciseEquipmentIcon.assertExists()
+        bestExerciseIcon.assertExists()
+        recentExerciseIcon.assertExists()
+    }
+
+    @Test
+    fun deleteExerciseDialogYesClickedDeleteAndBackFunctionsCalled() {
+        var backCalled = false
+        var updateCalled = false
+        var deleteCalled = false
+        rule.setContent {
+            ExerciseDetailsScreen(
+                uiState = exercise,
+                backNavigationFunction = { backCalled = true },
+                updateFunction = { updateCalled = true },
+                deleteFunction = { deleteCalled = true }
+            )
+        }
+
+        deleteExerciseButton.performClick()
+        rule.onNode(hasText("Yes")).performClick()
+
+        assertThat(backCalled, equalTo(true))
+        assertThat(updateCalled, equalTo(false))
+        assertThat(deleteCalled, equalTo(true))
     }
 }
