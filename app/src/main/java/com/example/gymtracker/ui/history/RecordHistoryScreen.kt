@@ -35,8 +35,8 @@ import com.example.gymtracker.converters.convertToKilograms
 import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.data.history.ExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
-import com.example.gymtracker.ui.exercise.DropdownBox
-import com.example.gymtracker.ui.exercise.ExerciseInformationField
+import com.example.gymtracker.ui.DropdownBox
+import com.example.gymtracker.ui.ExerciseInformationField
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate

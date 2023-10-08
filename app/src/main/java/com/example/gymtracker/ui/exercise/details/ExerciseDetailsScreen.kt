@@ -35,7 +35,7 @@ import com.example.gymtracker.R
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
-import com.example.gymtracker.ui.exercise.ActionConfirmation
+import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.ExercisesRoute
 import com.example.gymtracker.ui.exercise.create.ExerciseInformationForm
