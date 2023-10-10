@@ -48,7 +48,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.DayOfWeek
-import java.time.Month
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
@@ -431,16 +430,17 @@ fun YearMonthOptions(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         for (monthColumn in 0..2) {
-                            val month = Month.of(monthRow + monthColumn)
+                            val yearMonthOption = YearMonth.of(year, monthRow + monthColumn)
+                            val currentlySelected = yearMonthValue == yearMonthOption
                             Button(
                                 onClick = {
-                                    yearMonthValueOnChange(YearMonth.of(year, month.value))
+                                    yearMonthValueOnChange(yearMonthOption)
                                     closeFunction()
                                 },
-                                enabled = !(yearMonthValue.year == year && yearMonthValue.month == month)
-                                        && currentTime.isAfter(YearMonth.of(year, month)),
+                                enabled = !currentlySelected
+                                        && currentTime >= yearMonthOption,
                                 colors = ButtonDefaults.buttonColors(
-                                    disabledContainerColor = if (yearMonthValue.year == year && yearMonthValue.month == month) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background,
+                                    disabledContainerColor = if (currentlySelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background,
                                     containerColor = MaterialTheme.colorScheme.background,
                                     contentColor = MaterialTheme.colorScheme.onSurface,
                                     disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(
@@ -449,7 +449,7 @@ fun YearMonthOptions(
                                 ),
                             ) {
                                 Text(
-                                    text = month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+                                    text = yearMonthOption.month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
                                 )
                             }
                         }

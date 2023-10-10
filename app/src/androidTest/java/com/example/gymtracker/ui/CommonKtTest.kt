@@ -33,6 +33,21 @@ import kotlin.math.abs
 
 class CommonKtTest {
 
+    private val months = listOf(
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    )
+
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
@@ -350,21 +365,6 @@ class CommonKtTest {
 
     @Test
     fun yearMonthOptionsRendersCorrectButtonsAndMonths() {
-        val months = listOf(
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
-        )
-
         rule.setContent {
             YearMonthOptions(
                 yearMonthValue = YearMonth.of(2022, 10),
@@ -389,21 +389,6 @@ class CommonKtTest {
 
     @Test
     fun yearMonthOptionsPreviousToCurrentYearDoesNotChangeYearPosition() {
-        val months = listOf(
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
-        )
-
         rule.setContent {
             YearMonthOptions(
                 yearMonthValue = YearMonth.of(Year.now().value - 1, 10),
@@ -439,20 +424,6 @@ class CommonKtTest {
 
     @Test
     fun yearMonthOptionsClickingMonthExceptCurrentCallsYearMonthValueOnChange() {
-        val months = listOf(
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
-        )
         var chosenYearMonth = YearMonth.now()
 
         rule.setContent {
@@ -490,20 +461,6 @@ class CommonKtTest {
 
     @Test
     fun yearMonthOptionsClickingMonthAllFutureMonthsDisabled() {
-        val months = listOf(
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
-        )
         var chosenYearMonth = YearMonth.now()
 
         rule.setContent {
