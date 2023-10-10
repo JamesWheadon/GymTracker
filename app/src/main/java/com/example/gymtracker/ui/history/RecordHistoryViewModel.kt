@@ -15,4 +15,10 @@ class RecordHistoryViewModel(
             historyRepository.insertHistory(newHistory)
         }
     }
+
+    fun updateHistory(history: ExerciseHistory) {
+        viewModelScope.launch {
+            historyRepository.update(history)
+        }
+    }
 }

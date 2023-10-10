@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,12 +47,14 @@ import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.Calendar
 import com.example.gymtracker.ui.MonthPicker
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
+import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.ExercisesRoute
 import com.example.gymtracker.ui.exercise.create.ExerciseInformationForm
 import com.example.gymtracker.ui.exercise.toExercise
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.history.RecordHistoryScreen
+import com.example.gymtracker.ui.history.UpdateHistoryScreen
 import com.example.gymtracker.ui.navigation.NavigationArguments
 import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.TopBar
@@ -308,10 +311,11 @@ fun ExerciseHistoryCalendar(uiState: ExerciseDetailsUiState) {
             selectedMonth.year, selectedMonth.monthValue, showDay!!
         )
         ExercisesOnDay(
-            uiState.history!!.filter { history ->
+            exercises = uiState.history!!.filter { history ->
                 history.date == selectedDate
             },
             date = selectedDate,
+            exercise = uiState.toExerciseUiState(),
             onDismiss = { showDay = null }
         )
     }
@@ -331,6 +335,7 @@ fun ExerciseHistoryCalendar(uiState: ExerciseDetailsUiState) {
 fun ExercisesOnDay(
     exercises: List<ExerciseHistoryUiState>,
     date: LocalDate,
+    exercise: ExerciseUiState,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -347,7 +352,10 @@ fun ExercisesOnDay(
                 style = MaterialTheme.typography.headlineMedium
             )
             for (history in exercises) {
-                HistoryDetails(exerciseHistory = history)
+                HistoryDetails(
+                    exerciseHistory = history,
+                    exercise = exercise
+                )
             }
         }
         IconButton(
@@ -365,31 +373,52 @@ fun ExercisesOnDay(
 }
 
 @Composable
-fun HistoryDetails(exerciseHistory: ExerciseHistoryUiState) {
+fun HistoryDetails(
+    exerciseHistory: ExerciseHistoryUiState,
+    exercise: ExerciseUiState,
+    modifier: Modifier = Modifier
+) {
+    var editExercise by remember { mutableStateOf(false) }
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 8.dp,
         pressedElevation = 2.dp,
         focusedElevation = 4.dp
     )
-    Card(
-        elevation = customCardElevation
+    Button(
+        onClick = { editExercise = true },
+        modifier = modifier
     ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Card(
+            elevation = customCardElevation
         ) {
-            Column(
-                modifier = Modifier.weight(1F)
+            Row(
+                modifier = Modifier.padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Sets: " + exerciseHistory.sets.toString())
-                Text(text = "Reps: " + exerciseHistory.reps.toString())
+                Column(
+                    modifier = Modifier.weight(1F)
+                ) {
+                    Text(text = "Sets: " + exerciseHistory.sets.toString())
+                    Text(text = "Reps: " + exerciseHistory.reps.toString())
+                }
+                Column(
+                    modifier = Modifier.weight(1F)
+                ) {
+                    Text(text = "Weight: " + exerciseHistory.weight.toString() + "kg")
+                    Text(text = "Rest time: " + exerciseHistory.rest.toString())
+                }
             }
-            Column(
-                modifier = Modifier.weight(1F)
-            ) {
-                Text(text = "Weight: " + exerciseHistory.weight.toString() + "kg")
-                Text(text = "Rest time: " + exerciseHistory.rest.toString())
-            }
+        }
+    }
+    if (editExercise) {
+        Dialog(
+            onDismissRequest = { editExercise = false }
+        ) {
+            UpdateHistoryScreen(
+                exercise = exercise,
+                history = exerciseHistory,
+                onDismiss = { editExercise = false }
+            )
         }
     }
 }
@@ -455,6 +484,11 @@ fun ExercisesOnDayPreview() {
                 )
             ),
             date = LocalDate.now(),
+            exercise = ExerciseUiState(
+                name = "Curls",
+                muscleGroup = "Biceps",
+                equipment = "Dumbbells"
+            ),
             onDismiss = { }
         )
     }

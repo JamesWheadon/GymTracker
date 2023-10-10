@@ -19,3 +19,12 @@ fun ExerciseHistory.toExerciseHistoryUiState(): ExerciseHistoryUiState = Exercis
     reps = reps,
     date = date
 )
+
+fun ExerciseHistoryUiState.toExerciseHistory(exerciseId: Int): ExerciseHistory = ExerciseHistory(
+    id = id,
+    exerciseId = exerciseId,
+    weight = weight,
+    sets = sets,
+    reps = reps,
+    date = date
+)
