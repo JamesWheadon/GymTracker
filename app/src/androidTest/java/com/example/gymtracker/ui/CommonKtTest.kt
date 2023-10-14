@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui.exercise
+package com.example.gymtracker.ui
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertTextEquals
@@ -45,7 +45,8 @@ class CommonKtTest {
             )
         }
 
-        val dropdownBox = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
+        val dropdownBox =
+            rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
         val firstOption = rule.onNode(hasText("first") and hasParent(hasScrollAction()))
         val secondOption = rule.onNode(hasText("second") and hasParent(hasScrollAction()))
 
@@ -71,8 +72,8 @@ class CommonKtTest {
         rule.setContent {
             ActionConfirmation(
                 actionTitle = "Test Title",
-                confirmFunction = {  },
-                cancelFunction = {  }
+                confirmFunction = { },
+                cancelFunction = { }
             )
         }
 

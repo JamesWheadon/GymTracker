@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.gymtracker.ui.exercise.DropdownBox
+import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

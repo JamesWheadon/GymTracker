@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -35,8 +34,8 @@ import com.example.gymtracker.converters.convertToKilograms
 import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.data.history.ExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
-import com.example.gymtracker.ui.exercise.DropdownBox
-import com.example.gymtracker.ui.exercise.ExerciseInformationField
+import com.example.gymtracker.ui.DropdownBox
+import com.example.gymtracker.ui.ExerciseInformationField
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
@@ -62,22 +61,71 @@ fun RecordHistoryScreen(
 }
 
 @Composable
+fun UpdateHistoryScreen(
+    exercise: ExerciseUiState,
+    history: ExerciseHistoryUiState,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: RecordHistoryViewModel = viewModel(
+        factory = AppViewModelProvider.Factory
+    )
+) {
+    EditHistoryScreen(
+        history = history,
+        exercise = exercise,
+        updateFunction = { existingHistory ->
+            viewModel.updateHistory(existingHistory)
+        },
+        onDismiss = onDismiss,
+        modifier = modifier
+    )
+}
+
+@Composable
 fun RecordHistoryScreen(
     exercise: ExerciseUiState,
     saveFunction: (ExerciseHistory) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val customCardElevation = CardDefaults.cardElevation(
-        defaultElevation = 16.dp
-    )
     Box {
         RecordHistoryCard(
-            modifier,
-            customCardElevation,
-            exercise,
-            saveFunction,
-            onDismiss
+            exerciseId = exercise.id,
+            cardTitle = "New ${exercise.name} Workout",
+            saveFunction = saveFunction,
+            onDismiss = onDismiss,
+            modifier = modifier
+        )
+        IconButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset((-8).dp, 8.dp),
+            onClick = { onDismiss() }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Close"
+            )
+        }
+    }
+}
+
+@Composable
+fun EditHistoryScreen(
+    history: ExerciseHistoryUiState,
+    exercise: ExerciseUiState,
+    updateFunction: (ExerciseHistory) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box {
+        RecordHistoryCard(
+            exerciseId = exercise.id,
+            cardTitle = "Update ${exercise.name} Workout",
+            saveFunction = updateFunction,
+            onDismiss = onDismiss,
+            modifier = modifier,
+            savedHistory = history
         )
         IconButton(
             modifier = Modifier
@@ -95,15 +143,19 @@ fun RecordHistoryScreen(
 
 @Composable
 private fun RecordHistoryCard(
-    modifier: Modifier,
-    customCardElevation: CardElevation,
-    exercise: ExerciseUiState,
+    exerciseId: Int,
+    cardTitle: String,
     saveFunction: (ExerciseHistory) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    savedHistory: ExerciseHistoryUiState = ExerciseHistoryUiState()
 ) {
-    var setsState by remember { mutableStateOf("") }
-    var repsState by remember { mutableStateOf("") }
-    var weightState by remember { mutableStateOf("") }
+    val customCardElevation = CardDefaults.cardElevation(
+        defaultElevation = 16.dp
+    )
+    var setsState by remember { mutableStateOf(if (savedHistory == ExerciseHistoryUiState()) "" else savedHistory.sets.toString()) }
+    var repsState by remember { mutableStateOf(if (savedHistory == ExerciseHistoryUiState()) "" else savedHistory.reps.toString()) }
+    var weightState by remember { mutableStateOf(if (savedHistory == ExerciseHistoryUiState()) "" else savedHistory.weight.toString()) }
     var unitState by remember { mutableStateOf(WeightUnits.KILOGRAMS.shortForm) }
     Card(
         modifier = modifier
@@ -117,7 +169,7 @@ private fun RecordHistoryCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "New ${exercise.name} Workout"
+                text = cardTitle
             )
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -181,13 +233,14 @@ private fun RecordHistoryCard(
                 )
             }
             SaveHistoryButton(
-                setsState,
-                repsState,
-                weightState,
-                unitState,
-                exercise,
-                saveFunction,
-                onDismiss
+                setsState = setsState,
+                repsState = repsState,
+                weightState = weightState,
+                unitState = unitState,
+                exerciseId = exerciseId,
+                savedHistory = savedHistory,
+                saveFunction = saveFunction,
+                onDismiss = onDismiss
             )
         }
     }
@@ -199,21 +252,29 @@ private fun SaveHistoryButton(
     repsState: String,
     weightState: String,
     unitState: String,
-    exercise: ExerciseUiState,
+    exerciseId: Int,
+    savedHistory: ExerciseHistoryUiState,
     saveFunction: (ExerciseHistory) -> Unit,
     onDismiss: () -> Unit
 ) {
     if (setsState != "" && repsState != "" && weightState != "" && unitState != "") {
-        Button(onClick = {
-            val weight = weightState.toDouble()
-            val unit = getWeightUnitFromShortForm(unitState)
-            val history = ExerciseHistory(
-                exerciseId = exercise.id,
+        val weight = weightState.toDouble()
+        val unit = getWeightUnitFromShortForm(unitState)
+        val history = if (savedHistory == ExerciseHistoryUiState()) {
+            ExerciseHistory(
+                exerciseId = exerciseId,
                 weight = convertToKilograms(unit, weight),
                 sets = setsState.toInt(),
                 reps = repsState.toInt(),
                 date = LocalDate.now()
             )
+        } else {
+            savedHistory.sets = setsState.toInt()
+            savedHistory.reps = repsState.toInt()
+            savedHistory.weight = convertToKilograms(unit, weight)
+            savedHistory.toExerciseHistory(exerciseId)
+        }
+        Button(onClick = {
             saveFunction(history)
             onDismiss()
         }) {

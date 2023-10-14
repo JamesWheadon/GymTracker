@@ -17,13 +17,32 @@ class RecordHistoryViewModelTest {
     @get:Rule
     val coroutineTestRule = TestCoroutineRule()
 
+    private val viewModel = RecordHistoryViewModel(repository)
+
     @Test
     fun saveHistoryToRepository() = runTest {
-        val viewModel = RecordHistoryViewModel(repository)
         val history = ExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
 
         viewModel.saveHistory(history)
 
         verify(repository).insertHistory(history)
+    }
+
+    @Test
+    fun updateHistoryInRepository() = runTest {
+        val history = ExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
+
+        viewModel.updateHistory(history)
+
+        verify(repository).update(history)
+    }
+
+    @Test
+    fun deleteHistoryInRepository() = runTest {
+        val history = ExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
+
+        viewModel.deleteHistory(history)
+
+        verify(repository).delete(history)
     }
 }
