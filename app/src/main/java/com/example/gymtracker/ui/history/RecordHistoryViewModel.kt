@@ -21,4 +21,10 @@ class RecordHistoryViewModel(
             historyRepository.update(history)
         }
     }
+
+    fun deleteHistory(history: ExerciseHistory) {
+        viewModelScope.launch {
+            historyRepository.delete(history)
+        }
+    }
 }

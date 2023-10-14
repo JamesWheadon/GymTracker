@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,16 +24,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymtracker.data.history.ExerciseHistory
+import com.example.gymtracker.ui.ActionConfirmation
+import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.Calendar
 import com.example.gymtracker.ui.MonthPicker
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.history.RecordHistoryViewModel
 import com.example.gymtracker.ui.history.UpdateHistoryScreen
+import com.example.gymtracker.ui.history.toExerciseHistory
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -86,7 +94,8 @@ fun ExercisesOnDay(
     date: LocalDate,
     exercise: ExerciseUiState,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: RecordHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Box {
         Column(
@@ -103,7 +112,8 @@ fun ExercisesOnDay(
             for (history in exercises) {
                 HistoryDetails(
                     exerciseHistory = history,
-                    exercise = exercise
+                    exercise = exercise,
+                    deleteFunction = { deleteHistory -> viewModel.deleteHistory(deleteHistory) }
                 )
             }
         }
@@ -126,9 +136,11 @@ fun ExercisesOnDay(
 fun HistoryDetails(
     exerciseHistory: ExerciseHistoryUiState,
     exercise: ExerciseUiState,
+    deleteFunction: (ExerciseHistory) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var editExercise by remember { mutableStateOf(false) }
+    var deleteExercise by remember { mutableStateOf(false) }
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 8.dp,
         pressedElevation = 2.dp,
@@ -155,6 +167,13 @@ fun HistoryDetails(
                 Text(text = "Weight: ${exerciseHistory.weight}kg")
                 Text(text = "Rest time: ${exerciseHistory.rest}")
             }
+            IconButton(onClick = { deleteExercise = true }) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    tint = Color.Red,
+                    contentDescription = "Delete history"
+                )
+            }
         }
     }
     if (editExercise) {
@@ -168,30 +187,39 @@ fun HistoryDetails(
             )
         }
     }
+    if (deleteExercise) {
+        Dialog(
+            onDismissRequest = { deleteExercise = false }
+        ) {
+            ActionConfirmation(
+                actionTitle = "Do you want to delete this exercise?",
+                confirmFunction = { deleteFunction(exerciseHistory.toExerciseHistory(exerciseId = exercise.id)) },
+                cancelFunction = { deleteExercise = false }
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ExercisesOnDayPreview() {
+fun HistoryDetailsPreview() {
     GymTrackerTheme(darkTheme = false) {
-        ExercisesOnDay(
-            exercises = listOf(
-                ExerciseHistoryUiState(
-                    id = 1,
-                    weight = 13.0,
-                    sets = 1,
-                    reps = 2,
-                    rest = 1,
-                    date = LocalDate.now().minusDays(5)
-                )
+        HistoryDetails(
+            exerciseHistory = ExerciseHistoryUiState(
+                id = 1,
+                weight = 13.0,
+                sets = 1,
+                reps = 2,
+                rest = 1,
+                date = LocalDate.now().minusDays(5)
+
             ),
-            date = LocalDate.now(),
             exercise = ExerciseUiState(
                 name = "Curls",
                 muscleGroup = "Biceps",
                 equipment = "Dumbbells"
             ),
-            onDismiss = { }
+            deleteFunction = { },
         )
     }
 }

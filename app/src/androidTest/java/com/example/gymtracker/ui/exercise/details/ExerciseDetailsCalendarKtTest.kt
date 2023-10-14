@@ -136,9 +136,43 @@ class ExerciseDetailsCalendarKtTest {
         rule.onNode(hasText("Reps: 2")).assertExists()
         rule.onNode(hasText("Weight: 13.0kg")).assertExists()
         rule.onNode(hasText("Rest time: 1")).assertExists()
+        rule.onNode(hasContentDescription("Delete history")).assertExists()
 
         setsNode.performClick()
 
         rule.onNode(hasText("Update Curls Workout")).assertExists()
+    }
+
+    @Test
+    fun clickingDeleteIconOnHistoryDetailsOpensActionConfirmationForDeletion() {
+        rule.setContent {
+            ExerciseHistoryCalendar(
+                uiState = exercise
+            )
+        }
+
+        rule.onNode(hasText(LocalDate.now().dayOfMonth.toString())).performClick()
+
+        rule.onNode(
+            hasText(
+                "Exercises on ${
+                    LocalDate.now().format(
+                        DateTimeFormatter.ofLocalizedDate(
+                            FormatStyle.LONG
+                        )
+                    )
+                }"
+            )
+        ).assertExists()
+        rule.onNode(hasText("Sets: 1")).assertExists()
+        rule.onNode(hasText("Reps: 2")).assertExists()
+        rule.onNode(hasText("Weight: 13.0kg")).assertExists()
+        rule.onNode(hasText("Rest time: 1")).assertExists()
+
+        val deleteButton = rule.onNode(hasContentDescription("Delete history"))
+        deleteButton.assertExists()
+        deleteButton.performClick()
+
+        rule.onNode(hasText("Do you want to delete this exercise?")).assertExists()
     }
 }
