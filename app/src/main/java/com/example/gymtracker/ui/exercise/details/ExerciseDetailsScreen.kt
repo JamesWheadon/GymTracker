@@ -1,27 +1,20 @@
 package com.example.gymtracker.ui.exercise.details
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,25 +37,18 @@ import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
-import com.example.gymtracker.ui.Calendar
-import com.example.gymtracker.ui.MonthPicker
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
-import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.ExercisesRoute
 import com.example.gymtracker.ui.exercise.create.ExerciseInformationForm
 import com.example.gymtracker.ui.exercise.toExercise
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.history.RecordHistoryScreen
-import com.example.gymtracker.ui.history.UpdateHistoryScreen
 import com.example.gymtracker.ui.navigation.NavigationArguments
 import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 object ExerciseDetailsRoute : NavigationRoute {
     val navArgument = NavigationArguments.EXERCISE_DETAILS_NAV_ARGUMENT.routeName
@@ -299,130 +285,6 @@ fun ExerciseDetail(
     }
 }
 
-@Composable
-fun ExerciseHistoryCalendar(uiState: ExerciseDetailsUiState) {
-    var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
-    var showDay: Int? by remember { mutableStateOf(null) }
-    val activeDays = uiState.history!!
-        .filter { history -> history.date.month == selectedMonth.month && history.date.year == selectedMonth.year }
-        .map { history -> history.date.dayOfMonth }
-    if (showDay != null) {
-        val selectedDate = LocalDate.of(
-            selectedMonth.year, selectedMonth.monthValue, showDay!!
-        )
-        ExercisesOnDay(
-            exercises = uiState.history!!.filter { history ->
-                history.date == selectedDate
-            },
-            date = selectedDate,
-            exercise = uiState.toExerciseUiState(),
-            onDismiss = { showDay = null }
-        )
-    }
-    MonthPicker(
-        yearMonthValue = selectedMonth,
-        yearMonthValueOnChange = { chosen -> selectedMonth = chosen }
-    )
-    Calendar(
-        month = selectedMonth.monthValue,
-        year = selectedMonth.year,
-        activeDays = activeDays,
-        dayFunction = { chosenDay -> showDay = chosenDay }
-    )
-}
-
-@Composable
-fun ExercisesOnDay(
-    exercises: List<ExerciseHistoryUiState>,
-    date: LocalDate,
-    exercise: ExerciseUiState,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Exercises on ${date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))}",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            for (history in exercises) {
-                HistoryDetails(
-                    exerciseHistory = history,
-                    exercise = exercise
-                )
-            }
-        }
-        IconButton(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .offset((-8).dp, (-12).dp),
-            onClick = { onDismiss() }
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Close"
-            )
-        }
-    }
-}
-
-@Composable
-fun HistoryDetails(
-    exerciseHistory: ExerciseHistoryUiState,
-    exercise: ExerciseUiState,
-    modifier: Modifier = Modifier
-) {
-    var editExercise by remember { mutableStateOf(false) }
-    val customCardElevation = CardDefaults.cardElevation(
-        defaultElevation = 8.dp,
-        pressedElevation = 2.dp,
-        focusedElevation = 4.dp
-    )
-    Button(
-        onClick = { editExercise = true },
-        modifier = modifier
-    ) {
-        Card(
-            elevation = customCardElevation
-        ) {
-            Row(
-                modifier = Modifier.padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier.weight(1F)
-                ) {
-                    Text(text = "Sets: " + exerciseHistory.sets.toString())
-                    Text(text = "Reps: " + exerciseHistory.reps.toString())
-                }
-                Column(
-                    modifier = Modifier.weight(1F)
-                ) {
-                    Text(text = "Weight: " + exerciseHistory.weight.toString() + "kg")
-                    Text(text = "Rest time: " + exerciseHistory.rest.toString())
-                }
-            }
-        }
-    }
-    if (editExercise) {
-        Dialog(
-            onDismissRequest = { editExercise = false }
-        ) {
-            UpdateHistoryScreen(
-                exercise = exercise,
-                history = exerciseHistory,
-                onDismiss = { editExercise = false }
-            )
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun ItemDetailsScreenPreview() {
@@ -464,32 +326,6 @@ fun ItemDetailsScreenPreviewNoHistory() {
             backNavigationFunction = { },
             updateFunction = { },
             deleteFunction = { }
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ExercisesOnDayPreview() {
-    GymTrackerTheme(darkTheme = false) {
-        ExercisesOnDay(
-            exercises = listOf(
-                ExerciseHistoryUiState(
-                    id = 1,
-                    weight = 13.0,
-                    sets = 1,
-                    reps = 2,
-                    rest = 1,
-                    date = LocalDate.now().minusDays(5)
-                )
-            ),
-            date = LocalDate.now(),
-            exercise = ExerciseUiState(
-                name = "Curls",
-                muscleGroup = "Biceps",
-                equipment = "Dumbbells"
-            ),
-            onDismiss = { }
         )
     }
 }

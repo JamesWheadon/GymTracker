@@ -26,4 +26,14 @@ class RecordHistoryViewModelTest {
 
         verify(repository).insertHistory(history)
     }
+
+    @Test
+    fun updateHistoryInRepository() = runTest {
+        val viewModel = RecordHistoryViewModel(repository)
+        val history = ExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
+
+        viewModel.updateHistory(history)
+
+        verify(repository).update(history)
+    }
 }
