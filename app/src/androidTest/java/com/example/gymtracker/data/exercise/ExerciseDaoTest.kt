@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.contains
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -89,5 +90,16 @@ class ExerciseDaoTest {
 
         val savedExercise = exerciseDao.getExercise(exercise1.id).first()
         assertThat(savedExercise.name, equalTo(newExerciseName))
+    }
+
+    @Test
+    fun daoGetMuscleGroups_GetAllMuscleGroupsInDB() = runBlocking {
+        exerciseDao.insert(exercise1)
+        exerciseDao.insert(exercise2)
+
+        val muscleGroups = exerciseDao.getAllMuscleGroups().first()
+
+        assertThat(muscleGroups.size, equalTo(2))
+        assertThat(muscleGroups, contains("Biceps", "Triceps"))
     }
 }
