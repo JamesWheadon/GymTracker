@@ -38,6 +38,19 @@ class ExercisesScreenViewModelTest {
     }
 
     @Test
+    fun getMuscleGroupListFromRepository() = runTest {
+        val viewModel = ExercisesScreenViewModel(fakeRepository)
+
+        viewModel.muscleGroupUiState.test {
+            assertThat(awaitItem().size, equalTo(0))
+
+            fakeRepository.emitAllMuscleGroups(listOf("Biceps", "Tricpes"))
+
+            assertThat(awaitItem().size, equalTo(2))
+        }
+    }
+
+    @Test
     fun saveExerciseToRepository() = runTest {
         val viewModel = ExercisesScreenViewModel(repository)
 
