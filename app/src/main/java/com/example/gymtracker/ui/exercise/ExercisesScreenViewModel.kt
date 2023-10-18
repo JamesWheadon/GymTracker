@@ -34,6 +34,14 @@ class ExercisesScreenViewModel(
                 initialValue = listOf()
             )
 
+    val exerciseNamesUiState: StateFlow<List<String>> =
+        exerciseRepository.getAllExerciseNames()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = listOf()
+            )
+
     fun saveExercise(newExercise: Exercise) {
         viewModelScope.launch {
             exerciseRepository.insertExercise(newExercise)

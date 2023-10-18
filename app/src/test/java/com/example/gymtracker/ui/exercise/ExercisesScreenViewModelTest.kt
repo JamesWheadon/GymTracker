@@ -51,6 +51,19 @@ class ExercisesScreenViewModelTest {
     }
 
     @Test
+    fun getExerciseNamesListFromRepository() = runTest {
+        val viewModel = ExercisesScreenViewModel(fakeRepository)
+
+        viewModel.exerciseNamesUiState.test {
+            assertThat(awaitItem().size, equalTo(0))
+
+            fakeRepository.emitAllExerciseNames(listOf("Curls", "Dips"))
+
+            assertThat(awaitItem().size, equalTo(2))
+        }
+    }
+
+    @Test
     fun saveExerciseToRepository() = runTest {
         val viewModel = ExercisesScreenViewModel(repository)
 
