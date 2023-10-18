@@ -31,4 +31,7 @@ interface ExerciseDao {
 
     @Query("SELECT DISTINCT muscleGroup from exercises")
     fun getAllMuscleGroups(): Flow<List<String>>
+
+    @Query("SELECT name from exercises")
+    fun getAllExerciseNames(): Flow<List<String>>
 }
