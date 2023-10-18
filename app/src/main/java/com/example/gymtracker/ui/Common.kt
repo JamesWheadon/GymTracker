@@ -35,9 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 
@@ -47,49 +50,90 @@ fun ExerciseInformationField(
     label: String,
     value: String,
     onChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    supportText: String = ""
+    modifier: Modifier = Modifier
 ) {
-    if (supportText == "") {
-        TextField(
-            value = value,
-            onValueChange = onChange,
-            label = {
-                Text(text = label)
-            },
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                disabledTextColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            modifier = modifier.semantics { contentDescription = label }
-        )
-    } else {
-        TextField(
-            value = value,
-            onValueChange = onChange,
-            label = {
-                Text(text = label)
-            },
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                disabledTextColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            supportingText = {
-                Text(
-                    text = supportText,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
-            modifier = modifier.semantics { contentDescription = label }
-        )
+    TextField(
+        value = value,
+        onValueChange = onChange,
+        label = {
+            Text(text = label)
+        },
+        shape = RoundedCornerShape(8.dp),
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            disabledTextColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        ),
+        modifier = modifier.semantics { contentDescription = label }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ExerciseInformationFieldWithSuggestions(
+    label: String,
+    value: TextFieldValue,
+    onChange: (TextFieldValue) -> Unit,
+    suggestions: List<String>,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            }
+        ) {
+            TextField(
+                value = value,
+                onValueChange = onChange,
+                label = {
+                    Text(text = label)
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(8.dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    disabledTextColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                modifier = Modifier
+                    .menuAnchor()
+            )
+            val valueText = value.text
+            if (valueText.length >= 2) {
+                val possible = suggestions.sorted().filter { it.startsWith(valueText, ignoreCase = true) }
+                if (possible.isNotEmpty()) {
+                    DropdownMenu(
+                        expanded = expanded,
+                        properties = PopupProperties(focusable = false),
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        possible.take(3).forEach { item ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = item,
+                                        style = MaterialTheme.typography.labelSmall,
+                                    )
+                                },
+                                onClick = {
+                                    onChange(TextFieldValue(text = item, selection = TextRange(item.length)))
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -227,6 +271,19 @@ fun ActionConfirmationPreview() {
             actionTitle = "Delete Exercise?",
             confirmFunction = { },
             cancelFunction = { }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExerciseInformationFieldWithSuggestionsPreview() {
+    GymTrackerTheme(darkTheme = false) {
+        ExerciseInformationFieldWithSuggestions(
+            label = "Test Field",
+            value = TextFieldValue(text = "Bi"),
+            onChange = {  },
+            suggestions = listOf("Biceps", "Bicycle", "Bismuth")
         )
     }
 }
