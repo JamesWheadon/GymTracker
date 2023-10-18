@@ -28,4 +28,7 @@ interface ExerciseDao {
 
     @Query("SELECT * from exercises WHERE muscleGroup = :muscleGroup")
     fun getAllExercisesByMuscleGroup(muscleGroup: String): Flow<List<Exercise>>
+
+    @Query("SELECT DISTINCT muscleGroup from exercises")
+    fun getAllMuscleGroups(): Flow<List<String>>
 }

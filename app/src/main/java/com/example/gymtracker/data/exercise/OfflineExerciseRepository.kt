@@ -11,6 +11,8 @@ class OfflineExerciseRepository(private val exerciseDao: ExerciseDao) : Exercise
     override fun getAllMuscleGroupExercisesStream(muscleGroup: String): Flow<List<Exercise>> =
         exerciseDao.getAllExercisesByMuscleGroup(muscleGroup)
 
+    override fun getAllMuscleGroupsStream(): Flow<List<String>> = exerciseDao.getAllMuscleGroups()
+
     override suspend fun insertExercise(exercise: Exercise) = exerciseDao.insert(exercise)
 
     override suspend fun deleteExercise(exercise: Exercise) = exerciseDao.delete(exercise)

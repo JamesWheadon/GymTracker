@@ -26,6 +26,14 @@ class ExercisesScreenViewModel(
                 initialValue = ExerciseListUiState()
             )
 
+    val muscleGroupUiState: StateFlow<List<String>> =
+        exerciseRepository.getAllMuscleGroupsStream()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = listOf()
+            )
+
     fun saveExercise(newExercise: Exercise) {
         viewModelScope.launch {
             exerciseRepository.insertExercise(newExercise)
