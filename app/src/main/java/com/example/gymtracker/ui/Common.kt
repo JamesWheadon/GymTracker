@@ -50,7 +50,9 @@ fun ExerciseInformationField(
     label: String,
     value: String,
     onChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    error: Boolean = false,
+    errorMessage: String = ""
 ) {
     TextField(
         value = value,
@@ -66,6 +68,15 @@ fun ExerciseInformationField(
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent
         ),
+        isError = error,
+        supportingText = {
+            if (error) {
+                Text(
+                    text = errorMessage,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        },
         modifier = modifier.semantics { contentDescription = label }
     )
 }
@@ -81,55 +92,59 @@ fun ExerciseInformationFieldWithSuggestions(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
         modifier = modifier
     ) {
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = {
-                expanded = !expanded
-            }
-        ) {
-            TextField(
-                value = value,
-                onValueChange = onChange,
-                label = {
-                    Text(text = label)
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    disabledTextColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                modifier = Modifier
-                    .menuAnchor()
-            )
-            val valueText = value.text
-            if (valueText.length >= 2) {
-                val possible = suggestions.sorted().filter { it.startsWith(valueText, ignoreCase = true) }
-                if (possible.isNotEmpty()) {
-                    DropdownMenu(
-                        expanded = expanded,
-                        properties = PopupProperties(focusable = false),
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        possible.take(3).forEach { item ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
+        TextField(
+            value = value,
+            onValueChange = onChange,
+            label = {
+                Text(text = label)
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                disabledTextColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            modifier = Modifier
+                .semantics { contentDescription = label }
+                .menuAnchor()
+        )
+        val valueText = value.text
+        if (valueText.length >= 2) {
+            val possible =
+                suggestions.sorted().filter { it.startsWith(valueText, ignoreCase = true) }
+            if (possible.isNotEmpty()) {
+                DropdownMenu(
+                    expanded = expanded,
+                    properties = PopupProperties(focusable = false),
+                    onDismissRequest = { expanded = false }
+                ) {
+                    possible.take(3).forEach { item ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = item,
+                                    style = MaterialTheme.typography.labelSmall,
+                                )
+                            },
+                            onClick = {
+                                onChange(
+                                    TextFieldValue(
                                         text = item,
-                                        style = MaterialTheme.typography.labelSmall,
+                                        selection = TextRange(item.length)
                                     )
-                                },
-                                onClick = {
-                                    onChange(TextFieldValue(text = item, selection = TextRange(item.length)))
-                                }
-                            )
-                        }
+                                )
+                            }
+                        )
                     }
                 }
             }
@@ -147,55 +162,52 @@ fun DropdownBox(
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(options.first()) }
 
-    Box(
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
         modifier = modifier
     ) {
-        ExposedDropdownMenuBox(
+        TextField(
+            value = selectedOption,
+            onValueChange = { onChange(selectedOption) },
+            readOnly = true,
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                disabledTextColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded
+                )
+            },
+            modifier = Modifier
+                .menuAnchor()
+        )
+        DropdownMenu(
             expanded = expanded,
-            onExpandedChange = {
-                expanded = !expanded
-            }
+            onDismissRequest = { expanded = false }
         ) {
-            TextField(
-                value = selectedOption,
-                onValueChange = { onChange(selectedOption) },
-                readOnly = true,
-                singleLine = true,
-                shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    disabledTextColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(
-                        expanded = expanded
-                    )
-                },
-                modifier = Modifier
-                    .menuAnchor()
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                options.forEach { item ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = item,
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        },
-                        onClick = {
-                            selectedOption = item
-                            expanded = false
-                            onChange(item)
-                        }
-                    )
-                }
+            options.forEach { item ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = item,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
+                    onClick = {
+                        selectedOption = item
+                        expanded = false
+                        onChange(item)
+                    }
+                )
             }
         }
     }
@@ -282,7 +294,7 @@ fun ExerciseInformationFieldWithSuggestionsPreview() {
         ExerciseInformationFieldWithSuggestions(
             label = "Test Field",
             value = TextFieldValue(text = "Bi"),
-            onChange = {  },
+            onChange = { },
             suggestions = listOf("Biceps", "Bicycle", "Bismuth")
         )
     }
