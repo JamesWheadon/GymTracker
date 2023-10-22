@@ -102,4 +102,15 @@ class ExerciseDaoTest {
         assertThat(muscleGroups.size, equalTo(2))
         assertThat(muscleGroups, contains("Biceps", "Triceps"))
     }
+
+    @Test
+    fun daoGetExerciseNames_GetAllExerciseNamesInDB() = runBlocking {
+        exerciseDao.insert(exercise1)
+        exerciseDao.insert(exercise2)
+
+        val exerciseNames = exerciseDao.getAllExerciseNames().first()
+
+        assertThat(exerciseNames.size, equalTo(2))
+        assertThat(exerciseNames, contains("Curls", "Dips"))
+    }
 }

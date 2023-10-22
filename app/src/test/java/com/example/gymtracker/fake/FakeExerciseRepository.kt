@@ -16,6 +16,7 @@ class FakeExerciseRepository : ExerciseRepository {
     )
     private val allExercisesFlow = MutableSharedFlow<List<Exercise>>()
     private val allMuscleGroupsFlow = MutableSharedFlow<List<String>>()
+    private val allExerciseNamesFlow = MutableSharedFlow<List<String>>()
 
     suspend fun emitAllExercises(value: List<Exercise>) {
         allExercisesFlow.emit(value)
@@ -23,6 +24,10 @@ class FakeExerciseRepository : ExerciseRepository {
 
     suspend fun emitAllMuscleGroups(value: List<String>) {
         allMuscleGroupsFlow.emit(value)
+    }
+
+    suspend fun emitAllExerciseNames(value: List<String>) {
+        allExerciseNamesFlow.emit(value)
     }
 
     override fun getExerciseStream(id: Int): Flow<Exercise?> = flowOf(exercise)
@@ -33,6 +38,8 @@ class FakeExerciseRepository : ExerciseRepository {
         allExercisesFlow
 
     override fun getAllMuscleGroupsStream(): Flow<List<String>> = allMuscleGroupsFlow
+
+    override fun getAllExerciseNames(): Flow<List<String>> = allExerciseNamesFlow
 
     override suspend fun insertExercise(exercise: Exercise) {
     }

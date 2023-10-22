@@ -73,10 +73,12 @@ fun ExerciseInformationForm(
         defaultElevation = 16.dp
     )
     val savedMuscleGroups = viewModel.muscleGroupUiState.collectAsState().value
+    val savedExerciseNames = viewModel.exerciseNamesUiState.collectAsState().value
     val idState by remember { mutableStateOf(exercise.id) }
     var nameState by remember { mutableStateOf(exercise.name) }
     var equipmentState by remember { mutableStateOf(exercise.equipment) }
     var muscleState by remember { mutableStateOf(TextFieldValue(text = exercise.muscleGroup)) }
+    val nameError = savedExerciseNames.map(String::lowercase).contains(nameState.lowercase())
     Box {
         Card(
             modifier = modifier
@@ -109,7 +111,9 @@ fun ExerciseInformationForm(
                         value = nameState,
                         onChange = { entry ->
                             nameState = entry
-                        }
+                        },
+                        error = nameError,
+                        errorMessage = "Name already taken"
                     )
                     ExerciseInformationField(
                         label = "Equipment",
@@ -131,6 +135,7 @@ fun ExerciseInformationForm(
                         exerciseName = nameState,
                         exerciseEquipment = equipmentState,
                         exerciseMuscleGroup = muscleState.text,
+                        errors = nameError,
                         buttonText = buttonText,
                         saveFunction = createFunction,
                         closeForm = onDismiss
@@ -158,11 +163,12 @@ private fun SaveExerciseFormButton(
     exerciseName: String,
     exerciseEquipment: String,
     exerciseMuscleGroup: String,
+    errors: Boolean,
     buttonText: String,
     saveFunction: (Exercise) -> Unit,
     closeForm: () -> Unit
 ) {
-    if (exerciseName != "" && exerciseEquipment != "" && exerciseMuscleGroup != "") {
+    if (exerciseName != "" && exerciseEquipment != "" && exerciseMuscleGroup != "" && !errors) {
         Button(onClick = {
             saveFunction(
                 Exercise(

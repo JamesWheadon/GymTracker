@@ -40,6 +40,22 @@ class CommonKtTest {
     }
 
     @Test
+    fun shouldDisplayErrorMessageWhenError() {
+        rule.setContent {
+            ExerciseInformationField(
+                label = "Test Field",
+                value = "",
+                onChange = { },
+                error = true,
+                errorMessage = "Test error message"
+            )
+        }
+
+        val errorMessage = rule.onNode(hasText("Test error message"))
+        errorMessage.assertExists()
+    }
+
+    @Test
     fun shouldNotGiveSuggestionsForTextLessThanTwoCharacters() {
         var enteredText = TextFieldValue(text = "")
         rule.setContent {
