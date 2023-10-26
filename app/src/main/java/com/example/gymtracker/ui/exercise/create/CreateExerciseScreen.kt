@@ -172,7 +172,7 @@ private fun SaveExerciseFormButton(
         Button(onClick = {
             saveFunction(
                 Exercise(
-                    id = exerciseId,
+                    exerciseId = exerciseId,
                     name = exerciseName,
                     muscleGroup = exerciseMuscleGroup,
                     equipment = exerciseEquipment

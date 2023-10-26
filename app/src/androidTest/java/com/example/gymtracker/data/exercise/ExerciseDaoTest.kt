@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.gymtracker.data.database.ExerciseDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
@@ -44,7 +45,7 @@ class ExerciseDaoTest {
     fun daoInsert_insertsExerciseIntoDB() = runBlocking {
         exerciseDao.insert(exercise1)
 
-        val savedExercise = exerciseDao.getExercise(exercise1.id).first()
+        val savedExercise = exerciseDao.getExercise(exercise1.exerciseId).first()
 
         assertThat(exercise1, equalTo(savedExercise))
     }
@@ -76,7 +77,7 @@ class ExerciseDaoTest {
         exerciseDao.insert(exercise1)
         exerciseDao.delete(exercise1)
 
-        val savedExercise = exerciseDao.getExercise(exercise1.id).first()
+        val savedExercise = exerciseDao.getExercise(exercise1.exerciseId).first()
 
         assertThat(savedExercise, equalTo(null))
     }
@@ -88,7 +89,7 @@ class ExerciseDaoTest {
 
         exerciseDao.update(exercise1)
 
-        val savedExercise = exerciseDao.getExercise(exercise1.id).first()
+        val savedExercise = exerciseDao.getExercise(exercise1.exerciseId).first()
         assertThat(savedExercise.name, equalTo(newExerciseName))
     }
 

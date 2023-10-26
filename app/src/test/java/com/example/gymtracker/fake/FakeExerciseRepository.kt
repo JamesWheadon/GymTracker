@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.flowOf
 class FakeExerciseRepository : ExerciseRepository {
 
     val exercise = Exercise(
-        id = 1,
+        exerciseId = 1,
         name = "testName",
         muscleGroup = "muscleGroup",
         equipment = "equipment"

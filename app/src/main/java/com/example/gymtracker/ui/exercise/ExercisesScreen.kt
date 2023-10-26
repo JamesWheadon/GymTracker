@@ -135,7 +135,7 @@ fun ExerciseCard(
     )
     Button(
         shape = RectangleShape,
-        onClick = { navigationFunction(exercise.id) }
+        onClick = { navigationFunction(exercise.exerciseId) }
     ) {
         Card(
             modifier = modifier,
