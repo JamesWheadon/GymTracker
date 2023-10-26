@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ExercisesScreenViewModel(
-    private val exerciseRepository: ExerciseRepository,
+    private val exerciseRepository: ExerciseRepository
 ) : ViewModel() {
 
     companion object {
