@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
-import com.example.gymtracker.ui.ExerciseInformationField
+import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.ExerciseInformationFieldWithSuggestions
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
@@ -106,7 +106,7 @@ fun ExerciseInformationForm(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(6.dp))
-                    ExerciseInformationField(
+                    FormInformationField(
                         label = "Exercise Name",
                         value = nameState,
                         onChange = { entry ->
@@ -115,7 +115,7 @@ fun ExerciseInformationForm(
                         error = nameError,
                         errorMessage = "Name already taken"
                     )
-                    ExerciseInformationField(
+                    FormInformationField(
                         label = "Equipment",
                         value = equipmentState,
                         onChange = { entry ->

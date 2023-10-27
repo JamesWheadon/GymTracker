@@ -35,7 +35,7 @@ import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.data.history.ExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.DropdownBox
-import com.example.gymtracker.ui.ExerciseInformationField
+import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
@@ -178,7 +178,7 @@ private fun RecordHistoryCard(
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 0.dp)
             ) {
-                ExerciseInformationField(
+                FormInformationField(
                     label = "Sets",
                     value = setsState,
                     onChange = { entry ->
@@ -189,7 +189,7 @@ private fun RecordHistoryCard(
                         .padding(0.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
-                ExerciseInformationField(
+                FormInformationField(
                     label = "Reps",
                     value = repsState,
                     onChange = { entry ->
@@ -207,7 +207,7 @@ private fun RecordHistoryCard(
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 0.dp)
             ) {
-                ExerciseInformationField(
+                FormInformationField(
                     label = "Weight",
                     value = weightState,
                     onChange = { entry ->

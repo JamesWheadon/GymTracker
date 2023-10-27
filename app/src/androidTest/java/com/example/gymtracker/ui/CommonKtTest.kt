@@ -27,7 +27,7 @@ class CommonKtTest {
     fun shouldUpdateTextInTextField() {
         var enteredText = ""
         rule.setContent {
-            ExerciseInformationField(
+            FormInformationField(
                 label = "Test Field",
                 value = "",
                 onChange = { enteredText = it }
@@ -42,7 +42,7 @@ class CommonKtTest {
     @Test
     fun shouldDisplayErrorMessageWhenError() {
         rule.setContent {
-            ExerciseInformationField(
+            FormInformationField(
                 label = "Test Field",
                 value = "",
                 onChange = { },
