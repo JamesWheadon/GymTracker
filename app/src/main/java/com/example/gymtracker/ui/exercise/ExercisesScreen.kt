@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
-import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.create.CreateExerciseScreen
 import com.example.gymtracker.ui.navigation.NavigationArguments
@@ -124,7 +123,7 @@ fun ExerciseScreen(
 
 @Composable
 fun ExerciseCard(
-    exercise: Exercise,
+    exercise: ExerciseUiState,
     navigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -135,7 +134,7 @@ fun ExerciseCard(
     )
     Button(
         shape = RectangleShape,
-        onClick = { navigationFunction(exercise.exerciseId) }
+        onClick = { navigationFunction(exercise.id) }
     ) {
         Card(
             modifier = modifier,
@@ -208,9 +207,9 @@ fun ExerciseScreenPreview() {
             {},
             exerciseListUiState = ExerciseListUiState(
                 listOf(
-                    Exercise(0, "Curls", "Biceps", "Dumbbells"),
-                    Exercise(1, "Dips", "Triceps", "Dumbbells And Bars"),
-                    Exercise(
+                    ExerciseUiState(0, "Curls", "Biceps", "Dumbbells"),
+                    ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars"),
+                    ExerciseUiState(
                         2,
                         "Testing what happens if someone decides to have a ridiculously long exercise name",
                         "Lats",

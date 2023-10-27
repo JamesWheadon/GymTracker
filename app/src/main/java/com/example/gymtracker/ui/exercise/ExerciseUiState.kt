@@ -18,7 +18,7 @@ data class ExerciseDetailsUiState(
     var history: List<ExerciseHistoryUiState>? = listOf()
 )
 
-data class ExerciseListUiState(val exerciseList: List<Exercise> = listOf())
+data class ExerciseListUiState(val exerciseList: List<ExerciseUiState> = listOf())
 
 fun Exercise.toExerciseUiState(): ExerciseUiState = ExerciseUiState(
     id = exerciseId,
