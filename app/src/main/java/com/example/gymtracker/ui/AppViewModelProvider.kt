@@ -9,6 +9,7 @@ import com.example.gymtracker.GymTrackerApplication
 import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsViewModel
 import com.example.gymtracker.ui.history.RecordHistoryViewModel
+import com.example.gymtracker.ui.workout.WorkoutScreenViewModel
 
 
 object AppViewModelProvider {
@@ -28,6 +29,11 @@ object AppViewModelProvider {
         initializer {
             RecordHistoryViewModel(
                 gymTrackerApplication().container.historyRepository
+            )
+        }
+        initializer {
+            WorkoutScreenViewModel(
+                gymTrackerApplication().container.workoutRepository
             )
         }
     }
