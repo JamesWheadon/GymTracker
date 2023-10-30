@@ -36,12 +36,19 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.ui.AppViewModelProvider
+import com.example.gymtracker.ui.navigation.NavigationArguments
+import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
 
+object WorkoutsRoute : NavigationRoute {
+    override val route = NavigationArguments.WORKOUTS_SCREEN.routeName
+}
+
 @Composable
 fun WorkoutsScreen(
+    workoutNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WorkoutScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -49,6 +56,7 @@ fun WorkoutsScreen(
     WorkoutsScreen(
         workoutListUiState = workoutListUiState,
         createWorkout = { workout -> viewModel.saveWorkout(workout) },
+        workoutNavigationFunction = workoutNavigationFunction,
         modifier = modifier
     )
 }
@@ -58,6 +66,7 @@ fun WorkoutsScreen(
 fun WorkoutsScreen(
     workoutListUiState: WorkoutListUiState,
     createWorkout: (Workout) -> Unit,
+    workoutNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showCreate by remember { mutableStateOf(false) }
@@ -96,6 +105,7 @@ fun WorkoutsScreen(
             items(workoutListUiState.workoutList) { workout ->
                 WorkoutCard(
                     workout = workout,
+                    navigationFunction = workoutNavigationFunction,
                     modifier = Modifier.padding(16.dp, 0.dp)
                 )
             }
@@ -116,9 +126,11 @@ fun WorkoutsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutCard(
     workout: WorkoutUiState,
+    navigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val customCardElevation = CardDefaults.cardElevation(
@@ -128,7 +140,8 @@ fun WorkoutCard(
     )
     Card(
         modifier = modifier,
-        elevation = customCardElevation
+        elevation = customCardElevation,
+        onClick = { navigationFunction(workout.workoutId) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -160,7 +173,8 @@ fun WorkoutsScreenPreview() {
                     WorkoutUiState(2, "Back")
                 )
             ),
-            createWorkout = { }
+            createWorkout = { },
+            workoutNavigationFunction = { }
         )
     }
 }

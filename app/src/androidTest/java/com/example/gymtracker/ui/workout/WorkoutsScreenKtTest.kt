@@ -9,7 +9,7 @@ import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,18 +27,22 @@ class WorkoutsScreenKtTest {
     private val workout1 = WorkoutUiState(1, "first")
     private val workout2 = WorkoutUiState(2, "second")
 
+    private val firstWorkout = rule.onNode(hasText("first"))
+    private val secondWorkout = rule.onNode(hasText("first"))
+
     @Test
     fun rendersEmptyListOfWorkouts() {
         rule.setContent {
             WorkoutsScreen(
                 workoutListUiState = WorkoutListUiState(),
-                createWorkout = { }
+                createWorkout = { },
+                workoutNavigationFunction = { }
             )
         }
 
         lazyColumn.assertExists()
         createWorkoutButton.assertExists()
-        MatcherAssert.assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(0))
+        assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(0))
     }
 
     @Test
@@ -51,15 +55,16 @@ class WorkoutsScreenKtTest {
                         workout2
                     )
                 ),
-                createWorkout = { }
+                createWorkout = { },
+                workoutNavigationFunction = { }
             )
         }
 
         lazyColumn.assertExists()
         createWorkoutButton.assertExists()
-        MatcherAssert.assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(2))
-        rule.onNode(hasText("first")).assertExists()
-        rule.onNode(hasText("second")).assertExists()
+        assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(2))
+        firstWorkout.assertExists()
+        secondWorkout.assertExists()
     }
 
     @Test
@@ -72,7 +77,8 @@ class WorkoutsScreenKtTest {
                         workout2
                     )
                 ),
-                createWorkout = { }
+                createWorkout = { },
+                workoutNavigationFunction = { }
             )
         }
 
@@ -102,7 +108,8 @@ class WorkoutsScreenKtTest {
                 workoutListUiState = WorkoutListUiState(
                     workoutList = workoutList
                 ),
-                createWorkout = { workout -> workoutList.add(workout.toWorkoutUiState()) }
+                createWorkout = { workout -> workoutList.add(workout.toWorkoutUiState()) },
+                workoutNavigationFunction = { }
             )
         }
 
@@ -116,9 +123,36 @@ class WorkoutsScreenKtTest {
         createWorkoutFormTitle.assertDoesNotExist()
         createWorkoutFormNameField.assertDoesNotExist()
         saveWorkoutButton.assertDoesNotExist()
-        MatcherAssert.assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(3))
-        rule.onNode(hasText("first")).assertExists()
-        rule.onNode(hasText("second")).assertExists()
+        assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(3))
+        firstWorkout.assertExists()
+        secondWorkout.assertExists()
         rule.onNode(hasText("third")).assertExists()
+    }
+
+    @Test
+    fun clickingWorkoutCallsWorkoutNavigationFunction() {
+        var workoutChosen: Int? = null
+        rule.setContent {
+            WorkoutsScreen(
+                workoutListUiState = WorkoutListUiState(
+                    workoutList = listOf(
+                        workout1,
+                        workout2
+                    )
+                ),
+                createWorkout = { },
+                workoutNavigationFunction = { id -> workoutChosen = id }
+            )
+        }
+
+        lazyColumn.assertExists()
+        createWorkoutButton.assertExists()
+        assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(2))
+        firstWorkout.assertExists()
+        secondWorkout.assertExists()
+
+        firstWorkout.performClick()
+
+        assertThat(workoutChosen, equalTo(1))
     }
 }

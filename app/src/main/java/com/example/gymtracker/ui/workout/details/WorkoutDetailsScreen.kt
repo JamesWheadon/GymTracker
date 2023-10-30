@@ -15,9 +15,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseCard
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.navigation.NavigationArguments
+import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
+import com.example.gymtracker.ui.workout.WorkoutsRoute
+
+object WorkoutDetailsRoute : NavigationRoute {
+    val navArgument = NavigationArguments.WORKOUTS_DETAILS_NAV_ARGUMENT.routeName
+    override val route = "${WorkoutsRoute.route}/{${navArgument}}"
+
+    fun getRouteForNavArgument(navArgument: Int): String = "${WorkoutsRoute.route}/${navArgument}"
+}
 
 @Composable
 fun WorkoutDetailsScreen(
