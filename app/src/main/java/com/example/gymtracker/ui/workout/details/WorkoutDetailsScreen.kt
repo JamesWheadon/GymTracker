@@ -22,6 +22,7 @@ import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
 @Composable
 fun WorkoutDetailsScreen(
     modifier: Modifier = Modifier,
+    exerciseNavigationFunction: (Int) -> Unit,
     viewModel: WorkoutDetailsViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
@@ -29,6 +30,7 @@ fun WorkoutDetailsScreen(
     val uiState = viewModel.uiState.collectAsState().value
     WorkoutDetailsScreen(
         uiState = uiState,
+        exerciseNavigationFunction = exerciseNavigationFunction,
         modifier = modifier
     )
 }
@@ -37,6 +39,7 @@ fun WorkoutDetailsScreen(
 @Composable
 fun WorkoutDetailsScreen(
     uiState: WorkoutWithExercisesUiState,
+    exerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -57,7 +60,7 @@ fun WorkoutDetailsScreen(
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             items(uiState.exercises) { exercise ->
-                ExerciseCard(exercise = exercise, navigationFunction = { })
+                ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
             }
         }
     }
@@ -82,7 +85,8 @@ fun ExerciseScreenPreview() {
                         "Dumbbells"
                     )
                 )
-            )
+            ),
+            exerciseNavigationFunction = { }
         )
     }
 }

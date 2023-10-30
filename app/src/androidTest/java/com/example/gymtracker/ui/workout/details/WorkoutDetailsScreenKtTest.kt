@@ -3,8 +3,11 @@ package com.example.gymtracker.ui.workout.details
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.performClick
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 
@@ -34,7 +37,8 @@ class WorkoutDetailsScreenKtTest {
     fun rendersWorkoutWithNoExercises() {
         rule.setContent {
             WorkoutDetailsScreen(
-                uiState = workoutNoExercises
+                uiState = workoutNoExercises,
+                exerciseNavigationFunction = { }
             )
         }
 
@@ -45,12 +49,33 @@ class WorkoutDetailsScreenKtTest {
     fun rendersWorkoutWithExercises() {
         rule.setContent {
             WorkoutDetailsScreen(
-                uiState = workoutWithExercises
+                uiState = workoutWithExercises,
+                exerciseNavigationFunction = { }
             )
         }
 
         workoutTitle.assertExists()
         curlsExercise.assertExists()
         dipsExercise.assertExists()
+    }
+
+    @Test
+    fun clickingExerciseCallsExerciseNavigationFunctionWithId() {
+        var calledExerciseId: Int? = null
+
+        rule.setContent {
+            WorkoutDetailsScreen(
+                uiState = workoutWithExercises,
+                exerciseNavigationFunction = { id -> calledExerciseId = id }
+            )
+        }
+
+        workoutTitle.assertExists()
+        curlsExercise.assertExists()
+        dipsExercise.assertExists()
+
+        curlsExercise.performClick()
+
+        assertThat(calledExerciseId, equalTo(0))
     }
 }
