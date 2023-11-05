@@ -20,12 +20,14 @@ class WorkoutDetailsScreenKtTest {
         workoutId = 1,
         name = "Test Workout"
     )
+    private val curlsExerciseUiState = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
+    private val dipsExerciseUiState = ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars")
     private val workoutWithExercises = WorkoutWithExercisesUiState(
         workoutId = 1,
         name = "Test Workout",
         exercises = listOf(
-            ExerciseUiState(0, "Curls", "Biceps", "Dumbbells"),
-            ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars")
+            curlsExerciseUiState,
+            dipsExerciseUiState
         )
     )
 
