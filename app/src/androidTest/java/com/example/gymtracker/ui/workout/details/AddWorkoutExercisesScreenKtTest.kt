@@ -7,11 +7,20 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import com.example.gymtracker.data.exercise.ExerciseRepository
+import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
+import com.example.gymtracker.ui.exercise.toExercise
+import kotlinx.coroutines.flow.flowOf
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
 
 class AddWorkoutExercisesScreenKtTest {
 
@@ -20,6 +29,14 @@ class AddWorkoutExercisesScreenKtTest {
 
     private val curlsExerciseUiState = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
     private val dipsExerciseUiState = ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars")
+
+    @Mock
+    private lateinit var exerciseRepository: ExerciseRepository
+    @Mock
+    private lateinit var workoutExerciseCrossRefRepository: WorkoutExerciseCrossRefRepository
+
+    private lateinit var exerciseViewModel: ExercisesScreenViewModel
+    private lateinit var workoutExerciseCrossRefViewModel: WorkoutExerciseCrossRefViewModel
 
     private val curlsExercise = rule.onNode(hasText("Curls"))
     private val curlsMuscle = rule.onNode(hasText("Biceps"))
@@ -30,6 +47,18 @@ class AddWorkoutExercisesScreenKtTest {
     private val workoutExercisesTitles = rule.onNode(hasText("Workout Exercises"))
     private val availableExercisesTitles = rule.onNode(hasText("Available Exercises"))
     private val addWorkoutExercisesCloseButton = rule.onNode(hasContentDescription("Close"))
+
+    @Before
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
+
+        `when`(exerciseRepository.getAllExercisesStream()).thenReturn(flowOf(listOf(curlsExerciseUiState.toExercise())))
+        `when`(exerciseRepository.getAllMuscleGroupsStream()).thenReturn(flowOf(listOf(curlsExerciseUiState.muscleGroup)))
+        `when`(exerciseRepository.getAllExerciseNames()).thenReturn(flowOf(listOf(curlsExerciseUiState.name)))
+
+        exerciseViewModel = ExercisesScreenViewModel(exerciseRepository)
+        workoutExerciseCrossRefViewModel = WorkoutExerciseCrossRefViewModel(workoutExerciseCrossRefRepository)
+    }
 
     @Test
     fun rendersAddRemoveExerciseCardWithBoxChecked() {

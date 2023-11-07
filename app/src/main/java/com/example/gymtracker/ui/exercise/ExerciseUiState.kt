@@ -35,6 +35,13 @@ fun Exercise.toExerciseDetailsUiState(): ExerciseDetailsUiState = ExerciseDetail
     history = listOf()
 )
 
+fun ExerciseUiState.toExercise(): Exercise = Exercise(
+    exerciseId = id,
+    name = name,
+    equipment = equipment,
+    muscleGroup = muscleGroup
+)
+
 fun ExerciseDetailsUiState.toExerciseUiState(): ExerciseUiState = ExerciseUiState(
     id = id,
     name = name,

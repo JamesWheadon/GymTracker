@@ -7,4 +7,8 @@ class OfflineWorkoutExerciseCrossRefRepository(private val workoutExerciseDao: W
     override suspend fun saveExerciseToWorkout(exercise: Exercise, workout: Workout) = workoutExerciseDao.insert(
         WorkoutExerciseCrossRef(workoutId = workout.workoutId, exerciseId = exercise.exerciseId)
     )
+
+    override suspend fun deleteExerciseFromWorkout(exercise: Exercise, workout: Workout) = workoutExerciseDao.delete(
+        WorkoutExerciseCrossRef(workoutId = workout.workoutId, exerciseId = exercise.exerciseId)
+    )
 }

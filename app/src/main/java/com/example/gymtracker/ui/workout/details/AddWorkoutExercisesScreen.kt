@@ -31,32 +31,44 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
+import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseDetail
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
+import com.example.gymtracker.ui.exercise.toExercise
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
-fun AddExerciseScreen(
+fun AddWorkoutExercisesScreen(
+    workout: Workout,
     existingExercises: List<ExerciseUiState>,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ExercisesScreenViewModel = viewModel(
+    exercisesViewModel: ExercisesScreenViewModel = viewModel(
+        factory = AppViewModelProvider.Factory
+    ),
+    workoutExerciseCrossRefViewModel: WorkoutExerciseCrossRefViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {
     val chosenExercises: SnapshotStateList<ExerciseUiState> =
         remember { existingExercises.toMutableStateList() }
-    val allExercises = viewModel.exerciseListUiState.collectAsState().value.exerciseList
+    val allExercises = exercisesViewModel.exerciseListUiState.collectAsState().value.exerciseList
     val remainingExercises = allExercises.filter { exercise ->
         !chosenExercises.contains(exercise)
     }
     AddWorkoutExercisesScreen(
         chosenExercises = chosenExercises,
         remainingExercises = remainingExercises,
-        selectFunction = { exercise -> chosenExercises.add(exercise) },
-        deselectFunction = { exercise -> chosenExercises.remove(exercise) },
+        selectFunction = { exercise ->
+            chosenExercises.add(exercise)
+            workoutExerciseCrossRefViewModel.saveExerciseToWorkout(exercise.toExercise(), workout)
+        },
+        deselectFunction = { exercise ->
+            chosenExercises.remove(exercise)
+            workoutExerciseCrossRefViewModel.deleteExerciseFromWorkout(exercise.toExercise(), workout)
+        },
         onDismiss = onDismiss,
         modifier = modifier
     )

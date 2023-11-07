@@ -1,5 +1,6 @@
 package com.example.gymtracker.ui.workout
 
+import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.data.workoutWithExercises.WorkoutWithExercises
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.toExerciseUiState
@@ -14,4 +15,9 @@ fun WorkoutWithExercises.toWorkoutWithExercisesUiState(): WorkoutWithExercisesUi
     workoutId = workout.workoutId,
     name = workout.name,
     exercises = exercises.map { exercise -> exercise.toExerciseUiState() }
+)
+
+fun WorkoutWithExercisesUiState.toWorkout(): Workout = Workout(
+    workoutId = workoutId,
+    name = name
 )

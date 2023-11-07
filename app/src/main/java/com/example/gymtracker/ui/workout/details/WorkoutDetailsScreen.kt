@@ -33,6 +33,7 @@ import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.WorkoutsRoute
+import com.example.gymtracker.ui.workout.toWorkout
 
 object WorkoutDetailsRoute : NavigationRoute {
     val navArgument = NavigationArguments.WORKOUTS_DETAILS_NAV_ARGUMENT.routeName
@@ -104,7 +105,8 @@ fun WorkoutDetailsScreen(
         Dialog(
             onDismissRequest = { showAddExercise = false }
         ) {
-            AddExerciseScreen(
+            AddWorkoutExercisesScreen(
+                workout = uiState.toWorkout(),
                 existingExercises = uiState.exercises,
                 onDismiss = { showAddExercise = false }
             )

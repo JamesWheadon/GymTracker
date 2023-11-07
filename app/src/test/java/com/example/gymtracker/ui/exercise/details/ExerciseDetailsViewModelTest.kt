@@ -14,13 +14,13 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.kotlin.verify
 import java.time.LocalDate
 
 class ExerciseDetailsViewModelTest {
 
-    private val mockExerciseRepository: ExerciseRepository = Mockito.mock()
+    private val mockExerciseRepository: ExerciseRepository = mock()
     private val fakeExerciseRepository = FakeExerciseRepository()
     private val fakeHistoryRepository = FakeHistoryRepository()
     private val savedState = SavedStateHandle(mapOf("exerciseId" to 1))

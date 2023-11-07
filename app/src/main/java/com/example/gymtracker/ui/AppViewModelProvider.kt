@@ -11,6 +11,7 @@ import com.example.gymtracker.ui.exercise.details.ExerciseDetailsViewModel
 import com.example.gymtracker.ui.history.RecordHistoryViewModel
 import com.example.gymtracker.ui.workout.WorkoutScreenViewModel
 import com.example.gymtracker.ui.workout.details.WorkoutDetailsViewModel
+import com.example.gymtracker.ui.workout.details.WorkoutExerciseCrossRefViewModel
 
 
 object AppViewModelProvider {
@@ -41,6 +42,11 @@ object AppViewModelProvider {
             WorkoutDetailsViewModel(
                 gymTrackerApplication().container.workoutWithExerciseRepository,
                 this.createSavedStateHandle()
+            )
+        }
+        initializer {
+            WorkoutExerciseCrossRefViewModel(
+                gymTrackerApplication().container.workoutExerciseCrossRefRepository
             )
         }
     }
