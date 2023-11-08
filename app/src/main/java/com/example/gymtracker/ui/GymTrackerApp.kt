@@ -11,6 +11,7 @@ import com.example.gymtracker.ui.exercise.ExerciseScreen
 import com.example.gymtracker.ui.exercise.ExercisesRoute
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsRoute
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsScreen
+import com.example.gymtracker.ui.navigation.getHomeNavigationOptionsForRoute
 import com.example.gymtracker.ui.workout.WorkoutsRoute
 import com.example.gymtracker.ui.workout.WorkoutsScreen
 import com.example.gymtracker.ui.workout.details.WorkoutDetailsRoute
@@ -26,12 +27,14 @@ fun GymTrackerApp(
     ) {
         composable(route = ExercisesRoute.route) {
             ExerciseScreen(
-                exerciseNavigationFunction = { id: Int -> navController.navigate(ExerciseDetailsRoute.getRouteForNavArgument(id)) }
+                exerciseNavigationFunction = { id: Int -> navController.navigate(ExerciseDetailsRoute.getRouteForNavArgument(id)) },
+                homeNavigationOptions = getHomeNavigationOptionsForRoute(ExercisesRoute, navController)
             )
         }
         composable(route = WorkoutsRoute.route) {
             WorkoutsScreen(
-                workoutNavigationFunction = { id: Int -> navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(id)) }
+                workoutNavigationFunction = { id: Int -> navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(id)) },
+                homeNavigationOptions = getHomeNavigationOptionsForRoute(WorkoutsRoute, navController)
             )
         }
         composable(ExerciseDetailsRoute.route,

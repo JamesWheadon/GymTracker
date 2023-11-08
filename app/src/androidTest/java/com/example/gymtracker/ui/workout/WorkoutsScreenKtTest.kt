@@ -36,7 +36,8 @@ class WorkoutsScreenKtTest {
             WorkoutsScreen(
                 workoutListUiState = WorkoutListUiState(),
                 createWorkout = { },
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { },
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -56,7 +57,8 @@ class WorkoutsScreenKtTest {
                     )
                 ),
                 createWorkout = { },
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { },
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -78,7 +80,8 @@ class WorkoutsScreenKtTest {
                     )
                 ),
                 createWorkout = { },
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { },
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -109,7 +112,8 @@ class WorkoutsScreenKtTest {
                     workoutList = workoutList
                 ),
                 createWorkout = { workout -> workoutList.add(workout.toWorkoutUiState()) },
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { },
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -141,7 +145,8 @@ class WorkoutsScreenKtTest {
                     )
                 ),
                 createWorkout = { },
-                workoutNavigationFunction = { id -> workoutChosen = id }
+                workoutNavigationFunction = { id -> workoutChosen = id },
+                homeNavigationOptions = mapOf()
             )
         }
 

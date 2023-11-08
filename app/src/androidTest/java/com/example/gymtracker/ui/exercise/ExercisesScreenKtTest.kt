@@ -30,7 +30,8 @@ class ExercisesScreenKtTest {
         rule.setContent {
             ExerciseScreen(
                 exerciseNavigationFunction = {},
-                exerciseListUiState = ExerciseListUiState()
+                exerciseListUiState = ExerciseListUiState(),
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -48,7 +49,8 @@ class ExercisesScreenKtTest {
                         exercise1,
                         exercise2
                     )
-                )
+                ),
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -67,7 +69,8 @@ class ExercisesScreenKtTest {
                     exerciseList = listOf(
                         exercise1
                     )
-                )
+                ),
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -86,7 +89,8 @@ class ExercisesScreenKtTest {
                         exercise1,
                         exercise2
                     )
-                )
+                ),
+                homeNavigationOptions = mapOf()
             )
         }
 

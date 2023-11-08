@@ -16,9 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,19 +33,21 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.ui.AppViewModelProvider
+import com.example.gymtracker.ui.navigation.HomeNavigationInformation
+import com.example.gymtracker.ui.navigation.HomeScreenCardWrapper
 import com.example.gymtracker.ui.navigation.NavigationArguments
 import com.example.gymtracker.ui.navigation.NavigationRoute
-import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
 
 object WorkoutsRoute : NavigationRoute {
-    override val route = NavigationArguments.WORKOUTS_SCREEN.routeName
+    override val route = NavigationArguments.WORKOUTS_SCREEN.route
 }
 
 @Composable
 fun WorkoutsScreen(
     workoutNavigationFunction: (Int) -> Unit,
+    homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
     modifier: Modifier = Modifier,
     viewModel: WorkoutScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -57,30 +56,23 @@ fun WorkoutsScreen(
         workoutListUiState = workoutListUiState,
         createWorkout = { workout -> viewModel.saveWorkout(workout) },
         workoutNavigationFunction = workoutNavigationFunction,
-        modifier = modifier
+        homeNavigationOptions = homeNavigationOptions,
+        modifier = modifier,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutsScreen(
     workoutListUiState: WorkoutListUiState,
     createWorkout: (Workout) -> Unit,
     workoutNavigationFunction: (Int) -> Unit,
+    homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
     modifier: Modifier = Modifier
 ) {
     var showCreate by remember { mutableStateOf(false) }
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopBar(
-                text = "My Workouts",
-                backEnabled = false,
-                editEnabled = false,
-                deleteEnabled = false
-            )
-        },
+    HomeScreenCardWrapper(
+        title = "My Workouts",
+        homeNavigationOptions = homeNavigationOptions,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showCreate = true },
@@ -94,25 +86,12 @@ fun WorkoutsScreen(
                 )
             }
         }
-    ) { innerPadding ->
-        LazyColumn(
+    ) {
+        WorkoutList(
+            workoutListUiState = workoutListUiState,
+            workoutNavigationFunction = workoutNavigationFunction,
             modifier = modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(workoutListUiState.workoutList) { workout ->
-                WorkoutCard(
-                    workout = workout,
-                    navigationFunction = workoutNavigationFunction,
-                    modifier = Modifier.padding(16.dp, 0.dp)
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(0.dp))
-            }
-        }
+        )
     }
     if (showCreate) {
         Dialog(
@@ -122,6 +101,31 @@ fun WorkoutsScreen(
                 saveFunction = createWorkout,
                 onDismiss = { showCreate = false }
             )
+        }
+    }
+}
+
+@Composable
+private fun WorkoutList(
+    workoutListUiState: WorkoutListUiState,
+    workoutNavigationFunction: (Int) -> Unit,
+    modifier: Modifier
+) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(workoutListUiState.workoutList) { workout ->
+            WorkoutCard(
+                workout = workout,
+                navigationFunction = workoutNavigationFunction,
+                modifier = Modifier.padding(16.dp, 0.dp)
+            )
+        }
+        item {
+            Spacer(modifier = Modifier.height(0.dp))
         }
     }
 }
@@ -174,7 +178,14 @@ fun WorkoutsScreenPreview() {
                 )
             ),
             createWorkout = { },
-            workoutNavigationFunction = { }
+            workoutNavigationFunction = { },
+            homeNavigationOptions = mapOf(
+                Pair(
+                    HomeNavigationInformation(title = "Workouts", navigationFunction = { }),
+                    false
+                ),
+                Pair(HomeNavigationInformation(title = "Exercises", navigationFunction = { }), true)
+            )
         )
     }
 }

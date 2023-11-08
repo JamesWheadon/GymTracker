@@ -51,7 +51,7 @@ import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 
 object ExerciseDetailsRoute : NavigationRoute {
-    val navArgument = NavigationArguments.EXERCISE_DETAILS_NAV_ARGUMENT.routeName
+    val navArgument = NavigationArguments.EXERCISE_DETAILS_NAV_ARGUMENT.route
     override val route = "${ExercisesRoute.route}/{${navArgument}}"
 
     fun getRouteForNavArgument(navArgument: Int): String = "${ExercisesRoute.route}/${navArgument}"
