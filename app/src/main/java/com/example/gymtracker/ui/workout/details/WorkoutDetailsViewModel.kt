@@ -11,6 +11,7 @@ import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.toWorkoutWithExercisesUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,6 +31,7 @@ class WorkoutDetailsViewModel(
 
     val uiState: StateFlow<WorkoutWithExercisesUiState> =
         workoutWithExercisesRepository.getWorkoutWithExercisesStream(workoutId)
+            .filterNotNull()
             .map { workout -> workout.toWorkoutWithExercisesUiState() }
             .stateIn(
                 scope = viewModelScope,
@@ -45,8 +47,8 @@ class WorkoutDetailsViewModel(
 
     fun deleteWorkout(workout: Workout) {
         viewModelScope.launch {
-            workoutRepository.deleteWorkout(workout)
             workoutExerciseCrossRefRepository.deleteAllCrossRefForWorkout(workout)
+            workoutRepository.deleteWorkout(workout)
         }
     }
 }

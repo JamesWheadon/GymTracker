@@ -3,12 +3,15 @@ package com.example.gymtracker.ui.workout.create
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import com.example.gymtracker.data.workout.Workout
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -20,7 +23,7 @@ class CreateWorkoutScreenKtTest {
 
     private val title = rule.onNode(hasText("Create Workout"))
     private val nameField = rule.onNode(hasContentDescription("Workout Name"))
-    private val saveButton = rule.onNode(hasText("Save Workout"))
+    private val saveButton = rule.onNode(hasText("Save"))
     private val closeButton = rule.onNode(hasContentDescription("Close"))
 
     @Test
@@ -29,6 +32,7 @@ class CreateWorkoutScreenKtTest {
             CreateWorkoutForm(
                 saveFunction = { },
                 onDismiss = { },
+                screenTitle = "Create Workout",
             )
         }
 
@@ -45,6 +49,7 @@ class CreateWorkoutScreenKtTest {
             CreateWorkoutForm(
                 saveFunction = { },
                 onDismiss = { dismissed = true },
+                screenTitle = "Create Workout",
             )
         }
 
@@ -59,6 +64,7 @@ class CreateWorkoutScreenKtTest {
             CreateWorkoutForm(
                 saveFunction = { },
                 onDismiss = { },
+                screenTitle = "Create Workout",
             )
         }
 
@@ -67,12 +73,13 @@ class CreateWorkoutScreenKtTest {
 
     @Test
     fun enteringWorkoutNameClickingSaveButtonCallsSaveFunctionAndOnDismiss() {
-        var saved = false
+        var saved: Workout? = null
         var dismissed = false
         rule.setContent {
             CreateWorkoutForm(
-                saveFunction = { saved = true },
+                saveFunction = { workout -> saved = workout },
                 onDismiss = { dismissed = true },
+                screenTitle = "Create Workout",
             )
         }
 
@@ -80,7 +87,50 @@ class CreateWorkoutScreenKtTest {
 
         saveButton.assertIsEnabled()
         saveButton.performClick()
-        assertThat(saved, equalTo(true))
+
+        assertThat(saved!!.name, equalTo("Test Name"))
+        assertThat(dismissed, equalTo(true))
+    }
+
+    @Test
+    fun createWorkoutFormWithExistingWorkoutFillsInFormField() {
+        rule.setContent {
+            CreateWorkoutForm(
+                saveFunction = { },
+                onDismiss = { },
+                screenTitle = "Create Workout",
+                workout = Workout(
+                    name = "Existing workout"
+                )
+            )
+        }
+
+        nameField.assertTextContains("Existing workout")
+    }
+
+    @Test
+    fun createWorkoutFormWithExistingWorkoutSavesWithExistingId() {
+        var savedWorkout: Workout? = null
+        var dismissed = false
+        rule.setContent {
+            CreateWorkoutForm(
+                saveFunction = { workout -> savedWorkout = workout },
+                onDismiss = { dismissed = true },
+                screenTitle = "Create Workout",
+                workout = Workout(
+                    workoutId = 2,
+                    name = "Existing workout"
+                )
+            )
+        }
+
+        nameField.performTextInput(" updated")
+
+        saveButton.performClick()
+
+        assertThat(savedWorkout, notNullValue())
+        assertThat(savedWorkout!!.workoutId, equalTo(2))
+        assertThat(savedWorkout!!.name, equalTo("Existing workout updated"))
         assertThat(dismissed, equalTo(true))
     }
 }

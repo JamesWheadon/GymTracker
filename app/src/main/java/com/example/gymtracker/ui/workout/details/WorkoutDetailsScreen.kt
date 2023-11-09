@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.gymtracker.data.workout.Workout
+import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseCard
 import com.example.gymtracker.ui.exercise.ExerciseUiState
@@ -35,6 +37,7 @@ import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.WorkoutsRoute
+import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
 import com.example.gymtracker.ui.workout.toWorkout
 
 object WorkoutDetailsRoute : NavigationRoute {
@@ -58,6 +61,8 @@ fun WorkoutDetailsScreen(
         uiState = uiState,
         navController = navController,
         exerciseNavigationFunction = exerciseNavigationFunction,
+        updateWorkoutFunction = { workout -> viewModel.updateWorkout(workout) },
+        deleteWorkoutFunction = { workout -> viewModel.deleteWorkout(workout) },
         modifier = modifier,
     )
 }
@@ -68,15 +73,21 @@ fun WorkoutDetailsScreen(
     uiState: WorkoutWithExercisesUiState,
     navController: NavHostController,
     exerciseNavigationFunction: (Int) -> Unit,
+    updateWorkoutFunction: (Workout) -> Unit,
+    deleteWorkoutFunction: (Workout) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showAddExercise by remember { mutableStateOf(false) }
+    var showUpdateWorkout by remember { mutableStateOf(false) }
+    var showDeleteWorkout by remember { mutableStateOf(false) }
     Scaffold(
         modifier = modifier,
         topBar = {
             TopBar(
                 text = uiState.name,
-                navController = navController
+                navController = navController,
+                editFunction = { showUpdateWorkout = true },
+                deleteFunction = { showDeleteWorkout = true }
             )
         },
         floatingActionButton = {
@@ -109,6 +120,31 @@ fun WorkoutDetailsScreen(
                 existingExercises = uiState.exercises,
                 onDismiss = { showAddExercise = false }
             )
+        }
+    }
+    if (showUpdateWorkout) {
+        Dialog(
+            onDismissRequest = { showUpdateWorkout = false }
+        ) {
+            CreateWorkoutForm(
+                screenTitle = "Update Workout",
+                workout = uiState.toWorkout(),
+                saveFunction = updateWorkoutFunction,
+                onDismiss = { showUpdateWorkout = false }
+            )
+        }
+    }
+    if (showDeleteWorkout) {
+        Dialog(
+            onDismissRequest = { showDeleteWorkout = false }
+        ) {
+            ActionConfirmation(
+                actionTitle = "Delete ${uiState.name} Workout?",
+                confirmFunction = {
+                    deleteWorkoutFunction(uiState.toWorkout())
+                    navController.popBackStack()
+                },
+                cancelFunction = { showDeleteWorkout = false })
         }
     }
 }
