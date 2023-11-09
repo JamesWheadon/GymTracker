@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.Query
 
 @Dao
 interface WorkoutExerciseCrossRefDao {
@@ -12,4 +13,7 @@ interface WorkoutExerciseCrossRefDao {
 
     @Delete
     suspend fun delete(workoutExercise: WorkoutExerciseCrossRef)
+
+    @Query("DELETE FROM workoutsExercises WHERE workoutId = :workoutId")
+    suspend fun deleteAllCrossRefForWorkout(workoutId: Int)
 }

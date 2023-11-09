@@ -7,4 +7,6 @@ interface WorkoutExerciseCrossRefRepository {
     suspend fun saveExerciseToWorkout(exercise: Exercise, workout: Workout)
 
     suspend fun deleteExerciseFromWorkout(exercise: Exercise, workout: Workout)
+
+    suspend fun deleteAllCrossRefForWorkout(workout: Workout)
 }
