@@ -18,30 +18,32 @@ object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
             ExercisesScreenViewModel(
-                gymTrackerApplication().container.exerciseRepository
+                exerciseRepository = gymTrackerApplication().container.exerciseRepository
             )
         }
         initializer {
             ExerciseDetailsViewModel(
-                gymTrackerApplication().container.exerciseRepository,
-                gymTrackerApplication().container.historyRepository,
-                this.createSavedStateHandle()
+                exerciseRepository = gymTrackerApplication().container.exerciseRepository,
+                historyRepository = gymTrackerApplication().container.historyRepository,
+                savedStateHandle = this.createSavedStateHandle()
             )
         }
         initializer {
             RecordHistoryViewModel(
-                gymTrackerApplication().container.historyRepository
+                historyRepository = gymTrackerApplication().container.historyRepository
             )
         }
         initializer {
             WorkoutScreenViewModel(
-                gymTrackerApplication().container.workoutRepository
+                workoutRepository = gymTrackerApplication().container.workoutRepository
             )
         }
         initializer {
             WorkoutDetailsViewModel(
-                gymTrackerApplication().container.workoutWithExerciseRepository,
-                this.createSavedStateHandle()
+                workoutRepository = gymTrackerApplication().container.workoutRepository,
+                workoutWithExercisesRepository = gymTrackerApplication().container.workoutWithExerciseRepository,
+                workoutExerciseCrossRefRepository = gymTrackerApplication().container.workoutExerciseCrossRefRepository,
+                savedStateHandle = this.createSavedStateHandle()
             )
         }
         initializer {

@@ -3,6 +3,9 @@ package com.example.gymtracker.ui.workout.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gymtracker.data.workout.Workout
+import com.example.gymtracker.data.workout.WorkoutRepository
+import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.data.workoutWithExercises.WorkoutWithExercisesRepository
 import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.toWorkoutWithExercisesUiState
@@ -10,9 +13,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class WorkoutDetailsViewModel(
+    private val workoutRepository: WorkoutRepository,
     workoutWithExercisesRepository: WorkoutWithExercisesRepository,
+    private val workoutExerciseCrossRefRepository: WorkoutExerciseCrossRefRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -30,4 +36,17 @@ class WorkoutDetailsViewModel(
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = WorkoutWithExercisesUiState()
             )
+
+    fun updateWorkout(workout: Workout) {
+        viewModelScope.launch {
+            workoutRepository.updateWorkout(workout)
+        }
+    }
+
+    fun deleteWorkout(workout: Workout) {
+        viewModelScope.launch {
+            workoutRepository.deleteWorkout(workout)
+            workoutExerciseCrossRefRepository.deleteAllCrossRefForWorkout(workout)
+        }
+    }
 }
