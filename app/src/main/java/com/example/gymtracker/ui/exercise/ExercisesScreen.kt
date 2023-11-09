@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.create.CreateExerciseScreen
@@ -47,31 +48,35 @@ object ExercisesRoute : NavigationRoute {
 }
 
 @Composable
-fun ExerciseScreen(
+fun ExercisesScreen(
+    navController: NavHostController,
     exerciseNavigationFunction: (Int) -> Unit,
     homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
     modifier: Modifier = Modifier,
     viewModel: ExercisesScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val exerciseListUiState by viewModel.exerciseListUiState.collectAsState()
-    ExerciseScreen(
-        exerciseNavigationFunction = exerciseNavigationFunction,
+    ExercisesScreen(
         exerciseListUiState = exerciseListUiState,
+        navController = navController,
+        exerciseNavigationFunction = exerciseNavigationFunction,
         homeNavigationOptions = homeNavigationOptions,
-        modifier
+        modifier = modifier
     )
 }
 
 @Composable
-fun ExerciseScreen(
-    exerciseNavigationFunction: (Int) -> Unit,
+fun ExercisesScreen(
     exerciseListUiState: ExerciseListUiState,
+    navController: NavHostController,
+    exerciseNavigationFunction: (Int) -> Unit,
     homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
     modifier: Modifier = Modifier
 ) {
     var showCreate by remember { mutableStateOf(false) }
     HomeScreenCardWrapper(
         title = "My Exercises",
+        navController = navController,
         homeNavigationOptions = homeNavigationOptions,
         floatingActionButton = {
             FloatingActionButton(
@@ -86,8 +91,8 @@ fun ExerciseScreen(
                 )
             }
         }
-    ) {
-        ExercisesList(
+    ){
+        ExercisesScreen(
             exerciseListUiState = exerciseListUiState,
             exerciseNavigationFunction = exerciseNavigationFunction,
             modifier = modifier
@@ -105,10 +110,10 @@ fun ExerciseScreen(
 }
 
 @Composable
-private fun ExercisesList(
+private fun ExercisesScreen(
     exerciseListUiState: ExerciseListUiState,
     exerciseNavigationFunction: (Int) -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier
@@ -206,8 +211,7 @@ fun ExerciseDetail(
 @Composable
 fun ExerciseScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
-        ExerciseScreen(
-            {},
+        ExercisesScreen(
             exerciseListUiState = ExerciseListUiState(
                 listOf(
                     ExerciseUiState(0, "Curls", "Biceps", "Dumbbells"),
@@ -220,13 +224,7 @@ fun ExerciseScreenPreview() {
                     ),
                 )
             ),
-            homeNavigationOptions = mapOf(
-                Pair(HomeNavigationInformation(title = "Workouts", navigationFunction = { }), true),
-                Pair(
-                    HomeNavigationInformation(title = "Exercises", navigationFunction = { }),
-                    false
-                )
-            )
+            exerciseNavigationFunction = { }
         )
     }
 }

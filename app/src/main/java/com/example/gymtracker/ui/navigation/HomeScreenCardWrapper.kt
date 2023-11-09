@@ -16,13 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.gymtracker.ui.theme.GymTrackerTheme
+import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenCardWrapper(
     title: String,
+    navController: NavHostController,
     homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
     modifier: Modifier = Modifier,
     floatingActionButton: @Composable () -> Unit = { },
@@ -34,9 +34,7 @@ fun HomeScreenCardWrapper(
         topBar = {
             TopBar(
                 text = title,
-                backEnabled = false,
-                editEnabled = false,
-                deleteEnabled = false
+                navController = navController
             )
         },
         floatingActionButton = {
@@ -69,20 +67,5 @@ fun HomeScreenCardWrapper(
                 content()
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenCardWrapperPreview() {
-    GymTrackerTheme(darkTheme = false) {
-        HomeScreenCardWrapper(
-            title = "Test Title",
-            content = { Text(text = "test text") },
-            homeNavigationOptions = mapOf(
-                Pair(HomeNavigationInformation(title = "Workouts", navigationFunction = { }), true),
-                Pair(HomeNavigationInformation(title = "Exercises", navigationFunction = { }), false)
-            )
-        )
     }
 }

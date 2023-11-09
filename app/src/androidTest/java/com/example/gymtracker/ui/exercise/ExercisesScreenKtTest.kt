@@ -9,15 +9,22 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.performClick
+import androidx.navigation.NavHostController
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 
 class ExercisesScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
+
+    @Mock
+    private lateinit var navController: NavHostController
 
     private val lazyColumn = rule.onNode(hasScrollAction())
     private val createButton = rule.onNode(hasContentDescription("Add Exercise"))
@@ -25,10 +32,16 @@ class ExercisesScreenKtTest {
     private val exercise1 = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells")
     private val exercise2 = ExerciseUiState(2, "Curls", "Biceps", "Dumbbells")
 
+    @Before
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
+    }
+
     @Test
     fun rendersEmptyListOfExercises() {
         rule.setContent {
-            ExerciseScreen(
+            ExercisesScreen(
+                navController = navController,
                 exerciseNavigationFunction = {},
                 exerciseListUiState = ExerciseListUiState(),
                 homeNavigationOptions = mapOf()
@@ -42,7 +55,8 @@ class ExercisesScreenKtTest {
     @Test
     fun rendersListOfExercises() {
         rule.setContent {
-            ExerciseScreen(
+            ExercisesScreen(
+                navController = navController,
                 exerciseNavigationFunction = {},
                 exerciseListUiState = ExerciseListUiState(
                     exerciseList = listOf(
@@ -63,7 +77,8 @@ class ExercisesScreenKtTest {
         val exerciseId = 1
         var navigateId = 0
         rule.setContent {
-            ExerciseScreen(
+            ExercisesScreen(
+                navController = navController,
                 exerciseNavigationFunction = { navigateId = it },
                 exerciseListUiState = ExerciseListUiState(
                     exerciseList = listOf(
@@ -82,7 +97,8 @@ class ExercisesScreenKtTest {
     @Test
     fun clickPlusToOpenDialog() {
         rule.setContent {
-            ExerciseScreen(
+            ExercisesScreen(
+                navController = navController,
                 exerciseNavigationFunction = {},
                 exerciseListUiState = ExerciseListUiState(
                     exerciseList = listOf(

@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.gymtracker.ui.exercise.ExerciseScreen
+import com.example.gymtracker.ui.exercise.ExercisesScreen
 import com.example.gymtracker.ui.exercise.ExercisesRoute
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsRoute
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsScreen
@@ -26,13 +26,15 @@ fun GymTrackerApp(
         startDestination = ExercisesRoute.route,
     ) {
         composable(route = ExercisesRoute.route) {
-            ExerciseScreen(
+            ExercisesScreen(
+                navController = navController,
                 exerciseNavigationFunction = { id: Int -> navController.navigate(ExerciseDetailsRoute.getRouteForNavArgument(id)) },
                 homeNavigationOptions = getHomeNavigationOptionsForRoute(ExercisesRoute, navController)
             )
         }
         composable(route = WorkoutsRoute.route) {
             WorkoutsScreen(
+                navController = navController,
                 workoutNavigationFunction = { id: Int -> navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(id)) },
                 homeNavigationOptions = getHomeNavigationOptionsForRoute(WorkoutsRoute, navController)
             )
@@ -40,13 +42,14 @@ fun GymTrackerApp(
         composable(ExerciseDetailsRoute.route,
             arguments = listOf(navArgument(ExerciseDetailsRoute.navArgument) { type = NavType.IntType })) {
             ExerciseDetailsScreen(
-                backNavigationFunction = { navController.navigate(ExercisesRoute.route) }
+                navController = navController
             )
         }
         composable(WorkoutDetailsRoute.route,
             arguments = listOf(navArgument(WorkoutDetailsRoute.navArgument) { type = NavType.IntType })) {
             WorkoutDetailsScreen(
-                exerciseNavigationFunction = { id: Int -> navController.navigate(ExerciseDetailsRoute.getRouteForNavArgument(id)) }
+                navController = navController,
+                exerciseNavigationFunction = { id: Int -> navController.navigate(ExerciseDetailsRoute.getRouteForNavArgument(id)) },
             )
         }
     }

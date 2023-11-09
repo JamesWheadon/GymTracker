@@ -8,15 +8,22 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.navigation.NavHostController
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 
 class HomeScreenCardWrapperKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
+
+    @Mock
+    private lateinit var navController: NavHostController
 
     private val title = rule.onNode(hasText("Test Title"))
     private val content = rule.onNode(hasText("Test Content"))
@@ -24,11 +31,17 @@ class HomeScreenCardWrapperKtTest {
     private val exercisesButton = rule.onNode(hasText("Exercises"))
     private val floatingButton = rule.onNode(hasText("Floating Button"))
 
+    @Before
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
+    }
+
     @Test
     fun rendersHomeScreenCardWrapper() {
         rule.setContent {
             HomeScreenCardWrapper(
                 title = "Test Title",
+                navController = navController,
                 homeNavigationOptions = mapOf(
                     HomeNavigationInformation("Workouts") { } to true,
                     HomeNavigationInformation("Exercises") { } to false
@@ -60,6 +73,7 @@ class HomeScreenCardWrapperKtTest {
         rule.setContent {
             HomeScreenCardWrapper(
                 title = "Test Title",
+                navController = navController,
                 homeNavigationOptions = mapOf(
                     HomeNavigationInformation("Workouts") { workouts = true } to true,
                     HomeNavigationInformation("Exercises") { exercises = true } to false
@@ -88,8 +102,8 @@ class HomeScreenCardWrapperKtTest {
         rule.setContent {
             HomeScreenCardWrapper(
                 title = "Test Title",
-                homeNavigationOptions = mapOf(
-                ),
+                navController = navController,
+                homeNavigationOptions = mapOf(),
                 floatingActionButton = {
                     Button(onClick = { floatingAction = true }) {
                         Text(text = "Floating Button")

@@ -1,7 +1,9 @@
 package com.example.gymtracker.ui.navigation
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -14,18 +16,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
     text: String,
-    backEnabled: Boolean,
-    editEnabled: Boolean,
-    deleteEnabled: Boolean,
+    navController: NavHostController,
     modifier: Modifier = Modifier,
-    navigateBack: () -> Unit = {},
-    editFunction: () -> Unit = {},
-    deleteFunction: () -> Unit = {}
+    editFunction: (() -> Unit)? = null,
+    deleteFunction: (() -> Unit)? = null
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -35,17 +35,30 @@ fun TopBar(
             )
         },
         navigationIcon = {
-            if (backEnabled) {
-                IconButton(onClick = navigateBack) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back Button"
-                    )
+            val homeRoutes = NavigationArguments.values()
+                .filter { it.homeRoute }
+                .map { it.route }
+            Row {
+                if (navController.currentDestination != null && !homeRoutes.contains(navController.currentDestination!!.route)) {
+                    IconButton(onClick = { navController.navigate(navController.graph.startDestinationId) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Home,
+                            contentDescription = "Home Button"
+                        )
+                    }
+                }
+                if (navController.previousBackStackEntry != null) {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back Button"
+                        )
+                    }
                 }
             }
         },
         actions = {
-            if (editEnabled) {
+            if (editFunction != null) {
                 IconButton(onClick = editFunction) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
@@ -53,7 +66,7 @@ fun TopBar(
                     )
                 }
             }
-            if (deleteEnabled) {
+            if (deleteFunction != null) {
                 IconButton(onClick = deleteFunction) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,

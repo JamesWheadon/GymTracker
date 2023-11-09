@@ -4,17 +4,24 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 
 class WorkoutDetailsScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
+
+    @Mock
+    private lateinit var navController: NavHostController
 
     private val workoutNoExercises = WorkoutWithExercisesUiState(
         workoutId = 1,
@@ -35,12 +42,18 @@ class WorkoutDetailsScreenKtTest {
     private val curlsExercise = rule.onNode(hasText("Curls"))
     private val dipsExercise = rule.onNode(hasText("Dips"))
 
+    @Before
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
+    }
+
     @Test
     fun rendersWorkoutWithNoExercises() {
         rule.setContent {
             WorkoutDetailsScreen(
                 uiState = workoutNoExercises,
-                exerciseNavigationFunction = { }
+                navController = navController,
+                exerciseNavigationFunction = { },
             )
         }
 
@@ -52,7 +65,8 @@ class WorkoutDetailsScreenKtTest {
         rule.setContent {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
-                exerciseNavigationFunction = { }
+                navController = navController,
+                exerciseNavigationFunction = { },
             )
         }
 
@@ -68,7 +82,8 @@ class WorkoutDetailsScreenKtTest {
         rule.setContent {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
-                exerciseNavigationFunction = { id -> calledExerciseId = id }
+                navController = navController,
+                exerciseNavigationFunction = { id -> calledExerciseId = id },
             )
         }
 

@@ -1,6 +1,7 @@
 package com.example.gymtracker.ui.workout.details
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseCard
 import com.example.gymtracker.ui.exercise.ExerciseUiState
@@ -44,8 +46,9 @@ object WorkoutDetailsRoute : NavigationRoute {
 
 @Composable
 fun WorkoutDetailsScreen(
-    modifier: Modifier = Modifier,
+    navController: NavHostController,
     exerciseNavigationFunction: (Int) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: WorkoutDetailsViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
@@ -53,8 +56,9 @@ fun WorkoutDetailsScreen(
     val uiState = viewModel.uiState.collectAsState().value
     WorkoutDetailsScreen(
         uiState = uiState,
+        navController = navController,
         exerciseNavigationFunction = exerciseNavigationFunction,
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -62,6 +66,7 @@ fun WorkoutDetailsScreen(
 @Composable
 fun WorkoutDetailsScreen(
     uiState: WorkoutWithExercisesUiState,
+    navController: NavHostController,
     exerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -71,9 +76,7 @@ fun WorkoutDetailsScreen(
         topBar = {
             TopBar(
                 text = uiState.name,
-                backEnabled = false,
-                editEnabled = false,
-                deleteEnabled = false
+                navController = navController
             )
         },
         floatingActionButton = {
@@ -90,16 +93,12 @@ fun WorkoutDetailsScreen(
             }
         }
     ) { innerPadding ->
-        LazyColumn(
+        WorkoutDetailsScreen(
+            uiState = uiState,
+            exerciseNavigationFunction = exerciseNavigationFunction,
+            innerPadding = innerPadding,
             modifier = modifier
-                .fillMaxWidth(),
-            contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(0.dp)
-        ) {
-            items(uiState.exercises) { exercise ->
-                ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
-            }
-        }
+        )
     }
     if (showAddExercise) {
         Dialog(
@@ -110,6 +109,25 @@ fun WorkoutDetailsScreen(
                 existingExercises = uiState.exercises,
                 onDismiss = { showAddExercise = false }
             )
+        }
+    }
+}
+
+@Composable
+private fun WorkoutDetailsScreen(
+    uiState: WorkoutWithExercisesUiState,
+    exerciseNavigationFunction: (Int) -> Unit,
+    innerPadding: PaddingValues,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth(),
+        contentPadding = innerPadding,
+        verticalArrangement = Arrangement.spacedBy(0.dp)
+    ) {
+        items(uiState.exercises) { exercise ->
+            ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
         }
     }
 }
@@ -133,7 +151,8 @@ fun WorkoutDetailsScreenPreview() {
                     )
                 )
             ),
-            exerciseNavigationFunction = { }
+            exerciseNavigationFunction = { },
+            innerPadding = PaddingValues()
         )
     }
 }

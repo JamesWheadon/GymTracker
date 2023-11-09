@@ -8,15 +8,22 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.navigation.NavHostController
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 
 class WorkoutsScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
+
+    @Mock
+    private lateinit var navController: NavHostController
 
     private val lazyColumn = rule.onNode(hasScrollAction())
     private val createWorkoutButton = rule.onNode(hasContentDescription("Add Workout"))
@@ -30,12 +37,18 @@ class WorkoutsScreenKtTest {
     private val firstWorkout = rule.onNode(hasText("first"))
     private val secondWorkout = rule.onNode(hasText("first"))
 
+    @Before
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
+    }
+
     @Test
     fun rendersEmptyListOfWorkouts() {
         rule.setContent {
             WorkoutsScreen(
                 workoutListUiState = WorkoutListUiState(),
                 createWorkout = { },
+                navController = navController,
                 workoutNavigationFunction = { },
                 homeNavigationOptions = mapOf()
             )
@@ -57,6 +70,7 @@ class WorkoutsScreenKtTest {
                     )
                 ),
                 createWorkout = { },
+                navController = navController,
                 workoutNavigationFunction = { },
                 homeNavigationOptions = mapOf()
             )
@@ -80,6 +94,7 @@ class WorkoutsScreenKtTest {
                     )
                 ),
                 createWorkout = { },
+                navController = navController,
                 workoutNavigationFunction = { },
                 homeNavigationOptions = mapOf()
             )
@@ -112,6 +127,7 @@ class WorkoutsScreenKtTest {
                     workoutList = workoutList
                 ),
                 createWorkout = { workout -> workoutList.add(workout.toWorkoutUiState()) },
+                navController = navController,
                 workoutNavigationFunction = { },
                 homeNavigationOptions = mapOf()
             )
@@ -145,6 +161,7 @@ class WorkoutsScreenKtTest {
                     )
                 ),
                 createWorkout = { },
+                navController = navController,
                 workoutNavigationFunction = { id -> workoutChosen = id },
                 homeNavigationOptions = mapOf()
             )
