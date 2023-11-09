@@ -13,13 +13,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,59 +27,57 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.gymtracker.R
-import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.create.CreateExerciseScreen
+import com.example.gymtracker.ui.navigation.HomeNavigationInformation
+import com.example.gymtracker.ui.navigation.HomeScreenCardWrapper
 import com.example.gymtracker.ui.navigation.NavigationArguments
 import com.example.gymtracker.ui.navigation.NavigationRoute
-import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 object ExercisesRoute : NavigationRoute {
-    override val route = NavigationArguments.EXERCISES_SCREEN.routeName
+    override val route = NavigationArguments.EXERCISES_SCREEN.route
 }
 
 @Composable
-fun ExerciseScreen(
+fun ExercisesScreen(
+    navController: NavHostController,
     exerciseNavigationFunction: (Int) -> Unit,
+    homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
     modifier: Modifier = Modifier,
     viewModel: ExercisesScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val exerciseListUiState by viewModel.exerciseListUiState.collectAsState()
-    ExerciseScreen(
-        exerciseNavigationFunction = exerciseNavigationFunction,
+    ExercisesScreen(
         exerciseListUiState = exerciseListUiState,
-        modifier
+        navController = navController,
+        exerciseNavigationFunction = exerciseNavigationFunction,
+        homeNavigationOptions = homeNavigationOptions,
+        modifier = modifier
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExerciseScreen(
-    exerciseNavigationFunction: (Int) -> Unit,
+fun ExercisesScreen(
     exerciseListUiState: ExerciseListUiState,
+    navController: NavHostController,
+    exerciseNavigationFunction: (Int) -> Unit,
+    homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
     modifier: Modifier = Modifier
 ) {
     var showCreate by remember { mutableStateOf(false) }
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopBar(
-                text = "My Exercises",
-                backEnabled = false,
-                editEnabled = false,
-                deleteEnabled = false
-            )
-        },
+    HomeScreenCardWrapper(
+        title = "My Exercises",
+        navController = navController,
+        homeNavigationOptions = homeNavigationOptions,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showCreate = true },
@@ -96,20 +91,12 @@ fun ExerciseScreen(
                 )
             }
         }
-    ) { innerPadding ->
-        LazyColumn(
+    ){
+        ExercisesScreen(
+            exerciseListUiState = exerciseListUiState,
+            exerciseNavigationFunction = exerciseNavigationFunction,
             modifier = modifier
-                .fillMaxWidth(),
-            contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(0.dp)
-        ) {
-            items(exerciseListUiState.exerciseList) { exercise ->
-                ExerciseCard(
-                    exercise = exercise,
-                    navigationFunction = exerciseNavigationFunction
-                )
-            }
-        }
+        )
     }
     if (showCreate) {
         Dialog(
@@ -123,8 +110,28 @@ fun ExerciseScreen(
 }
 
 @Composable
+private fun ExercisesScreen(
+    exerciseListUiState: ExerciseListUiState,
+    exerciseNavigationFunction: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(0.dp)
+    ) {
+        items(exerciseListUiState.exerciseList) { exercise ->
+            ExerciseCard(
+                exercise = exercise,
+                navigationFunction = exerciseNavigationFunction
+            )
+        }
+    }
+}
+
+@Composable
 fun ExerciseCard(
-    exercise: Exercise,
+    exercise: ExerciseUiState,
     navigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -204,20 +211,20 @@ fun ExerciseDetail(
 @Composable
 fun ExerciseScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
-        ExerciseScreen(
-            {},
+        ExercisesScreen(
             exerciseListUiState = ExerciseListUiState(
                 listOf(
-                    Exercise(0, "Curls", "Biceps", "Dumbbells"),
-                    Exercise(1, "Dips", "Triceps", "Dumbbells And Bars"),
-                    Exercise(
+                    ExerciseUiState(0, "Curls", "Biceps", "Dumbbells"),
+                    ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars"),
+                    ExerciseUiState(
                         2,
                         "Testing what happens if someone decides to have a ridiculously long exercise name",
                         "Lats",
                         "Dumbbells"
                     ),
                 )
-            )
+            ),
+            exerciseNavigationFunction = { }
         )
     }
 }

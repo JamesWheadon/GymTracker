@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HistoryDao {
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(exerciseHistory: ExerciseHistory)
 

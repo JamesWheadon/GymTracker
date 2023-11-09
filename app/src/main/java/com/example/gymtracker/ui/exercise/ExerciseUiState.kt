@@ -18,21 +18,28 @@ data class ExerciseDetailsUiState(
     var history: List<ExerciseHistoryUiState>? = listOf()
 )
 
-data class ExerciseListUiState(val exerciseList: List<Exercise> = listOf())
+data class ExerciseListUiState(val exerciseList: List<ExerciseUiState> = listOf())
 
 fun Exercise.toExerciseUiState(): ExerciseUiState = ExerciseUiState(
-    id = id,
+    id = exerciseId,
     name = name,
     muscleGroup = muscleGroup,
     equipment = equipment
 )
 
 fun Exercise.toExerciseDetailsUiState(): ExerciseDetailsUiState = ExerciseDetailsUiState(
-    id = id,
+    id = exerciseId,
     name = name,
     muscleGroup = muscleGroup,
     equipment = equipment,
     history = listOf()
+)
+
+fun ExerciseUiState.toExercise(): Exercise = Exercise(
+    exerciseId = id,
+    name = name,
+    equipment = equipment,
+    muscleGroup = muscleGroup
 )
 
 fun ExerciseDetailsUiState.toExerciseUiState(): ExerciseUiState = ExerciseUiState(
@@ -43,7 +50,7 @@ fun ExerciseDetailsUiState.toExerciseUiState(): ExerciseUiState = ExerciseUiStat
 )
 
 fun ExerciseDetailsUiState.toExercise(): Exercise = Exercise(
-    id = id,
+    exerciseId = id,
     name = name,
     equipment = equipment,
     muscleGroup = muscleGroup

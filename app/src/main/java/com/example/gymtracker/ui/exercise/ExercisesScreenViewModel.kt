@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ExercisesScreenViewModel(
-    private val exerciseRepository: ExerciseRepository,
+    private val exerciseRepository: ExerciseRepository
 ) : ViewModel() {
 
     companion object {
@@ -19,7 +19,10 @@ class ExercisesScreenViewModel(
     }
 
     val exerciseListUiState: StateFlow<ExerciseListUiState> =
-        exerciseRepository.getAllExercisesStream().map { ExerciseListUiState(it) }
+        exerciseRepository.getAllExercisesStream()
+            .map { exerciseList -> ExerciseListUiState(
+                exerciseList.map { exercise -> exercise.toExerciseUiState() }
+            ) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),

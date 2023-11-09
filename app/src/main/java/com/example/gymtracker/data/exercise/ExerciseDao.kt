@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExerciseDao {
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(exercise: Exercise)
 
@@ -20,7 +19,7 @@ interface ExerciseDao {
     @Update
     suspend fun update(exercise: Exercise)
 
-    @Query("SELECT * from exercises WHERE id = :id")
+    @Query("SELECT * from exercises WHERE exerciseId = :id")
     fun getExercise(id: Int): Flow<Exercise>
 
     @Query("SELECT * from exercises")

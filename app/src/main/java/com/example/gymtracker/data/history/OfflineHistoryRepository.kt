@@ -3,7 +3,6 @@ package com.example.gymtracker.data.history
 import kotlinx.coroutines.flow.Flow
 
 class OfflineHistoryRepository(private val historyDao: HistoryDao) : HistoryRepository {
-
     override fun getHistoryStream(id: Int): Flow<ExerciseHistory?> = historyDao.getHistory(id)
 
     override fun getFullExerciseHistoryStream(exerciseId: Int): Flow<List<ExerciseHistory>?> =

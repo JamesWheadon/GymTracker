@@ -5,12 +5,17 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.Mockito.verify
+import org.mockito.MockitoAnnotations
 import java.time.LocalDate
 
 private const val NAME = "Curls"
@@ -21,6 +26,9 @@ class ExerciseDetailsScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
+
+    @Mock
+    private lateinit var navController: NavHostController
 
     private val exerciseNoHistory = ExerciseDetailsUiState(
         name = NAME,
@@ -58,12 +66,17 @@ class ExerciseDetailsScreenKtTest {
     private val deleteExerciseButton = rule.onNode(hasContentDescription("Delete feature"))
     private val deleteExerciseTitle = rule.onNode(hasText("Delete $NAME Exercise?"))
 
+    @Before
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
+    }
+
     @Test
     fun rendersExerciseDetailsWithNoHistory() {
         rule.setContent {
             ExerciseDetailsScreen(
                 uiState = exerciseNoHistory,
-                backNavigationFunction = { },
+                navController = navController,
                 updateFunction = { },
                 deleteFunction = { }
             )
@@ -84,7 +97,7 @@ class ExerciseDetailsScreenKtTest {
         rule.setContent {
             ExerciseDetailsScreen(
                 uiState = exercise,
-                backNavigationFunction = { },
+                navController = navController,
                 updateFunction = { },
                 deleteFunction = { }
             )
@@ -105,7 +118,7 @@ class ExerciseDetailsScreenKtTest {
         rule.setContent {
             ExerciseDetailsScreen(
                 uiState = exercise,
-                backNavigationFunction = { },
+                navController = navController,
                 updateFunction = { },
                 deleteFunction = { }
             )
@@ -130,7 +143,7 @@ class ExerciseDetailsScreenKtTest {
         rule.setContent {
             ExerciseDetailsScreen(
                 uiState = exercise,
-                backNavigationFunction = { },
+                navController = navController,
                 updateFunction = { },
                 deleteFunction = { }
             )
@@ -155,7 +168,7 @@ class ExerciseDetailsScreenKtTest {
         rule.setContent {
             ExerciseDetailsScreen(
                 uiState = exercise,
-                backNavigationFunction = { },
+                navController = navController,
                 updateFunction = { },
                 deleteFunction = { }
             )
@@ -177,13 +190,12 @@ class ExerciseDetailsScreenKtTest {
 
     @Test
     fun deleteExerciseDialogYesClickedDeleteAndBackFunctionsCalled() {
-        var backCalled = false
         var updateCalled = false
         var deleteCalled = false
         rule.setContent {
             ExerciseDetailsScreen(
                 uiState = exercise,
-                backNavigationFunction = { backCalled = true },
+                navController = navController,
                 updateFunction = { updateCalled = true },
                 deleteFunction = { deleteCalled = true }
             )
@@ -192,8 +204,8 @@ class ExerciseDetailsScreenKtTest {
         deleteExerciseButton.performClick()
         rule.onNode(hasText("Yes")).performClick()
 
-        assertThat(backCalled, equalTo(true))
         assertThat(updateCalled, equalTo(false))
         assertThat(deleteCalled, equalTo(true))
+        verify(navController).popBackStack()
     }
 }

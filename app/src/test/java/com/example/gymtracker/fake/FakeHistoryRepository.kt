@@ -31,5 +31,4 @@ class FakeHistoryRepository : HistoryRepository {
 
     override suspend fun delete(history: ExerciseHistory) {
     }
-
 }

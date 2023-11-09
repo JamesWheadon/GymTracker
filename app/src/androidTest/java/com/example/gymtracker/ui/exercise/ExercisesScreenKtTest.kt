@@ -9,29 +9,42 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.performClick
-import com.example.gymtracker.data.exercise.Exercise
+import androidx.navigation.NavHostController
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 
 class ExercisesScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
+    @Mock
+    private lateinit var navController: NavHostController
+
     private val lazyColumn = rule.onNode(hasScrollAction())
     private val createButton = rule.onNode(hasContentDescription("Add Exercise"))
 
-    private val exercise1 = Exercise(1, "Curls", "Biceps", "Dumbbells")
-    private val exercise2 = Exercise(2, "Curls", "Biceps", "Dumbbells")
+    private val exercise1 = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells")
+    private val exercise2 = ExerciseUiState(2, "Curls", "Biceps", "Dumbbells")
+
+    @Before
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
+    }
 
     @Test
     fun rendersEmptyListOfExercises() {
         rule.setContent {
-            ExerciseScreen(
+            ExercisesScreen(
+                navController = navController,
                 exerciseNavigationFunction = {},
-                exerciseListUiState = ExerciseListUiState()
+                exerciseListUiState = ExerciseListUiState(),
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -42,14 +55,16 @@ class ExercisesScreenKtTest {
     @Test
     fun rendersListOfExercises() {
         rule.setContent {
-            ExerciseScreen(
+            ExercisesScreen(
+                navController = navController,
                 exerciseNavigationFunction = {},
                 exerciseListUiState = ExerciseListUiState(
                     exerciseList = listOf(
                         exercise1,
                         exercise2
                     )
-                )
+                ),
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -62,13 +77,15 @@ class ExercisesScreenKtTest {
         val exerciseId = 1
         var navigateId = 0
         rule.setContent {
-            ExerciseScreen(
-                exerciseNavigationFunction = { navigateId = it},
+            ExercisesScreen(
+                navController = navController,
+                exerciseNavigationFunction = { navigateId = it },
                 exerciseListUiState = ExerciseListUiState(
                     exerciseList = listOf(
                         exercise1
                     )
-                )
+                ),
+                homeNavigationOptions = mapOf()
             )
         }
 
@@ -80,14 +97,16 @@ class ExercisesScreenKtTest {
     @Test
     fun clickPlusToOpenDialog() {
         rule.setContent {
-            ExerciseScreen(
+            ExercisesScreen(
+                navController = navController,
                 exerciseNavigationFunction = {},
                 exerciseListUiState = ExerciseListUiState(
                     exerciseList = listOf(
-                        Exercise(1, "Curls", "Biceps", "Dumbbells"),
-                        Exercise(2, "Curls", "Biceps", "Dumbbells")
+                        exercise1,
+                        exercise2
                     )
-                )
+                ),
+                homeNavigationOptions = mapOf()
             )
         }
 

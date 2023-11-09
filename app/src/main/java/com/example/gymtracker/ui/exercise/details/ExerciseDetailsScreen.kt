@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.gymtracker.R
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.data.exercise.Exercise
@@ -51,7 +52,7 @@ import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 
 object ExerciseDetailsRoute : NavigationRoute {
-    val navArgument = NavigationArguments.EXERCISE_DETAILS_NAV_ARGUMENT.routeName
+    val navArgument = NavigationArguments.EXERCISE_DETAILS_NAV_ARGUMENT.route
     override val route = "${ExercisesRoute.route}/{${navArgument}}"
 
     fun getRouteForNavArgument(navArgument: Int): String = "${ExercisesRoute.route}/${navArgument}"
@@ -59,7 +60,7 @@ object ExerciseDetailsRoute : NavigationRoute {
 
 @Composable
 fun ExerciseDetailsScreen(
-    backNavigationFunction: () -> Unit,
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     viewModel: ExerciseDetailsViewModel = viewModel(
         factory = AppViewModelProvider.Factory
@@ -69,7 +70,7 @@ fun ExerciseDetailsScreen(
     uiState.history = viewModel.exerciseHistory.collectAsState().value
     ExerciseDetailsScreen(
         uiState = uiState,
-        backNavigationFunction = backNavigationFunction,
+        navController = navController,
         updateFunction = { exercise -> viewModel.updateExercise(exercise) },
         deleteFunction = { exercise -> viewModel.deleteExercise(exercise) },
         modifier = modifier
@@ -81,7 +82,7 @@ fun ExerciseDetailsScreen(
 @Composable
 fun ExerciseDetailsScreen(
     uiState: ExerciseDetailsUiState,
-    backNavigationFunction: () -> Unit,
+    navController: NavHostController,
     updateFunction: (Exercise) -> Unit,
     deleteFunction: (Exercise) -> Unit,
     modifier: Modifier = Modifier
@@ -94,10 +95,7 @@ fun ExerciseDetailsScreen(
         topBar = {
             TopBar(
                 text = uiState.name,
-                backEnabled = true,
-                editEnabled = true,
-                deleteEnabled = true,
-                navigateBack = backNavigationFunction,
+                navController = navController,
                 editFunction = { updateExercise = true },
                 deleteFunction = { deleteExercise = true }
             )
@@ -116,20 +114,7 @@ fun ExerciseDetailsScreen(
             }
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(vertical = 16.dp, horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            ExerciseInformation(innerPadding, uiState)
-            if (uiState.history?.isNotEmpty() == true) {
-                ExerciseHistoryDetails(uiState = uiState)
-                ExerciseHistoryCalendar(uiState = uiState)
-            }
-        }
+        ExerciseDetailsScreen(innerPadding, uiState)
     }
     if (showRecord) {
         Dialog(
@@ -162,9 +147,30 @@ fun ExerciseDetailsScreen(
                 actionTitle = "Delete ${uiState.name} Exercise?",
                 confirmFunction = {
                     deleteFunction(uiState.toExercise())
-                    backNavigationFunction()
+                    navController.popBackStack()
                 },
                 cancelFunction = { deleteExercise = false })
+        }
+    }
+}
+
+@Composable
+private fun ExerciseDetailsScreen(
+    innerPadding: PaddingValues,
+    uiState: ExerciseDetailsUiState
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(vertical = 16.dp, horizontal = 16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        ExerciseInformation(innerPadding, uiState)
+        if (uiState.history?.isNotEmpty() == true) {
+            ExerciseHistoryDetails(uiState = uiState)
+            ExerciseHistoryCalendar(uiState = uiState)
         }
     }
 }
@@ -287,9 +293,10 @@ fun ExerciseDetail(
 
 @Preview(showBackground = true)
 @Composable
-fun ItemDetailsScreenPreview() {
+fun ExerciseDetailsScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         ExerciseDetailsScreen(
+            innerPadding = PaddingValues(),
             uiState = ExerciseDetailsUiState(
                 name = "Curls",
                 muscleGroup = "Biceps",
@@ -304,10 +311,7 @@ fun ItemDetailsScreenPreview() {
                         date = LocalDate.now().minusDays(5)
                     )
                 )
-            ),
-            backNavigationFunction = { },
-            updateFunction = { },
-            deleteFunction = { }
+            )
         )
     }
 }
@@ -317,15 +321,13 @@ fun ItemDetailsScreenPreview() {
 fun ItemDetailsScreenPreviewNoHistory() {
     GymTrackerTheme(darkTheme = false) {
         ExerciseDetailsScreen(
+            innerPadding = PaddingValues(),
             uiState = ExerciseDetailsUiState(
                 name = "Curls",
                 muscleGroup = "Biceps",
                 equipment = "Dumbbells",
                 history = listOf()
-            ),
-            backNavigationFunction = { },
-            updateFunction = { },
-            deleteFunction = { }
+            )
         )
     }
 }

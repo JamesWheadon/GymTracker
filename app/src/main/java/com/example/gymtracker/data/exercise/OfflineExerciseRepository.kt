@@ -3,7 +3,6 @@ package com.example.gymtracker.data.exercise
 import kotlinx.coroutines.flow.Flow
 
 class OfflineExerciseRepository(private val exerciseDao: ExerciseDao) : ExerciseRepository {
-
     override fun getAllExercisesStream(): Flow<List<Exercise>> = exerciseDao.getAllExercises()
 
     override fun getExerciseStream(id: Int): Flow<Exercise?> = exerciseDao.getExercise(id)
