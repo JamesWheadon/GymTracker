@@ -10,6 +10,18 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HistoryDao {
+    @Query("SELECT * FROM history WHERE id = :id")
+    fun getHistory(id: Int): Flow<ExerciseHistory>
+
+    @Query("SELECT * FROM history WHERE exerciseId = :exerciseId")
+    fun getFullExerciseHistory(exerciseId: Int): Flow<List<ExerciseHistory>>
+
+    @Query("SELECT * FROM history WHERE exerciseId = :exerciseId ORDER BY date DESC LIMIT 1")
+    fun getLatestExerciseHistory(exerciseId: Int): Flow<ExerciseHistory>
+
+    @Query("SELECT * FROM history WHERE exerciseId = :exerciseId AND date > strftime('%s','now') / 86400 - :days")
+    fun getRecentExerciseHistory(exerciseId: Int, days: Int): Flow<List<ExerciseHistory>>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(exerciseHistory: ExerciseHistory)
 
@@ -19,15 +31,6 @@ interface HistoryDao {
     @Delete
     suspend fun delete(exerciseHistory: ExerciseHistory)
 
-    @Query("SELECT * from history WHERE id = :id")
-    fun getHistory(id: Int): Flow<ExerciseHistory>
-
-    @Query("SELECT * from history WHERE exerciseId = :exerciseId")
-    fun getFullExerciseHistory(exerciseId: Int): Flow<List<ExerciseHistory>>
-
-    @Query("SELECT * from history WHERE exerciseId = :exerciseId ORDER BY date DESC LIMIT 1")
-    fun getLatestExerciseHistory(exerciseId: Int): Flow<ExerciseHistory>
-
-    @Query("SELECT * from history WHERE exerciseId = :exerciseId AND date > strftime('%s','now') / 86400 - :days")
-    fun getRecentExerciseHistory(exerciseId: Int, days: Int): Flow<List<ExerciseHistory>>
+    @Query("DELETE FROM history WHERE exerciseId = :exerciseId")
+    suspend fun deleteAllForExercise(exerciseId: Int)
 }

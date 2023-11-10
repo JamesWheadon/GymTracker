@@ -19,4 +19,6 @@ class OfflineHistoryRepository(private val historyDao: HistoryDao) : HistoryRepo
     override suspend fun update(history: ExerciseHistory) = historyDao.update(history)
 
     override suspend fun delete(history: ExerciseHistory) = historyDao.delete(history)
+
+    override suspend fun deleteAllForExercise(exerciseId: Int) = historyDao.deleteAllForExercise(exerciseId)
 }

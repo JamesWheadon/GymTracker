@@ -16,4 +16,6 @@ interface HistoryRepository {
     suspend fun update(history: ExerciseHistory)
 
     suspend fun delete(history: ExerciseHistory)
+
+    suspend fun deleteAllForExercise(exerciseId: Int)
 }
