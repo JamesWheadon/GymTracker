@@ -8,12 +8,14 @@ import com.example.gymtracker.data.database.ExerciseDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+
+private const val UPDATED_NAME = "updated name"
 
 @RunWith(AndroidJUnit4::class)
 class WorkoutDaoTest {
@@ -44,6 +46,27 @@ class WorkoutDaoTest {
 
         val savedWorkout = workoutDao.getAllWorkouts().first()[0]
 
-        MatcherAssert.assertThat(workout, equalTo(savedWorkout))
+        assertThat(workout, equalTo(savedWorkout))
+    }
+
+    @Test
+    fun daoUpdate_UpdateWorkoutInDB() = runBlocking {
+        workoutDao.insert(workout)
+        workout.name = UPDATED_NAME
+
+        workoutDao.update(workout)
+
+        val savedWorkout = workoutDao.getAllWorkouts().first()[0]
+        assertThat(savedWorkout.name, equalTo(UPDATED_NAME))
+    }
+
+    @Test
+    fun daoDelete_DeleteWorkoutFromDB() = runBlocking {
+        workoutDao.insert(workout)
+        workoutDao.delete(workout)
+
+        val savedWorkout = workoutDao.getAllWorkouts().first()
+
+        assertThat(savedWorkout, equalTo(listOf()))
     }
 }

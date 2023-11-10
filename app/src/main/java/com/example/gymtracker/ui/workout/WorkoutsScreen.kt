@@ -104,7 +104,8 @@ fun WorkoutsScreen(
         ) {
             CreateWorkoutForm(
                 saveFunction = createWorkout,
-                onDismiss = { showCreate = false }
+                onDismiss = { showCreate = false },
+                screenTitle = "Create Workout"
             )
         }
     }

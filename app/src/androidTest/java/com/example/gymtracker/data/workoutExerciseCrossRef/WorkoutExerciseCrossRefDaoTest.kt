@@ -64,4 +64,17 @@ class WorkoutExerciseCrossRefDaoTest {
         assertThat(saved.count, equalTo(0))
         saved.close()
     }
+
+    @Test
+    fun daoDelete_DeletesAllWorkoutExerciseFromDBForWorkout() = runBlocking {
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 2))
+        workoutExerciseCrossRefDao.deleteAllCrossRefForWorkout(1)
+
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workoutsExercises", 0)
+        val saved = exercise.query(query)
+
+        assertThat(saved.count, equalTo(0))
+        saved.close()
+    }
 }

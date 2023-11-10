@@ -31,11 +31,13 @@ import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
 fun CreateWorkoutForm(
+    screenTitle: String,
     saveFunction: (Workout) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    workout: Workout = Workout(name = "")
 ) {
-    var nameState by remember { mutableStateOf("") }
+    var nameState by remember { mutableStateOf(workout.name) }
     Box {
         Card(
             modifier = modifier
@@ -47,7 +49,7 @@ fun CreateWorkoutForm(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Create Workout",
+                    text = screenTitle,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier
@@ -72,7 +74,8 @@ fun CreateWorkoutForm(
                     SaveWorkoutFormButton(
                         workoutName = nameState,
                         saveFunction = saveFunction,
-                        closeForm = onDismiss
+                        closeForm = onDismiss,
+                        existingWorkout = workout
                     )
                 }
             }
@@ -95,33 +98,46 @@ fun CreateWorkoutForm(
 fun SaveWorkoutFormButton(
     workoutName: String,
     saveFunction: (Workout) -> Unit,
-    closeForm: () -> Unit
+    closeForm: () -> Unit,
+    existingWorkout: Workout
 ) {
-    if (workoutName != "") {
-        Button(onClick = {
+    Button(
+        onClick = {
             saveFunction(
                 Workout(
+                    workoutId = existingWorkout.workoutId,
                     name = workoutName
                 )
             )
             closeForm()
-        }) {
-            Text("Save Workout")
-        }
-    } else {
-        Button(
-            onClick = { },
-            enabled = false
-        ) {
-            Text("Save Workout")
-        }
+        },
+        enabled = workoutName != ""
+    ) {
+        Text("Save")
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CreateWorkoutFromPreview() {
+fun CreateWorkoutFormPreview() {
     GymTrackerTheme(darkTheme = false) {
-        CreateWorkoutForm(saveFunction = { }, onDismiss = { })
+        CreateWorkoutForm(
+            saveFunction = { },
+            onDismiss = { },
+            screenTitle = "Create Workout"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CreateWorkoutFormExistingWorkoutPreview() {
+    GymTrackerTheme(darkTheme = false) {
+        CreateWorkoutForm(
+            saveFunction = { },
+            onDismiss = { },
+            screenTitle = "Create Workout",
+            workout = Workout(name = "Test")
+        )
     }
 }

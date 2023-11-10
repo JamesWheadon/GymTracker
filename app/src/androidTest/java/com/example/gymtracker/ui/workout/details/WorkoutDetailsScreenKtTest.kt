@@ -1,6 +1,7 @@
 package com.example.gymtracker.ui.workout.details
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
@@ -41,6 +42,8 @@ class WorkoutDetailsScreenKtTest {
     private val workoutTitle = rule.onNode(hasText("Test Workout"))
     private val curlsExercise = rule.onNode(hasText("Curls"))
     private val dipsExercise = rule.onNode(hasText("Dips"))
+    private val editButton = rule.onNode(hasContentDescription("Edit feature"))
+    private val deleteButton = rule.onNode(hasContentDescription("Delete feature"))
 
     @Before
     fun setUp() {
@@ -54,6 +57,8 @@ class WorkoutDetailsScreenKtTest {
                 uiState = workoutNoExercises,
                 navController = navController,
                 exerciseNavigationFunction = { },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
             )
         }
 
@@ -67,6 +72,8 @@ class WorkoutDetailsScreenKtTest {
                 uiState = workoutWithExercises,
                 navController = navController,
                 exerciseNavigationFunction = { },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
             )
         }
 
@@ -84,6 +91,8 @@ class WorkoutDetailsScreenKtTest {
                 uiState = workoutWithExercises,
                 navController = navController,
                 exerciseNavigationFunction = { id -> calledExerciseId = id },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
             )
         }
 
@@ -94,5 +103,39 @@ class WorkoutDetailsScreenKtTest {
         curlsExercise.performClick()
 
         assertThat(calledExerciseId, equalTo(0))
+    }
+
+    @Test
+    fun clickingEditButtonOpensUpdateWorkoutDialog() {
+        rule.setContent {
+            WorkoutDetailsScreen(
+                uiState = workoutWithExercises,
+                navController = navController,
+                exerciseNavigationFunction = { },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
+            )
+        }
+
+        editButton.performClick()
+
+        rule.onNode(hasText("Update Workout")).assertExists()
+    }
+
+    @Test
+    fun clickingDeleteButtonOpensDeleteeWorkoutDialog() {
+        rule.setContent {
+            WorkoutDetailsScreen(
+                uiState = workoutWithExercises,
+                navController = navController,
+                exerciseNavigationFunction = { },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
+            )
+        }
+
+        deleteButton.performClick()
+
+        rule.onNode(hasText("Delete Test Workout Workout?")).assertExists()
     }
 }

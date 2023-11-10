@@ -29,7 +29,7 @@ class WorkoutsScreenKtTest {
     private val createWorkoutButton = rule.onNode(hasContentDescription("Add Workout"))
     private val createWorkoutFormTitle = rule.onNode(hasText("Create Workout"))
     private val createWorkoutFormNameField = rule.onNode(hasContentDescription("Workout Name"))
-    private val saveWorkoutButton = rule.onNode(hasText("Save Workout"))
+    private val saveWorkoutButton = rule.onNode(hasText("Save"))
 
     private val workout1 = WorkoutUiState(1, "first")
     private val workout2 = WorkoutUiState(2, "second")

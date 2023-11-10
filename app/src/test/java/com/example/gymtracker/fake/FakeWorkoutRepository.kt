@@ -17,4 +17,10 @@ class FakeWorkoutRepository : WorkoutRepository {
 
     override suspend fun insertWorkout(workout: Workout) {
     }
+
+    override suspend fun updateWorkout(workout: Workout) {
+    }
+
+    override suspend fun deleteWorkout(workout: Workout) {
+    }
 }
