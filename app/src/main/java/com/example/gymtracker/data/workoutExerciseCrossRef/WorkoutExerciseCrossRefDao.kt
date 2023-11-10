@@ -14,9 +14,9 @@ interface WorkoutExerciseCrossRefDao {
     @Delete
     suspend fun delete(workoutExercise: WorkoutExerciseCrossRef)
 
-    @Query("DELETE FROM workoutsExercises WHERE workoutId = :workoutId")
+    @Query("DELETE FROM workouts_exercises WHERE workoutId = :workoutId")
     suspend fun deleteAllCrossRefForWorkout(workoutId: Int)
 
-    @Query("DELETE FROM workoutsExercises WHERE exerciseId = :exerciseId")
+    @Query("DELETE FROM workouts_exercises WHERE exerciseId = :exerciseId")
     suspend fun deleteAllCrossRefForExercise(exerciseId: Int)
 }

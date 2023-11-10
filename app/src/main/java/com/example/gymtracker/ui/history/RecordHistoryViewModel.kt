@@ -3,28 +3,28 @@ package com.example.gymtracker.ui.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymtracker.data.history.ExerciseHistory
-import com.example.gymtracker.data.history.HistoryRepository
+import com.example.gymtracker.data.history.ExerciseHistoryRepository
 import kotlinx.coroutines.launch
 
 class RecordHistoryViewModel(
-    private val historyRepository: HistoryRepository
+    private val exerciseHistoryRepository: ExerciseHistoryRepository
 ) : ViewModel() {
 
     fun saveHistory(newHistory: ExerciseHistory) {
         viewModelScope.launch {
-            historyRepository.insertHistory(newHistory)
+            exerciseHistoryRepository.insertHistory(newHistory)
         }
     }
 
     fun updateHistory(history: ExerciseHistory) {
         viewModelScope.launch {
-            historyRepository.update(history)
+            exerciseHistoryRepository.update(history)
         }
     }
 
     fun deleteHistory(history: ExerciseHistory) {
         viewModelScope.launch {
-            historyRepository.delete(history)
+            exerciseHistoryRepository.delete(history)
         }
     }
 }

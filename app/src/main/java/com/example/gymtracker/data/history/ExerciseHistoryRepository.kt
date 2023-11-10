@@ -3,7 +3,7 @@ package com.example.gymtracker.data.history
 import com.example.gymtracker.data.exercise.Exercise
 import kotlinx.coroutines.flow.Flow
 
-interface HistoryRepository {
+interface ExerciseHistoryRepository {
     fun getHistoryStream(id: Int): Flow<ExerciseHistory?>
 
     fun getFullExerciseHistoryStream(exerciseId: Int): Flow<List<ExerciseHistory>?>

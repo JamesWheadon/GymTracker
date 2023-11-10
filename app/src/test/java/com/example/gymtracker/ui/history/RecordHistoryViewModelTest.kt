@@ -1,7 +1,7 @@
 package com.example.gymtracker.ui.history
 
 import com.example.gymtracker.data.history.ExerciseHistory
-import com.example.gymtracker.data.history.HistoryRepository
+import com.example.gymtracker.data.history.ExerciseHistoryRepository
 import com.example.gymtracker.rules.TestCoroutineRule
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -12,7 +12,7 @@ import java.time.LocalDate
 
 class RecordHistoryViewModelTest {
 
-    private val repository: HistoryRepository = Mockito.mock()
+    private val repository: ExerciseHistoryRepository = Mockito.mock()
 
     @get:Rule
     val coroutineTestRule = TestCoroutineRule()

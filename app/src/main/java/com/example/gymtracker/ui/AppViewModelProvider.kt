@@ -24,14 +24,14 @@ object AppViewModelProvider {
         initializer {
             ExerciseDetailsViewModel(
                 exerciseRepository = gymTrackerApplication().container.exerciseRepository,
-                historyRepository = gymTrackerApplication().container.historyRepository,
+                exerciseHistoryRepository = gymTrackerApplication().container.exerciseHistoryRepository,
                 workoutExerciseCrossRefRepository = gymTrackerApplication().container.workoutExerciseCrossRefRepository,
                 savedStateHandle = this.createSavedStateHandle()
             )
         }
         initializer {
             RecordHistoryViewModel(
-                historyRepository = gymTrackerApplication().container.historyRepository
+                exerciseHistoryRepository = gymTrackerApplication().container.exerciseHistoryRepository
             )
         }
         initializer {

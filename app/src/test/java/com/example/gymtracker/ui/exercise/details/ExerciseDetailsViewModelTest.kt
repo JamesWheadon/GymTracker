@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.example.gymtracker.data.exercise.ExerciseRepository
 import com.example.gymtracker.data.history.ExerciseHistory
-import com.example.gymtracker.data.history.HistoryRepository
+import com.example.gymtracker.data.history.ExerciseHistoryRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.fake.FakeExerciseRepository
-import com.example.gymtracker.fake.FakeHistoryRepository
+import com.example.gymtracker.fake.FakeExerciseHistoryRepository
 import com.example.gymtracker.rules.TestCoroutineRule
 import com.example.gymtracker.ui.exercise.exercise1
 import com.example.gymtracker.ui.exercise.toExerciseDetailsUiState
@@ -23,10 +23,10 @@ import java.time.LocalDate
 class ExerciseDetailsViewModelTest {
 
     private val mockExerciseRepository: ExerciseRepository = mock()
-    private val mockHistoryRepository: HistoryRepository = mock()
+    private val mockExerciseHistoryRepository: ExerciseHistoryRepository = mock()
     private val mockWorkoutExerciseRepository: WorkoutExerciseCrossRefRepository = mock()
     private val fakeExerciseRepository = FakeExerciseRepository()
-    private val fakeHistoryRepository = FakeHistoryRepository()
+    private val fakeHistoryRepository = FakeExerciseHistoryRepository()
     private val savedState = SavedStateHandle(mapOf("exerciseId" to 1))
     private lateinit var viewModel: ExerciseDetailsViewModel
 
@@ -37,7 +37,7 @@ class ExerciseDetailsViewModelTest {
     fun getExerciseFromRepository() = runTest {
         viewModel = ExerciseDetailsViewModel(
             exerciseRepository = fakeExerciseRepository,
-            historyRepository = fakeHistoryRepository,
+            exerciseHistoryRepository = fakeHistoryRepository,
             workoutExerciseCrossRefRepository = mockWorkoutExerciseRepository,
             savedStateHandle = savedState
         )
@@ -52,7 +52,7 @@ class ExerciseDetailsViewModelTest {
     fun getHistoryFromRepository() = runTest {
         viewModel = ExerciseDetailsViewModel(
             exerciseRepository = fakeExerciseRepository,
-            historyRepository = fakeHistoryRepository,
+            exerciseHistoryRepository = fakeHistoryRepository,
             workoutExerciseCrossRefRepository = mockWorkoutExerciseRepository,
             savedStateHandle = savedState
         )
@@ -69,7 +69,7 @@ class ExerciseDetailsViewModelTest {
     fun updateExerciseInRepository() = runTest {
         viewModel = ExerciseDetailsViewModel(
             exerciseRepository = mockExerciseRepository,
-            historyRepository = fakeHistoryRepository,
+            exerciseHistoryRepository = fakeHistoryRepository,
             workoutExerciseCrossRefRepository = mockWorkoutExerciseRepository,
             savedStateHandle = savedState
         )
@@ -83,14 +83,14 @@ class ExerciseDetailsViewModelTest {
     fun deleteExerciseInRepository() = runTest {
         viewModel = ExerciseDetailsViewModel(
             exerciseRepository = mockExerciseRepository,
-            historyRepository = mockHistoryRepository,
+            exerciseHistoryRepository = mockExerciseHistoryRepository,
             workoutExerciseCrossRefRepository = mockWorkoutExerciseRepository,
             savedStateHandle = savedState
         )
 
         viewModel.deleteExercise(exercise1)
 
-        verify(mockHistoryRepository).deleteAllForExercise(exercise1)
+        verify(mockExerciseHistoryRepository).deleteAllForExercise(exercise1)
         verify(mockWorkoutExerciseRepository).deleteAllCrossRefForExercise(exercise1)
         verify(mockExerciseRepository).deleteExercise(exercise1)
     }
