@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseRepository
 import com.example.gymtracker.data.history.HistoryRepository
+import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.toExerciseDetailsUiState
 import com.example.gymtracker.ui.history.ExerciseHistoryUiState
@@ -18,7 +19,8 @@ import kotlinx.coroutines.launch
 
 class ExerciseDetailsViewModel(
     private val exerciseRepository: ExerciseRepository,
-    historyRepository: HistoryRepository,
+    private val historyRepository: HistoryRepository,
+    private val workoutExerciseCrossRefRepository: WorkoutExerciseCrossRefRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -54,6 +56,8 @@ class ExerciseDetailsViewModel(
 
     fun deleteExercise(exercise: Exercise) {
         viewModelScope.launch {
+            historyRepository.deleteAllForExercise(exercise)
+            workoutExerciseCrossRefRepository.deleteAllCrossRefForExercise(exercise)
             exerciseRepository.deleteExercise(exercise)
         }
     }

@@ -1,5 +1,6 @@
 package com.example.gymtracker.data.history
 
+import com.example.gymtracker.data.exercise.Exercise
 import kotlinx.coroutines.flow.Flow
 
 class OfflineHistoryRepository(private val historyDao: HistoryDao) : HistoryRepository {
@@ -19,4 +20,6 @@ class OfflineHistoryRepository(private val historyDao: HistoryDao) : HistoryRepo
     override suspend fun update(history: ExerciseHistory) = historyDao.update(history)
 
     override suspend fun delete(history: ExerciseHistory) = historyDao.delete(history)
+
+    override suspend fun deleteAllForExercise(exercise: Exercise) = historyDao.deleteAllForExercise(exercise.exerciseId)
 }

@@ -112,6 +112,16 @@ class HistoryDaoTest {
         assertThat(savedHistory.weight, equalTo(NEW_WEIGHT))
     }
 
+    @Test
+    fun daoDelete_DeleteAllHistoryForExerciseFromDB() = runBlocking {
+        addMultipleHistoryToDB()
+
+        historyDao.deleteAllForExercise(FIRST_EXERCISE_ID)
+
+        val savedHistory = historyDao.getFullExerciseHistory(FIRST_EXERCISE_ID).first()
+        assertThat(savedHistory.size, equalTo(0))
+    }
+
     private fun getExerciseHistory(id: Int, exerciseId: Int, time: LocalDate = LocalDate.now()) = ExerciseHistory(id, exerciseId, 10.0, 10, 10, time)
 
     private suspend fun addMultipleHistoryToDB() {

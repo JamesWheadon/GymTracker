@@ -1,5 +1,6 @@
 package com.example.gymtracker.data.history
 
+import com.example.gymtracker.data.exercise.Exercise
 import kotlinx.coroutines.flow.Flow
 
 interface HistoryRepository {
@@ -16,4 +17,6 @@ interface HistoryRepository {
     suspend fun update(history: ExerciseHistory)
 
     suspend fun delete(history: ExerciseHistory)
+
+    suspend fun deleteAllForExercise(exercise: Exercise)
 }

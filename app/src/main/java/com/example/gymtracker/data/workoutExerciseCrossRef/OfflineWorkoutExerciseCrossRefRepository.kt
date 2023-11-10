@@ -13,4 +13,6 @@ class OfflineWorkoutExerciseCrossRefRepository(private val workoutExerciseDao: W
     )
 
     override suspend fun deleteAllCrossRefForWorkout(workout: Workout) = workoutExerciseDao.deleteAllCrossRefForWorkout(workout.workoutId)
+
+    override suspend fun deleteAllCrossRefForExercise(exercise: Exercise) = workoutExerciseDao.deleteAllCrossRefForExercise(exercise.exerciseId)
 }
