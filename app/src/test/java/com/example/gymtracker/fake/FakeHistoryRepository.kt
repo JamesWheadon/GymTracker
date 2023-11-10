@@ -1,5 +1,6 @@
 package com.example.gymtracker.fake
 
+import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.history.ExerciseHistory
 import com.example.gymtracker.data.history.HistoryRepository
 import kotlinx.coroutines.flow.Flow
@@ -30,5 +31,8 @@ class FakeHistoryRepository : HistoryRepository {
     }
 
     override suspend fun delete(history: ExerciseHistory) {
+    }
+
+    override suspend fun deleteAllForExercise(exercise: Exercise) {
     }
 }

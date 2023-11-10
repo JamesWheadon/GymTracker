@@ -25,6 +25,7 @@ object AppViewModelProvider {
             ExerciseDetailsViewModel(
                 exerciseRepository = gymTrackerApplication().container.exerciseRepository,
                 historyRepository = gymTrackerApplication().container.historyRepository,
+                workoutExerciseCrossRefRepository = gymTrackerApplication().container.workoutExerciseCrossRefRepository,
                 savedStateHandle = this.createSavedStateHandle()
             )
         }
