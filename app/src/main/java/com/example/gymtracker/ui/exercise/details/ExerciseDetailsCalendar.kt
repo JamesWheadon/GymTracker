@@ -32,8 +32,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.data.history.ExerciseHistory
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
-import com.example.gymtracker.ui.Calendar
-import com.example.gymtracker.ui.MonthPicker
+import com.example.gymtracker.ui.visualisations.Calendar
+import com.example.gymtracker.ui.visualisations.MonthPicker
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.toExerciseUiState

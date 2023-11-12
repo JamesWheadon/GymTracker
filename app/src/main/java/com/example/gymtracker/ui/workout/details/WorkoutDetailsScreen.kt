@@ -1,6 +1,7 @@
 package com.example.gymtracker.ui.workout.details
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,10 +36,15 @@ import com.example.gymtracker.ui.navigation.NavigationArguments
 import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.visualisations.Calendar
+import com.example.gymtracker.ui.visualisations.MonthPicker
+import com.example.gymtracker.ui.workout.WorkoutHistoryUiState
 import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.WorkoutsRoute
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
 import com.example.gymtracker.ui.workout.toWorkout
+import java.time.LocalDate
+import java.time.YearMonth
 
 object WorkoutDetailsRoute : NavigationRoute {
     val navArgument = NavigationArguments.WORKOUTS_DETAILS_NAV_ARGUMENT.route
@@ -144,7 +150,8 @@ fun WorkoutDetailsScreen(
                     deleteWorkoutFunction(uiState.toWorkout())
                     navController.popBackStack()
                 },
-                cancelFunction = { showDeleteWorkout = false })
+                cancelFunction = { showDeleteWorkout = false }
+            )
         }
     }
 }
@@ -156,15 +163,32 @@ private fun WorkoutDetailsScreen(
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxWidth(),
-        contentPadding = innerPadding,
-        verticalArrangement = Arrangement.spacedBy(0.dp)
-    ) {
-        items(uiState.exercises) { exercise ->
-            ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
+    var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
+    Column {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxWidth(),
+            contentPadding = innerPadding,
+            verticalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
+            items(uiState.exercises) { exercise ->
+                ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
+            }
         }
+        MonthPicker(
+            yearMonthValue = selectedMonth,
+            yearMonthValueOnChange = { chosen -> selectedMonth = chosen }
+        )
+        Calendar(
+            month = selectedMonth.monthValue,
+            year = selectedMonth.year,
+            activeDays = uiState.workoutHistory
+                .filter {
+                        history -> history.date.year == selectedMonth.year &&
+                        history.date.monthValue == selectedMonth.monthValue
+                }.map { history -> history.date.dayOfMonth },
+            dayFunction = { }
+        )
     }
 }
 
@@ -185,6 +209,10 @@ fun WorkoutDetailsScreenPreview() {
                         "Lats",
                         "Dumbbells"
                     )
+                ),
+                workoutHistory = listOf(
+                    WorkoutHistoryUiState(1, 1, LocalDate.now()),
+                    WorkoutHistoryUiState(2, 1, LocalDate.now().minusDays(3))
                 )
             ),
             exerciseNavigationFunction = { },

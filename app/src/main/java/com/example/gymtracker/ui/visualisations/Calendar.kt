@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui
+package com.example.gymtracker.ui.visualisations
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

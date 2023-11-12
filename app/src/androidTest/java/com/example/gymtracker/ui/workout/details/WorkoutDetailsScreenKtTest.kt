@@ -1,12 +1,15 @@
 package com.example.gymtracker.ui.workout.details
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.workout.WorkoutHistoryUiState
 import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -15,6 +18,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 class WorkoutDetailsScreenKtTest {
 
@@ -30,12 +36,18 @@ class WorkoutDetailsScreenKtTest {
     )
     private val curlsExerciseUiState = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
     private val dipsExerciseUiState = ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars")
+    private val firstWorkoutHistory = WorkoutHistoryUiState(0, 1, LocalDate.now())
+    private val secondWorkoutHistory = WorkoutHistoryUiState(1, 1, LocalDate.now().minusDays(1))
     private val workoutWithExercises = WorkoutWithExercisesUiState(
         workoutId = 1,
         name = "Test Workout",
         exercises = listOf(
             curlsExerciseUiState,
             dipsExerciseUiState
+        ),
+        workoutHistory = listOf(
+            firstWorkoutHistory,
+            secondWorkoutHistory
         )
     )
 
@@ -123,7 +135,7 @@ class WorkoutDetailsScreenKtTest {
     }
 
     @Test
-    fun clickingDeleteButtonOpensDeleteeWorkoutDialog() {
+    fun clickingDeleteButtonOpensDeleteWorkoutDialog() {
         rule.setContent {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
@@ -137,5 +149,57 @@ class WorkoutDetailsScreenKtTest {
         deleteButton.performClick()
 
         rule.onNode(hasText("Delete Test Workout Workout?")).assertExists()
+    }
+
+    @Test
+    fun rendersMonthPickerAndCalendar() {
+        rule.setContent {
+            WorkoutDetailsScreen(
+                uiState = workoutWithExercises,
+                navController = navController,
+                exerciseNavigationFunction = { },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
+            )
+        }
+
+        rule.onNode(
+            hasText(
+                "${
+                    LocalDate.now().month.getDisplayName(
+                        TextStyle.FULL_STANDALONE,
+                        Locale.ENGLISH
+                    )
+                } ${LocalDate.now().year}"
+            )
+        ).assertExists()
+        for (i in 1 ..LocalDate.now().month.length(LocalDate.now().isLeapYear)) {
+            rule.onNode(hasText(i.toString())).assertExists()
+        }
+    }
+
+    @Test
+    fun highlightsCalendarDaysThatMatchWorkoutHistory() {
+        val dayOfMonth = LocalDate.now().dayOfMonth
+
+        rule.setContent {
+            WorkoutDetailsScreen(
+                uiState = workoutWithExercises,
+                navController = navController,
+                exerciseNavigationFunction = { },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
+            )
+        }
+
+        for (i in 1 ..LocalDate.now().month.length(LocalDate.now().isLeapYear)) {
+            val dayNode = rule.onNode(hasText(i.toString()))
+            dayNode.assertExists()
+            if (i == dayOfMonth || (i + 1) == dayOfMonth) {
+                dayNode.assertIsEnabled()
+            } else {
+                dayNode.assertIsNotEnabled()
+            }
+        }
     }
 }

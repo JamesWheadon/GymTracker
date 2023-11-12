@@ -8,13 +8,15 @@ import com.example.gymtracker.ui.exercise.toExerciseUiState
 data class WorkoutWithExercisesUiState(
     val workoutId: Int = 0,
     val name: String = "",
-    val exercises: List<ExerciseUiState> = listOf()
+    val exercises: List<ExerciseUiState> = listOf(),
+    val workoutHistory: List<WorkoutHistoryUiState> = listOf()
 )
 
 fun WorkoutWithExercises.toWorkoutWithExercisesUiState(): WorkoutWithExercisesUiState = WorkoutWithExercisesUiState(
     workoutId = workout.workoutId,
     name = workout.name,
-    exercises = exercises.map { exercise -> exercise.toExerciseUiState() }
+    exercises = exercises.map { exercise -> exercise.toExerciseUiState() },
+    workoutHistory = workoutHistory.map { workoutHistory -> workoutHistory.toWorkoutHistoryUiState() }
 )
 
 fun WorkoutWithExercisesUiState.toWorkout(): Workout = Workout(
