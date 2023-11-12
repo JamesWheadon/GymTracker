@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui.history
+package com.example.gymtracker.ui.exercise.history
 
 import com.example.gymtracker.data.history.ExerciseHistory
 import java.time.LocalDate

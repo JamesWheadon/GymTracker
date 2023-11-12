@@ -43,8 +43,8 @@ import com.example.gymtracker.ui.exercise.ExercisesRoute
 import com.example.gymtracker.ui.exercise.create.ExerciseInformationForm
 import com.example.gymtracker.ui.exercise.toExercise
 import com.example.gymtracker.ui.exercise.toExerciseUiState
-import com.example.gymtracker.ui.history.ExerciseHistoryUiState
-import com.example.gymtracker.ui.history.RecordHistoryScreen
+import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryScreen
 import com.example.gymtracker.ui.navigation.NavigationArguments
 import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.TopBar
@@ -120,7 +120,7 @@ fun ExerciseDetailsScreen(
         Dialog(
             onDismissRequest = { showRecord = false }
         ) {
-            RecordHistoryScreen(
+            RecordExerciseHistoryScreen(
                 exercise = uiState.toExerciseUiState(),
                 onDismiss = { showRecord = false }
             )

@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui.history
+package com.example.gymtracker.ui.exercise.history
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.hasContentDescription
@@ -14,7 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
 
-class RecordHistoryScreenKtTest {
+class RecordExerciseHistoryScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
@@ -32,7 +32,7 @@ class RecordHistoryScreenKtTest {
     @Test
     fun rendersEmptyCreateForm() {
         rule.setContent {
-            RecordHistoryScreen(
+            RecordExerciseHistoryScreen(
                 exercise = exercise,
                 saveFunction = {},
                 onDismiss = {}
@@ -50,7 +50,7 @@ class RecordHistoryScreenKtTest {
     fun clickCloseButtonToDismiss() {
         var dismissed = false
         rule.setContent {
-            RecordHistoryScreen(
+            RecordExerciseHistoryScreen(
                 exercise = exercise,
                 saveFunction = {},
                 onDismiss = { dismissed = true }
@@ -67,7 +67,7 @@ class RecordHistoryScreenKtTest {
         var created: ExerciseHistory? = null
         var dismissed = false
         rule.setContent {
-            RecordHistoryScreen(
+            RecordExerciseHistoryScreen(
                 exercise = exercise,
                 saveFunction = { created = it },
                 onDismiss = { dismissed = true }
@@ -88,7 +88,7 @@ class RecordHistoryScreenKtTest {
         var created: ExerciseHistory? = null
         var dismissed = false
         rule.setContent {
-            RecordHistoryScreen(
+            RecordExerciseHistoryScreen(
                 exercise = exercise,
                 saveFunction = { created = it },
                 onDismiss = { dismissed = true }
@@ -109,7 +109,7 @@ class RecordHistoryScreenKtTest {
         var created: ExerciseHistory? = null
         var dismissed = false
         rule.setContent {
-            RecordHistoryScreen(
+            RecordExerciseHistoryScreen(
                 exercise = exercise,
                 saveFunction = { created = it },
                 onDismiss = { dismissed = true }
@@ -130,7 +130,7 @@ class RecordHistoryScreenKtTest {
         var created: ExerciseHistory? = null
         var dismissed = false
         rule.setContent {
-            RecordHistoryScreen(
+            RecordExerciseHistoryScreen(
                 exercise = exercise,
                 saveFunction = { created = it },
                 onDismiss = { dismissed = true }

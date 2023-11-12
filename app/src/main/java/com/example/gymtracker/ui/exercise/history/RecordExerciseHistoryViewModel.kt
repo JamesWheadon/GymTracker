@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui.history
+package com.example.gymtracker.ui.exercise.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,7 +6,7 @@ import com.example.gymtracker.data.history.ExerciseHistory
 import com.example.gymtracker.data.history.ExerciseHistoryRepository
 import kotlinx.coroutines.launch
 
-class RecordHistoryViewModel(
+class RecordExerciseHistoryViewModel(
     private val exerciseHistoryRepository: ExerciseHistoryRepository
 ) : ViewModel() {
 

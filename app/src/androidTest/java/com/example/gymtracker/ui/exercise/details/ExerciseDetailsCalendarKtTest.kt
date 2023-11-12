@@ -8,7 +8,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
-import com.example.gymtracker.ui.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
 import org.junit.Rule
 import org.junit.Test
 import java.time.DayOfWeek

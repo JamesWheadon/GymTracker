@@ -1,7 +1,7 @@
 package com.example.gymtracker.ui.exercise.details
 
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
-import com.example.gymtracker.ui.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test

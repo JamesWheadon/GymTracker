@@ -37,10 +37,10 @@ import com.example.gymtracker.ui.visualisations.MonthPicker
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.toExerciseUiState
-import com.example.gymtracker.ui.history.ExerciseHistoryUiState
-import com.example.gymtracker.ui.history.RecordHistoryViewModel
-import com.example.gymtracker.ui.history.UpdateHistoryScreen
-import com.example.gymtracker.ui.history.toExerciseHistory
+import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
+import com.example.gymtracker.ui.exercise.history.UpdateExerciseHistoryScreen
+import com.example.gymtracker.ui.exercise.history.toExerciseHistory
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -95,7 +95,7 @@ fun ExercisesOnDay(
     exercise: ExerciseUiState,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RecordHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: RecordExerciseHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Box {
         Column(
@@ -180,7 +180,7 @@ fun HistoryDetails(
         Dialog(
             onDismissRequest = { editExercise = false }
         ) {
-            UpdateHistoryScreen(
+            UpdateExerciseHistoryScreen(
                 exercise = exercise,
                 history = exerciseHistory,
                 onDismiss = { editExercise = false }
