@@ -4,8 +4,11 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.performClick
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
@@ -30,6 +33,7 @@ class WorkoutHistoryScreenKtTest {
     private val weight = rule.onNode(hasText("Weight: 1.0kg"))
     private val rest = rule.onNode(hasText("Rest time: 1"))
     private val deleteHistoryButton = rule.onNode(hasContentDescription("Delete history"))
+    private val closeButton = rule.onNode(hasContentDescription("Close"))
 
     @Test
     fun rendersWorkoutHistoryExerciseCard() {
@@ -61,5 +65,22 @@ class WorkoutHistoryScreenKtTest {
         curlsExerciseName.assertExists()
         dipsExerciseName.assertDoesNotExist()
         benchExerciseName.assertExists()
+        closeButton.assertExists()
+    }
+
+    @Test
+    fun clickingXCallsOnDismiss() {
+        var dismissed = false
+        rule.setContent {
+            WorkoutHistoryScreen(
+                uiState = workoutHistory,
+                exercises = listOf(curls, dips, bench),
+                onDismiss = { dismissed = true }
+            )
+        }
+
+        closeButton.performClick()
+
+        assertThat(dismissed, equalTo(true))
     }
 }

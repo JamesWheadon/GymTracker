@@ -41,6 +41,7 @@ import com.example.gymtracker.ui.visualisations.MonthPicker
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryUiState
 import com.example.gymtracker.ui.workout.WorkoutsRoute
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryScreen
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -162,6 +163,7 @@ private fun WorkoutDetailsScreen(
     modifier: Modifier = Modifier
 ) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
+    var selectedWorkoutHistoryId by remember { mutableStateOf(-1) }
     Column {
         LazyColumn(
             modifier = modifier
@@ -172,6 +174,13 @@ private fun WorkoutDetailsScreen(
             items(uiState.exercises) { exercise ->
                 ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
             }
+        }
+        if (selectedWorkoutHistoryId != -1) {
+            WorkoutHistoryScreen(
+                uiState = uiState.workoutHistory.first { workoutHistory -> workoutHistory.workoutHistoryId == selectedWorkoutHistoryId },
+                exercises = uiState.exercises,
+                onDismiss = { selectedWorkoutHistoryId = -1 }
+            )
         }
         MonthPicker(
             yearMonthValue = selectedMonth,
@@ -185,7 +194,7 @@ private fun WorkoutDetailsScreen(
                         history -> history.date.year == selectedMonth.year &&
                         history.date.monthValue == selectedMonth.monthValue
                 }.map { history -> history.date.dayOfMonth },
-            dayFunction = { }
+            dayFunction = { chosenDay -> selectedWorkoutHistoryId = uiState.workoutHistory.first { it.date == LocalDate.of(selectedMonth.year, selectedMonth.monthValue, chosenDay) }.workoutHistoryId }
         )
     }
 }

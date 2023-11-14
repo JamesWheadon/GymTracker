@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -35,8 +36,10 @@ class WorkoutDetailsScreenKtTest {
     )
     private val curlsExerciseUiState = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
     private val dipsExerciseUiState = ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars")
-    private val firstWorkoutHistory = WorkoutHistoryUiState(0, 1, LocalDate.now())
-    private val secondWorkoutHistory = WorkoutHistoryUiState(1, 1, LocalDate.now().minusDays(1))
+    private val curlsExerciseHistoryUiState = ExerciseHistoryUiState(0, 0)
+    private val dipsExerciseHistoryUiState = ExerciseHistoryUiState(1, 1)
+    private val firstWorkoutHistory = WorkoutHistoryUiState(0, 1, LocalDate.now(), listOf(curlsExerciseHistoryUiState, dipsExerciseHistoryUiState))
+    private val secondWorkoutHistory = WorkoutHistoryUiState(1, 1, LocalDate.now().minusDays(1), listOf(curlsExerciseHistoryUiState, dipsExerciseHistoryUiState))
     private val workoutWithExercises = WorkoutWithExercisesUiState(
         workoutId = 1,
         name = "Test Workout",
@@ -200,5 +203,30 @@ class WorkoutDetailsScreenKtTest {
                 dayNode.assertIsNotEnabled()
             }
         }
+    }
+
+    @Test
+    fun clickingHighlightedCalendarDayRendersWorkoutHistoryDetails() {
+        val dayOfMonth = LocalDate.now().dayOfMonth
+
+        rule.setContent {
+            WorkoutDetailsScreen(
+                uiState = workoutWithExercises,
+                navController = navController,
+                exerciseNavigationFunction = { },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
+            )
+        }
+
+        val dayNode = rule.onNode(hasText(dayOfMonth.toString()))
+        val closeButton = rule.onNode(hasContentDescription("Close"))
+        dayNode.performClick()
+
+        closeButton.assertExists()
+
+        closeButton.performClick()
+
+        closeButton.assertDoesNotExist()
     }
 }
