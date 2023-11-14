@@ -1,4 +1,4 @@
-package com.example.gymtracker.data.history
+package com.example.gymtracker.data.exerciseHistory
 
 import com.example.gymtracker.data.exercise.Exercise
 import kotlinx.coroutines.flow.Flow

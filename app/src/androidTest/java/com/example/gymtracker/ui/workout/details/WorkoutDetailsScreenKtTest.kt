@@ -9,8 +9,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.workout.WorkoutHistoryUiState
-import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before

@@ -32,7 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
 import com.example.gymtracker.converters.getWeightUnitFromShortForm
-import com.example.gymtracker.data.history.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField

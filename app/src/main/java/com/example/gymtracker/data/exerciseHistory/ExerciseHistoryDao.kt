@@ -1,4 +1,4 @@
-package com.example.gymtracker.data.history
+package com.example.gymtracker.data.exerciseHistory
 
 import androidx.room.Dao
 import androidx.room.Delete

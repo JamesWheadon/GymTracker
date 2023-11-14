@@ -7,8 +7,6 @@ import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.data.workout.WorkoutRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.data.workoutWithExercises.WorkoutWithExercisesRepository
-import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
-import com.example.gymtracker.ui.workout.toWorkoutWithExercisesUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull

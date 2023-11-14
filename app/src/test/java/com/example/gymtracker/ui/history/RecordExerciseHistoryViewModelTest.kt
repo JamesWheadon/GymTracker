@@ -1,7 +1,7 @@
 package com.example.gymtracker.ui.history
 
-import com.example.gymtracker.data.history.ExerciseHistory
-import com.example.gymtracker.data.history.ExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
 import com.example.gymtracker.rules.TestCoroutineRule
 import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
 import kotlinx.coroutines.test.runTest

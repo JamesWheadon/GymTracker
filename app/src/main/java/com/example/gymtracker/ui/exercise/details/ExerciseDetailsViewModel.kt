@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseRepository
-import com.example.gymtracker.data.history.ExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.toExerciseDetailsUiState

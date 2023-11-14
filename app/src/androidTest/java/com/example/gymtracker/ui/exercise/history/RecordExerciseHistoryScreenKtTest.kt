@@ -6,7 +6,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.example.gymtracker.data.history.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert

@@ -2,8 +2,8 @@ package com.example.gymtracker.ui.exercise.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gymtracker.data.history.ExerciseHistory
-import com.example.gymtracker.data.history.ExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
 import kotlinx.coroutines.launch
 
 class RecordExerciseHistoryViewModel(

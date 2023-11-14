@@ -1,4 +1,4 @@
-package com.example.gymtracker.data.history
+package com.example.gymtracker.data.exerciseHistory
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

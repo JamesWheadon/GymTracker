@@ -38,11 +38,9 @@ import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.visualisations.Calendar
 import com.example.gymtracker.ui.visualisations.MonthPicker
-import com.example.gymtracker.ui.workout.WorkoutHistoryUiState
-import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryUiState
 import com.example.gymtracker.ui.workout.WorkoutsRoute
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
-import com.example.gymtracker.ui.workout.toWorkout
 import java.time.LocalDate
 import java.time.YearMonth
 

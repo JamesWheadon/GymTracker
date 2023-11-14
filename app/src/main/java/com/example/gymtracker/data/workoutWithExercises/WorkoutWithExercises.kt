@@ -7,6 +7,7 @@ import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRef
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
+import com.example.gymtracker.data.workoutHistory.WorkoutHistoryWithExerciseHistory
 
 data class WorkoutWithExercises(
     @Embedded val workout: Workout,
@@ -18,7 +19,8 @@ data class WorkoutWithExercises(
     val exercises: List<Exercise>,
     @Relation(
         parentColumn = "workoutId",
-        entityColumn = "workoutId"
+        entityColumn = "workoutId",
+        entity = WorkoutHistory::class
     )
-    val workoutHistory: List<WorkoutHistory>
+    val workoutHistory: List<WorkoutHistoryWithExerciseHistory>
 )

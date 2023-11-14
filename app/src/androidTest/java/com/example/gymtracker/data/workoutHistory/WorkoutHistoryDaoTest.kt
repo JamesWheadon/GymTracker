@@ -6,8 +6,8 @@ import androidx.room.RoomSQLiteQuery
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.gymtracker.data.database.ExerciseWorkoutDatabase
-import com.example.gymtracker.data.history.ExerciseHistory
-import com.example.gymtracker.data.history.ExerciseHistoryDao
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo

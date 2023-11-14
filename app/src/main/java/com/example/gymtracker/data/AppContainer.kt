@@ -4,8 +4,8 @@ import android.content.Context
 import com.example.gymtracker.data.database.ExerciseWorkoutDatabase
 import com.example.gymtracker.data.exercise.ExerciseRepository
 import com.example.gymtracker.data.exercise.OfflineExerciseRepository
-import com.example.gymtracker.data.history.ExerciseHistoryRepository
-import com.example.gymtracker.data.history.OfflineExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseHistory.OfflineExerciseHistoryRepository
 import com.example.gymtracker.data.workout.OfflineWorkoutRepository
 import com.example.gymtracker.data.workout.WorkoutRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.OfflineWorkoutExerciseCrossRefRepository

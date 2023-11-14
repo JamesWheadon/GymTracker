@@ -8,8 +8,8 @@ import androidx.room.TypeConverters
 import com.example.gymtracker.converters.LocalDateConverter
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseDao
-import com.example.gymtracker.data.history.ExerciseHistory
-import com.example.gymtracker.data.history.ExerciseHistoryDao
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryDao
 import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.data.workout.WorkoutDao
 import com.example.gymtracker.data.workoutWithExercises.WorkoutWithExercisesDao

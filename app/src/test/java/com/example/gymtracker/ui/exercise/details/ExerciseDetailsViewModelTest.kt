@@ -3,8 +3,8 @@ package com.example.gymtracker.ui.exercise.details
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.example.gymtracker.data.exercise.ExerciseRepository
-import com.example.gymtracker.data.history.ExerciseHistory
-import com.example.gymtracker.data.history.ExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.fake.FakeExerciseRepository
 import com.example.gymtracker.fake.FakeExerciseHistoryRepository
