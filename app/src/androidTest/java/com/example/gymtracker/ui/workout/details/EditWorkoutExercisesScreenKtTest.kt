@@ -22,7 +22,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
-class AddWorkoutExercisesScreenKtTest {
+class EditWorkoutExercisesScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
@@ -150,7 +150,7 @@ class AddWorkoutExercisesScreenKtTest {
     @Test
     fun rendersAddWorkoutExercisesScreenWithNoExercises() {
         rule.setContent {
-            AddWorkoutExercisesScreen(
+            EditWorkoutExercisesScreen(
                 chosenExercises = listOf(),
                 remainingExercises = listOf(),
                 selectFunction = { },
@@ -167,7 +167,7 @@ class AddWorkoutExercisesScreenKtTest {
     @Test
     fun rendersAddWorkoutExercisesScreenWithNoWorkoutExercises() {
         rule.setContent {
-            AddWorkoutExercisesScreen(
+            EditWorkoutExercisesScreen(
                 chosenExercises = listOf(),
                 remainingExercises = listOf(curlsExerciseUiState),
                 selectFunction = { },
@@ -185,7 +185,7 @@ class AddWorkoutExercisesScreenKtTest {
     @Test
     fun rendersAddWorkoutExercisesScreenWithNoAvailableExercises() {
         rule.setContent {
-            AddWorkoutExercisesScreen(
+            EditWorkoutExercisesScreen(
                 chosenExercises = listOf(curlsExerciseUiState),
                 remainingExercises = listOf(),
                 selectFunction = { },
@@ -203,7 +203,7 @@ class AddWorkoutExercisesScreenKtTest {
     @Test
     fun rendersAddWorkoutExercisesScreenWithAvailableExercisesAndChosenExercises() {
         rule.setContent {
-            AddWorkoutExercisesScreen(
+            EditWorkoutExercisesScreen(
                 chosenExercises = listOf(curlsExerciseUiState),
                 remainingExercises = listOf(dipsExerciseUiState),
                 selectFunction = { },
@@ -225,7 +225,7 @@ class AddWorkoutExercisesScreenKtTest {
         var deselected: String? = null
 
         rule.setContent {
-            AddWorkoutExercisesScreen(
+            EditWorkoutExercisesScreen(
                 chosenExercises = listOf(curlsExerciseUiState),
                 remainingExercises = listOf(dipsExerciseUiState),
                 selectFunction = { exerciseUiState -> deselected = exerciseUiState.name },
@@ -255,7 +255,7 @@ class AddWorkoutExercisesScreenKtTest {
         var dismissed = false
 
         rule.setContent {
-            AddWorkoutExercisesScreen(
+            EditWorkoutExercisesScreen(
                 chosenExercises = listOf(curlsExerciseUiState),
                 remainingExercises = listOf(dipsExerciseUiState),
                 selectFunction = { },

@@ -58,6 +58,7 @@ class WorkoutDetailsScreenKtTest {
     private val dipsExercise = rule.onNode(hasText("Dips"))
     private val editButton = rule.onNode(hasContentDescription("Edit feature"))
     private val deleteButton = rule.onNode(hasContentDescription("Delete feature"))
+    private val editExercisesButton = rule.onNode(hasText("Edit Exercises"))
 
     @Before
     fun setUp() {
@@ -228,5 +229,37 @@ class WorkoutDetailsScreenKtTest {
         closeButton.performClick()
 
         closeButton.assertDoesNotExist()
+    }
+
+    @Test
+    fun rendersEditExerciseButtonInWorkoutDetailsScreen() {
+        rule.setContent {
+            WorkoutDetailsScreen(
+                uiState = workoutWithExercises,
+                navController = navController,
+                exerciseNavigationFunction = { },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
+            )
+        }
+
+        editExercisesButton.assertExists()
+    }
+
+    @Test
+    fun clickingEditExerciseButtonOpensEditWorkoutExercisesScreen() {
+        rule.setContent {
+            WorkoutDetailsScreen(
+                uiState = workoutWithExercises,
+                navController = navController,
+                exerciseNavigationFunction = { },
+                updateWorkoutFunction = { },
+                deleteWorkoutFunction = { }
+            )
+        }
+
+        editExercisesButton.performClick()
+
+        rule.onNode(hasText("Workout Exercises"))
     }
 }
