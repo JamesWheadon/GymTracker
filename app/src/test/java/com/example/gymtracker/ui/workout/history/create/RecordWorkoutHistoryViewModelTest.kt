@@ -1,34 +1,39 @@
 package com.example.gymtracker.ui.workout.history.create
 
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistoryRepository
-import com.example.gymtracker.data.workoutHistory.WorkoutHistoryWithExerciseHistory
 import com.example.gymtracker.rules.TestCoroutineRule
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.verify
 import java.time.LocalDate
 
 class RecordWorkoutHistoryViewModelTest {
 
-    private val workoutHistory = WorkoutHistoryWithExerciseHistory(
-        workoutHistory = WorkoutHistory(1, 1, LocalDate.now()),
-        exercises = listOf()
-    )
+    private val workoutHistory = WorkoutHistory(workoutId = 1, date = LocalDate.now())
+    private val exerciseHistory = ExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
+    private val savedExerciseHistory = ExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now(), 1)
 
-    private val mockRepository: WorkoutHistoryRepository = Mockito.mock()
+    private val mockWorkoutHistoryRepository: WorkoutHistoryRepository = Mockito.mock()
+    private val mockExerciseHistoryRepository: ExerciseHistoryRepository = Mockito.mock()
+
+    private val viewModel = RecordWorkoutHistoryViewModel(mockWorkoutHistoryRepository, mockExerciseHistoryRepository)
 
     @get:Rule
     val coroutineTestRule = TestCoroutineRule()
 
     @Test
     fun saveWorkoutToRepository() = runTest {
-        val viewModel = RecordWorkoutHistoryViewModel(mockRepository)
+        `when`(mockWorkoutHistoryRepository.insert(workoutHistory)).thenReturn(1L)
 
-        viewModel.saveWorkout(workoutHistory)
+        viewModel.saveWorkoutHistory(workoutHistory, listOf(exerciseHistory))
 
-        verify(mockRepository).insert(workoutHistory)
+        verify(mockWorkoutHistoryRepository).insert(workoutHistory)
+        verify(mockExerciseHistoryRepository).insertHistory(savedExerciseHistory)
     }
 }

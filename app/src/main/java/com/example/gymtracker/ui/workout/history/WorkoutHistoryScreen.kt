@@ -27,7 +27,7 @@ import java.time.LocalDate
 
 @Composable
 fun WorkoutHistoryScreen(
-    uiState: WorkoutHistoryUiState,
+    uiState: WorkoutHistoryWithExercisesUiState,
     exercises: List<ExerciseUiState>,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -90,7 +90,7 @@ fun WorkoutHistoryExerciseCard(
 fun WorkoutHistoryScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         WorkoutHistoryScreen(
-            uiState = WorkoutHistoryUiState(
+            uiState = WorkoutHistoryWithExercisesUiState(
                 1, 1, LocalDate.now(), exercises = listOf(
                     ExerciseHistoryUiState(1, 1, 1.0, 1, 1, 1, LocalDate.now()),
                     ExerciseHistoryUiState(2, 2, 1.0, 1, 1, 1, LocalDate.now())

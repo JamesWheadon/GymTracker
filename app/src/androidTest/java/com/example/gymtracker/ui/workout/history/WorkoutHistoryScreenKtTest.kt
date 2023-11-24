@@ -23,7 +23,7 @@ class WorkoutHistoryScreenKtTest {
     private val bench = ExerciseUiState(3, "Bench", "Chest", "Barbell")
     private val curlsHistory = ExerciseHistoryUiState(1, 1, 1.0, 1, 1, 1, LocalDate.now())
     private val benchHistory = ExerciseHistoryUiState(1, 3, 1.0, 1, 1, 1, LocalDate.now())
-    private val workoutHistory = WorkoutHistoryUiState(1, 1, LocalDate.now(), listOf(curlsHistory, benchHistory))
+    private val workoutHistory = WorkoutHistoryWithExercisesUiState(1, 1, LocalDate.now(), listOf(curlsHistory, benchHistory))
 
     private val curlsExerciseName = rule.onNode(hasText("Curls"))
     private val dipsExerciseName = rule.onNode(hasText("Dips"))

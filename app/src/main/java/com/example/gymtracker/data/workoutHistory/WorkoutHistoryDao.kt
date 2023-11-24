@@ -7,5 +7,5 @@ import androidx.room.OnConflictStrategy
 @Dao
 interface WorkoutHistoryDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(workoutHistoryWithExerciseHistory: WorkoutHistoryWithExerciseHistory)
+    suspend fun insert(workoutHistory: WorkoutHistory): Long
 }

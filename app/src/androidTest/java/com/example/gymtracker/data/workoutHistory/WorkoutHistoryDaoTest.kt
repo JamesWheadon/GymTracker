@@ -6,7 +6,6 @@ import androidx.room.RoomSQLiteQuery
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.gymtracker.data.database.ExerciseWorkoutDatabase
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryDao
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -21,7 +20,6 @@ import java.time.LocalDate
 class WorkoutHistoryDaoTest {
 
     private lateinit var workoutHistoryDao: WorkoutHistoryDao
-    private lateinit var exerciseHistoryDao: ExerciseHistoryDao
     private lateinit var database: ExerciseWorkoutDatabase
 
     @Before
@@ -31,7 +29,6 @@ class WorkoutHistoryDaoTest {
             .allowMainThreadQueries()
             .build()
         workoutHistoryDao = database.workoutHistoryDao()
-        exerciseHistoryDao = database.exerciseHistoryDao()
     }
 
     @After
@@ -42,7 +39,7 @@ class WorkoutHistoryDaoTest {
 
     @Test
     fun daoInsert_InsertsWorkoutExerciseIntoDB() = runBlocking {
-        workoutHistoryDao.insert(WorkoutHistoryWithExerciseHistory(workoutHistory = WorkoutHistory(1, 1, LocalDate.now()), exercises = listOf()))
+        val insertId = workoutHistoryDao.insert(WorkoutHistory(workoutId = 1, date = LocalDate.now()))
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workout_history", 0)
         val saved = database.query(query)
@@ -54,6 +51,7 @@ class WorkoutHistoryDaoTest {
         assertThat(saved.count, equalTo(1))
         assertThat(saved.getInt(workoutIdIndex), equalTo(1))
         assertThat(saved.getInt(idIndex), equalTo(1))
+        assertThat(insertId, equalTo(1))
         saved.close()
     }
 }

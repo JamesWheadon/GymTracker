@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -53,7 +54,8 @@ fun FormInformationField(
     onChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     error: Boolean = false,
-    errorMessage: String = ""
+    errorMessage: String = "",
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     TextField(
         value = value,
@@ -78,6 +80,7 @@ fun FormInformationField(
                 )
             }
         },
+        keyboardOptions = keyboardOptions,
         modifier = modifier.semantics { contentDescription = label }
     )
 }

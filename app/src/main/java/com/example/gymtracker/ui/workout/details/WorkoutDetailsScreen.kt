@@ -3,11 +3,18 @@ package com.example.gymtracker.ui.workout.details
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,9 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.gymtracker.data.workout.Workout
@@ -37,7 +46,8 @@ import com.example.gymtracker.ui.visualisations.MonthPicker
 import com.example.gymtracker.ui.workout.WorkoutsRoute
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryScreen
-import com.example.gymtracker.ui.workout.history.WorkoutHistoryUiState
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
+import com.example.gymtracker.ui.workout.history.create.RecordWorkoutHistoryScreen
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -81,6 +91,7 @@ fun WorkoutDetailsScreen(
     var showEditExercises by remember { mutableStateOf(false) }
     var showUpdateWorkout by remember { mutableStateOf(false) }
     var showDeleteWorkout by remember { mutableStateOf(false) }
+    var showRecordWorkout by remember { mutableStateOf(false) }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -90,6 +101,19 @@ fun WorkoutDetailsScreen(
                 editFunction = { showUpdateWorkout = true },
                 deleteFunction = { showDeleteWorkout = true }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { showRecordWorkout = true },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(20.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    tint = Color.Black,
+                    contentDescription = "Add Workout"
+                )
+            }
         }
     ) { innerPadding ->
         WorkoutDetailsScreen(
@@ -101,9 +125,7 @@ fun WorkoutDetailsScreen(
         )
     }
     if (showEditExercises) {
-        Dialog(
-            onDismissRequest = { showEditExercises = false }
-        ) {
+        Dialog(onDismissRequest = { showEditExercises = false }) {
             EditWorkoutExercisesScreen(
                 workout = uiState.toWorkout(),
                 existingExercises = uiState.exercises,
@@ -112,9 +134,7 @@ fun WorkoutDetailsScreen(
         }
     }
     if (showUpdateWorkout) {
-        Dialog(
-            onDismissRequest = { showUpdateWorkout = false }
-        ) {
+        Dialog(onDismissRequest = { showUpdateWorkout = false }) {
             CreateWorkoutForm(
                 screenTitle = "Update Workout",
                 workout = uiState.toWorkout(),
@@ -124,9 +144,7 @@ fun WorkoutDetailsScreen(
         }
     }
     if (showDeleteWorkout) {
-        Dialog(
-            onDismissRequest = { showDeleteWorkout = false }
-        ) {
+        Dialog(onDismissRequest = { showDeleteWorkout = false }) {
             ActionConfirmation(
                 actionTitle = "Delete ${uiState.name} Workout?",
                 confirmFunction = {
@@ -134,6 +152,18 @@ fun WorkoutDetailsScreen(
                     navController.popBackStack()
                 },
                 cancelFunction = { showDeleteWorkout = false }
+            )
+        }
+    }
+    if (showRecordWorkout) {
+        Dialog(
+            onDismissRequest = { showRecordWorkout = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            RecordWorkoutHistoryScreen(
+                uiState = uiState,
+                onDismiss = { showRecordWorkout = false },
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -209,8 +239,8 @@ fun WorkoutDetailsScreenPreview() {
                     )
                 ),
                 workoutHistory = listOf(
-                    WorkoutHistoryUiState(1, 1, LocalDate.now()),
-                    WorkoutHistoryUiState(2, 1, LocalDate.now().minusDays(3))
+                    WorkoutHistoryWithExercisesUiState(1, 1, LocalDate.now()),
+                    WorkoutHistoryWithExercisesUiState(2, 1, LocalDate.now().minusDays(3))
                 )
             ),
             exerciseNavigationFunction = { },
