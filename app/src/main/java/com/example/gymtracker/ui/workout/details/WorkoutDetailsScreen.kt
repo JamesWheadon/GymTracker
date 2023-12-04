@@ -1,29 +1,35 @@
 package com.example.gymtracker.ui.workout.details
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.gymtracker.data.workout.Workout
@@ -35,10 +41,15 @@ import com.example.gymtracker.ui.navigation.NavigationArguments
 import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
-import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
+import com.example.gymtracker.ui.visualisations.Calendar
+import com.example.gymtracker.ui.visualisations.MonthPicker
 import com.example.gymtracker.ui.workout.WorkoutsRoute
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
-import com.example.gymtracker.ui.workout.toWorkout
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryScreen
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
+import com.example.gymtracker.ui.workout.history.create.RecordWorkoutHistoryScreen
+import java.time.LocalDate
+import java.time.YearMonth
 
 object WorkoutDetailsRoute : NavigationRoute {
     val navArgument = NavigationArguments.WORKOUTS_DETAILS_NAV_ARGUMENT.route
@@ -77,9 +88,10 @@ fun WorkoutDetailsScreen(
     deleteWorkoutFunction: (Workout) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showAddExercise by remember { mutableStateOf(false) }
+    var showEditExercises by remember { mutableStateOf(false) }
     var showUpdateWorkout by remember { mutableStateOf(false) }
     var showDeleteWorkout by remember { mutableStateOf(false) }
+    var showRecordWorkout by remember { mutableStateOf(false) }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -92,14 +104,14 @@ fun WorkoutDetailsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showAddExercise = true },
+                onClick = { showRecordWorkout = true },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(20.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     tint = Color.Black,
-                    contentDescription = "Add Exercise"
+                    contentDescription = "Add Workout"
                 )
             }
         }
@@ -107,25 +119,22 @@ fun WorkoutDetailsScreen(
         WorkoutDetailsScreen(
             uiState = uiState,
             exerciseNavigationFunction = exerciseNavigationFunction,
+            editExercises = { showEditExercises = true },
             innerPadding = innerPadding,
             modifier = modifier
         )
     }
-    if (showAddExercise) {
-        Dialog(
-            onDismissRequest = { showAddExercise = false }
-        ) {
-            AddWorkoutExercisesScreen(
+    if (showEditExercises) {
+        Dialog(onDismissRequest = { showEditExercises = false }) {
+            EditWorkoutExercisesScreen(
                 workout = uiState.toWorkout(),
                 existingExercises = uiState.exercises,
-                onDismiss = { showAddExercise = false }
+                onDismiss = { showEditExercises = false }
             )
         }
     }
     if (showUpdateWorkout) {
-        Dialog(
-            onDismissRequest = { showUpdateWorkout = false }
-        ) {
+        Dialog(onDismissRequest = { showUpdateWorkout = false }) {
             CreateWorkoutForm(
                 screenTitle = "Update Workout",
                 workout = uiState.toWorkout(),
@@ -135,16 +144,27 @@ fun WorkoutDetailsScreen(
         }
     }
     if (showDeleteWorkout) {
-        Dialog(
-            onDismissRequest = { showDeleteWorkout = false }
-        ) {
+        Dialog(onDismissRequest = { showDeleteWorkout = false }) {
             ActionConfirmation(
                 actionTitle = "Delete ${uiState.name} Workout?",
                 confirmFunction = {
                     deleteWorkoutFunction(uiState.toWorkout())
                     navController.popBackStack()
                 },
-                cancelFunction = { showDeleteWorkout = false })
+                cancelFunction = { showDeleteWorkout = false }
+            )
+        }
+    }
+    if (showRecordWorkout) {
+        Dialog(
+            onDismissRequest = { showRecordWorkout = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            RecordWorkoutHistoryScreen(
+                uiState = uiState,
+                onDismiss = { showRecordWorkout = false },
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
@@ -153,18 +173,50 @@ fun WorkoutDetailsScreen(
 private fun WorkoutDetailsScreen(
     uiState: WorkoutWithExercisesUiState,
     exerciseNavigationFunction: (Int) -> Unit,
+    editExercises: () -> Unit,
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxWidth(),
-        contentPadding = innerPadding,
-        verticalArrangement = Arrangement.spacedBy(0.dp)
+    var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
+    var selectedWorkoutHistoryId by remember { mutableStateOf(-1) }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(uiState.exercises) { exercise ->
-            ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
+        LazyColumn(
+            modifier = modifier
+                .fillMaxWidth(),
+            contentPadding = innerPadding,
+            verticalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
+            items(uiState.exercises) { exercise ->
+                ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
+            }
         }
+        Button(onClick = editExercises) {
+            Text(text = "Edit Exercises")
+        }
+        if (selectedWorkoutHistoryId != -1) {
+            WorkoutHistoryScreen(
+                workoutHistoryUiState = uiState.workoutHistory.first { workoutHistory -> workoutHistory.workoutHistoryId == selectedWorkoutHistoryId },
+                workoutUiState = uiState,
+                onDismiss = { selectedWorkoutHistoryId = -1 }
+            )
+        }
+        MonthPicker(
+            yearMonthValue = selectedMonth,
+            yearMonthValueOnChange = { chosen -> selectedMonth = chosen }
+        )
+        Calendar(
+            month = selectedMonth.monthValue,
+            year = selectedMonth.year,
+            activeDays = uiState.workoutHistory
+                .filter {
+                        history -> history.date.year == selectedMonth.year &&
+                        history.date.monthValue == selectedMonth.monthValue
+                }.map { history -> history.date.dayOfMonth },
+            dayFunction = { chosenDay -> selectedWorkoutHistoryId = uiState.workoutHistory.first { it.date == LocalDate.of(selectedMonth.year, selectedMonth.monthValue, chosenDay) }.workoutHistoryId }
+        )
     }
 }
 
@@ -185,9 +237,14 @@ fun WorkoutDetailsScreenPreview() {
                         "Lats",
                         "Dumbbells"
                     )
+                ),
+                workoutHistory = listOf(
+                    WorkoutHistoryWithExercisesUiState(1, 1, LocalDate.now()),
+                    WorkoutHistoryWithExercisesUiState(2, 1, LocalDate.now().minusDays(3))
                 )
             ),
             exerciseNavigationFunction = { },
+            editExercises = { },
             innerPadding = PaddingValues()
         )
     }

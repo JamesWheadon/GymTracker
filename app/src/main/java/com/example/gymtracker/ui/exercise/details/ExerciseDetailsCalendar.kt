@@ -11,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,19 +28,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gymtracker.data.history.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
-import com.example.gymtracker.ui.Calendar
-import com.example.gymtracker.ui.MonthPicker
+import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
+import com.example.gymtracker.ui.exercise.history.UpdateExerciseHistoryScreen
+import com.example.gymtracker.ui.exercise.history.toExerciseHistory
 import com.example.gymtracker.ui.exercise.toExerciseUiState
-import com.example.gymtracker.ui.history.ExerciseHistoryUiState
-import com.example.gymtracker.ui.history.RecordHistoryViewModel
-import com.example.gymtracker.ui.history.UpdateHistoryScreen
-import com.example.gymtracker.ui.history.toExerciseHistory
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.visualisations.Calendar
+import com.example.gymtracker.ui.visualisations.MonthPicker
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -95,7 +95,7 @@ fun ExercisesOnDay(
     exercise: ExerciseUiState,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RecordHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: RecordExerciseHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Box {
         Column(
@@ -113,7 +113,7 @@ fun ExercisesOnDay(
                 HistoryDetails(
                     exerciseHistory = history,
                     exercise = exercise,
-                    deleteFunction = { deleteHistory -> viewModel.deleteHistory(deleteHistory) }
+                    deleteFunction = { deleteHistory -> viewModel.deleteHistory(deleteHistory) },
                 )
             }
         }
@@ -137,18 +137,14 @@ fun HistoryDetails(
     exerciseHistory: ExerciseHistoryUiState,
     exercise: ExerciseUiState,
     deleteFunction: (ExerciseHistory) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    editEnabled: Boolean = true
 ) {
     var editExercise by remember { mutableStateOf(false) }
     var deleteExercise by remember { mutableStateOf(false) }
-    val customCardElevation = CardDefaults.cardElevation(
-        defaultElevation = 8.dp,
-        pressedElevation = 2.dp,
-        focusedElevation = 4.dp
-    )
     Card(
-        elevation = customCardElevation,
-        onClick = { editExercise = true },
+        elevation = customCardElevation(),
+        onClick = { editExercise = true && editEnabled },
         modifier = modifier
     ) {
         Row(
@@ -167,12 +163,14 @@ fun HistoryDetails(
                 Text(text = "Weight: ${exerciseHistory.weight}kg")
                 Text(text = "Rest time: ${exerciseHistory.rest}")
             }
-            IconButton(onClick = { deleteExercise = true }) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    tint = Color.Red,
-                    contentDescription = "Delete history"
-                )
+            if (editEnabled) {
+                IconButton(onClick = { deleteExercise = true }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        tint = Color.Red,
+                        contentDescription = "Delete history"
+                    )
+                }
             }
         }
     }
@@ -180,7 +178,7 @@ fun HistoryDetails(
         Dialog(
             onDismissRequest = { editExercise = false }
         ) {
-            UpdateHistoryScreen(
+            UpdateExerciseHistoryScreen(
                 exercise = exercise,
                 history = exerciseHistory,
                 onDismiss = { editExercise = false }
@@ -219,7 +217,7 @@ fun HistoryDetailsPreview() {
                 muscleGroup = "Biceps",
                 equipment = "Dumbbells"
             ),
-            deleteFunction = { },
+            deleteFunction = { }
         )
     }
 }

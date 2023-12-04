@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseRepository
-import com.example.gymtracker.data.history.HistoryRepository
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.toExerciseDetailsUiState
-import com.example.gymtracker.ui.history.ExerciseHistoryUiState
-import com.example.gymtracker.ui.history.toExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.toExerciseHistoryUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class ExerciseDetailsViewModel(
     private val exerciseRepository: ExerciseRepository,
-    private val historyRepository: HistoryRepository,
+    private val exerciseHistoryRepository: ExerciseHistoryRepository,
     private val workoutExerciseCrossRefRepository: WorkoutExerciseCrossRefRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -40,7 +40,7 @@ class ExerciseDetailsViewModel(
             )
 
     val exerciseHistory: StateFlow<List<ExerciseHistoryUiState>> =
-        historyRepository.getFullExerciseHistoryStream(exerciseId)
+        exerciseHistoryRepository.getFullExerciseHistoryStream(exerciseId)
         .map { historyList -> historyList?.map { history -> history.toExerciseHistoryUiState() } ?: listOf() }
         .stateIn(
             scope = viewModelScope,
@@ -56,7 +56,7 @@ class ExerciseDetailsViewModel(
 
     fun deleteExercise(exercise: Exercise) {
         viewModelScope.launch {
-            historyRepository.deleteAllForExercise(exercise)
+            exerciseHistoryRepository.deleteAllForExercise(exercise)
             workoutExerciseCrossRefRepository.deleteAllCrossRefForExercise(exercise)
             exerciseRepository.deleteExercise(exercise)
         }

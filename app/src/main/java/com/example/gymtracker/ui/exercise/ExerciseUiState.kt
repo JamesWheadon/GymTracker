@@ -1,7 +1,7 @@
 package com.example.gymtracker.ui.exercise
 
 import com.example.gymtracker.data.exercise.Exercise
-import com.example.gymtracker.ui.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
 
 data class ExerciseUiState(
     val id: Int = 0,

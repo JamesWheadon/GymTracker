@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui
+package com.example.gymtracker.ui.visualisations
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.geometry.Offset

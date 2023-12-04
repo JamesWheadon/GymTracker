@@ -21,7 +21,8 @@ class FakeWorkoutWithExercisesRepository : WorkoutWithExercisesRepository {
                 muscleGroup = "muscleGroup",
                 equipment = "equipment"
             )
-        )
+        ),
+        workoutHistory = listOf()
     )
 
     override fun getWorkoutWithExercisesStream(workoutId: Int): Flow<WorkoutWithExercises> = flowOf(workoutWithExercises)

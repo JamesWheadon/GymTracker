@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.gymtracker.data.database.ExerciseDatabase
+import com.example.gymtracker.data.database.ExerciseWorkoutDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
@@ -20,7 +20,7 @@ import java.io.IOException
 class ExerciseDaoTest {
 
     private lateinit var exerciseDao: ExerciseDao
-    private lateinit var exerciseDatabase: ExerciseDatabase
+    private lateinit var exerciseWorkoutDatabase: ExerciseWorkoutDatabase
 
     private val newExerciseName = "Press"
     private val exercise1 = Exercise(1, "Curls", "Biceps", "Dumbbells")
@@ -29,16 +29,16 @@ class ExerciseDaoTest {
     @Before
     fun createDb() {
         val context: Context = ApplicationProvider.getApplicationContext()
-        exerciseDatabase = Room.inMemoryDatabaseBuilder(context, ExerciseDatabase::class.java)
+        exerciseWorkoutDatabase = Room.inMemoryDatabaseBuilder(context, ExerciseWorkoutDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        exerciseDao = exerciseDatabase.exerciseDao()
+        exerciseDao = exerciseWorkoutDatabase.exerciseDao()
     }
 
     @After
     @Throws(IOException::class)
     fun closeDb() {
-        exerciseDatabase.close()
+        exerciseWorkoutDatabase.close()
     }
 
     @Test

@@ -8,10 +8,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gymtracker.GymTrackerApplication
 import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsViewModel
-import com.example.gymtracker.ui.history.RecordHistoryViewModel
+import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
 import com.example.gymtracker.ui.workout.WorkoutScreenViewModel
 import com.example.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.example.gymtracker.ui.workout.details.WorkoutExerciseCrossRefViewModel
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryViewModel
 
 
 object AppViewModelProvider {
@@ -24,14 +25,14 @@ object AppViewModelProvider {
         initializer {
             ExerciseDetailsViewModel(
                 exerciseRepository = gymTrackerApplication().container.exerciseRepository,
-                historyRepository = gymTrackerApplication().container.historyRepository,
+                exerciseHistoryRepository = gymTrackerApplication().container.exerciseHistoryRepository,
                 workoutExerciseCrossRefRepository = gymTrackerApplication().container.workoutExerciseCrossRefRepository,
                 savedStateHandle = this.createSavedStateHandle()
             )
         }
         initializer {
-            RecordHistoryViewModel(
-                historyRepository = gymTrackerApplication().container.historyRepository
+            RecordExerciseHistoryViewModel(
+                exerciseHistoryRepository = gymTrackerApplication().container.exerciseHistoryRepository
             )
         }
         initializer {
@@ -50,6 +51,12 @@ object AppViewModelProvider {
         initializer {
             WorkoutExerciseCrossRefViewModel(
                 gymTrackerApplication().container.workoutExerciseCrossRefRepository
+            )
+        }
+        initializer {
+            WorkoutHistoryViewModel(
+                gymTrackerApplication().container.workoutHistoryRepository,
+                gymTrackerApplication().container.exerciseHistoryRepository
             )
         }
     }

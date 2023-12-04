@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui.history
+package com.example.gymtracker.ui.exercise.history
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
 import com.example.gymtracker.converters.getWeightUnitFromShortForm
-import com.example.gymtracker.data.history.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
@@ -42,15 +42,15 @@ import java.time.LocalDate
 
 
 @Composable
-fun RecordHistoryScreen(
+fun RecordExerciseHistoryScreen(
     exercise: ExerciseUiState,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RecordHistoryViewModel = viewModel(
+    viewModel: RecordExerciseHistoryViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {
-    RecordHistoryScreen(
+    RecordExerciseHistoryScreen(
         exercise = exercise,
         saveFunction = { history ->
             viewModel.saveHistory(history)
@@ -61,16 +61,16 @@ fun RecordHistoryScreen(
 }
 
 @Composable
-fun UpdateHistoryScreen(
+fun UpdateExerciseHistoryScreen(
     exercise: ExerciseUiState,
     history: ExerciseHistoryUiState,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RecordHistoryViewModel = viewModel(
+    viewModel: RecordExerciseHistoryViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {
-    EditHistoryScreen(
+    EditExerciseHistoryScreen(
         history = history,
         exercise = exercise,
         updateFunction = { existingHistory ->
@@ -82,14 +82,14 @@ fun UpdateHistoryScreen(
 }
 
 @Composable
-fun RecordHistoryScreen(
+fun RecordExerciseHistoryScreen(
     exercise: ExerciseUiState,
     saveFunction: (ExerciseHistory) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box {
-        RecordHistoryCard(
+        RecordExerciseHistoryCard(
             exerciseId = exercise.id,
             cardTitle = "New ${exercise.name} Workout",
             saveFunction = saveFunction,
@@ -111,7 +111,7 @@ fun RecordHistoryScreen(
 }
 
 @Composable
-fun EditHistoryScreen(
+fun EditExerciseHistoryScreen(
     history: ExerciseHistoryUiState,
     exercise: ExerciseUiState,
     updateFunction: (ExerciseHistory) -> Unit,
@@ -119,7 +119,7 @@ fun EditHistoryScreen(
     modifier: Modifier = Modifier
 ) {
     Box {
-        RecordHistoryCard(
+        RecordExerciseHistoryCard(
             exerciseId = exercise.id,
             cardTitle = "Update ${exercise.name} Workout",
             saveFunction = updateFunction,
@@ -142,7 +142,7 @@ fun EditHistoryScreen(
 }
 
 @Composable
-private fun RecordHistoryCard(
+private fun RecordExerciseHistoryCard(
     exerciseId: Int,
     cardTitle: String,
     saveFunction: (ExerciseHistory) -> Unit,
@@ -232,7 +232,7 @@ private fun RecordHistoryCard(
                         .semantics { contentDescription = "Units" }
                 )
             }
-            SaveHistoryButton(
+            SaveExerciseHistoryButton(
                 setsState = setsState,
                 repsState = repsState,
                 weightState = weightState,
@@ -247,7 +247,7 @@ private fun RecordHistoryCard(
 }
 
 @Composable
-private fun SaveHistoryButton(
+private fun SaveExerciseHistoryButton(
     setsState: String,
     repsState: String,
     weightState: String,
@@ -292,9 +292,9 @@ private fun SaveHistoryButton(
 
 @Preview(showBackground = true)
 @Composable
-fun ExerciseScreenPreview() {
+fun RecordExerciseHistoryScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
-        RecordHistoryScreen(
+        RecordExerciseHistoryScreen(
             exercise = ExerciseUiState(
                 name = "Curls",
                 muscleGroup = "Biceps",

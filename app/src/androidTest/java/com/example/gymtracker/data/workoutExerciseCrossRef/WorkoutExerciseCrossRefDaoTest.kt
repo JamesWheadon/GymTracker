@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomSQLiteQuery
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.gymtracker.data.database.ExerciseDatabase
+import com.example.gymtracker.data.database.ExerciseWorkoutDatabase
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -19,12 +19,12 @@ import java.io.IOException
 class WorkoutExerciseCrossRefDaoTest {
 
     private lateinit var workoutExerciseCrossRefDao: WorkoutExerciseCrossRefDao
-    private lateinit var exercise: ExerciseDatabase
+    private lateinit var exercise: ExerciseWorkoutDatabase
 
     @Before
     fun createDb() {
         val context: Context = ApplicationProvider.getApplicationContext()
-        exercise = Room.inMemoryDatabaseBuilder(context, ExerciseDatabase::class.java)
+        exercise = Room.inMemoryDatabaseBuilder(context, ExerciseWorkoutDatabase::class.java)
             .allowMainThreadQueries()
             .build()
         workoutExerciseCrossRefDao = exercise.workoutExerciseCrossRefDao()
@@ -40,7 +40,7 @@ class WorkoutExerciseCrossRefDaoTest {
     fun daoInsert_InsertsWorkoutExerciseIntoDB() = runBlocking {
         workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
 
-        val query = RoomSQLiteQuery.acquire("SELECT * FROM workoutsExercises", 0)
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
         val saved = exercise.query(query)
         saved.moveToFirst()
 
@@ -58,7 +58,7 @@ class WorkoutExerciseCrossRefDaoTest {
         workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
         workoutExerciseCrossRefDao.delete(WorkoutExerciseCrossRef(1, 1))
 
-        val query = RoomSQLiteQuery.acquire("SELECT * FROM workoutsExercises", 0)
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
         val saved = exercise.query(query)
 
         assertThat(saved.count, equalTo(0))
@@ -71,7 +71,7 @@ class WorkoutExerciseCrossRefDaoTest {
         workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 2))
         workoutExerciseCrossRefDao.deleteAllCrossRefForWorkout(1)
 
-        val query = RoomSQLiteQuery.acquire("SELECT * FROM workoutsExercises", 0)
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
         val saved = exercise.query(query)
 
         assertThat(saved.count, equalTo(0))
@@ -84,7 +84,7 @@ class WorkoutExerciseCrossRefDaoTest {
         workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(2, 1))
         workoutExerciseCrossRefDao.deleteAllCrossRefForExercise(1)
 
-        val query = RoomSQLiteQuery.acquire("SELECT * FROM workoutsExercises", 0)
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
         val saved = exercise.query(query)
 
         assertThat(saved.count, equalTo(0))

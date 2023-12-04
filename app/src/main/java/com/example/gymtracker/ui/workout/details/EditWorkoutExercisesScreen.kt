@@ -40,7 +40,7 @@ import com.example.gymtracker.ui.exercise.toExercise
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
-fun AddWorkoutExercisesScreen(
+fun EditWorkoutExercisesScreen(
     workout: Workout,
     existingExercises: List<ExerciseUiState>,
     onDismiss: () -> Unit,
@@ -58,7 +58,7 @@ fun AddWorkoutExercisesScreen(
     val remainingExercises = allExercises.filter { exercise ->
         !chosenExercises.contains(exercise)
     }
-    AddWorkoutExercisesScreen(
+    EditWorkoutExercisesScreen(
         chosenExercises = chosenExercises,
         remainingExercises = remainingExercises,
         selectFunction = { exercise ->
@@ -75,7 +75,7 @@ fun AddWorkoutExercisesScreen(
 }
 
 @Composable
-fun AddWorkoutExercisesScreen(
+fun EditWorkoutExercisesScreen(
     chosenExercises: List<ExerciseUiState>,
     remainingExercises: List<ExerciseUiState>,
     selectFunction: (ExerciseUiState) -> Unit,
@@ -193,7 +193,7 @@ fun AddRemoveExerciseCard(
 @Composable
 fun AddExerciseScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
-        AddWorkoutExercisesScreen(
+        EditWorkoutExercisesScreen(
             chosenExercises = listOf(ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")),
             remainingExercises = listOf(
                 ExerciseUiState(

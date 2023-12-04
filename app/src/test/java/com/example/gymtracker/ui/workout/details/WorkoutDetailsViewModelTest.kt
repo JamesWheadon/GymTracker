@@ -8,7 +8,6 @@ import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossR
 import com.example.gymtracker.fake.FakeWorkoutWithExercisesRepository
 import com.example.gymtracker.rules.TestCoroutineRule
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.workout.WorkoutWithExercisesUiState
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
