@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
@@ -34,6 +35,8 @@ class WorkoutHistoryScreenKtTest {
     private val rest = rule.onNode(hasText("Rest time: 1"))
     private val deleteHistoryButton = rule.onNode(hasContentDescription("Delete history"))
     private val closeButton = rule.onNode(hasContentDescription("Close"))
+    private val editButton = rule.onNode(hasContentDescription("Edit"))
+    private val deleteButton = rule.onNode(hasContentDescription("Delete"))
 
     @Test
     fun rendersWorkoutHistoryExerciseCard() {
@@ -49,15 +52,15 @@ class WorkoutHistoryScreenKtTest {
         reps.assertExists()
         weight.assertExists()
         rest.assertExists()
-        deleteHistoryButton.assertExists()
+        deleteHistoryButton.assertDoesNotExist()
     }
 
     @Test
     fun rendersWorkoutHistoryScreen() {
         rule.setContent {
             WorkoutHistoryScreen(
-                uiState = workoutHistory,
-                exercises = listOf(curls, dips, bench),
+                workoutHistoryUiState = workoutHistory,
+                workoutUiState = WorkoutWithExercisesUiState(exercises = listOf(curls, dips, bench)),
                 onDismiss = { }
             )
         }
@@ -73,8 +76,8 @@ class WorkoutHistoryScreenKtTest {
         var dismissed = false
         rule.setContent {
             WorkoutHistoryScreen(
-                uiState = workoutHistory,
-                exercises = listOf(curls, dips, bench),
+                workoutHistoryUiState = workoutHistory,
+                workoutUiState = WorkoutWithExercisesUiState(exercises = listOf(curls, dips, bench)),
                 onDismiss = { dismissed = true }
             )
         }
@@ -82,5 +85,35 @@ class WorkoutHistoryScreenKtTest {
         closeButton.performClick()
 
         assertThat(dismissed, equalTo(true))
+    }
+
+    @Test
+    fun clickingEditRendersRecordWorkoutHistoryScreenWithAlternateTitle() {
+        rule.setContent {
+            WorkoutHistoryScreen(
+                workoutHistoryUiState = workoutHistory,
+                workoutUiState = WorkoutWithExercisesUiState(exercises = listOf(curls, dips, bench)),
+                onDismiss = { }
+            )
+        }
+
+        editButton.performClick()
+
+        rule.onNode(hasText("Update Workout")).assertExists()
+    }
+
+    @Test
+    fun clickingDeleteOpensActionConfirmation() {
+        rule.setContent {
+            WorkoutHistoryScreen(
+                workoutHistoryUiState = workoutHistory,
+                workoutUiState = WorkoutWithExercisesUiState(exercises = listOf(curls, dips, bench)),
+                onDismiss = { }
+            )
+        }
+
+        deleteButton.performClick()
+
+        rule.onNode(hasText("Do you want to delete this workout?")).assertExists()
     }
 }

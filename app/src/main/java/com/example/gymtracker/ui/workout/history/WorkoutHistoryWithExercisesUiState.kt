@@ -1,8 +1,10 @@
 package com.example.gymtracker.ui.workout.history
 
+import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistoryWithExerciseHistory
 import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.toExerciseHistory
 import com.example.gymtracker.ui.exercise.history.toExerciseHistoryUiState
 import java.time.LocalDate
 
@@ -31,6 +33,10 @@ fun WorkoutHistoryWithExercisesUiState.toWorkoutUiState(): WorkoutHistoryUiState
     workoutId = workoutId,
     date = date
 )
+
+fun WorkoutHistoryWithExercisesUiState.toWorkoutAndExercises(): Pair<WorkoutHistory, List<ExerciseHistory>> {
+    return Pair(this.toWorkoutUiState().toWorkoutHistory(), this.exercises.map { exerciseHistory -> exerciseHistory.toExerciseHistory() })
+}
 
 fun WorkoutHistoryUiState.toWorkoutHistory(): WorkoutHistory = WorkoutHistory(
     workoutHistoryId = workoutHistoryId,

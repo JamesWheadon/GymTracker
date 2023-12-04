@@ -8,6 +8,6 @@ import java.time.LocalDate
 data class WorkoutHistory(
     @PrimaryKey(autoGenerate = true)
     val workoutHistoryId: Int = 0,
-    var workoutId: Int,
+    val workoutId: Int,
     val date: LocalDate
 )

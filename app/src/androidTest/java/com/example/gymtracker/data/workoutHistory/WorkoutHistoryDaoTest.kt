@@ -54,4 +54,39 @@ class WorkoutHistoryDaoTest {
         assertThat(insertId, equalTo(1))
         saved.close()
     }
+
+    @Test
+    fun daoUpdate_UpdatesWorkoutExerciseIntoDB() = runBlocking {
+        val workoutHistory = WorkoutHistory(workoutId = 1, date = LocalDate.now())
+        val insertId = workoutHistoryDao.insert(workoutHistory)
+        val updatedWorkoutHistory = WorkoutHistory(workoutHistoryId = insertId.toInt(), workoutId = 2, date = LocalDate.now())
+        workoutHistoryDao.update(updatedWorkoutHistory)
+
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workout_history", 0)
+        val saved = database.query(query)
+        saved.moveToFirst()
+
+        val workoutIdIndex = saved.getColumnIndex("workoutId")
+        val idIndex = saved.getColumnIndex("workoutHistoryId")
+
+        assertThat(saved.count, equalTo(1))
+        assertThat(saved.getInt(workoutIdIndex), equalTo(2))
+        assertThat(saved.getInt(idIndex), equalTo(1))
+        saved.close()
+    }
+
+    @Test
+    fun daoDelete_DeletesWorkoutExerciseFromDB() = runBlocking {
+        val workoutHistory = WorkoutHistory(workoutId = 1, date = LocalDate.now())
+        val insertId = workoutHistoryDao.insert(workoutHistory)
+        val deletedWorkoutHistory = WorkoutHistory(workoutHistoryId = insertId.toInt(), workoutId = 1, date = LocalDate.now())
+        workoutHistoryDao.delete(deletedWorkoutHistory)
+
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workout_history", 0)
+        val saved = database.query(query)
+        saved.moveToFirst()
+
+        assertThat(saved.count, equalTo(0))
+        saved.close()
+    }
 }

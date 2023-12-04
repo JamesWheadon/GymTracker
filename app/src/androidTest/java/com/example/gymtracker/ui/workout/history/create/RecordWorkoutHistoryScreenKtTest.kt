@@ -23,6 +23,8 @@ import com.example.gymtracker.data.workoutHistory.WorkoutHistoryRepository
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryViewModel
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
@@ -53,7 +55,7 @@ class RecordWorkoutHistoryScreenKtTest {
 
     @Captor
     lateinit var exerciseHistoryCaptor: ArgumentCaptor<ExerciseHistory>
-    private lateinit var recordWorkoutHistoryViewModel: RecordWorkoutHistoryViewModel
+    private lateinit var workoutHistoryViewModel: WorkoutHistoryViewModel
 
     private val curlsExercise = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells")
     private val dipsExercise = ExerciseUiState(2, "Dips", "Triceps", "Bars")
@@ -77,7 +79,7 @@ class RecordWorkoutHistoryScreenKtTest {
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        recordWorkoutHistoryViewModel = RecordWorkoutHistoryViewModel(
+        workoutHistoryViewModel = WorkoutHistoryViewModel(
             mockWorkoutHistoryRepository,
             mockExerciseHistoryRepository
         )
@@ -275,7 +277,7 @@ class RecordWorkoutHistoryScreenKtTest {
             RecordWorkoutHistoryScreen(
                 uiState = workoutWithExercises,
                 onDismiss = { dismissed = true },
-                viewModel = recordWorkoutHistoryViewModel
+                viewModel = workoutHistoryViewModel
             )
         }
 
@@ -292,6 +294,39 @@ class RecordWorkoutHistoryScreenKtTest {
 
         verify(mockWorkoutHistoryRepository).insert(workoutHistory)
         verify(mockExerciseHistoryRepository, times(1)).insertHistory(capture(exerciseHistoryCaptor))
+        assertThat(exerciseHistoryCaptor.value.exerciseId, equalTo(1))
+        assertThat(dismissed, equalTo(true))
+    }
+
+    @Test
+    fun recordWorkoutScreenUpdateSaveButtonUpdatesCheckedExercises() = runBlocking {
+        val workoutHistory = WorkoutHistory(1, 1, LocalDate.now())
+
+        var dismissed = false
+
+        rule.setContent {
+            RecordWorkoutHistoryScreen(
+                uiState = workoutWithExercises,
+                onDismiss = { dismissed = true },
+                viewModel = workoutHistoryViewModel,
+                workoutHistory = WorkoutHistoryWithExercisesUiState(
+                    workoutHistoryId = 1,
+                    workoutId = 1,
+                    exercises = listOf(ExerciseHistoryUiState(exerciseId = 1, sets = 1, reps = 1))
+                ),
+                titleText = "Update Workout"
+            )
+        }
+
+        rule.onNode(hasText("Update Workout"))
+        recordTitle.assertDoesNotExist()
+
+        saveButton.assertIsEnabled()
+
+        saveButton.performClick()
+
+        verify(mockWorkoutHistoryRepository).update(workoutHistory)
+        verify(mockExerciseHistoryRepository, times(1)).update(capture(exerciseHistoryCaptor))
         assertThat(exerciseHistoryCaptor.value.exerciseId, equalTo(1))
         assertThat(dismissed, equalTo(true))
     }

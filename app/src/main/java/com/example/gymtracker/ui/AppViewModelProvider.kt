@@ -12,7 +12,7 @@ import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
 import com.example.gymtracker.ui.workout.WorkoutScreenViewModel
 import com.example.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.example.gymtracker.ui.workout.details.WorkoutExerciseCrossRefViewModel
-import com.example.gymtracker.ui.workout.history.create.RecordWorkoutHistoryViewModel
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryViewModel
 
 
 object AppViewModelProvider {
@@ -54,7 +54,7 @@ object AppViewModelProvider {
             )
         }
         initializer {
-            RecordWorkoutHistoryViewModel(
+            WorkoutHistoryViewModel(
                 gymTrackerApplication().container.workoutHistoryRepository,
                 gymTrackerApplication().container.exerciseHistoryRepository
             )

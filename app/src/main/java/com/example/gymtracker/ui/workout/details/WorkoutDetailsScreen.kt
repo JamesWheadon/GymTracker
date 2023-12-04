@@ -198,8 +198,8 @@ private fun WorkoutDetailsScreen(
         }
         if (selectedWorkoutHistoryId != -1) {
             WorkoutHistoryScreen(
-                uiState = uiState.workoutHistory.first { workoutHistory -> workoutHistory.workoutHistoryId == selectedWorkoutHistoryId },
-                exercises = uiState.exercises,
+                workoutHistoryUiState = uiState.workoutHistory.first { workoutHistory -> workoutHistory.workoutHistoryId == selectedWorkoutHistoryId },
+                workoutUiState = uiState,
                 onDismiss = { selectedWorkoutHistoryId = -1 }
             )
         }

@@ -20,11 +20,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -50,10 +50,13 @@ import com.example.gymtracker.ui.exercise.history.toExerciseHistory
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryUiState
+import com.example.gymtracker.ui.workout.history.WorkoutHistoryViewModel
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
 import com.example.gymtracker.ui.workout.history.toWorkoutHistory
 import com.example.gymtracker.ui.workout.history.toWorkoutUiState
 import java.time.LocalDate
+
+private const val RECORD_WORKOUT = "Record Workout"
 
 @Composable
 fun RecordWorkoutHistoryScreen(
@@ -61,7 +64,8 @@ fun RecordWorkoutHistoryScreen(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     workoutHistory: WorkoutHistoryWithExercisesUiState = WorkoutHistoryWithExercisesUiState(),
-    viewModel: RecordWorkoutHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    titleText: String = RECORD_WORKOUT,
+    viewModel: WorkoutHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Box {
         Card(
@@ -71,11 +75,13 @@ fun RecordWorkoutHistoryScreen(
         ) {
             RecordWorkoutHistoryScreen(
                 uiState = uiState,
+                titleText = titleText,
                 workoutHistory = workoutHistory,
                 workoutSaveFunction = { workoutHistory, workoutExercises ->
                     viewModel.saveWorkoutHistory(
                         workoutHistory,
-                        workoutExercises
+                        workoutExercises,
+                        titleText == RECORD_WORKOUT
                     )
                 },
                 onDismiss = onDismiss
@@ -98,11 +104,12 @@ fun RecordWorkoutHistoryScreen(
 @Composable
 private fun RecordWorkoutHistoryScreen(
     uiState: WorkoutWithExercisesUiState,
+    titleText: String,
     workoutSaveFunction: (WorkoutHistory, List<ExerciseHistory>) -> Unit,
     onDismiss: () -> Unit,
     workoutHistory: WorkoutHistoryWithExercisesUiState = WorkoutHistoryWithExercisesUiState()
 ) {
-    val exerciseHistories: MutableList<ExerciseHistoryUiState> = remember { mutableStateListOf() }
+    val exerciseHistories: MutableList<ExerciseHistoryUiState> = remember { workoutHistory.exercises.toMutableStateList() }
     val exerciseErrors: MutableMap<Int, Boolean> = remember { mutableStateMapOf() }
     val workoutHistoryUiState = if (workoutHistory == WorkoutHistoryWithExercisesUiState()) {
         WorkoutHistoryUiState(workoutId = uiState.workoutId)
@@ -113,7 +120,7 @@ private fun RecordWorkoutHistoryScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "Record Workout")
+        Text(text = titleText)
         uiState.exercises.forEach { exercise ->
             RecordExerciseCard(
                 exercise = exercise,
@@ -307,6 +314,7 @@ fun WorkoutsScreenPreview() {
                     WorkoutHistoryWithExercisesUiState(2, 1, LocalDate.now().minusDays(3))
                 )
             ),
+            titleText = RECORD_WORKOUT,
             workoutSaveFunction = { _, _ -> },
             onDismiss = {  }
         )
