@@ -33,9 +33,8 @@ class WorkoutsScreenKtTest {
 
     private val workout1 = WorkoutUiState(1, "first")
     private val workout2 = WorkoutUiState(2, "second")
-
     private val firstWorkout = rule.onNode(hasText("first"))
-    private val secondWorkout = rule.onNode(hasText("first"))
+    private val secondWorkout = rule.onNode(hasText("second"))
 
     @Before
     fun setUp() {

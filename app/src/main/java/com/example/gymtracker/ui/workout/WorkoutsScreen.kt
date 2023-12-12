@@ -36,13 +36,13 @@ import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.navigation.HomeNavigationInformation
 import com.example.gymtracker.ui.navigation.HomeScreenCardWrapper
-import com.example.gymtracker.ui.navigation.NavigationArguments
+import com.example.gymtracker.ui.navigation.NavigationRoutes
 import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
 
 object WorkoutsRoute : NavigationRoute {
-    override val route = NavigationArguments.WORKOUTS_SCREEN.route
+    override val route = NavigationRoutes.WORKOUTS_SCREEN.baseRoute
 }
 
 @Composable

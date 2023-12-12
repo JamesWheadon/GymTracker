@@ -35,9 +35,9 @@ fun TopBar(
             )
         },
         navigationIcon = {
-            val homeRoutes = NavigationArguments.values()
+            val homeRoutes = NavigationRoutes.values()
                 .filter { it.homeRoute }
-                .map { it.route }
+                .map { it.baseRoute }
             Row {
                 if (navController.currentDestination != null && !homeRoutes.contains(navController.currentDestination!!.route)) {
                     IconButton(onClick = { navController.navigate(navController.graph.startDestinationId) }) {

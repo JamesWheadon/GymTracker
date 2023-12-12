@@ -45,17 +45,17 @@ import com.example.gymtracker.ui.exercise.toExercise
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryScreen
-import com.example.gymtracker.ui.navigation.NavigationArguments
 import com.example.gymtracker.ui.navigation.NavigationRoute
+import com.example.gymtracker.ui.navigation.NavigationRoutes.EXERCISE_DETAILS_SCREEN
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 
 object ExerciseDetailsRoute : NavigationRoute {
-    val navArgument = NavigationArguments.EXERCISE_DETAILS_NAV_ARGUMENT.route
+    val navArgument = EXERCISE_DETAILS_SCREEN.baseRoute
     override val route = "${ExercisesRoute.route}/{${navArgument}}"
 
-    fun getRouteForNavArgument(navArgument: Int): String = "${ExercisesRoute.route}/${navArgument}"
+    fun getRouteForNavArgument(navArgument: Int): String = "${EXERCISE_DETAILS_SCREEN.baseRoute}/${navArgument}"
 }
 
 @Composable
