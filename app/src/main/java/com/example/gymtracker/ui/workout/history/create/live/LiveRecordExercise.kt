@@ -160,17 +160,14 @@ fun LiveRecordExerciseSetsAndTimer(
         var setsComplete by remember { mutableStateOf(0) }
         var resting by remember { mutableStateOf(false) }
         Text(text = "Sets Completed: $setsComplete")
-        Log.i("function call", "composable rendered")
         if (resting) {
             Timer(rest = exerciseData.rest) {
                 resting = false
             }
         } else {
-            Log.i("function call", "Button rendered")
             Button(onClick = {
                 setsComplete++
                 resting = true
-                Log.i("function call", "$setsComplete")
             }) {
                 Text(text = "Finish Set")
             }

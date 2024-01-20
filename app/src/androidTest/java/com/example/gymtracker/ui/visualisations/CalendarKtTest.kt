@@ -12,7 +12,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onParent
 import androidx.compose.ui.test.performClick
-import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.Rule
@@ -86,7 +86,7 @@ class CalendarKtTest {
                         Matchers.greaterThan(previousPosition.x)
                     )
                 } else {
-                    MatcherAssert.assertThat(dayPosition.x, CoreMatchers.equalTo(0F))
+                    MatcherAssert.assertThat(dayPosition.x, equalTo(0F))
                 }
             }
             previousPosition = dayPosition
@@ -112,7 +112,7 @@ class CalendarKtTest {
         rule.onAllNodesWithText("", substring = true).assertCountEquals(1)
         MatcherAssert.assertThat(
             dayNode.positionInRoot.x + dayNode.size.width,
-            CoreMatchers.equalTo(dayParent.positionInRoot.x + dayParent.size.width)
+            equalTo(dayParent.positionInRoot.x + dayParent.size.width)
         )
     }
 
@@ -131,7 +131,7 @@ class CalendarKtTest {
         val dayNode = day.fetchSemanticsNode()
         day.assertExists()
         rule.onAllNodesWithText("", substring = true).assertCountEquals(1)
-        MatcherAssert.assertThat(dayNode.positionInRoot.x, CoreMatchers.equalTo(0F))
+        MatcherAssert.assertThat(dayNode.positionInRoot.x, equalTo(0F))
     }
 
     @Test
@@ -193,8 +193,8 @@ class CalendarKtTest {
         firstDay.performClick()
         secondDay.performClick()
 
-        MatcherAssert.assertThat(clicked.size, CoreMatchers.equalTo(1))
-        MatcherAssert.assertThat(clicked[0], CoreMatchers.equalTo(1))
+        MatcherAssert.assertThat(clicked.size, equalTo(1))
+        MatcherAssert.assertThat(clicked[0], equalTo(1))
     }
 
     @Test
@@ -295,7 +295,7 @@ class CalendarKtTest {
 
         MatcherAssert.assertThat(
             yearPosition,
-            CoreMatchers.equalTo(yearNow.fetchSemanticsNode().positionInRoot)
+            equalTo(yearNow.fetchSemanticsNode().positionInRoot)
         )
     }
 
@@ -326,14 +326,14 @@ class CalendarKtTest {
             if (month != "Oct") {
                 MatcherAssert.assertThat(
                     chosenYearMonth.month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
-                    CoreMatchers.equalTo(month)
+                    equalTo(month)
                 )
                 MatcherAssert.assertThat(
                     chosenYearMonth.year,
-                    CoreMatchers.equalTo(Year.now().value - 1)
+                    equalTo(Year.now().value - 1)
                 )
             } else {
-                MatcherAssert.assertThat(chosenYearMonth, CoreMatchers.equalTo(null))
+                MatcherAssert.assertThat(chosenYearMonth, equalTo(null))
             }
             chosenYearMonth = null
         }
@@ -363,17 +363,17 @@ class CalendarKtTest {
             val monthNode = rule.onNode(hasText(months[month - 1]))
             monthNode.assertExists()
             monthNode.performClick()
-            if (month < YearMonth.now().month.value) {
+            if (month <= YearMonth.now().month.value) {
                 MatcherAssert.assertThat(
                     chosenYearMonth.month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
-                    CoreMatchers.equalTo(months[month - 1])
+                    equalTo(months[month - 1])
                 )
                 MatcherAssert.assertThat(
                     chosenYearMonth.year,
-                    CoreMatchers.equalTo(Year.now().value)
+                    equalTo(Year.now().value)
                 )
             } else {
-                MatcherAssert.assertThat(chosenYearMonth, CoreMatchers.equalTo(null))
+                MatcherAssert.assertThat(chosenYearMonth, equalTo(null))
             }
             chosenYearMonth = null
         }

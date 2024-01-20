@@ -7,15 +7,22 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.performClick
+import androidx.navigation.NavHostController
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 
 class WorkoutSelectionScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
+
+    @Mock
+    private lateinit var navController: NavHostController
 
     private val workout1 = WorkoutUiState(1, "first")
     private val workout2 = WorkoutUiState(2, "second")
@@ -24,7 +31,11 @@ class WorkoutSelectionScreenKtTest {
     private val lazyColumn = rule.onNode(hasScrollAction())
     private val firstWorkout = rule.onNode(hasText("first"))
     private val secondWorkout = rule.onNode(hasText("second"))
-    private val closeButton = rule.onNode(hasContentDescription("Close"))
+
+    @Before
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
+    }
 
     @Test
     fun rendersEmptyListOfWorkouts() {
@@ -35,7 +46,6 @@ class WorkoutSelectionScreenKtTest {
             )
         }
 
-        screenTitle.assertExists()
         lazyColumn.assertExists()
         assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(0))
     }
@@ -54,7 +64,6 @@ class WorkoutSelectionScreenKtTest {
             )
         }
 
-        screenTitle.assertExists()
         lazyColumn.assertExists()
         assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(2))
         firstWorkout.assertExists()
@@ -76,7 +85,6 @@ class WorkoutSelectionScreenKtTest {
             )
         }
 
-        screenTitle.assertExists()
         lazyColumn.assertExists()
         assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(2))
         firstWorkout.assertExists()
@@ -88,21 +96,14 @@ class WorkoutSelectionScreenKtTest {
     }
 
     @Test
-    fun clickingCloseButtonCallsOnDismiss() {
-        var dismissed = false
+    fun rendersWorkoutSelectionScreen() {
         rule.setContent {
             LiveRecordChooseWorkoutsScreen(
-                workoutNavigationFunction = { },
-                onDismiss = {dismissed = true}
+                navController = navController,
+                workoutNavigationFunction = { }
             )
         }
 
         screenTitle.assertExists()
-        lazyColumn.assertExists()
-        closeButton.assertExists()
-
-        closeButton.performClick()
-
-        assertThat(dismissed, equalTo(true))
     }
 }

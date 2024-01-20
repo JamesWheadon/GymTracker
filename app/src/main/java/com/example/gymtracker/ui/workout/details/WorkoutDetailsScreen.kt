@@ -52,8 +52,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 object WorkoutDetailsRoute : NavigationRoute {
-    val navArgument = WORKOUT_DETAILS_SCREEN.baseRoute
-    override val route = "${WorkoutsRoute.route}/{${navArgument}}"
+    override val route = "${WORKOUT_DETAILS_SCREEN.baseRoute}/{${WORKOUT_DETAILS_SCREEN.navigationArgument}}"
 
     fun getRouteForNavArgument(navArgument: Int): String = "${WORKOUT_DETAILS_SCREEN.baseRoute}/${navArgument}"
 }
