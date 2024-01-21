@@ -11,33 +11,16 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import androidx.navigation.NavHostController
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
-import com.example.gymtracker.data.workout.WorkoutRepository
-import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
-import com.example.gymtracker.data.workoutHistory.WorkoutHistoryRepository
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
 class LiveRecordWorkoutKtTest {
-
-    @Mock
-    private lateinit var navController: NavHostController
-    @Mock
-    private lateinit var workoutHistoryRepository: WorkoutHistoryRepository
-    @Mock
-    private lateinit var exerciseHistoryRepository: ExerciseHistoryRepository
-    @Mock
-    private lateinit var workoutRepository: WorkoutRepository
-    @Mock
-    private lateinit var workoutExerciseCrossRefRepository: WorkoutExerciseCrossRefRepository
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
@@ -159,5 +142,24 @@ class LiveRecordWorkoutKtTest {
 
         rule.onAllNodesWithText("Start").assertCountEquals(2)
         rule.onAllNodesWithText("Completed").assertCountEquals(1)
+    }
+
+    @Test
+    fun rendersLiveRecordWorkoutCancelExercise() {
+        rule.setContent {
+            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = {})
+        }
+
+        curlsExerciseName.assertExists()
+        dipsExerciseName.assertExists()
+        pressExerciseName.assertExists()
+        startButtons.assertCountEquals(3)
+        completedText.assertCountEquals(0)
+
+        startButtons[0].performClick()
+        rule.onNode(hasText("Cancel")).performClick()
+
+        rule.onAllNodesWithText("Start").assertCountEquals(3)
+        rule.onAllNodesWithText("Completed").assertCountEquals(0)
     }
 }

@@ -27,6 +27,7 @@ class LiveRecordExerciseKtTest {
     private val restField = rule.onNode(hasContentDescription("Rest"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
     private val startButton = rule.onNode(hasText("Start"))
+    private val cancelButton = rule.onNode(hasText("Cancel"))
 
     @OptIn(ExperimentalTestApi::class)
     @Test
@@ -65,7 +66,9 @@ class LiveRecordExerciseKtTest {
     @Test
     fun rendersLiveRecordExerciseSetsAndTimer() {
         rule.setContent {
-            LiveRecordExerciseSetsAndTimer(exerciseData = ExerciseHistoryUiState(rest = 15), exerciseFinished = { })
+            LiveRecordExerciseSetsAndTimer(
+                exerciseData = ExerciseHistoryUiState(rest = 15),
+                exerciseFinished = { })
         }
 
         rule.onNode(hasText("Sets Completed: 0")).assertExists()
@@ -122,20 +125,42 @@ class LiveRecordExerciseKtTest {
     @Test
     fun rendersLiveRecordExerciseInfo() {
         rule.setContent {
-            LiveRecordExerciseInfo(onStart = { })
+            LiveRecordExerciseInfo(
+                onStart = { },
+                onCancel = {}
+            )
         }
 
         repsField.assertExists()
         restField.assertExists()
         weightField.assertExists()
         startButton.assertExists()
+        cancelButton.assertExists()
+    }
+
+    @Test
+    fun liveRecordExerciseInfoClickingCancelCallsOnCancel() {
+        var cancelled = false
+        rule.setContent {
+            LiveRecordExerciseInfo(
+                onStart = { },
+                onCancel = { cancelled = true }
+            )
+        }
+
+        cancelButton.performClick()
+
+        assertThat(cancelled, equalTo(true))
     }
 
     @Test
     fun liveRecordExerciseInfoClickingStartPopulatesExerciseData() {
         var exerciseData: ExerciseData? = null
         rule.setContent {
-            LiveRecordExerciseInfo(onStart = { data -> exerciseData = data })
+            LiveRecordExerciseInfo(
+                onStart = { data -> exerciseData = data },
+                onCancel = { }
+            )
         }
 
         repsField.performClick()
@@ -157,7 +182,8 @@ class LiveRecordExerciseKtTest {
         rule.setContent {
             LiveRecordExercise(
                 uiState = ExerciseUiState(name = "Curls"),
-                exerciseComplete = {history -> exerciseHistory = history}
+                exerciseComplete = { history -> exerciseHistory = history },
+                exerciseCancel = { }
             )
         }
 

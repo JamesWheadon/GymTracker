@@ -1,6 +1,5 @@
 package com.example.gymtracker.ui.workout.history.create.live
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,7 +37,8 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun LiveRecordExercise(
     uiState: ExerciseUiState,
-    exerciseComplete: (ExerciseHistoryUiState) -> Unit
+    exerciseComplete: (ExerciseHistoryUiState) -> Unit,
+    exerciseCancel: () -> Unit
 ) {
     var recording by remember { mutableStateOf(false) }
     val exerciseData = ExerciseHistoryUiState(exerciseId = uiState.id)
@@ -48,12 +50,15 @@ fun LiveRecordExercise(
         ) {
             Text(text = uiState.name)
             if (!recording) {
-                LiveRecordExerciseInfo() { data ->
-                    exerciseData.rest = data.rest
-                    exerciseData.reps = data.reps
-                    exerciseData.weight = data.weight
-                    recording = true
-                }
+                LiveRecordExerciseInfo(
+                    onStart = { data ->
+                        exerciseData.rest = data.rest
+                        exerciseData.reps = data.reps
+                        exerciseData.weight = data.weight
+                        recording = true
+                    },
+                    onCancel = { exerciseCancel() }
+                )
             } else {
                 LiveRecordExerciseSetsAndTimer(
                     exerciseData = exerciseData
@@ -68,7 +73,8 @@ fun LiveRecordExercise(
 
 @Composable
 fun LiveRecordExerciseInfo(
-    onStart: (ExerciseData) -> Unit
+    onStart: (ExerciseData) -> Unit,
+    onCancel: () -> Unit
 ) {
     var repsState by remember { mutableStateOf("") }
     var restState by remember { mutableStateOf("") }
@@ -137,16 +143,30 @@ fun LiveRecordExerciseInfo(
                     .semantics { contentDescription = "Units" }
             )
         }
-        Button(onClick = {
-            onStart(
-                ExerciseData(
-                    reps = repsState.toInt(),
-                    rest = restState.toInt(),
-                    weight = weightState.toDouble()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(onClick = {
+                onStart(
+                    ExerciseData(
+                        reps = repsState.toInt(),
+                        rest = restState.toInt(),
+                        weight = weightState.toDouble()
+                    )
                 )
-            )
-        }) {
-            Text(text = "Start")
+            }) {
+                Text(text = "Start")
+            }
+            Button(
+                onClick = {
+                    onCancel()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(text = "Cancel")
+            }
         }
     }
 }
@@ -205,7 +225,8 @@ fun LiveRecordExercisePreview() {
     GymTrackerTheme(darkTheme = false) {
         LiveRecordExercise(
             uiState = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells"),
-            exerciseComplete = { }
+            exerciseComplete = { },
+            exerciseCancel = { }
         )
     }
 }

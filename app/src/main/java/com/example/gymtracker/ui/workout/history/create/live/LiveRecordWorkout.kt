@@ -100,6 +100,9 @@ fun LiveRecordWorkout(
                     exerciseComplete = { exerciseHistory ->
                         completedExercises.add(exerciseHistory)
                         currentExercise = -1
+                    },
+                    exerciseCancel = {
+                        currentExercise = -1
                     }
                 )
             } else if (completedExercises.map { it.exerciseId }.contains(exercise.id)) {
