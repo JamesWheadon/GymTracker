@@ -40,6 +40,7 @@ class LiveRecordWorkoutKtTest {
     private val restField = rule.onNode(hasContentDescription("Rest"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
     private val finishExercise = rule.onNode(hasText("Finish Exercise"))
+    private val finishWorkout = rule.onNode(hasText("Finish Workout"))
 
     @Before
     fun setUp() {
@@ -144,6 +145,18 @@ class LiveRecordWorkoutKtTest {
         rule.onAllNodesWithText("Start").assertCountEquals(2)
         rule.onAllNodesWithText("Completed").assertCountEquals(1)
         assertThat(saved, equalTo(true))
+    }
+
+    @Test
+    fun rendersLiveRecordWorkoutCompleteWorkout() {
+        var finished = false
+        rule.setContent {
+            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = { }, finishFunction = { finished = true })
+        }
+
+        finishWorkout.performClick()
+
+        assertThat(finished, equalTo(true))
     }
 
     @Test
