@@ -1,5 +1,6 @@
 package com.example.gymtracker.ui.workout.history.create.live
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +62,7 @@ fun LiveRecordExercise(
                     onCancel = { exerciseCancel() }
                 )
             } else {
+                Log.i("LiveRecordExercise", exerciseData.toString())
                 LiveRecordExerciseSetsAndTimer(
                     exerciseData = exerciseData
                 ) { setsCompleted ->
@@ -76,10 +79,10 @@ fun LiveRecordExerciseInfo(
     onStart: (ExerciseData) -> Unit,
     onCancel: () -> Unit
 ) {
-    var repsState by remember { mutableStateOf("") }
-    var restState by remember { mutableStateOf("") }
-    var weightState by remember { mutableStateOf("") }
-    var unitState by remember { mutableStateOf(WeightUnits.KILOGRAMS.shortForm) }
+    var repsState by rememberSaveable { mutableStateOf("") }
+    var restState by rememberSaveable { mutableStateOf("") }
+    var weightState by rememberSaveable { mutableStateOf("") }
+    var unitState by rememberSaveable { mutableStateOf(WeightUnits.KILOGRAMS.shortForm) }
     Column {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -177,8 +180,8 @@ fun LiveRecordExerciseSetsAndTimer(
     exerciseFinished: (Int) -> Unit
 ) {
     Column {
-        var setsComplete by remember { mutableStateOf(0) }
-        var resting by remember { mutableStateOf(false) }
+        var setsComplete by rememberSaveable { mutableStateOf(0) }
+        var resting by rememberSaveable { mutableStateOf(false) }
         Text(text = "Sets Completed: $setsComplete")
         if (resting) {
             Timer(rest = exerciseData.rest) {
@@ -203,7 +206,7 @@ fun Timer(
     rest: Int,
     finished: () -> Unit
 ) {
-    var time by remember { mutableStateOf(rest) }
+    var time by rememberSaveable { mutableStateOf(rest) }
     LaunchedEffect(Unit) {
         while (time > 0) {
             delay(1.seconds)

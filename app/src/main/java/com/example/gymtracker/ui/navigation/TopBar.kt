@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.workout.WorkoutSelectionScreenRoute
+import com.example.gymtracker.ui.workout.history.create.live.LiveRecordWorkoutRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +80,11 @@ fun TopBar(
                 }
             }
             if (homeScreen) {
-                IconButton(onClick = { navController.navigate(WorkoutSelectionScreenRoute.route) }) {
+                IconButton(onClick = {
+                    if (!navController.popBackStack(route = LiveRecordWorkoutRoute.route, inclusive = false)) {
+                        navController.navigate(WorkoutSelectionScreenRoute.route)
+                    }
+                }) {
                     Icon(
                         imageVector = Icons.Outlined.PlayArrow,
                         contentDescription = "Live Record Workout"
