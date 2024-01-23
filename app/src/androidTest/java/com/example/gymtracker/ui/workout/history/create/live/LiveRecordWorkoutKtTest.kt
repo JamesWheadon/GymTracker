@@ -106,7 +106,7 @@ class LiveRecordWorkoutKtTest {
     @Test
     fun rendersLiveRecordWorkout() {
         rule.setContent {
-            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = {})
+            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = {}, finishFunction = {})
         }
 
         curlsExerciseName.assertExists()
@@ -118,8 +118,9 @@ class LiveRecordWorkoutKtTest {
 
     @Test
     fun rendersLiveRecordWorkoutCompleteExercise() {
+        var saved = false
         rule.setContent {
-            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = {})
+            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = { saved = true }, finishFunction = {})
         }
 
         curlsExerciseName.assertExists()
@@ -142,12 +143,13 @@ class LiveRecordWorkoutKtTest {
 
         rule.onAllNodesWithText("Start").assertCountEquals(2)
         rule.onAllNodesWithText("Completed").assertCountEquals(1)
+        assertThat(saved, equalTo(true))
     }
 
     @Test
     fun rendersLiveRecordWorkoutCancelExercise() {
         rule.setContent {
-            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = {})
+            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = {}, finishFunction = {})
         }
 
         curlsExerciseName.assertExists()
