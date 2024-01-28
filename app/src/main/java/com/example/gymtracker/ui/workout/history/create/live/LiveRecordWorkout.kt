@@ -82,7 +82,7 @@ fun LiveRecordWorkout(
                 navController.popBackStack()
                 navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(uiState.workoutId))
             },
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding).fillMaxWidth()
         )
     }
 }
@@ -112,7 +112,8 @@ fun LiveRecordWorkout(
                     },
                     exerciseCancel = {
                         currentExercise = -1
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
             } else if (completedExercises.contains(exercise.id)) {
                 LiveRecordWorkoutExerciseCard(
@@ -138,10 +139,13 @@ fun LiveRecordWorkout(
 fun LiveRecordWorkoutExerciseCard(
     exercise: ExerciseUiState,
     completed: Boolean,
+    modifier: Modifier = Modifier,
     recording: Boolean = false,
     startFunction: () -> Unit = { }
 ) {
-    Card {
+    Card(
+        modifier = modifier.fillMaxWidth()
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround,

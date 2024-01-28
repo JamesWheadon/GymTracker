@@ -1,6 +1,5 @@
 package com.example.gymtracker.ui.workout.history.create.live
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,15 +39,19 @@ import kotlin.time.Duration.Companion.seconds
 fun LiveRecordExercise(
     uiState: ExerciseUiState,
     exerciseComplete: (ExerciseHistoryUiState) -> Unit,
-    exerciseCancel: () -> Unit
+    exerciseCancel: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var recording by remember { mutableStateOf(false) }
     val exerciseData = ExerciseHistoryUiState(exerciseId = uiState.id)
     Card(
-        elevation = customCardElevation()
+        elevation = customCardElevation(),
+        modifier = modifier
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = uiState.name)
             if (!recording) {
@@ -62,7 +65,6 @@ fun LiveRecordExercise(
                     onCancel = { exerciseCancel() }
                 )
             } else {
-                Log.i("LiveRecordExercise", exerciseData.toString())
                 LiveRecordExerciseSetsAndTimer(
                     exerciseData = exerciseData
                 ) { setsCompleted ->
@@ -179,7 +181,10 @@ fun LiveRecordExerciseSetsAndTimer(
     exerciseData: ExerciseHistoryUiState,
     exerciseFinished: (Int) -> Unit
 ) {
-    Column {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
         var setsComplete by rememberSaveable { mutableStateOf(0) }
         var resting by rememberSaveable { mutableStateOf(false) }
         Text(text = "Sets Completed: $setsComplete")
@@ -230,6 +235,17 @@ fun LiveRecordExercisePreview() {
             uiState = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells"),
             exerciseComplete = { },
             exerciseCancel = { }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LiveRecordExerciseSetsAndTimerPreview() {
+    GymTrackerTheme(darkTheme = false) {
+        LiveRecordExerciseSetsAndTimer(
+            exerciseData = ExerciseHistoryUiState(),
+            exerciseFinished = { }
         )
     }
 }
