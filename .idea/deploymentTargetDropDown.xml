@@ -14,12 +14,6 @@
       <entry key="rendersLiveRecordWorkoutCancelExercise()">
         <State />
       </entry>
-      <entry key="rendersLiveRecordWorkoutCompleteExercise()">
-        <State />
-      </entry>
-      <entry key="rendersTimerThatCountsDown()">
-        <State />
-      </entry>
     </value>
   </component>
 </project>
