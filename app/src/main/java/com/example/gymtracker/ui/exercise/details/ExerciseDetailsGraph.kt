@@ -336,23 +336,25 @@ private fun DrawScope.drawDataPoints(
             )
         }.sortedBy { point -> point.first }
 
-    val path = Path()
-    path.moveTo(dataPoints[0].first, dataPoints[0].second)
+    if (dataPoints.isNotEmpty()) {
+        val path = Path()
+        path.moveTo(dataPoints[0].first, dataPoints[0].second)
 
-    dataPoints.forEach { point ->
-        drawCircle(
+        dataPoints.forEach { point ->
+            drawCircle(
+                color = lineColor,
+                center = Offset(point.first, point.second),
+                radius = 10F
+            )
+            path.lineTo(point.first, point.second)
+        }
+
+        drawPath(
+            path = path,
             color = lineColor,
-            center = Offset(point.first, point.second),
-            radius = 10F
+            style = Stroke(width = 2f)
         )
-        path.lineTo(point.first, point.second)
     }
-
-    drawPath(
-        path = path,
-        color = lineColor,
-        style = Stroke(width = 2f)
-    )
     return dataPoints
 }
 

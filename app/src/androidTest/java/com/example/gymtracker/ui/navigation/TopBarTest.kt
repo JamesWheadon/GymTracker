@@ -77,7 +77,7 @@ class TopBarTest {
 
     @Test
     fun clickingHomeButtonExecutesNavigateToHome() {
-        `when`(navController.currentDestination).thenReturn(NavDestination(NavigationArguments.EXERCISES_SCREEN.route))
+        `when`(navController.currentDestination).thenReturn(NavDestination(NavigationRoutes.EXERCISES_SCREEN.baseRoute))
         `when`(navController.graph).thenReturn(navGraph)
 
         rule.setContent {

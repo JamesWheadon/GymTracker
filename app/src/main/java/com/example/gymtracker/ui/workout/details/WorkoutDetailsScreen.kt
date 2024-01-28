@@ -37,13 +37,12 @@ import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseCard
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.navigation.NavigationArguments
 import com.example.gymtracker.ui.navigation.NavigationRoute
+import com.example.gymtracker.ui.navigation.NavigationRoutes.WORKOUT_DETAILS_SCREEN
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.visualisations.Calendar
 import com.example.gymtracker.ui.visualisations.MonthPicker
-import com.example.gymtracker.ui.workout.WorkoutsRoute
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryScreen
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
@@ -52,10 +51,9 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 object WorkoutDetailsRoute : NavigationRoute {
-    val navArgument = NavigationArguments.WORKOUTS_DETAILS_NAV_ARGUMENT.route
-    override val route = "${WorkoutsRoute.route}/{${navArgument}}"
+    override val route = "${WORKOUT_DETAILS_SCREEN.baseRoute}/{${WORKOUT_DETAILS_SCREEN.navigationArgument}}"
 
-    fun getRouteForNavArgument(navArgument: Int): String = "${WorkoutsRoute.route}/${navArgument}"
+    fun getRouteForNavArgument(navArgument: Int): String = "${WORKOUT_DETAILS_SCREEN.baseRoute}/${navArgument}"
 }
 
 @Composable

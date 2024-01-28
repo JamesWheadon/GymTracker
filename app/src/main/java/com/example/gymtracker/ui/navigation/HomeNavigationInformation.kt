@@ -11,11 +11,11 @@ fun getHomeNavigationOptionsForRoute(
     homeRoute: NavigationRoute,
     navController: NavHostController
 ): Map<HomeNavigationInformation, Boolean> {
-    return NavigationArguments.values()
+    return NavigationRoutes.values()
         .filter { it.homeRoute }
         .associate { navigationArgument ->
             HomeNavigationInformation(navigationArgument.homeNavigationTitle) {
-                navController.navigate(navigationArgument.route)
-            } to (navigationArgument.route != homeRoute.route)
+                navController.navigate(navigationArgument.baseRoute)
+            } to (navigationArgument.baseRoute != homeRoute.route)
         }
 }

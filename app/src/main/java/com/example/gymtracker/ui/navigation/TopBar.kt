@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import com.example.gymtracker.ui.workout.WorkoutSelectionScreenRoute
+import com.example.gymtracker.ui.workout.history.create.live.LiveRecordWorkoutRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,6 +27,7 @@ fun TopBar(
     text: String,
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    homeScreen: Boolean = false,
     editFunction: (() -> Unit)? = null,
     deleteFunction: (() -> Unit)? = null
 ) {
@@ -35,9 +39,9 @@ fun TopBar(
             )
         },
         navigationIcon = {
-            val homeRoutes = NavigationArguments.values()
+            val homeRoutes = NavigationRoutes.values()
                 .filter { it.homeRoute }
-                .map { it.route }
+                .map { it.baseRoute }
             Row {
                 if (navController.currentDestination != null && !homeRoutes.contains(navController.currentDestination!!.route)) {
                     IconButton(onClick = { navController.navigate(navController.graph.startDestinationId) }) {
@@ -72,6 +76,18 @@ fun TopBar(
                         imageVector = Icons.Outlined.Delete,
                         tint = Color.Red,
                         contentDescription = "Delete feature"
+                    )
+                }
+            }
+            if (homeScreen) {
+                IconButton(onClick = {
+                    if (!navController.popBackStack(route = LiveRecordWorkoutRoute.route, inclusive = false)) {
+                        navController.navigate(WorkoutSelectionScreenRoute.route)
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Outlined.PlayArrow,
+                        contentDescription = "Live Record Workout"
                     )
                 }
             }

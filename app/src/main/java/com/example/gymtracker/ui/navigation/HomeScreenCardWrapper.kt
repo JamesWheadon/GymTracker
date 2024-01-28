@@ -34,7 +34,8 @@ fun HomeScreenCardWrapper(
         topBar = {
             TopBar(
                 text = title,
-                navController = navController
+                navController = navController,
+                homeScreen = true
             )
         },
         floatingActionButton = {
