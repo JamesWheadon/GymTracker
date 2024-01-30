@@ -1,14 +1,16 @@
 package com.example.gymtracker.ui.workout.details
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
@@ -19,11 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,8 +53,7 @@ fun EditWorkoutExercisesScreen(
         factory = AppViewModelProvider.Factory
     )
 ) {
-    val chosenExercises: SnapshotStateList<ExerciseUiState> =
-        remember { existingExercises.toMutableStateList() }
+    val chosenExercises = existingExercises.toMutableStateList()
     val allExercises = exercisesViewModel.exerciseListUiState.collectAsState().value.exerciseList
     val remainingExercises = allExercises.filter { exercise ->
         !chosenExercises.contains(exercise)
@@ -84,42 +84,49 @@ fun EditWorkoutExercisesScreen(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.4f))
     ) {
-        Card {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(
-                    horizontal = 0.dp,
-                    vertical = 24.dp
-                )
-            ) {
-                if (chosenExercises.isNotEmpty()) {
-                    ExercisesList(chosenExercises, deselectFunction, "Workout Exercises", true)
-                }
-                if (remainingExercises.isNotEmpty()) {
-                    ExercisesList(remainingExercises, selectFunction, "Available Exercises", false)
+        Box(
+            modifier = modifier.fillMaxSize(0.8F)
+        ) {
+            Card {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(
+                            horizontal = 0.dp,
+                            vertical = 24.dp
+                        )
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    if (chosenExercises.isNotEmpty()) {
+                        ExercisesList(chosenExercises, deselectFunction, "Workout Exercises", true)
+                    }
+                    if (remainingExercises.isNotEmpty()) {
+                        ExercisesList(remainingExercises, selectFunction, "Available Exercises", false)
+                    }
                 }
             }
-        }
-        IconButton(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .offset((-8).dp, 8.dp),
-            onClick = { onDismiss() }
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Close"
-            )
+            IconButton(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset((-8).dp, 8.dp),
+                onClick = { onDismiss() }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close"
+                )
+            }
         }
     }
 }
 
 @Composable
 fun ExercisesList(
-    chosenExercises: List<ExerciseUiState>,
+    exercises: List<ExerciseUiState>,
     clickFunction: (ExerciseUiState) -> Unit,
     listTitle: String,
     exercisesSelected: Boolean
@@ -128,14 +135,12 @@ fun ExercisesList(
         text = listTitle,
         style = MaterialTheme.typography.headlineLarge
     )
-    LazyColumn {
-        items(chosenExercises) { exercise ->
-            AddRemoveExerciseCard(
-                exercise = exercise,
-                checked = exercisesSelected,
-                clickFunction = clickFunction
-            )
-        }
+    exercises.forEach { exercise ->
+        AddRemoveExerciseCard(
+            exercise = exercise,
+            checked = exercisesSelected,
+            clickFunction = clickFunction
+        )
     }
 }
 

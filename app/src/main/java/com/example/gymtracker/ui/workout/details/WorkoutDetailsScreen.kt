@@ -4,10 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -51,9 +50,11 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 object WorkoutDetailsRoute : NavigationRoute {
-    override val route = "${WORKOUT_DETAILS_SCREEN.baseRoute}/{${WORKOUT_DETAILS_SCREEN.navigationArgument}}"
+    override val route =
+        "${WORKOUT_DETAILS_SCREEN.baseRoute}/{${WORKOUT_DETAILS_SCREEN.navigationArgument}}"
 
-    fun getRouteForNavArgument(navArgument: Int): String = "${WORKOUT_DETAILS_SCREEN.baseRoute}/${navArgument}"
+    fun getRouteForNavArgument(navArgument: Int): String =
+        "${WORKOUT_DETAILS_SCREEN.baseRoute}/${navArgument}"
 }
 
 @Composable
@@ -123,13 +124,11 @@ fun WorkoutDetailsScreen(
         )
     }
     if (showEditExercises) {
-        Dialog(onDismissRequest = { showEditExercises = false }) {
-            EditWorkoutExercisesScreen(
-                workout = uiState.toWorkout(),
-                existingExercises = uiState.exercises,
-                onDismiss = { showEditExercises = false }
-            )
-        }
+        EditWorkoutExercisesScreen(
+            workout = uiState.toWorkout(),
+            existingExercises = uiState.exercises,
+            onDismiss = { showEditExercises = false }
+        )
     }
     if (showUpdateWorkout) {
         Dialog(onDismissRequest = { showUpdateWorkout = false }) {
@@ -179,15 +178,13 @@ private fun WorkoutDetailsScreen(
     var selectedWorkoutHistoryId by remember { mutableStateOf(-1) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(innerPadding)
     ) {
-        LazyColumn(
-            modifier = modifier
-                .fillMaxWidth(),
-            contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(0.dp)
-        ) {
-            items(uiState.exercises) { exercise ->
+        Column {
+            uiState.exercises.forEach { exercise ->
                 ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
             }
         }
@@ -209,11 +206,19 @@ private fun WorkoutDetailsScreen(
             month = selectedMonth.monthValue,
             year = selectedMonth.year,
             activeDays = uiState.workoutHistory
-                .filter {
-                        history -> history.date.year == selectedMonth.year &&
-                        history.date.monthValue == selectedMonth.monthValue
+                .filter { history ->
+                    history.date.year == selectedMonth.year &&
+                            history.date.monthValue == selectedMonth.monthValue
                 }.map { history -> history.date.dayOfMonth },
-            dayFunction = { chosenDay -> selectedWorkoutHistoryId = uiState.workoutHistory.first { it.date == LocalDate.of(selectedMonth.year, selectedMonth.monthValue, chosenDay) }.workoutHistoryId }
+            dayFunction = { chosenDay ->
+                selectedWorkoutHistoryId = uiState.workoutHistory.first {
+                    it.date == LocalDate.of(
+                        selectedMonth.year,
+                        selectedMonth.monthValue,
+                        chosenDay
+                    )
+                }.workoutHistoryId
+            }
         )
     }
 }

@@ -13,3 +13,8 @@ fun Workout.toWorkoutUiState(): WorkoutUiState = WorkoutUiState(
     workoutId = workoutId,
     name = name
 )
+
+fun WorkoutUiState.toWorkout(): Workout = Workout(
+    workoutId = workoutId,
+    name = name
+)

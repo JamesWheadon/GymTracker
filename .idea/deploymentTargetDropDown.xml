@@ -8,12 +8,6 @@
       <entry key="app">
         <State />
       </entry>
-      <entry key="rendersLiveRecordExerciseCardNotCompleteClickStart()">
-        <State />
-      </entry>
-      <entry key="rendersLiveRecordWorkoutCancelExercise()">
-        <State />
-      </entry>
     </value>
   </component>
 </project>
