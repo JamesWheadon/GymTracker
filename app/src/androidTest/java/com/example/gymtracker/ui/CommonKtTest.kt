@@ -1,6 +1,7 @@
 package com.example.gymtracker.ui
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,7 +31,8 @@ class CommonKtTest {
             FormInformationField(
                 label = "Test Field",
                 value = "",
-                onChange = { enteredText = it }
+                onChange = { enteredText = it },
+                keyboardOptions = KeyboardOptions.Default
             )
         }
 
@@ -46,6 +48,7 @@ class CommonKtTest {
                 label = "Test Field",
                 value = "",
                 onChange = { },
+                keyboardOptions = KeyboardOptions.Default,
                 error = true,
                 errorMessage = "Test error message"
             )
