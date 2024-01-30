@@ -124,7 +124,7 @@ class EditWorkoutExercisesScreenKtTest {
     fun rendersExerciseList() {
         rule.setContent {
             ExercisesList(
-                chosenExercises = listOf(curlsExerciseUiState, dipsExerciseUiState),
+                exercises = listOf(curlsExerciseUiState, dipsExerciseUiState),
                 clickFunction = { },
                 listTitle = "Test List",
                 exercisesSelected = true

@@ -26,6 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,10 +38,11 @@ import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.navigation.HomeNavigationInformation
 import com.example.gymtracker.ui.navigation.HomeScreenCardWrapper
-import com.example.gymtracker.ui.navigation.NavigationRoutes
 import com.example.gymtracker.ui.navigation.NavigationRoute
+import com.example.gymtracker.ui.navigation.NavigationRoutes
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
+import com.example.gymtracker.ui.workout.details.EditWorkoutExercisesScreen
 
 object WorkoutsRoute : NavigationRoute {
     override val route = NavigationRoutes.WORKOUTS_SCREEN.baseRoute
@@ -74,6 +77,7 @@ fun WorkoutsScreen(
     modifier: Modifier = Modifier
 ) {
     var showCreate by remember { mutableStateOf(false) }
+    var showWorkoutExercises by remember { mutableStateOf(false) }
     HomeScreenCardWrapper(
         title = "My Workouts",
         navController = navController,
@@ -103,11 +107,21 @@ fun WorkoutsScreen(
             onDismissRequest = { showCreate = false }
         ) {
             CreateWorkoutForm(
-                saveFunction = createWorkout,
+                saveFunction = { workout ->
+                    createWorkout(workout)
+                    showWorkoutExercises = true
+                },
                 onDismiss = { showCreate = false },
                 screenTitle = "Create Workout"
             )
         }
+    }
+    if (showWorkoutExercises) {
+            EditWorkoutExercisesScreen(
+                workout = workoutListUiState.workoutList.last().toWorkout(),
+                existingExercises = listOf(),
+                onDismiss = { showWorkoutExercises = false }
+            )
     }
 }
 
@@ -120,7 +134,8 @@ private fun WorkoutsScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp),
+            .padding(vertical = 16.dp)
+            .semantics { contentDescription = "workoutColumn" },
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(workoutListUiState.workoutList) { workout ->

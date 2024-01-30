@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -69,7 +70,8 @@ fun CreateWorkoutForm(
                         value = nameState,
                         onChange = { entry ->
                             nameState = entry
-                        }
+                        },
+                        keyboardOptions = KeyboardOptions.Default
                     )
                     SaveWorkoutFormButton(
                         workoutName = nameState,

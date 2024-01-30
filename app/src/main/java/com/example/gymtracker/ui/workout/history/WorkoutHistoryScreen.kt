@@ -55,15 +55,15 @@ fun WorkoutHistoryScreen(
             elevation = customCardElevation(),
             modifier = modifier
         ) {
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                items(workoutUiState.exercises.filter { exercise ->
+                workoutUiState.exercises.filter { exercise ->
                     workoutHistoryUiState.exercises
                         .map { exerciseHistory -> exerciseHistory.exerciseId }
                         .contains(exercise.id)
-                }) { exercise ->
+                }.forEach { exercise ->
                     WorkoutHistoryExerciseCard(
                         exercise = exercise,
                         exerciseHistory = workoutHistoryUiState.exercises.first { exerciseHistory -> exerciseHistory.exerciseId == exercise.id }

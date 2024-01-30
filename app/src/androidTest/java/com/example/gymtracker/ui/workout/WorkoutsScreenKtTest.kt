@@ -2,7 +2,6 @@ package com.example.gymtracker.ui.workout
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onChildren
@@ -25,7 +24,7 @@ class WorkoutsScreenKtTest {
     @Mock
     private lateinit var navController: NavHostController
 
-    private val lazyColumn = rule.onNode(hasScrollAction())
+    private val lazyColumn = rule.onNode(hasContentDescription("workoutColumn"))
     private val createWorkoutButton = rule.onNode(hasContentDescription("Add Workout"))
     private val createWorkoutFormTitle = rule.onNode(hasText("Create Workout"))
     private val createWorkoutFormNameField = rule.onNode(hasContentDescription("Workout Name"))

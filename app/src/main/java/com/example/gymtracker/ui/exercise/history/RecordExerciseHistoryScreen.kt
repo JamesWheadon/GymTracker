@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -184,6 +186,7 @@ private fun RecordExerciseHistoryCard(
                     onChange = { entry ->
                         setsState = entry
                     },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     modifier = Modifier
                         .weight(1f)
                         .padding(0.dp)
@@ -195,6 +198,7 @@ private fun RecordExerciseHistoryCard(
                     onChange = { entry ->
                         repsState = entry
                     },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     modifier = Modifier
                         .weight(1f)
                         .padding(0.dp)
@@ -213,6 +217,7 @@ private fun RecordExerciseHistoryCard(
                     onChange = { entry ->
                         weightState = entry
                     },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier
                         .weight(1f)
                         .padding(0.dp)

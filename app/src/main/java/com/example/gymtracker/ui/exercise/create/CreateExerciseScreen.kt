@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -32,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
-import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.ExerciseInformationFieldWithSuggestions
+import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.example.gymtracker.ui.theme.GymTrackerTheme
@@ -112,6 +113,7 @@ fun ExerciseInformationForm(
                         onChange = { entry ->
                             nameState = entry
                         },
+                        keyboardOptions = KeyboardOptions.Default,
                         error = nameError,
                         errorMessage = "Name already taken"
                     )
@@ -120,7 +122,8 @@ fun ExerciseInformationForm(
                         value = equipmentState,
                         onChange = { entry ->
                             equipmentState = entry
-                        }
+                        },
+                        keyboardOptions = KeyboardOptions.Default
                     )
                     ExerciseInformationFieldWithSuggestions(
                         label = "Muscle Group",

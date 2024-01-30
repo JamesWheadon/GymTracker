@@ -52,10 +52,10 @@ fun FormInformationField(
     label: String,
     value: String,
     onChange: (String) -> Unit,
+    keyboardOptions: KeyboardOptions,
     modifier: Modifier = Modifier,
     error: Boolean = false,
-    errorMessage: String = "",
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    errorMessage: String = ""
 ) {
     TextField(
         value = value,
