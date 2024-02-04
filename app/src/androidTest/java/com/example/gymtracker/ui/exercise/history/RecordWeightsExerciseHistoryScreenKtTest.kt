@@ -6,7 +6,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert
@@ -14,7 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
 
-class RecordExerciseHistoryScreenKtTest {
+class RecordWeightsExerciseHistoryScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
@@ -27,7 +27,7 @@ class RecordExerciseHistoryScreenKtTest {
     private val closeButton = rule.onNode(hasContentDescription("Close"))
 
     private val exercise = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
-    private val history = ExerciseHistory(0, 0, 1.0, 1, 1, LocalDate.now())
+    private val history = WeightsExerciseHistory(0, 0, 1.0, 1, 1, LocalDate.now())
 
     @Test
     fun rendersEmptyCreateForm() {
@@ -64,7 +64,7 @@ class RecordExerciseHistoryScreenKtTest {
 
     @Test
     fun doesNotSaveAndDismissWithEmptySetsField() {
-        var created: ExerciseHistory? = null
+        var created: WeightsExerciseHistory? = null
         var dismissed = false
         rule.setContent {
             RecordExerciseHistoryScreen(
@@ -85,7 +85,7 @@ class RecordExerciseHistoryScreenKtTest {
 
     @Test
     fun doesNotSaveAndDismissWithEmptyRepsField() {
-        var created: ExerciseHistory? = null
+        var created: WeightsExerciseHistory? = null
         var dismissed = false
         rule.setContent {
             RecordExerciseHistoryScreen(
@@ -106,7 +106,7 @@ class RecordExerciseHistoryScreenKtTest {
 
     @Test
     fun doesNotSaveAndDismissWithEmptyWeightField() {
-        var created: ExerciseHistory? = null
+        var created: WeightsExerciseHistory? = null
         var dismissed = false
         rule.setContent {
             RecordExerciseHistoryScreen(
@@ -127,7 +127,7 @@ class RecordExerciseHistoryScreenKtTest {
 
     @Test
     fun savesAndDismissRecordScreenWithAllFieldsFull() {
-        var created: ExerciseHistory? = null
+        var created: WeightsExerciseHistory? = null
         var dismissed = false
         rule.setContent {
             RecordExerciseHistoryScreen(

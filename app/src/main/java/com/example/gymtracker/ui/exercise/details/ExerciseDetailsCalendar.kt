@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
@@ -136,7 +136,7 @@ fun ExercisesOnDay(
 fun HistoryDetails(
     exerciseHistory: ExerciseHistoryUiState,
     exercise: ExerciseUiState,
-    deleteFunction: (ExerciseHistory) -> Unit,
+    deleteFunction: (WeightsExerciseHistory) -> Unit,
     modifier: Modifier = Modifier,
     editEnabled: Boolean = true
 ) {

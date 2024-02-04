@@ -5,7 +5,32 @@
       <entry key="All Tests">
         <State />
       </entry>
+      <entry key="CalendarKtTest$EmailIdValidatorTest">
+        <State />
+      </entry>
+      <entry key="MyParameterizedTest">
+        <State />
+      </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="yearMonthOptionsClickingMonthAllFutureMonthsDisabled()">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\Whead\.android\avd\Pixel_5_API_31.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-02-04T20:53:51.447865800Z" />
+        </State>
+      </entry>
+      <entry key="yearMonthOptionsClickingMonthAllFutureMonthsDisabled() (1)">
         <State />
       </entry>
     </value>

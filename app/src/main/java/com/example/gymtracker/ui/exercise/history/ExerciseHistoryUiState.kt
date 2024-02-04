@@ -1,6 +1,6 @@
 package com.example.gymtracker.ui.exercise.history
 
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import java.time.LocalDate
 
 data class ExerciseHistoryUiState(
@@ -13,7 +13,7 @@ data class ExerciseHistoryUiState(
     val date: LocalDate = LocalDate.now()
 )
 
-fun ExerciseHistory.toExerciseHistoryUiState(): ExerciseHistoryUiState = ExerciseHistoryUiState(
+fun WeightsExerciseHistory.toExerciseHistoryUiState(): ExerciseHistoryUiState = ExerciseHistoryUiState(
     id = id,
     exerciseId = exerciseId,
     weight = weight,
@@ -22,7 +22,7 @@ fun ExerciseHistory.toExerciseHistoryUiState(): ExerciseHistoryUiState = Exercis
     date = date
 )
 
-fun ExerciseHistoryUiState.toExerciseHistory(exerciseId: Int): ExerciseHistory = ExerciseHistory(
+fun ExerciseHistoryUiState.toExerciseHistory(exerciseId: Int): WeightsExerciseHistory = WeightsExerciseHistory(
     id = id,
     exerciseId = exerciseId,
     weight = weight,
@@ -31,7 +31,7 @@ fun ExerciseHistoryUiState.toExerciseHistory(exerciseId: Int): ExerciseHistory =
     date = date
 )
 
-fun ExerciseHistoryUiState.toExerciseHistory(): ExerciseHistory = ExerciseHistory(
+fun ExerciseHistoryUiState.toExerciseHistory(): WeightsExerciseHistory = WeightsExerciseHistory(
     id = id,
     exerciseId = exerciseId,
     weight = weight,

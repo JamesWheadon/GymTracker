@@ -1,4 +1,4 @@
-package com.example.gymtracker.data.exerciseHistory
+package com.example.gymtracker.data.exerciseHistory.weights
 
 import android.content.Context
 import androidx.room.Room
@@ -22,9 +22,9 @@ private const val SECOND_HISTORY_ID = 2
 private const val THIRD_HISTORY_ID = 3
 private const val NEW_WEIGHT = 20.0
 
-class ExerciseHistoryDaoTest {
+class WeightsExerciseHistoryDaoTest {
 
-    private lateinit var exerciseHistoryDao: ExerciseHistoryDao
+    private lateinit var weightsExerciseHistoryDao: WeightsExerciseHistoryDao
     private lateinit var exerciseWorkoutDatabase: ExerciseWorkoutDatabase
 
     @Before
@@ -33,7 +33,7 @@ class ExerciseHistoryDaoTest {
         exerciseWorkoutDatabase = Room.inMemoryDatabaseBuilder(context, ExerciseWorkoutDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        exerciseHistoryDao = exerciseWorkoutDatabase.exerciseHistoryDao()
+        weightsExerciseHistoryDao = exerciseWorkoutDatabase.weightsExerciseHistoryDao()
     }
 
     @After
@@ -44,10 +44,10 @@ class ExerciseHistoryDaoTest {
 
     @Test
     fun daoInsertAndDaoSelect_insertsExerciseHistoryIntoDBAndRetrievesById() = runBlocking {
-        val exerciseHistory = getExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID)
-        exerciseHistoryDao.insert(exerciseHistory)
+        val exerciseHistory = createExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID)
+        weightsExerciseHistoryDao.insert(exerciseHistory)
 
-        val savedExerciseHistory = exerciseHistoryDao.getHistory(exerciseHistory.id).first()
+        val savedExerciseHistory = weightsExerciseHistoryDao.getHistory(exerciseHistory.id).first()
 
         Assert.assertEquals(exerciseHistory, savedExerciseHistory)
     }
@@ -56,7 +56,9 @@ class ExerciseHistoryDaoTest {
     fun daoSelectAllByExercise_RetrieveFullHistoryForExerciseFromDB() = runBlocking {
         addMultipleHistoryToDB()
 
-        val savedExerciseHistory = exerciseHistoryDao.getFullExerciseHistory(FIRST_EXERCISE_ID).first()
+        val savedExerciseHistory = weightsExerciseHistoryDao.getFullExerciseHistory(
+            FIRST_EXERCISE_ID
+        ).first()
 
         assertThat(savedExerciseHistory.size, equalTo(2))
     }
@@ -65,16 +67,19 @@ class ExerciseHistoryDaoTest {
     fun daoSelectMostRecentExercise_RetrieveLatestHistoryForExerciseFromDB() = runBlocking {
         addMultipleHistoryToDB()
 
-        val savedExerciseHistory = exerciseHistoryDao.getLatestExerciseHistory(FIRST_EXERCISE_ID).first()
+        val savedExerciseHistory = weightsExerciseHistoryDao.getLatestExerciseHistory(
+            FIRST_EXERCISE_ID
+        ).first()
 
-        assertThat(savedExerciseHistory, equalTo(getExerciseHistory(SECOND_HISTORY_ID, FIRST_EXERCISE_ID)))
+        assertThat(savedExerciseHistory, equalTo(createExerciseHistory(SECOND_HISTORY_ID, FIRST_EXERCISE_ID)))
     }
 
     @Test
     fun daoSelectExerciseInPastWeek_RetrieveRecentHistoryForExerciseFromDB() = runBlocking {
         addMultipleHistoryToDB()
 
-        val savedExerciseHistory = exerciseHistoryDao.getRecentExerciseHistory(FIRST_EXERCISE_ID, 7).first()
+        val savedExerciseHistory = weightsExerciseHistoryDao.getRecentExerciseHistory(
+            FIRST_EXERCISE_ID, 7).first()
 
         assertThat(savedExerciseHistory.size, equalTo(1))
     }
@@ -84,31 +89,32 @@ class ExerciseHistoryDaoTest {
         addMultipleHistoryToDB()
 
 
-        val savedExerciseHistory = exerciseHistoryDao.getRecentExerciseHistory(FIRST_EXERCISE_ID, 31).first()
+        val savedExerciseHistory = weightsExerciseHistoryDao.getRecentExerciseHistory(
+            FIRST_EXERCISE_ID, 31).first()
 
         assertThat(savedExerciseHistory.size, equalTo(2))
     }
 
     @Test
     fun daoDelete_DeleteHistoryFromDB() = runBlocking {
-        val exerciseHistory = getExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID)
-        exerciseHistoryDao.insert(exerciseHistory)
+        val exerciseHistory = createExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID)
+        weightsExerciseHistoryDao.insert(exerciseHistory)
 
-        exerciseHistoryDao.delete(exerciseHistory)
+        weightsExerciseHistoryDao.delete(exerciseHistory)
 
-        val savedHistory = exerciseHistoryDao.getHistory(FIRST_HISTORY_ID).first()
+        val savedHistory = weightsExerciseHistoryDao.getHistory(FIRST_HISTORY_ID).first()
         assertThat(savedHistory, equalTo(null))
     }
 
     @Test
     fun daoUpdate_UpdateHistoryInDB() = runBlocking {
-        val exerciseHistory = getExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID)
-        exerciseHistoryDao.insert(exerciseHistory)
+        val exerciseHistory = createExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID)
+        weightsExerciseHistoryDao.insert(exerciseHistory)
 
-        exerciseHistory.weight = NEW_WEIGHT
-        exerciseHistoryDao.update(exerciseHistory)
+        val updateExerciseHistory = createExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID, weight = NEW_WEIGHT)
+        weightsExerciseHistoryDao.update(updateExerciseHistory)
 
-        val savedHistory = exerciseHistoryDao.getHistory(FIRST_HISTORY_ID).first()
+        val savedHistory = weightsExerciseHistoryDao.getHistory(FIRST_HISTORY_ID).first()
         assertThat(savedHistory.weight, equalTo(NEW_WEIGHT))
     }
 
@@ -116,17 +122,17 @@ class ExerciseHistoryDaoTest {
     fun daoDelete_DeleteAllHistoryForExerciseFromDB() = runBlocking {
         addMultipleHistoryToDB()
 
-        exerciseHistoryDao.deleteAllForExercise(FIRST_EXERCISE_ID)
+        weightsExerciseHistoryDao.deleteAllForExercise(FIRST_EXERCISE_ID)
 
-        val savedHistory = exerciseHistoryDao.getFullExerciseHistory(FIRST_EXERCISE_ID).first()
+        val savedHistory = weightsExerciseHistoryDao.getFullExerciseHistory(FIRST_EXERCISE_ID).first()
         assertThat(savedHistory.size, equalTo(0))
     }
 
-    private fun getExerciseHistory(id: Int, exerciseId: Int, time: LocalDate = LocalDate.now()) = ExerciseHistory(id, exerciseId, 10.0, 10, 10, time)
+    private fun createExerciseHistory(id: Int, exerciseId: Int, time: LocalDate = LocalDate.now(), weight: Double = 10.0) = WeightsExerciseHistory(id, exerciseId, weight, 10, 10, time)
 
     private suspend fun addMultipleHistoryToDB() {
-        exerciseHistoryDao.insert(getExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID, LocalDate.now().minusDays(8)))
-        exerciseHistoryDao.insert(getExerciseHistory(SECOND_HISTORY_ID, FIRST_EXERCISE_ID))
-        exerciseHistoryDao.insert(getExerciseHistory(THIRD_HISTORY_ID, SECOND_EXERCISE_ID))
+        weightsExerciseHistoryDao.insert(createExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID, LocalDate.now().minusDays(8)))
+        weightsExerciseHistoryDao.insert(createExerciseHistory(SECOND_HISTORY_ID, FIRST_EXERCISE_ID))
+        weightsExerciseHistoryDao.insert(createExerciseHistory(THIRD_HISTORY_ID, SECOND_EXERCISE_ID))
     }
 }

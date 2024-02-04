@@ -16,8 +16,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistoryRepository
 import com.example.gymtracker.ui.exercise.ExerciseUiState
@@ -51,10 +51,10 @@ class RecordWorkoutHistoryScreenKtTest {
     @Mock
     private lateinit var mockWorkoutHistoryRepository: WorkoutHistoryRepository
     @Mock
-    private lateinit var mockExerciseHistoryRepository: ExerciseHistoryRepository
+    private lateinit var mockWeightsExerciseHistoryRepository: WeightsExerciseHistoryRepository
 
     @Captor
-    lateinit var exerciseHistoryCaptor: ArgumentCaptor<ExerciseHistory>
+    lateinit var weightsExerciseHistoryCaptor: ArgumentCaptor<WeightsExerciseHistory>
     private lateinit var workoutHistoryViewModel: WorkoutHistoryViewModel
 
     private val curlsExercise = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells")
@@ -81,7 +81,7 @@ class RecordWorkoutHistoryScreenKtTest {
         MockitoAnnotations.initMocks(this)
         workoutHistoryViewModel = WorkoutHistoryViewModel(
             mockWorkoutHistoryRepository,
-            mockExerciseHistoryRepository
+            mockWeightsExerciseHistoryRepository
         )
     }
 
@@ -293,8 +293,8 @@ class RecordWorkoutHistoryScreenKtTest {
         saveButton.performClick()
 
         verify(mockWorkoutHistoryRepository).insert(workoutHistory)
-        verify(mockExerciseHistoryRepository, times(1)).insertHistory(capture(exerciseHistoryCaptor))
-        assertThat(exerciseHistoryCaptor.value.exerciseId, equalTo(1))
+        verify(mockWeightsExerciseHistoryRepository, times(1)).insertHistory(capture(weightsExerciseHistoryCaptor))
+        assertThat(weightsExerciseHistoryCaptor.value.exerciseId, equalTo(1))
         assertThat(dismissed, equalTo(true))
     }
 
@@ -326,8 +326,8 @@ class RecordWorkoutHistoryScreenKtTest {
         saveButton.performClick()
 
         verify(mockWorkoutHistoryRepository).update(workoutHistory)
-        verify(mockExerciseHistoryRepository, times(1)).update(capture(exerciseHistoryCaptor))
-        assertThat(exerciseHistoryCaptor.value.exerciseId, equalTo(1))
+        verify(mockWeightsExerciseHistoryRepository, times(1)).update(capture(weightsExerciseHistoryCaptor))
+        assertThat(weightsExerciseHistoryCaptor.value.exerciseId, equalTo(1))
         assertThat(dismissed, equalTo(true))
     }
 

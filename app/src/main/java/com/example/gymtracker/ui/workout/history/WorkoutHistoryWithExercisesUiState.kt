@@ -1,6 +1,6 @@
 package com.example.gymtracker.ui.workout.history
 
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistoryWithExerciseHistory
 import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
@@ -34,7 +34,7 @@ fun WorkoutHistoryWithExercisesUiState.toWorkoutUiState(): WorkoutHistoryUiState
     date = date
 )
 
-fun WorkoutHistoryWithExercisesUiState.toWorkoutAndExercises(): Pair<WorkoutHistory, List<ExerciseHistory>> {
+fun WorkoutHistoryWithExercisesUiState.toWorkoutAndExercises(): Pair<WorkoutHistory, List<WeightsExerciseHistory>> {
     return Pair(this.toWorkoutUiState().toWorkoutHistory(), this.exercises.map { exerciseHistory -> exerciseHistory.toExerciseHistory() })
 }
 

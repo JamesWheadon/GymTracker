@@ -25,14 +25,14 @@ object AppViewModelProvider {
         initializer {
             ExerciseDetailsViewModel(
                 exerciseRepository = gymTrackerApplication().container.exerciseRepository,
-                exerciseHistoryRepository = gymTrackerApplication().container.exerciseHistoryRepository,
+                weightsExerciseHistoryRepository = gymTrackerApplication().container.weightsExerciseHistoryRepository,
                 workoutExerciseCrossRefRepository = gymTrackerApplication().container.workoutExerciseCrossRefRepository,
                 savedStateHandle = this.createSavedStateHandle()
             )
         }
         initializer {
             RecordExerciseHistoryViewModel(
-                exerciseHistoryRepository = gymTrackerApplication().container.exerciseHistoryRepository
+                weightsExerciseHistoryRepository = gymTrackerApplication().container.weightsExerciseHistoryRepository
             )
         }
         initializer {
@@ -56,7 +56,7 @@ object AppViewModelProvider {
         initializer {
             WorkoutHistoryViewModel(
                 gymTrackerApplication().container.workoutHistoryRepository,
-                gymTrackerApplication().container.exerciseHistoryRepository
+                gymTrackerApplication().container.weightsExerciseHistoryRepository
             )
         }
     }

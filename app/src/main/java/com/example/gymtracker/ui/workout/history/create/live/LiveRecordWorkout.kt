@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.toExerciseHistory
@@ -90,7 +90,7 @@ fun LiveRecordWorkout(
 @Composable
 fun LiveRecordWorkout(
     uiState: WorkoutWithExercisesUiState,
-    saveFunction: (ExerciseHistory) -> Unit,
+    saveFunction: (WeightsExerciseHistory) -> Unit,
     finishFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {

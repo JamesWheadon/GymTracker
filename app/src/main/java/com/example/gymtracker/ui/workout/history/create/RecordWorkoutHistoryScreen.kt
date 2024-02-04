@@ -38,7 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
 import com.example.gymtracker.converters.getWeightUnitFromShortForm
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.DropdownBox
@@ -105,7 +105,7 @@ fun RecordWorkoutHistoryScreen(
 private fun RecordWorkoutHistoryScreen(
     uiState: WorkoutWithExercisesUiState,
     titleText: String,
-    workoutSaveFunction: (WorkoutHistory, List<ExerciseHistory>) -> Unit,
+    workoutSaveFunction: (WorkoutHistory, List<WeightsExerciseHistory>) -> Unit,
     onDismiss: () -> Unit,
     workoutHistory: WorkoutHistoryWithExercisesUiState = WorkoutHistoryWithExercisesUiState()
 ) {

@@ -78,6 +78,7 @@ fun WorkoutsScreen(
 ) {
     var showCreate by remember { mutableStateOf(false) }
     var showWorkoutExercises by remember { mutableStateOf(false) }
+    var newWorkoutName by remember { mutableStateOf("") }
     HomeScreenCardWrapper(
         title = "My Workouts",
         navController = navController,
@@ -110,6 +111,7 @@ fun WorkoutsScreen(
                 saveFunction = { workout ->
                     createWorkout(workout)
                     showWorkoutExercises = true
+                    newWorkoutName = workout.name
                 },
                 onDismiss = { showCreate = false },
                 screenTitle = "Create Workout"
@@ -117,11 +119,14 @@ fun WorkoutsScreen(
         }
     }
     if (showWorkoutExercises) {
+        val newWorkout = workoutListUiState.workoutList.firstOrNull { it.name == newWorkoutName }
+        if (newWorkout != null) {
             EditWorkoutExercisesScreen(
-                workout = workoutListUiState.workoutList.last().toWorkout(),
+                workout = newWorkout.toWorkout(),
                 existingExercises = listOf(),
                 onDismiss = { showWorkoutExercises = false }
             )
+        }
     }
 }
 

@@ -34,7 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
 import com.example.gymtracker.converters.getWeightUnitFromShortForm
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
@@ -86,7 +86,7 @@ fun UpdateExerciseHistoryScreen(
 @Composable
 fun RecordExerciseHistoryScreen(
     exercise: ExerciseUiState,
-    saveFunction: (ExerciseHistory) -> Unit,
+    saveFunction: (WeightsExerciseHistory) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -116,7 +116,7 @@ fun RecordExerciseHistoryScreen(
 fun EditExerciseHistoryScreen(
     history: ExerciseHistoryUiState,
     exercise: ExerciseUiState,
-    updateFunction: (ExerciseHistory) -> Unit,
+    updateFunction: (WeightsExerciseHistory) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -147,7 +147,7 @@ fun EditExerciseHistoryScreen(
 private fun RecordExerciseHistoryCard(
     exerciseId: Int,
     cardTitle: String,
-    saveFunction: (ExerciseHistory) -> Unit,
+    saveFunction: (WeightsExerciseHistory) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     savedHistory: ExerciseHistoryUiState = ExerciseHistoryUiState()
@@ -259,14 +259,14 @@ private fun SaveExerciseHistoryButton(
     unitState: String,
     exerciseId: Int,
     savedHistory: ExerciseHistoryUiState,
-    saveFunction: (ExerciseHistory) -> Unit,
+    saveFunction: (WeightsExerciseHistory) -> Unit,
     onDismiss: () -> Unit
 ) {
     if (setsState != "" && repsState != "" && weightState != "" && unitState != "") {
         val weight = weightState.toDouble()
         val unit = getWeightUnitFromShortForm(unitState)
         val history = if (savedHistory == ExerciseHistoryUiState()) {
-            ExerciseHistory(
+            WeightsExerciseHistory(
                 exerciseId = exerciseId,
                 weight = convertToKilograms(unit, weight),
                 sets = setsState.toInt(),
