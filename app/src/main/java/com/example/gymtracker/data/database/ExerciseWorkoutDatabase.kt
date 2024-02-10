@@ -29,7 +29,7 @@ import com.example.gymtracker.data.workoutWithExercises.WorkoutWithExercisesDao
         WorkoutExerciseCrossRef::class,
         WorkoutHistory::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(LocalDateConverter::class)

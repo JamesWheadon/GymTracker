@@ -30,7 +30,7 @@ import androidx.navigation.NavHostController
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.history.toExerciseHistory
+import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
 import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.example.gymtracker.ui.navigation.TopBar
@@ -106,7 +106,7 @@ fun LiveRecordWorkout(
                 LiveRecordExercise(
                     uiState = exercise,
                     exerciseComplete = { exerciseHistory ->
-                        saveFunction(exerciseHistory.toExerciseHistory())
+                        saveFunction(exerciseHistory.toWeightsExerciseHistory())
                         completedExercises.add(exerciseHistory.exerciseId)
                         currentExercise = -1
                     },

@@ -34,10 +34,11 @@ import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
 import com.example.gymtracker.ui.exercise.history.UpdateExerciseHistoryScreen
-import com.example.gymtracker.ui.exercise.history.toExerciseHistory
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
+import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.visualisations.Calendar
@@ -90,7 +91,7 @@ fun ExerciseHistoryCalendar(
 
 @Composable
 fun ExercisesOnDay(
-    exercises: List<ExerciseHistoryUiState>,
+    exercises: List<WeightsExerciseHistoryUiState>,
     date: LocalDate,
     exercise: ExerciseUiState,
     onDismiss: () -> Unit,
@@ -113,7 +114,7 @@ fun ExercisesOnDay(
                 HistoryDetails(
                     exerciseHistory = history,
                     exercise = exercise,
-                    deleteFunction = { deleteHistory -> viewModel.deleteHistory(deleteHistory) },
+                    deleteFunction = { deleteHistory -> viewModel.deleteHistory(deleteHistory.toWeightsExerciseHistoryUiState()) },
                 )
             }
         }
@@ -134,7 +135,7 @@ fun ExercisesOnDay(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryDetails(
-    exerciseHistory: ExerciseHistoryUiState,
+    exerciseHistory: WeightsExerciseHistoryUiState,
     exercise: ExerciseUiState,
     deleteFunction: (WeightsExerciseHistory) -> Unit,
     modifier: Modifier = Modifier,
@@ -191,7 +192,7 @@ fun HistoryDetails(
         ) {
             ActionConfirmation(
                 actionTitle = "Do you want to delete this exercise?",
-                confirmFunction = { deleteFunction(exerciseHistory.toExerciseHistory(exerciseId = exercise.id)) },
+                confirmFunction = { deleteFunction(exerciseHistory.toWeightsExerciseHistory(exerciseId = exercise.id)) },
                 cancelFunction = { deleteExercise = false }
             )
         }
@@ -203,7 +204,7 @@ fun HistoryDetails(
 fun HistoryDetailsPreview() {
     GymTrackerTheme(darkTheme = false) {
         HistoryDetails(
-            exerciseHistory = ExerciseHistoryUiState(
+            exerciseHistory = WeightsExerciseHistoryUiState(
                 id = 1,
                 weight = 13.0,
                 sets = 1,

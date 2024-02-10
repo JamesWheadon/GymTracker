@@ -21,7 +21,7 @@ import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistor
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistoryRepository
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryViewModel
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
@@ -90,7 +90,7 @@ class RecordWorkoutHistoryScreenKtTest {
         rule.setContent {
             RecordExerciseCard(
                 exercise = curlsExercise,
-                savedExerciseHistory = ExerciseHistoryUiState(),
+                savedExerciseHistory = WeightsExerciseHistoryUiState(),
                 selectExerciseFunction = { true },
                 deselectExerciseFunction = { true },
                 errorStateChange = { _, _ -> },
@@ -113,7 +113,7 @@ class RecordWorkoutHistoryScreenKtTest {
         rule.setContent {
             RecordExerciseCard(
                 exercise = curlsExercise,
-                savedExerciseHistory = ExerciseHistoryUiState(),
+                savedExerciseHistory = WeightsExerciseHistoryUiState(),
                 selectExerciseFunction = {
                     selected = true
                     true
@@ -123,7 +123,7 @@ class RecordWorkoutHistoryScreenKtTest {
                     true
                 },
                 errorStateChange = { _, _ -> },
-                exerciseHistory = ExerciseHistoryUiState()
+                exerciseHistory = WeightsExerciseHistoryUiState()
             )
         }
 
@@ -150,14 +150,14 @@ class RecordWorkoutHistoryScreenKtTest {
         rule.setContent {
             RecordExerciseCard(
                 exercise = curlsExercise,
-                savedExerciseHistory = ExerciseHistoryUiState(),
+                savedExerciseHistory = WeightsExerciseHistoryUiState(),
                 selectExerciseFunction = { true },
                 deselectExerciseFunction = { true },
                 errorStateChange = { exerciseId, exerciseError ->
                     error = exerciseError
                     id = exerciseId
                                    },
-                exerciseHistory = ExerciseHistoryUiState()
+                exerciseHistory = WeightsExerciseHistoryUiState()
             )
         }
         curlsCheckbox.performClick()
@@ -178,14 +178,14 @@ class RecordWorkoutHistoryScreenKtTest {
         rule.setContent {
             RecordExerciseCard(
                 exercise = curlsExercise,
-                savedExerciseHistory = ExerciseHistoryUiState(),
+                savedExerciseHistory = WeightsExerciseHistoryUiState(),
                 selectExerciseFunction = { true },
                 deselectExerciseFunction = { true },
                 errorStateChange = { exerciseId, exerciseError ->
                     error = exerciseError
                     id = exerciseId
                 },
-                exerciseHistory = ExerciseHistoryUiState()
+                exerciseHistory = WeightsExerciseHistoryUiState()
             )
         }
         curlsCheckbox.performClick()
@@ -312,7 +312,7 @@ class RecordWorkoutHistoryScreenKtTest {
                 workoutHistory = WorkoutHistoryWithExercisesUiState(
                     workoutHistoryId = 1,
                     workoutId = 1,
-                    exercises = listOf(ExerciseHistoryUiState(exerciseId = 1, sets = 1, reps = 1))
+                    exercises = listOf(WeightsExerciseHistoryUiState(exerciseId = 1, sets = 1, reps = 1))
                 ),
                 titleText = "Update Workout"
             )

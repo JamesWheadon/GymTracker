@@ -1,7 +1,7 @@
 package com.example.gymtracker.ui.exercise.details
 
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -19,7 +19,7 @@ class ExerciseDetailsGraphKtTest {
         muscleGroup = "Biceps",
         equipment = "Dumbbells",
         history = listOf(
-            ExerciseHistoryUiState(
+            WeightsExerciseHistoryUiState(
                 id = 1,
                 weight = 13.0,
                 sets = 1,
@@ -27,7 +27,7 @@ class ExerciseDetailsGraphKtTest {
                 rest = 1,
                 date = firstDate
             ),
-            ExerciseHistoryUiState(
+            WeightsExerciseHistoryUiState(
                 id = 1,
                 weight = 12.0,
                 sets = 2,

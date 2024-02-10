@@ -8,7 +8,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -59,7 +59,7 @@ class ExerciseDetailsCalendarKtTest {
     private val rest = rule.onNode(hasText("Rest time: 1"))
     private val deleteButton = rule.onNode(hasContentDescription("Delete history"))
 
-    private val exerciseHistory = ExerciseHistoryUiState(1, 1, 13.0, 1, 2, 1, LocalDate.now())
+    private val exerciseHistory = WeightsExerciseHistoryUiState(1, 1, LocalDate.now(), 13.0, 1, 2, 1)
     private val exercise = ExerciseDetailsUiState(
         name = NAME,
         muscleGroup = MUSCLE_GROUP,

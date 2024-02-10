@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
-import com.example.gymtracker.ui.ExerciseInformationFieldWithSuggestions
 import com.example.gymtracker.ui.FormInformationField
+import com.example.gymtracker.ui.FormInformationFieldWithSuggestions
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.example.gymtracker.ui.theme.GymTrackerTheme
@@ -234,7 +234,7 @@ private fun WeightsExerciseInformationForm(
             onChange = equipmentStateOnChange,
             keyboardOptions = KeyboardOptions.Default
         )
-        ExerciseInformationFieldWithSuggestions(
+        FormInformationFieldWithSuggestions(
             label = "Muscle Group",
             value = muscleState,
             onChange = muscleStateOnChange,

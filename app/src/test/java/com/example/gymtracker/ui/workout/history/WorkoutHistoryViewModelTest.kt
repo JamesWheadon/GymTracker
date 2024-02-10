@@ -16,8 +16,8 @@ import java.time.LocalDate
 class WorkoutHistoryViewModelTest {
 
     private val workoutHistory = WorkoutHistory(workoutId = 1, date = LocalDate.now())
-    private val weightsExerciseHistory = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
-    private val savedWeightsExerciseHistory = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now(), 1)
+    private val weightsExerciseHistory = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now(), 1)
+    private val savedWeightsExerciseHistory = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now(), 1, 1)
 
     private val mockWorkoutHistoryRepository: WorkoutHistoryRepository = Mockito.mock()
     private val mockWeightsExerciseHistoryRepository: WeightsExerciseHistoryRepository = Mockito.mock()
@@ -31,7 +31,7 @@ class WorkoutHistoryViewModelTest {
     fun saveWorkoutToRepository() = runTest {
         `when`(mockWorkoutHistoryRepository.insert(workoutHistory)).thenReturn(1L)
 
-        viewModel.saveWorkoutHistory(workoutHistory, listOf(weightsExerciseHistory))
+        viewModel.saveWorkoutHistory(workoutHistory, listOf(weightsExerciseHistory), true)
 
         verify(mockWorkoutHistoryRepository).insert(workoutHistory)
         verify(mockWeightsExerciseHistoryRepository).insertHistory(savedWeightsExerciseHistory)

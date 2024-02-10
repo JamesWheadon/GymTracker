@@ -1,9 +1,13 @@
 package com.example.gymtracker.ui.history
 
+import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.example.gymtracker.rules.TestCoroutineRule
 import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
+import com.example.gymtracker.ui.exercise.history.state.toCardioExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistoryUiState
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -13,37 +17,65 @@ import java.time.LocalDate
 
 class RecordWeightsExerciseHistoryViewModelTest {
 
-    private val repository: WeightsExerciseHistoryRepository = Mockito.mock()
+    private val weightsRepository: WeightsExerciseHistoryRepository = Mockito.mock()
+    private val cardioRepository: CardioExerciseHistoryRepository = Mockito.mock()
 
     @get:Rule
     val coroutineTestRule = TestCoroutineRule()
 
-    private val viewModel = RecordExerciseHistoryViewModel(repository)
+    private val viewModel = RecordExerciseHistoryViewModel(weightsRepository, cardioRepository)
 
     @Test
-    fun saveHistoryToRepository() = runTest {
+    fun saveWeightsHistoryToRepository() = runTest {
         val history = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
 
-        viewModel.saveHistory(history)
+        viewModel.saveHistory(history.toWeightsExerciseHistoryUiState())
 
-        verify(repository).insertHistory(history)
+        verify(weightsRepository).insertHistory(history)
     }
 
     @Test
-    fun updateHistoryInRepository() = runTest {
-        val history = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
+    fun saveCardioHistoryToRepository() = runTest {
+        val history = CardioExerciseHistory(1, 1, LocalDate.now())
 
-        viewModel.updateHistory(history)
+        viewModel.saveHistory(history.toCardioExerciseHistoryUiState())
 
-        verify(repository).update(history)
+        verify(cardioRepository).insert(history)
     }
 
     @Test
-    fun deleteHistoryInRepository() = runTest {
+    fun updateWeightsHistoryInRepository() = runTest {
         val history = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
 
-        viewModel.deleteHistory(history)
+        viewModel.updateHistory(history.toWeightsExerciseHistoryUiState())
 
-        verify(repository).delete(history)
+        verify(weightsRepository).update(history)
+    }
+
+    @Test
+    fun updateCardioHistoryInRepository() = runTest {
+        val history = CardioExerciseHistory(1, 1, LocalDate.now())
+
+        viewModel.updateHistory(history.toCardioExerciseHistoryUiState())
+
+        verify(cardioRepository).update(history)
+    }
+
+    @Test
+    fun deleteWeightsHistoryInRepository() = runTest {
+        val history = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
+
+        viewModel.deleteHistory(history.toWeightsExerciseHistoryUiState())
+
+        verify(weightsRepository).delete(history)
+    }
+
+    @Test
+    fun deleteCardioHistoryInRepository() = runTest {
+        val history = CardioExerciseHistory(1, 1, LocalDate.now())
+
+        viewModel.deleteHistory(history.toCardioExerciseHistoryUiState())
+
+        verify(cardioRepository).delete(history)
     }
 }

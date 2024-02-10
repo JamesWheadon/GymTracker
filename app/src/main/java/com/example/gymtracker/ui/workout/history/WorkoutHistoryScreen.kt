@@ -34,7 +34,7 @@ import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.details.HistoryDetails
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.history.create.RecordWorkoutHistoryScreen
@@ -168,7 +168,7 @@ fun WorkoutHistoryScreen(
 @Composable
 fun WorkoutHistoryExerciseCard(
     exercise: ExerciseUiState,
-    exerciseHistory: ExerciseHistoryUiState
+    exerciseHistory: WeightsExerciseHistoryUiState
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -191,8 +191,8 @@ fun WorkoutHistoryScreenPreview() {
         WorkoutHistoryScreen(
             uiState = WorkoutHistoryWithExercisesUiState(
                 1, 1, LocalDate.now(), exercises = listOf(
-                    ExerciseHistoryUiState(1, 1, 1.0, 1, 1, 1, LocalDate.now()),
-                    ExerciseHistoryUiState(2, 2, 1.0, 1, 1, 1, LocalDate.now())
+                    WeightsExerciseHistoryUiState(1, 1, LocalDate.now(), 1.0, 1, 1, 1),
+                    WeightsExerciseHistoryUiState(2, 2, LocalDate.now(), 1.0, 1, 1, 1)
                 )
             ),
             exercises = listOf(

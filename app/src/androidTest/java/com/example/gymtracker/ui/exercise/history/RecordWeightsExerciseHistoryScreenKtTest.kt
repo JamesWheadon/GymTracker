@@ -1,15 +1,16 @@
 package com.example.gymtracker.ui.exercise.history
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
@@ -19,57 +20,45 @@ class RecordWeightsExerciseHistoryScreenKtTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
+    private val cardTitleText = "Record Weights"
+    private val cardTitle = rule.onNode(hasText(cardTitleText))
     private val createButton = rule.onNode(hasText("Save"))
     private val setsField = rule.onNode(hasContentDescription("Sets"))
     private val repsField = rule.onNode(hasContentDescription("Reps"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
     private val unitsField = rule.onNode(hasContentDescription("Units"))
-    private val closeButton = rule.onNode(hasContentDescription("Close"))
 
     private val exercise = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
-    private val history = WeightsExerciseHistory(0, 0, 1.0, 1, 1, LocalDate.now())
+    private val history = WeightsExerciseHistoryUiState(0, 0, LocalDate.now(), 1.0, 1, 1)
 
     @Test
     fun rendersEmptyCreateForm() {
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = exercise,
+            RecordWeightsExerciseHistoryCard(
+                exerciseId = exercise.id,
+                cardTitle = cardTitleText,
                 saveFunction = {},
                 onDismiss = {}
             )
         }
 
-        createButton.assertExists()
+        cardTitle.assertExists()
         setsField.assertExists()
         repsField.assertExists()
         weightField.assertExists()
         unitsField.assertExists()
-        closeButton.assertExists()
-    }
-    @Test
-    fun clickCloseButtonToDismiss() {
-        var dismissed = false
-        rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = exercise,
-                saveFunction = {},
-                onDismiss = { dismissed = true }
-            )
-        }
-
-        closeButton.performClick()
-
-        MatcherAssert.assertThat(dismissed, equalTo(true))
+        createButton.assertExists()
     }
 
     @Test
     fun doesNotSaveAndDismissWithEmptySetsField() {
-        var created: WeightsExerciseHistory? = null
+        var created: WeightsExerciseHistoryUiState? = null
         var dismissed = false
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = exercise,
-                saveFunction = { created = it },
+            RecordWeightsExerciseHistoryCard(
+                exerciseId = exercise.id,
+                cardTitle = cardTitleText,
+                saveFunction = { created = it as WeightsExerciseHistoryUiState },
                 onDismiss = { dismissed = true }
             )
         }
@@ -79,18 +68,19 @@ class RecordWeightsExerciseHistoryScreenKtTest {
 
         createButton.performClick()
 
-        MatcherAssert.assertThat(created, equalTo(null))
-        MatcherAssert.assertThat(dismissed, equalTo(false))
+        assertThat(created, equalTo(null))
+        assertThat(dismissed, equalTo(false))
     }
 
     @Test
     fun doesNotSaveAndDismissWithEmptyRepsField() {
-        var created: WeightsExerciseHistory? = null
+        var created: WeightsExerciseHistoryUiState? = null
         var dismissed = false
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = exercise,
-                saveFunction = { created = it },
+            RecordWeightsExerciseHistoryCard(
+                exerciseId = exercise.id,
+                cardTitle = cardTitleText,
+                saveFunction = { created = it as WeightsExerciseHistoryUiState },
                 onDismiss = { dismissed = true }
             )
         }
@@ -100,18 +90,19 @@ class RecordWeightsExerciseHistoryScreenKtTest {
 
         createButton.performClick()
 
-        MatcherAssert.assertThat(created, equalTo(null))
-        MatcherAssert.assertThat(dismissed, equalTo(false))
+        assertThat(created, equalTo(null))
+        assertThat(dismissed, equalTo(false))
     }
 
     @Test
     fun doesNotSaveAndDismissWithEmptyWeightField() {
-        var created: WeightsExerciseHistory? = null
+        var created: WeightsExerciseHistoryUiState? = null
         var dismissed = false
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = exercise,
-                saveFunction = { created = it },
+            RecordWeightsExerciseHistoryCard(
+                exerciseId = exercise.id,
+                cardTitle = cardTitleText,
+                saveFunction = { created = it as WeightsExerciseHistoryUiState },
                 onDismiss = { dismissed = true }
             )
         }
@@ -121,18 +112,19 @@ class RecordWeightsExerciseHistoryScreenKtTest {
 
         createButton.performClick()
 
-        MatcherAssert.assertThat(created, equalTo(null))
-        MatcherAssert.assertThat(dismissed, equalTo(false))
+        assertThat(created, equalTo(null))
+        assertThat(dismissed, equalTo(false))
     }
 
     @Test
     fun savesAndDismissRecordScreenWithAllFieldsFull() {
-        var created: WeightsExerciseHistory? = null
+        var created: WeightsExerciseHistoryUiState? = null
         var dismissed = false
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = exercise,
-                saveFunction = { created = it },
+            RecordWeightsExerciseHistoryCard(
+                exerciseId = exercise.id,
+                cardTitle = cardTitleText,
+                saveFunction = { created = it as WeightsExerciseHistoryUiState },
                 onDismiss = { dismissed = true }
             )
         }
@@ -143,7 +135,24 @@ class RecordWeightsExerciseHistoryScreenKtTest {
 
         createButton.performClick()
 
-        MatcherAssert.assertThat(created, equalTo(history))
-        MatcherAssert.assertThat(dismissed, equalTo(true))
+        assertThat(created, equalTo(history))
+        assertThat(dismissed, equalTo(true))
+    }
+
+    @Test
+    fun fillsFormFieldsWithInformationFromExistingHistory() {
+        rule.setContent {
+            RecordWeightsExerciseHistoryCard(
+                exerciseId = exercise.id,
+                cardTitle = cardTitleText,
+                saveFunction = { },
+                onDismiss = { },
+                savedHistory = history
+            )
+        }
+
+        setsField.assertTextContains(history.sets.toString())
+        repsField.assertTextContains(history.reps.toString())
+        weightField.assertTextContains(history.weight.toString())
     }
 }

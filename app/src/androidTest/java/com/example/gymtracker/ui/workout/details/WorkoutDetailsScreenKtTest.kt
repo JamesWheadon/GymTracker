@@ -9,7 +9,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -36,10 +36,10 @@ class WorkoutDetailsScreenKtTest {
     )
     private val curlsExerciseUiState = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
     private val dipsExerciseUiState = ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars")
-    private val curlsExerciseHistoryUiState = ExerciseHistoryUiState(0, 0)
-    private val dipsExerciseHistoryUiState = ExerciseHistoryUiState(1, 1)
-    private val firstWorkoutHistory = WorkoutHistoryWithExercisesUiState(0, 1, LocalDate.now(), listOf(curlsExerciseHistoryUiState, dipsExerciseHistoryUiState))
-    private val secondWorkoutHistory = WorkoutHistoryWithExercisesUiState(1, 1, LocalDate.now().minusDays(1), listOf(curlsExerciseHistoryUiState, dipsExerciseHistoryUiState))
+    private val curlsWeightsExerciseHistoryUiState = WeightsExerciseHistoryUiState(0, 0)
+    private val dipsWeightsExerciseHistoryUiState = WeightsExerciseHistoryUiState(1, 1)
+    private val firstWorkoutHistory = WorkoutHistoryWithExercisesUiState(0, 1, LocalDate.now(), listOf(curlsWeightsExerciseHistoryUiState, dipsWeightsExerciseHistoryUiState))
+    private val secondWorkoutHistory = WorkoutHistoryWithExercisesUiState(1, 1, LocalDate.now().minusDays(1), listOf(curlsWeightsExerciseHistoryUiState, dipsWeightsExerciseHistoryUiState))
     private val workoutWithExercises = WorkoutWithExercisesUiState(
         workoutId = 1,
         name = "Test Workout",

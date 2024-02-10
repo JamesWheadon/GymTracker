@@ -30,7 +30,7 @@ import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -38,12 +38,12 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun LiveRecordExercise(
     uiState: ExerciseUiState,
-    exerciseComplete: (ExerciseHistoryUiState) -> Unit,
+    exerciseComplete: (WeightsExerciseHistoryUiState) -> Unit,
     exerciseCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var recording by remember { mutableStateOf(false) }
-    val exerciseData = ExerciseHistoryUiState(exerciseId = uiState.id)
+    val exerciseData = WeightsExerciseHistoryUiState(exerciseId = uiState.id)
     Card(
         elevation = customCardElevation(),
         modifier = modifier
@@ -178,7 +178,7 @@ fun LiveRecordExerciseInfo(
 
 @Composable
 fun LiveRecordExerciseSetsAndTimer(
-    exerciseData: ExerciseHistoryUiState,
+    exerciseData: WeightsExerciseHistoryUiState,
     exerciseFinished: (Int) -> Unit
 ) {
     Column(
@@ -189,7 +189,7 @@ fun LiveRecordExerciseSetsAndTimer(
         var resting by rememberSaveable { mutableStateOf(false) }
         Text(text = "Sets Completed: $setsComplete")
         if (resting) {
-            Timer(rest = exerciseData.rest) {
+            Timer(rest = exerciseData.rest!!) {
                 resting = false
             }
         } else {
@@ -244,7 +244,7 @@ fun LiveRecordExercisePreview() {
 fun LiveRecordExerciseSetsAndTimerPreview() {
     GymTrackerTheme(darkTheme = false) {
         LiveRecordExerciseSetsAndTimer(
-            exerciseData = ExerciseHistoryUiState(),
+            exerciseData = WeightsExerciseHistoryUiState(),
             exerciseFinished = { }
         )
     }

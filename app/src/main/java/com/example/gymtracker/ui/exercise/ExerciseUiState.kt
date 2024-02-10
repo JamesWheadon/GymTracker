@@ -1,7 +1,7 @@
 package com.example.gymtracker.ui.exercise
 
 import com.example.gymtracker.data.exercise.Exercise
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 
 data class ExerciseUiState(
     val id: Int = 0,
@@ -15,7 +15,7 @@ data class ExerciseDetailsUiState(
     val name: String = "",
     val muscleGroup: String = "",
     val equipment: String = "",
-    var history: List<ExerciseHistoryUiState>? = listOf()
+    var history: List<WeightsExerciseHistoryUiState>? = listOf()
 )
 
 data class ExerciseListUiState(val exerciseList: List<ExerciseUiState> = listOf())

@@ -8,8 +8,8 @@ import com.example.gymtracker.data.exercise.ExerciseRepository
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
-import com.example.gymtracker.ui.exercise.history.toExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.toExerciseDetailsUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,9 +39,9 @@ class ExerciseDetailsViewModel(
                 initialValue = ExerciseDetailsUiState()
             )
 
-    val exerciseHistory: StateFlow<List<ExerciseHistoryUiState>> =
+    val exerciseHistory: StateFlow<List<WeightsExerciseHistoryUiState>> =
         weightsExerciseHistoryRepository.getFullExerciseHistoryStream(exerciseId)
-        .map { historyList -> historyList?.map { history -> history.toExerciseHistoryUiState() } ?: listOf() }
+        .map { historyList -> historyList?.map { history -> history.toWeightsExerciseHistoryUiState() } ?: listOf() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),

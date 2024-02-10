@@ -11,7 +11,7 @@ data class CardioExerciseHistory(
     val exerciseId: Int,
     val date: LocalDate,
     val minutes: Int? = null,
-    val second: Int? = null,
+    val seconds: Int? = null,
     val calories: Int? = null,
     val distance: Double? = null,
     var workoutHistoryId: Int? = null

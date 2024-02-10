@@ -40,8 +40,8 @@ import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.create.ExerciseInformationForm
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryScreen
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.toExercise
 import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.navigation.NavigationRoute
@@ -300,7 +300,7 @@ fun ExerciseDetailsScreenPreview() {
                 muscleGroup = "Biceps",
                 equipment = "Dumbbells",
                 history = listOf(
-                    ExerciseHistoryUiState(
+                    WeightsExerciseHistoryUiState(
                         id = 1,
                         weight = 13.0,
                         sets = 1,

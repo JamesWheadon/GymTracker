@@ -45,8 +45,8 @@ import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
-import com.example.gymtracker.ui.exercise.history.toExerciseHistory
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryUiState
@@ -109,7 +109,7 @@ private fun RecordWorkoutHistoryScreen(
     onDismiss: () -> Unit,
     workoutHistory: WorkoutHistoryWithExercisesUiState = WorkoutHistoryWithExercisesUiState()
 ) {
-    val exerciseHistories: MutableList<ExerciseHistoryUiState> = remember { workoutHistory.exercises.toMutableStateList() }
+    val exerciseHistories: MutableList<WeightsExerciseHistoryUiState> = remember { workoutHistory.exercises.toMutableStateList() }
     val exerciseErrors: MutableMap<Int, Boolean> = remember { mutableStateMapOf() }
     val workoutHistoryUiState = if (workoutHistory == WorkoutHistoryWithExercisesUiState()) {
         WorkoutHistoryUiState(workoutId = uiState.workoutId)
@@ -126,8 +126,8 @@ private fun RecordWorkoutHistoryScreen(
                 exercise = exercise,
                 savedExerciseHistory = workoutHistory.exercises
                     .firstOrNull { history -> history.exerciseId == exercise.id }
-                    ?: ExerciseHistoryUiState(),
-                selectExerciseFunction = { exerciseHistories.add(ExerciseHistoryUiState(exerciseId = exercise.id)) },
+                    ?: WeightsExerciseHistoryUiState(),
+                selectExerciseFunction = { exerciseHistories.add(WeightsExerciseHistoryUiState(exerciseId = exercise.id)) },
                 deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
                 errorStateChange = { exerciseId, exerciseError -> exerciseErrors[exerciseId] = exerciseError },
                 exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id }
@@ -137,7 +137,7 @@ private fun RecordWorkoutHistoryScreen(
             onClick = {
                 workoutSaveFunction(
                     workoutHistoryUiState.toWorkoutHistory(),
-                    exerciseHistories.map { exerciseHistory -> exerciseHistory.toExerciseHistory() }
+                    exerciseHistories.map { exerciseHistory -> exerciseHistory.toWeightsExerciseHistory() }
                 )
                 onDismiss()
             },
@@ -151,13 +151,13 @@ private fun RecordWorkoutHistoryScreen(
 @Composable
 fun RecordExerciseCard(
     exercise: ExerciseUiState,
-    savedExerciseHistory: ExerciseHistoryUiState,
+    savedExerciseHistory: WeightsExerciseHistoryUiState,
     selectExerciseFunction: () -> Boolean,
     deselectExerciseFunction: () -> Boolean,
     errorStateChange: (Int, Boolean) -> Unit,
-    exerciseHistory: ExerciseHistoryUiState?
+    exerciseHistory: WeightsExerciseHistoryUiState?
 ) {
-    var expanded by remember { mutableStateOf(savedExerciseHistory != ExerciseHistoryUiState()) }
+    var expanded by remember { mutableStateOf(savedExerciseHistory != WeightsExerciseHistoryUiState()) }
     var setsState by remember { mutableStateOf(savedExerciseHistory.sets.toString()) }
     var repsState by remember { mutableStateOf(savedExerciseHistory.reps.toString()) }
     var weightState by remember { mutableStateOf(savedExerciseHistory.weight.toString()) }
