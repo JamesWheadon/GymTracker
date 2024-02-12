@@ -34,15 +34,15 @@ class LiveRecordExerciseKtTest {
     fun rendersTimerThatCountsDown() {
         var finished = false
         rule.setContent {
-            Timer(rest = 15) {
+            Timer(rest = 5) {
                 finished = true
             }
         }
 
         timerStopButton.assertExists()
-        rule.onNode(hasText("00:15")).assertExists()
+        rule.onNode(hasText("00:05")).assertExists()
         assertThat(finished, equalTo(false))
-        rule.waitUntilAtLeastOneExists(hasText("00:00"), 15000)
+        rule.waitUntilAtLeastOneExists(hasText("00:00"), 5000)
         assertThat(finished, equalTo(true))
     }
 

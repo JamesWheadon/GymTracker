@@ -2,22 +2,19 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="CommonKtTest">
+      <entry key="All Tests">
         <State />
       </entry>
-      <entry key="RecordExerciseHistoryScreenKtTest">
+      <entry key="LiveRecordExerciseKtTest">
         <State />
       </entry>
-      <entry key="RecordWeightsExerciseHistoryScreenKtTest">
+      <entry key="WeightsExerciseDetailsScreenKtTest">
         <State />
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="shouldDisplayErrorWhenSecondsValueInvalid()">
-        <State />
-      </entry>
-      <entry key="shouldUpdateStateWhenUserEntersValue()">
+      <entry key="rendersTimerThatCountsDown()">
         <State />
       </entry>
     </value>

@@ -8,6 +8,8 @@ import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryR
 import com.example.gymtracker.data.exerciseHistory.cardio.OfflineCardioExerciseHistoryRepository
 import com.example.gymtracker.data.exerciseHistory.weights.OfflineWeightsExerciseHistoryRepository
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseWithHistory.ExerciseWithHistoryRepository
+import com.example.gymtracker.data.exerciseWithHistory.OfflineExerciseWithHistoryRepository
 import com.example.gymtracker.data.workout.OfflineWorkoutRepository
 import com.example.gymtracker.data.workout.WorkoutRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.OfflineWorkoutExerciseCrossRefRepository
@@ -21,6 +23,7 @@ interface AppContainer {
     val exerciseRepository: ExerciseRepository
     val weightsExerciseHistoryRepository: WeightsExerciseHistoryRepository
     val cardioExerciseHistoryRepository: CardioExerciseHistoryRepository
+    val exerciseWithHistoryRepository: ExerciseWithHistoryRepository
     val workoutRepository: WorkoutRepository
     val workoutExerciseCrossRefRepository: WorkoutExerciseCrossRefRepository
     val workoutWithExerciseRepository: WorkoutWithExercisesRepository
@@ -36,6 +39,9 @@ class AppDataContainer(private val context: Context) : AppContainer {
     }
     override val cardioExerciseHistoryRepository: CardioExerciseHistoryRepository by lazy {
         OfflineCardioExerciseHistoryRepository(ExerciseWorkoutDatabase.getDatabase(context).cardioExerciseHistoryDao())
+    }
+    override val exerciseWithHistoryRepository: ExerciseWithHistoryRepository by lazy {
+        OfflineExerciseWithHistoryRepository(ExerciseWorkoutDatabase.getDatabase(context).exerciseWithHistoryDao())
     }
     override val workoutRepository: WorkoutRepository by lazy {
         OfflineWorkoutRepository(ExerciseWorkoutDatabase.getDatabase(context).workoutDao())

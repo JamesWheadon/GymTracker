@@ -7,9 +7,8 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
-import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
+import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import com.example.gymtracker.ui.exercise.toExerciseUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
@@ -59,12 +58,32 @@ class ExerciseDetailsCalendarKtTest {
     private val rest = rule.onNode(hasText("Rest time: 1"))
     private val deleteButton = rule.onNode(hasContentDescription("Delete history"))
 
-    private val exerciseHistory = WeightsExerciseHistoryUiState(1, 1, LocalDate.now(), 13.0, 1, 2, 1)
+    private val exerciseHistory = WeightsExerciseHistoryUiState(
+        id = 1,
+        exerciseId = 1,
+        date = LocalDate.now(),
+        weight = 13.0,
+        sets = 1,
+        reps = 2,
+        rest = 1
+    )
     private val exercise = ExerciseDetailsUiState(
-        name = NAME,
-        muscleGroup = MUSCLE_GROUP,
-        equipment = EQUIPMENT,
-        history = listOf(exerciseHistory)
+        exercise = ExerciseUiState(
+            name = NAME,
+            muscleGroup = MUSCLE_GROUP,
+            equipment = EQUIPMENT,
+        ),
+        weightsHistory = listOf(
+            WeightsExerciseHistoryUiState(
+                id = 1,
+                exerciseId = 1,
+                date = LocalDate.now(),
+                weight = 13.0,
+                sets = 1,
+                reps = 2,
+                rest = 1
+            )
+        )
     )
 
     @Test

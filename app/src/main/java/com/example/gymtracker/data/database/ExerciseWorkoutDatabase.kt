@@ -12,6 +12,7 @@ import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistory
 import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryDao
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryDao
+import com.example.gymtracker.data.exerciseWithHistory.ExerciseWithHistoryDao
 import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.data.workout.WorkoutDao
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRef
@@ -37,6 +38,7 @@ abstract class ExerciseWorkoutDatabase : RoomDatabase() {
     abstract fun exerciseDao(): ExerciseDao
     abstract fun weightsExerciseHistoryDao(): WeightsExerciseHistoryDao
     abstract fun cardioExerciseHistoryDao(): CardioExerciseHistoryDao
+    abstract fun exerciseWithHistoryDao(): ExerciseWithHistoryDao
     abstract fun workoutDao(): WorkoutDao
     abstract fun workoutExerciseCrossRefDao(): WorkoutExerciseCrossRefDao
     abstract fun workoutWithExercisesDao(): WorkoutWithExercisesDao

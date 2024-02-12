@@ -32,14 +32,12 @@ import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistor
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
-import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
 import com.example.gymtracker.ui.exercise.history.UpdateExerciseHistoryScreen
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
 import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistoryUiState
-import com.example.gymtracker.ui.exercise.toExerciseUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.visualisations.Calendar
 import com.example.gymtracker.ui.visualisations.MonthPicker
@@ -56,7 +54,7 @@ fun ExerciseHistoryCalendar(
 ) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
     var showDay: Int? by remember { mutableStateOf(null) }
-    val activeDays = uiState.history!!
+    val activeDays = listOf(uiState.weightsHistory, uiState.cardioHistory).flatten()
         .filter { history -> history.date.month == selectedMonth.month && history.date.year == selectedMonth.year }
         .map { history -> history.date.dayOfMonth }
     Column(
@@ -68,7 +66,7 @@ fun ExerciseHistoryCalendar(
                 selectedMonth.year, selectedMonth.monthValue, showDay!!
             )
             ExercisesOnDay(
-                exercises = uiState.history!!.filter { history ->
+                exercises = uiState.weightsHistory.filter { history ->
                     history.date == selectedDate
                 },
                 date = selectedDate,
