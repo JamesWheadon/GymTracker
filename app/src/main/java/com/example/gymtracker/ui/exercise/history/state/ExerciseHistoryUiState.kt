@@ -6,4 +6,5 @@ sealed interface ExerciseHistoryUiState {
     val id: Int
     val exerciseId: Int
     val date: LocalDate
+    var workoutId: Int?
 }

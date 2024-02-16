@@ -36,7 +36,7 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun LiveRecordExercise(
+fun LiveRecordWeightsExercise(
     uiState: ExerciseUiState,
     exerciseComplete: (WeightsExerciseHistoryUiState) -> Unit,
     exerciseCancel: () -> Unit,
@@ -55,7 +55,7 @@ fun LiveRecordExercise(
         ) {
             Text(text = uiState.name)
             if (!recording) {
-                LiveRecordExerciseInfo(
+                LiveRecordWeightsExerciseInfo(
                     onStart = { data ->
                         exerciseData.rest = data.rest
                         exerciseData.reps = data.reps
@@ -77,7 +77,7 @@ fun LiveRecordExercise(
 }
 
 @Composable
-fun LiveRecordExerciseInfo(
+fun LiveRecordWeightsExerciseInfo(
     onStart: (ExerciseData) -> Unit,
     onCancel: () -> Unit
 ) {
@@ -229,9 +229,9 @@ data class ExerciseData(val reps: Int = 0, val rest: Int = 0, val weight: Double
 
 @Preview(showBackground = true)
 @Composable
-fun LiveRecordExercisePreview() {
+fun LiveRecordWeightsExercisePreview() {
     GymTrackerTheme(darkTheme = false) {
-        LiveRecordExercise(
+        LiveRecordWeightsExercise(
             uiState = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells"),
             exerciseComplete = { },
             exerciseCancel = { }

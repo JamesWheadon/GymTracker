@@ -15,7 +15,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 
-class LiveRecordExerciseKtTest {
+class LiveRecordWeightsExerciseKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
@@ -125,7 +125,7 @@ class LiveRecordExerciseKtTest {
     @Test
     fun rendersLiveRecordExerciseInfo() {
         rule.setContent {
-            LiveRecordExerciseInfo(
+            LiveRecordWeightsExerciseInfo(
                 onStart = { },
                 onCancel = {}
             )
@@ -142,7 +142,7 @@ class LiveRecordExerciseKtTest {
     fun liveRecordExerciseInfoClickingCancelCallsOnCancel() {
         var cancelled = false
         rule.setContent {
-            LiveRecordExerciseInfo(
+            LiveRecordWeightsExerciseInfo(
                 onStart = { },
                 onCancel = { cancelled = true }
             )
@@ -157,7 +157,7 @@ class LiveRecordExerciseKtTest {
     fun liveRecordExerciseInfoClickingStartPopulatesExerciseData() {
         var exerciseData: ExerciseData? = null
         rule.setContent {
-            LiveRecordExerciseInfo(
+            LiveRecordWeightsExerciseInfo(
                 onStart = { data -> exerciseData = data },
                 onCancel = { }
             )
@@ -180,7 +180,7 @@ class LiveRecordExerciseKtTest {
     fun rendersLiveRecordExerciseInfoAndClickingFinishExerciseReturnsHistory() {
         var exerciseHistory: WeightsExerciseHistoryUiState? = null
         rule.setContent {
-            LiveRecordExercise(
+            LiveRecordWeightsExercise(
                 uiState = ExerciseUiState(name = "Curls"),
                 exerciseComplete = { history -> exerciseHistory = history },
                 exerciseCancel = { }

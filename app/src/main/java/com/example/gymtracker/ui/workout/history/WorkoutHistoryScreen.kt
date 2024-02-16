@@ -191,8 +191,24 @@ fun WorkoutHistoryScreenPreview() {
         WorkoutHistoryScreen(
             uiState = WorkoutHistoryWithExercisesUiState(
                 1, 1, LocalDate.now(), exercises = listOf(
-                    WeightsExerciseHistoryUiState(1, 1, LocalDate.now(), 1.0, 1, 1, 1),
-                    WeightsExerciseHistoryUiState(2, 2, LocalDate.now(), 1.0, 1, 1, 1)
+                    WeightsExerciseHistoryUiState(
+                        id = 1,
+                        exerciseId = 1,
+                        date = LocalDate.now(),
+                        weight = 1.0,
+                        sets = 1,
+                        reps = 1,
+                        rest = 1
+                    ),
+                    WeightsExerciseHistoryUiState(
+                        id = 2,
+                        exerciseId = 2,
+                        date = LocalDate.now(),
+                        weight = 1.0,
+                        sets = 1,
+                        reps = 1,
+                        rest = 1
+                    )
                 )
             ),
             exercises = listOf(

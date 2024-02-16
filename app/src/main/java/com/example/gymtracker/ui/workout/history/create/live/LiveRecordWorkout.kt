@@ -27,10 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
+import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.example.gymtracker.ui.navigation.TopBar
@@ -61,7 +60,7 @@ fun LiveRecordWorkout(
 ) {
     val uiState = detailsViewModel.uiState.collectAsState().value
     LaunchedEffect(uiState.workoutId != 0) {
-        historyViewModel.saveWorkoutHistory(
+        historyViewModel.liveSaveWorkoutHistory(
             WorkoutHistoryUiState(workoutId = uiState.workoutId).toWorkoutHistory()
         )
     }
@@ -76,7 +75,7 @@ fun LiveRecordWorkout(
         LiveRecordWorkout(
             uiState = uiState,
             saveFunction = { exercise ->
-                historyViewModel.saveWorkoutExercise(exercise)
+                historyViewModel.liveSaveWorkoutExerciseHistory(exercise)
             },
             finishFunction = {
                 navController.popBackStack()
@@ -90,7 +89,7 @@ fun LiveRecordWorkout(
 @Composable
 fun LiveRecordWorkout(
     uiState: WorkoutWithExercisesUiState,
-    saveFunction: (WeightsExerciseHistory) -> Unit,
+    saveFunction: (ExerciseHistoryUiState) -> Unit,
     finishFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -103,18 +102,33 @@ fun LiveRecordWorkout(
     ) {
         uiState.exercises.forEach { exercise ->
             if (exercise.id == currentExercise) {
-                LiveRecordExercise(
-                    uiState = exercise,
-                    exerciseComplete = { exerciseHistory ->
-                        saveFunction(exerciseHistory.toWeightsExerciseHistory())
-                        completedExercises.add(exerciseHistory.exerciseId)
-                        currentExercise = -1
-                    },
-                    exerciseCancel = {
-                        currentExercise = -1
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if (exercise.equipment != "") {
+                    LiveRecordWeightsExercise(
+                        uiState = exercise,
+                        exerciseComplete = { exerciseHistory ->
+                            saveFunction(exerciseHistory)
+                            completedExercises.add(exerciseHistory.exerciseId)
+                            currentExercise = -1
+                        },
+                        exerciseCancel = {
+                            currentExercise = -1
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    LiveRecordCardioExercise(
+                        uiState = exercise,
+                        exerciseComplete = { exerciseHistory ->
+                            saveFunction(exerciseHistory)
+                            completedExercises.add(exerciseHistory.exerciseId)
+                            currentExercise = -1
+                        },
+                        exerciseCancel = {
+                            currentExercise = -1
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             } else if (completedExercises.contains(exercise.id)) {
                 LiveRecordWorkoutExerciseCard(
                     exercise = exercise,

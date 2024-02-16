@@ -21,13 +21,31 @@ class RecordExerciseHistoryScreenKtTest {
 
     private val weightsExercise = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
     private val cardioExercise = ExerciseUiState(0, "Cardio")
-    private val weightsHistory = WeightsExerciseHistoryUiState(0, 0, LocalDate.now(), 1.0, 1, 1)
-    private val cardioHistory = CardioExerciseHistoryUiState(0, 0, LocalDate.now(), 60, 0)
+    private val weightsHistory = WeightsExerciseHistoryUiState(
+        id = 0,
+        exerciseId = 0,
+        date = LocalDate.now(),
+        workoutId = 1,
+        weight = 1.0,
+        sets = 1,
+        reps = 1
+    )
+    private val cardioHistory = CardioExerciseHistoryUiState(
+        id = 0,
+        exerciseId = 0,
+        date = LocalDate.now(),
+        workoutId = 1,
+        minutes = 60,
+        seconds = 0
+    )
 
-    private val newWeightsExerciseTitle = rule.onNode(hasText("New ${weightsExercise.name} Workout"))
-    private val updateWeightsExerciseTitle = rule.onNode(hasText("Update ${weightsExercise.name} Workout"))
+    private val newWeightsExerciseTitle =
+        rule.onNode(hasText("New ${weightsExercise.name} Workout"))
+    private val updateWeightsExerciseTitle =
+        rule.onNode(hasText("Update ${weightsExercise.name} Workout"))
     private val newCardioExerciseTitle = rule.onNode(hasText("New ${cardioExercise.name} Workout"))
-    private val updateCardioExerciseTitle = rule.onNode(hasText("Update ${cardioExercise.name} Workout"))
+    private val updateCardioExerciseTitle =
+        rule.onNode(hasText("Update ${cardioExercise.name} Workout"))
     private val setsField = rule.onNode(hasContentDescription("Sets"))
     private val distanceField = rule.onNode(hasContentDescription("Distance"))
     private val createButton = rule.onNode(hasText("Save"))
@@ -51,6 +69,7 @@ class RecordExerciseHistoryScreenKtTest {
         newCardioExerciseTitle.assertDoesNotExist()
         distanceField.assertDoesNotExist()
     }
+
     @Test
     fun clickCloseButtonToDismissForWeightsExercise() {
         var dismissed = false
@@ -105,6 +124,7 @@ class RecordExerciseHistoryScreenKtTest {
         newWeightsExerciseTitle.assertDoesNotExist()
         setsField.assertDoesNotExist()
     }
+
     @Test
     fun clickCloseButtonToDismissForCardioExercise() {
         var dismissed = false

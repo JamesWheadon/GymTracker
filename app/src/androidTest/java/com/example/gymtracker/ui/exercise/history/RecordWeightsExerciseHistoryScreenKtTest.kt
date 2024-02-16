@@ -29,7 +29,15 @@ class RecordWeightsExerciseHistoryScreenKtTest {
     private val unitsField = rule.onNode(hasContentDescription("Units"))
 
     private val exercise = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
-    private val history = WeightsExerciseHistoryUiState(0, 0, LocalDate.now(), 1.0, 1, 1)
+    private val history = WeightsExerciseHistoryUiState(
+        id = 0,
+        exerciseId = 0,
+        date = LocalDate.now(),
+        workoutId = null,
+        weight = 1.0,
+        sets = 1,
+        reps = 1
+    )
 
     @Test
     fun rendersEmptyCreateForm() {

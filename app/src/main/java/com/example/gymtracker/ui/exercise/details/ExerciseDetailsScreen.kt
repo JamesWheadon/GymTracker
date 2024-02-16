@@ -98,10 +98,10 @@ fun ExerciseDetailsScreen(
             }
         }
     ) { innerPadding ->
-        if (uiState.exercise.name != "") {
+        if (uiState.exercise.equipment != "") {
             WeightsExerciseDetailsScreen(innerPadding, uiState)
         } else {
-            WeightsExerciseDetailsScreen(innerPadding, uiState)
+            CardioExerciseDetailsScreen(innerPadding, uiState)
         }
     }
     if (showRecord) {

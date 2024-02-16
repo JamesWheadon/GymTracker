@@ -1,4 +1,4 @@
-package com.example.gymtracker.ui.exercise.history
+package com.example.gymtracker.ui.workout.history.create.live
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.converters.DistanceUnits
 import com.example.gymtracker.converters.convertToKilometers
@@ -29,49 +32,36 @@ import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.FormTimeField
 import com.example.gymtracker.ui.customCardElevation
+import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
-import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
+import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 
 @Composable
-fun RecordCardioExerciseHistoryCard(
-    exerciseId: Int,
-    cardTitle: String,
-    saveFunction: (ExerciseHistoryUiState) -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
-    savedHistory: CardioExerciseHistoryUiState = CardioExerciseHistoryUiState()
+fun LiveRecordCardioExercise(
+    uiState: ExerciseUiState,
+    exerciseComplete: (CardioExerciseHistoryUiState) -> Unit,
+    exerciseCancel: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    var minutesState by remember {
-        mutableStateOf(
-            if (savedHistory == CardioExerciseHistoryUiState()) "" else (savedHistory.minutes
-                ?: 0).toString()
-        )
-    }
-    var secondsState by remember {
-        mutableStateOf(
-            if (savedHistory == CardioExerciseHistoryUiState()) "" else (savedHistory.minutes
-                ?: 0).toString()
-        )
-    }
-    var caloriesState by remember { mutableStateOf(if (savedHistory == CardioExerciseHistoryUiState()) "" else savedHistory.calories.toString()) }
-    var distanceState by remember { mutableStateOf(if (savedHistory == CardioExerciseHistoryUiState()) "" else savedHistory.distance.toString()) }
+    var minutesState by remember { mutableStateOf("") }
+    var secondsState by remember { mutableStateOf("") }
+    var caloriesState by remember { mutableStateOf("") }
+    var distanceState by remember { mutableStateOf("") }
     var unitState by remember { mutableStateOf(DistanceUnits.KILOMETERS.shortForm) }
+    val saveEnabled = (minutesState != "" && secondsState != "") ||
+            caloriesState != "" || distanceState != ""
     Card(
+        elevation = customCardElevation(),
         modifier = modifier
-            .padding(vertical = 10.dp, horizontal = 10.dp),
-        elevation = customCardElevation()
     ) {
         Column(
             modifier = modifier
-                .fillMaxWidth()
                 .padding(0.dp, 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = cardTitle
-            )
+            Text(text = uiState.name)
             FormTimeField(
                 minutes = minutesState,
                 seconds = secondsState,
@@ -131,69 +121,54 @@ fun RecordCardioExerciseHistoryCard(
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 0.dp)
             )
-            SaveCardioExerciseHistoryButton(
-                minutesState = minutesState,
-                secondsState = secondsState,
-                caloriesState = caloriesState,
-                distanceState = distanceState,
-                unitState = unitState,
-                exerciseId = exerciseId,
-                savedHistory = savedHistory,
-                saveFunction = saveFunction,
-                onDismiss = onDismiss
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    enabled = saveEnabled,
+                    onClick = {
+                        val distance = if (distanceState == "") {
+                            null
+                        } else {
+                            val unit = getDistanceUnitFromShortForm(unitState)
+                            convertToKilometers(unit, distanceState.toDouble())
+                        }
+                        exerciseComplete(
+                            CardioExerciseHistoryUiState(
+                                exerciseId = uiState.id,
+                                distance = distance,
+                                minutes = minutesState.toIntOrNull(),
+                                seconds = secondsState.toIntOrNull(),
+                                calories = caloriesState.toIntOrNull()
+                            )
+                        )
+                    }
+                ) {
+                    Text(text = "Save")
+                }
+                Button(
+                    onClick = {
+                        exerciseCancel()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(text = "Cancel")
+                }
+            }
         }
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun SaveCardioExerciseHistoryButton(
-    minutesState: String,
-    secondsState: String,
-    caloriesState: String,
-    distanceState: String,
-    unitState: String,
-    exerciseId: Int,
-    savedHistory: CardioExerciseHistoryUiState,
-    saveFunction: (ExerciseHistoryUiState) -> Unit,
-    onDismiss: () -> Unit
-) {
-    if ((minutesState != "" && secondsState != "" && secondsState.toInt() < 60) || caloriesState != "" || distanceState != "") {
-        Button(onClick = {
-            val distance = if (distanceState == "") {
-                null
-            } else {
-                val unit = getDistanceUnitFromShortForm(unitState)
-                convertToKilometers(unit, distanceState.toDouble())
-            }
-            val minutes = minutesState.toIntOrNull()
-            val seconds = secondsState.toIntOrNull()
-            val history = if (savedHistory == CardioExerciseHistoryUiState()) {
-                CardioExerciseHistoryUiState(
-                    exerciseId = exerciseId,
-                    distance = distance,
-                    minutes = minutes,
-                    seconds = seconds,
-                    calories = caloriesState.toIntOrNull()
-                )
-            } else {
-                savedHistory.distance = distance
-                savedHistory.minutes = minutes
-                savedHistory.seconds = seconds
-                savedHistory.calories = caloriesState.toIntOrNull()
-                savedHistory
-            }
-            saveFunction(history)
-            onDismiss()
-        }) {
-            Text("Save")
-        }
-    } else {
-        Button(
-            onClick = { },
-            enabled = false
-        ) {
-            Text("Save")
-        }
+fun LiveRecordCardioExercisePreview() {
+    GymTrackerTheme(darkTheme = false) {
+        LiveRecordCardioExercise(
+            uiState = ExerciseUiState(name = "Treadmill"),
+            exerciseCancel = {},
+            exerciseComplete = {}
+        )
     }
 }

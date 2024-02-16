@@ -16,6 +16,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
@@ -52,6 +53,8 @@ class RecordWorkoutHistoryScreenKtTest {
     private lateinit var mockWorkoutHistoryRepository: WorkoutHistoryRepository
     @Mock
     private lateinit var mockWeightsExerciseHistoryRepository: WeightsExerciseHistoryRepository
+    @Mock
+    private lateinit var mockCardioExerciseHistoryRepository: CardioExerciseHistoryRepository
 
     @Captor
     lateinit var weightsExerciseHistoryCaptor: ArgumentCaptor<WeightsExerciseHistory>
@@ -81,7 +84,8 @@ class RecordWorkoutHistoryScreenKtTest {
         MockitoAnnotations.initMocks(this)
         workoutHistoryViewModel = WorkoutHistoryViewModel(
             mockWorkoutHistoryRepository,
-            mockWeightsExerciseHistoryRepository
+            mockWeightsExerciseHistoryRepository,
+            mockCardioExerciseHistoryRepository
         )
     }
 

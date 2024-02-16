@@ -59,7 +59,8 @@ object AppViewModelProvider {
         initializer {
             WorkoutHistoryViewModel(
                 gymTrackerApplication().container.workoutHistoryRepository,
-                gymTrackerApplication().container.weightsExerciseHistoryRepository
+                gymTrackerApplication().container.weightsExerciseHistoryRepository,
+                gymTrackerApplication().container.cardioExerciseHistoryRepository
             )
         }
     }
