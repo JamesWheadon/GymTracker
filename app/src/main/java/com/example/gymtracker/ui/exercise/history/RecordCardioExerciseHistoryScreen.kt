@@ -42,20 +42,10 @@ fun RecordCardioExerciseHistoryCard(
     modifier: Modifier = Modifier,
     savedHistory: CardioExerciseHistoryUiState = CardioExerciseHistoryUiState()
 ) {
-    var minutesState by remember {
-        mutableStateOf(
-            if (savedHistory == CardioExerciseHistoryUiState()) "" else (savedHistory.minutes
-                ?: 0).toString()
-        )
-    }
-    var secondsState by remember {
-        mutableStateOf(
-            if (savedHistory == CardioExerciseHistoryUiState()) "" else (savedHistory.minutes
-                ?: 0).toString()
-        )
-    }
-    var caloriesState by remember { mutableStateOf(if (savedHistory == CardioExerciseHistoryUiState()) "" else savedHistory.calories.toString()) }
-    var distanceState by remember { mutableStateOf(if (savedHistory == CardioExerciseHistoryUiState()) "" else savedHistory.distance.toString()) }
+    var minutesState by remember { mutableStateOf(savedHistory.minutes?.toString() ?: "") }
+    var secondsState by remember { mutableStateOf(savedHistory.seconds?.toString() ?: "") }
+    var caloriesState by remember { mutableStateOf(savedHistory.calories?.toString() ?: "") }
+    var distanceState by remember { mutableStateOf(savedHistory.distance?.toString() ?: "") }
     var unitState by remember { mutableStateOf(DistanceUnits.KILOMETERS.shortForm) }
     Card(
         modifier = modifier

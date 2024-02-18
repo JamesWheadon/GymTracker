@@ -332,7 +332,7 @@ fun RecordCardioExerciseCard(
     Card {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(vertical = 8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Box(
                 modifier = Modifier.fillMaxWidth()
@@ -360,26 +360,10 @@ fun RecordCardioExerciseCard(
                 )
             }
             if (exerciseHistory != null) {
-                var minutesState by remember {
-                    mutableStateOf(
-                        exerciseHistory.minutes?.toString() ?: ""
-                    )
-                }
-                var secondsState by remember {
-                    mutableStateOf(
-                        exerciseHistory.seconds?.toString() ?: ""
-                    )
-                }
-                var distanceState by remember {
-                    mutableStateOf(
-                        exerciseHistory.distance?.toString() ?: ""
-                    )
-                }
-                var caloriesState by remember {
-                    mutableStateOf(
-                        exerciseHistory.calories?.toString() ?: ""
-                    )
-                }
+                var minutesState by remember { mutableStateOf(exerciseHistory.minutes?.toString() ?: "") }
+                var secondsState by remember { mutableStateOf(exerciseHistory.seconds?.toString() ?: "") }
+                var caloriesState by remember { mutableStateOf(exerciseHistory.calories?.toString() ?: "") }
+                var distanceState by remember { mutableStateOf(exerciseHistory.distance?.toString() ?: "") }
                 var unitState by remember { mutableStateOf(DistanceUnits.KILOMETERS.shortForm) }
                 val error = !((minutesState != "" && secondsState != "")
                         || distanceState != ""
