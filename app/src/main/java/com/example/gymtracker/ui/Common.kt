@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -87,7 +88,7 @@ fun FormInformationField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExerciseInformationFieldWithSuggestions(
+fun FormInformationFieldWithSuggestions(
     label: String,
     value: TextFieldValue,
     onChange: (TextFieldValue) -> Unit,
@@ -153,6 +154,72 @@ fun ExerciseInformationFieldWithSuggestions(
                 }
             }
         }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FormTimeField(
+    minutes: String,
+    seconds: String,
+    minutesOnChange: (String) -> Unit,
+    secondsOnChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val secondsError = seconds != "" && seconds.toInt() >= 60
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.Top,
+        modifier = modifier
+    ) {
+        TextField(
+            value = minutes,
+            onValueChange = minutesOnChange,
+            label = {
+                Text(text = "Minutes")
+            },
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                disabledTextColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            modifier = Modifier.semantics { contentDescription = "Minutes" }
+                .weight(1f)
+                .padding(0.dp)
+        )
+        TextField(
+            value = seconds,
+            onValueChange = secondsOnChange,
+            label = {
+                Text(text = "Seconds")
+            },
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                disabledTextColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            isError = secondsError,
+            supportingText = {
+                if (secondsError) {
+                    Text(
+                        text = "Value must be between 0 and 59",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            modifier = Modifier.semantics { contentDescription = "Seconds" }
+                .weight(1f)
+                .padding(0.dp)
+        )
     }
 }
 
@@ -300,13 +367,26 @@ fun ActionConfirmationPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun ExerciseInformationFieldWithSuggestionsPreview() {
+fun FormInformationFieldWithSuggestionsPreview() {
     GymTrackerTheme(darkTheme = false) {
-        ExerciseInformationFieldWithSuggestions(
+        FormInformationFieldWithSuggestions(
             label = "Test Field",
             value = TextFieldValue(text = "Bi"),
             onChange = { },
             suggestions = listOf("Biceps", "Bicycle", "Bismuth")
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FormTimeFieldPreview() {
+    GymTrackerTheme(darkTheme = false) {
+        FormTimeField(
+            minutes = "",
+            seconds = "",
+            minutesOnChange = { },
+            secondsOnChange = { }
         )
     }
 }

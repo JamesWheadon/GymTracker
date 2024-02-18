@@ -8,14 +8,14 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 
-class LiveRecordExerciseKtTest {
+class LiveRecordWeightsExerciseKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
@@ -34,15 +34,15 @@ class LiveRecordExerciseKtTest {
     fun rendersTimerThatCountsDown() {
         var finished = false
         rule.setContent {
-            Timer(rest = 15) {
+            Timer(rest = 5) {
                 finished = true
             }
         }
 
         timerStopButton.assertExists()
-        rule.onNode(hasText("00:15")).assertExists()
+        rule.onNode(hasText("00:05")).assertExists()
         assertThat(finished, equalTo(false))
-        rule.waitUntilAtLeastOneExists(hasText("00:00"), 15000)
+        rule.waitUntilAtLeastOneExists(hasText("00:00"), 5000)
         assertThat(finished, equalTo(true))
     }
 
@@ -67,7 +67,7 @@ class LiveRecordExerciseKtTest {
     fun rendersLiveRecordExerciseSetsAndTimer() {
         rule.setContent {
             LiveRecordExerciseSetsAndTimer(
-                exerciseData = ExerciseHistoryUiState(rest = 15),
+                exerciseData = WeightsExerciseHistoryUiState(rest = 15),
                 exerciseFinished = { })
         }
 
@@ -80,7 +80,7 @@ class LiveRecordExerciseKtTest {
     fun liveRecordExerciseSetsAndTimerFinishingSetStartsTimer() {
         rule.setContent {
             LiveRecordExerciseSetsAndTimer(
-                exerciseData = ExerciseHistoryUiState(rest = 15),
+                exerciseData = WeightsExerciseHistoryUiState(rest = 15),
                 exerciseFinished = { }
             )
         }
@@ -102,7 +102,7 @@ class LiveRecordExerciseKtTest {
         var completed = 0
         rule.setContent {
             LiveRecordExerciseSetsAndTimer(
-                exerciseData = ExerciseHistoryUiState(rest = 15),
+                exerciseData = WeightsExerciseHistoryUiState(rest = 15),
                 exerciseFinished = { sets -> completed = sets })
         }
 
@@ -125,7 +125,7 @@ class LiveRecordExerciseKtTest {
     @Test
     fun rendersLiveRecordExerciseInfo() {
         rule.setContent {
-            LiveRecordExerciseInfo(
+            LiveRecordWeightsExerciseInfo(
                 onStart = { },
                 onCancel = {}
             )
@@ -142,7 +142,7 @@ class LiveRecordExerciseKtTest {
     fun liveRecordExerciseInfoClickingCancelCallsOnCancel() {
         var cancelled = false
         rule.setContent {
-            LiveRecordExerciseInfo(
+            LiveRecordWeightsExerciseInfo(
                 onStart = { },
                 onCancel = { cancelled = true }
             )
@@ -157,7 +157,7 @@ class LiveRecordExerciseKtTest {
     fun liveRecordExerciseInfoClickingStartPopulatesExerciseData() {
         var exerciseData: ExerciseData? = null
         rule.setContent {
-            LiveRecordExerciseInfo(
+            LiveRecordWeightsExerciseInfo(
                 onStart = { data -> exerciseData = data },
                 onCancel = { }
             )
@@ -178,9 +178,9 @@ class LiveRecordExerciseKtTest {
 
     @Test
     fun rendersLiveRecordExerciseInfoAndClickingFinishExerciseReturnsHistory() {
-        var exerciseHistory: ExerciseHistoryUiState? = null
+        var exerciseHistory: WeightsExerciseHistoryUiState? = null
         rule.setContent {
-            LiveRecordExercise(
+            LiveRecordWeightsExercise(
                 uiState = ExerciseUiState(name = "Curls"),
                 exerciseComplete = { history -> exerciseHistory = history },
                 exerciseCancel = { }

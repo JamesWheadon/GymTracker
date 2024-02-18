@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseRepository
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
+import com.example.gymtracker.data.exerciseWithHistory.ExerciseWithHistoryRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
-import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
-import com.example.gymtracker.ui.exercise.toExerciseDetailsUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
-import com.example.gymtracker.ui.exercise.history.toExerciseHistoryUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -19,8 +17,10 @@ import kotlinx.coroutines.launch
 
 class ExerciseDetailsViewModel(
     private val exerciseRepository: ExerciseRepository,
-    private val exerciseHistoryRepository: ExerciseHistoryRepository,
+    private val weightsExerciseHistoryRepository: WeightsExerciseHistoryRepository,
+    private val cardioExerciseHistoryRepository: CardioExerciseHistoryRepository,
     private val workoutExerciseCrossRefRepository: WorkoutExerciseCrossRefRepository,
+    exerciseWithHistoryRepository: ExerciseWithHistoryRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -31,22 +31,13 @@ class ExerciseDetailsViewModel(
     }
 
     val uiState: StateFlow<ExerciseDetailsUiState> =
-        exerciseRepository.getExerciseStream(exerciseId)
-            .map { exercise -> exercise?.toExerciseDetailsUiState() ?: ExerciseDetailsUiState() }
+        exerciseWithHistoryRepository.getExerciseWithHistoryStream(exerciseId)
+            .map { exercise -> exercise.toExerciseDetailsUiState() }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = ExerciseDetailsUiState()
             )
-
-    val exerciseHistory: StateFlow<List<ExerciseHistoryUiState>> =
-        exerciseHistoryRepository.getFullExerciseHistoryStream(exerciseId)
-        .map { historyList -> historyList?.map { history -> history.toExerciseHistoryUiState() } ?: listOf() }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-            initialValue = listOf()
-        )
 
     fun updateExercise(exercise: Exercise) {
         viewModelScope.launch {
@@ -56,7 +47,11 @@ class ExerciseDetailsViewModel(
 
     fun deleteExercise(exercise: Exercise) {
         viewModelScope.launch {
-            exerciseHistoryRepository.deleteAllForExercise(exercise)
+            if (exercise.equipment != "") {
+                weightsExerciseHistoryRepository.deleteAllForExercise(exercise)
+            } else {
+                cardioExerciseHistoryRepository.deleteAllForExercise(exercise)
+            }
             workoutExerciseCrossRefRepository.deleteAllCrossRefForExercise(exercise)
             exerciseRepository.deleteExercise(exercise)
         }

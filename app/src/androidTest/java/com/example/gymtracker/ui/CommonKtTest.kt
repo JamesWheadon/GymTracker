@@ -5,6 +5,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasParent
@@ -62,7 +63,7 @@ class CommonKtTest {
     fun shouldNotGiveSuggestionsForTextLessThanTwoCharacters() {
         var enteredText = TextFieldValue(text = "")
         rule.setContent {
-            ExerciseInformationFieldWithSuggestions(
+            FormInformationFieldWithSuggestions(
                 label = "Test Field",
                 value = enteredText,
                 onChange = { enteredText = it },
@@ -84,7 +85,7 @@ class CommonKtTest {
         var enteredText by mutableStateOf(TextFieldValue(text = ""))
 
         rule.setContent {
-            ExerciseInformationFieldWithSuggestions(
+            FormInformationFieldWithSuggestions(
                 label = "Test Field",
                 value = enteredText,
                 onChange = { enteredText = it },
@@ -118,7 +119,7 @@ class CommonKtTest {
     fun clickingSuggestionsEntersSuggestionInToTextFieldValue() {
         var enteredText by mutableStateOf(TextFieldValue(text = ""))
         rule.setContent {
-            ExerciseInformationFieldWithSuggestions(
+            FormInformationFieldWithSuggestions(
                 label = "Test Field",
                 value = enteredText,
                 onChange = { enteredText = it },
@@ -148,7 +149,7 @@ class CommonKtTest {
     fun shouldOnlyDisplayFirstThreeSuggestionsAlphabetically() {
         var enteredText by mutableStateOf(TextFieldValue(text = ""))
         rule.setContent {
-            ExerciseInformationFieldWithSuggestions(
+            FormInformationFieldWithSuggestions(
                 label = "Test Field",
                 value = enteredText,
                 onChange = { enteredText = it },
@@ -168,6 +169,57 @@ class CommonKtTest {
         bicycle.assertExists()
         bismuth.assertDoesNotExist()
         biscuits.assertExists()
+    }
+
+    @Test
+    fun shouldRenderFormTimeField() {
+        var minutes = ""
+        var seconds = ""
+        rule.setContent {
+            FormTimeField(
+                minutes = minutes,
+                seconds = seconds,
+                minutesOnChange = { minutes = it },
+                secondsOnChange = { seconds = it }
+            )
+        }
+
+        rule.onNode(hasContentDescription("Minutes")).assertExists()
+        rule.onNode(hasContentDescription("Seconds")).assertExists()
+    }
+
+    @Test
+    fun shouldUpdateStateWhenUserEntersValue() {
+        var minutes = ""
+        var seconds = ""
+        rule.setContent {
+            FormTimeField(
+                minutes = "",
+                seconds = "",
+                minutesOnChange = { minutes = it },
+                secondsOnChange = { seconds = it }
+            )
+        }
+
+        rule.onNode(hasContentDescription("Minutes")).performTextInput("30")
+        assertThat(minutes, equalTo("30"))
+        rule.onNode(hasContentDescription("Seconds")).performTextInput("60")
+        assertThat(seconds, equalTo("60"))
+    }
+
+    @Test
+    fun shouldDisplayErrorWhenSecondsValueInvalid() {
+        rule.setContent {
+            FormTimeField(
+                minutes = "",
+                seconds = "60",
+                minutesOnChange = { },
+                secondsOnChange = { }
+            )
+        }
+
+        rule.onNode(hasContentDescription("Seconds"))
+            .assertTextContains("Value must be between 0 and 59")
     }
 
     @Test

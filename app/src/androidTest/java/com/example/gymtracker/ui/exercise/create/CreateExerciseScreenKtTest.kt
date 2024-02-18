@@ -8,30 +8,22 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.example.gymtracker.data.exercise.Exercise
-import com.example.gymtracker.data.exercise.ExerciseRepository
-import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
+import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.toExerciseUiState
-import kotlinx.coroutines.flow.flowOf
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
 
 class CreateExerciseScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
-    @Mock
-    private lateinit var repository: ExerciseRepository
-
-    private lateinit var viewModel: ExercisesScreenViewModel
-
     private val createButton = rule.onNode(hasText("Create"))
+    private val typeToggle = rule.onNode(hasContentDescription("exerciseTypeToggle"))
+    private val weightsType = rule.onNode(hasText("Weights"))
+    private val cardioType = rule.onNode(hasText("Cardio"))
     private val nameField = rule.onNode(hasContentDescription("Exercise Name"))
     private val equipmentField = rule.onNode(hasContentDescription("Equipment"))
     private val muscleField = rule.onNode(hasContentDescription("Muscle Group"))
@@ -41,30 +33,24 @@ class CreateExerciseScreenKtTest {
     private val exercise = Exercise(0, "Test Curls", "Biceps", "Dumbbells")
     private val savedExercise = Exercise(1, "Saved Curls", "Biceps", "Dumbbells")
 
-    @Before
-    fun setUp() {
-        MockitoAnnotations.initMocks(this)
-
-        `when`(repository.getAllExercisesStream()).thenReturn(flowOf(listOf(savedExercise)))
-        `when`(repository.getAllMuscleGroupsStream()).thenReturn(flowOf(listOf(savedExercise.muscleGroup)))
-        `when`(repository.getAllExerciseNames()).thenReturn(flowOf(listOf(savedExercise.name)))
-
-        viewModel = ExercisesScreenViewModel(repository)
-    }
-
     @Test
     fun rendersEmptyCreateForm() {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = "Create New Exercise",
-                onDismiss = {},
-                createFunction = {},
                 buttonText = "Create",
-                viewModel = viewModel
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = {},
+                createFunction = {}
             )
         }
 
         createButton.assertExists()
+        typeToggle.assertExists()
+        weightsType.assertExists()
+        cardioType.assertExists()
         nameField.assertExists()
         equipmentField.assertExists()
         muscleField.assertExists()
@@ -77,10 +63,12 @@ class CreateExerciseScreenKtTest {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = "Create New Exercise",
-                onDismiss = { dismissed = true },
-                createFunction = {},
                 buttonText = "Create",
-                viewModel = viewModel
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { dismissed = true },
+                createFunction = {}
             )
         }
 
@@ -96,10 +84,12 @@ class CreateExerciseScreenKtTest {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = "Create New Exercise",
-                onDismiss = { dismissed = true },
-                createFunction = { created = it },
                 buttonText = "Create",
-                viewModel = viewModel
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { dismissed = true },
+                createFunction = { created = it }
             )
         }
 
@@ -119,10 +109,12 @@ class CreateExerciseScreenKtTest {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = "Create New Exercise",
-                onDismiss = { dismissed = true },
-                createFunction = { created = it },
                 buttonText = "Create",
-                viewModel = viewModel
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { dismissed = true },
+                createFunction = { created = it }
             )
         }
 
@@ -142,10 +134,12 @@ class CreateExerciseScreenKtTest {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = "Create New Exercise",
-                onDismiss = { dismissed = true },
-                createFunction = { created = it },
                 buttonText = "Create",
-                viewModel = viewModel
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { dismissed = true },
+                createFunction = { created = it }
             )
         }
 
@@ -165,13 +159,14 @@ class CreateExerciseScreenKtTest {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = "Create New Exercise",
-                onDismiss = { dismissed = true },
-                createFunction = { created = it },
                 buttonText = "Create",
-                viewModel = viewModel
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { dismissed = true },
+                createFunction = { created = it }
             )
         }
-
         nameField.performTextInput(exercise.name)
         equipmentField.performTextInput(exercise.equipment)
         muscleField.performTextInput(exercise.muscleGroup)
@@ -187,14 +182,16 @@ class CreateExerciseScreenKtTest {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = "Create New Exercise",
-                onDismiss = { },
-                createFunction = { },
                 buttonText = "Create",
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
                 exercise = exercise.toExerciseUiState(),
-                viewModel = viewModel
+                onDismiss = { },
+                createFunction = { }
             )
         }
 
+        typeToggle.assertDoesNotExist()
         nameField.assertTextContains(exercise.name)
         equipmentField.assertTextContains(exercise.equipment)
         muscleField.assertTextContains(exercise.muscleGroup)
@@ -205,11 +202,12 @@ class CreateExerciseScreenKtTest {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = "Create New Exercise",
-                onDismiss = { },
-                createFunction = { },
                 buttonText = "Create",
+                savedExerciseNames = listOf(savedExercise.name),
+                savedMuscleGroups = listOf(),
                 exercise = savedExercise.toExerciseUiState(),
-                viewModel = viewModel
+                onDismiss = { },
+                createFunction = { }
             )
         }
 
@@ -227,11 +225,12 @@ class CreateExerciseScreenKtTest {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = "Create New Exercise",
-                onDismiss = { dismissed = true },
-                createFunction = { newExercise -> created = newExercise },
                 buttonText = "Create",
+                savedExerciseNames = listOf(savedExercise.name),
+                savedMuscleGroups = listOf(),
                 exercise = savedExercise.toExerciseUiState(),
-                viewModel = viewModel
+                onDismiss = { dismissed = true },
+                createFunction = { newExercise -> created = newExercise }
             )
         }
 
@@ -243,5 +242,103 @@ class CreateExerciseScreenKtTest {
         createButton.performClick()
         assertThat(dismissed, equalTo(false))
         assertThat(created, equalTo(null))
+    }
+
+    @Test
+    fun typeToggleChangesAvailableInformationFields() {
+        rule.setContent {
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
+                buttonText = "Create",
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { },
+                createFunction = { }
+            )
+        }
+
+        nameField.assertExists()
+        equipmentField.assertExists()
+        muscleField.assertExists()
+        createButton.assertExists()
+
+        typeToggle.performClick()
+
+        nameField.assertExists()
+        equipmentField.assertDoesNotExist()
+        muscleField.assertDoesNotExist()
+        createButton.assertExists()
+    }
+
+    @Test
+    fun createCardioExerciseWithJustNameField() {
+        var created: Exercise? = null
+        var dismissed = false
+
+        rule.setContent {
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
+                buttonText = "Create",
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { dismissed = true },
+                createFunction = { newExercise -> created = newExercise }
+            )
+        }
+
+        typeToggle.performClick()
+        nameField.performTextInput("Cardio")
+        createButton.performClick()
+
+        assertThat(dismissed, equalTo(true))
+        assertThat(created!!.name, equalTo("Cardio"))
+        assertThat(created!!.equipment, equalTo(""))
+        assertThat(created!!.muscleGroup, equalTo(""))
+    }
+
+    @Test
+    fun doesNotCreateCardioExerciseWithEmptyNameField() {
+        var created: Exercise? = null
+        var dismissed = false
+
+        rule.setContent {
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
+                buttonText = "Create",
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { dismissed = true },
+                createFunction = { newExercise -> created = newExercise }
+            )
+        }
+
+        typeToggle.performClick()
+        createButton.performClick()
+
+        assertThat(dismissed, equalTo(false))
+        assertThat(created, equalTo(null))
+    }
+
+    @Test
+    fun updateCardioExerciseWithNameField() {
+        rule.setContent {
+            ExerciseInformationForm(
+                formTitle = "Create New Exercise",
+                buttonText = "Create",
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(name = "Cardio"),
+                onDismiss = { },
+                createFunction = { }
+            )
+        }
+
+        typeToggle.assertDoesNotExist()
+        equipmentField.assertDoesNotExist()
+        muscleField.assertDoesNotExist()
+        nameField.assertTextContains("Cardio")
     }
 }

@@ -33,8 +33,9 @@ import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.details.HistoryDetails
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.details.ExerciseHistoryDetails
+import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.history.create.RecordWorkoutHistoryScreen
@@ -121,14 +122,13 @@ fun WorkoutHistoryScreen(
         }
     }
     if (showDeleteWorkoutHistory) {
-        val (workoutHistory, exerciseHistories) = workoutHistoryUiState.toWorkoutAndExercises()
         Dialog(
             onDismissRequest = { showDeleteWorkoutHistory = false }
         ) {
             ActionConfirmation(
                 actionTitle = "Do you want to delete this workout?",
                 confirmFunction = {
-                    viewModel.deleteWorkoutHistory(workoutHistory, exerciseHistories)
+                    viewModel.deleteWorkoutHistory(workoutHistoryUiState)
                     onDismiss()
                 },
                 cancelFunction = { showDeleteWorkoutHistory = false }
@@ -175,7 +175,7 @@ fun WorkoutHistoryExerciseCard(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(text = exercise.name)
-        HistoryDetails(
+        ExerciseHistoryDetails(
             exerciseHistory = exerciseHistory,
             exercise = exercise,
             editEnabled = false,
@@ -191,8 +191,24 @@ fun WorkoutHistoryScreenPreview() {
         WorkoutHistoryScreen(
             uiState = WorkoutHistoryWithExercisesUiState(
                 1, 1, LocalDate.now(), exercises = listOf(
-                    ExerciseHistoryUiState(1, 1, 1.0, 1, 1, 1, LocalDate.now()),
-                    ExerciseHistoryUiState(2, 2, 1.0, 1, 1, 1, LocalDate.now())
+                    WeightsExerciseHistoryUiState(
+                        id = 1,
+                        exerciseId = 1,
+                        date = LocalDate.now(),
+                        weight = 1.0,
+                        sets = 1,
+                        reps = 1,
+                        rest = 1
+                    ),
+                    WeightsExerciseHistoryUiState(
+                        id = 2,
+                        exerciseId = 2,
+                        date = LocalDate.now(),
+                        weight = 1.0,
+                        sets = 1,
+                        reps = 1,
+                        rest = 1
+                    )
                 )
             ),
             exercises = listOf(

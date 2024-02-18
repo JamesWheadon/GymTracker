@@ -39,13 +39,16 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gymtracker.ui.DropdownBox
-import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
+
+private const val X_OFFSET = 100F
+private const val Y_OFFSET = 50F
+private const val FIRST_POINT = 25F
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
@@ -90,28 +93,42 @@ fun Graph(
                 yGradient = 1
             } else {
                 ySteps = ceil((yMax - yMin) / yGradient).toInt()
-                yAxisSpace = (canvasHeight - 100F) / ySteps
+                yAxisSpace = (canvasHeight - X_OFFSET) / ySteps
             }
 
             val currentDate = LocalDate.now().toEpochDay()
 
-            drawAxis(canvasHeight, canvasWidth)
+            drawAxis(
+                canvasHeight = canvasHeight,
+                canvasWidth = canvasWidth
+            )
 
-            labelYAxis(ySteps, yMin, yGradient, textMeasurer, yAxisSpace)
+            labelYAxis(
+                ySteps = ySteps,
+                yMin = yMin,
+                yGradient = yGradient,
+                textMeasurer = textMeasurer,
+                yAxisSpace = yAxisSpace,
+                yUnit = yUnit
+            )
 
             val fontSize = labelXAxis(
-                customFormatter, textMeasurer, startDate, canvasHeight, canvasWidth
+                customFormatter = customFormatter,
+                textMeasurer = textMeasurer,
+                startDate = startDate,
+                canvasHeight = canvasHeight,
+                canvasWidth = canvasWidth
             )
 
             val dataPoints = drawDataPoints(
-                points,
-                startDate,
-                canvasWidth,
-                currentDate,
-                yMin,
-                yGradient,
-                yAxisSpace,
-                lineColor
+                points = points,
+                startDate = startDate,
+                canvasWidth = canvasWidth,
+                currentDate = currentDate,
+                yMin = yMin,
+                yGradient = yGradient,
+                yAxisSpace = yAxisSpace,
+                lineColor = lineColor
             )
 
             val selected =
@@ -120,17 +137,17 @@ fun Graph(
                 val dataPoint = points[dataPoints.indexOf(selected)]
 
                 dataPointInformation(
-                    yUnit,
-                    dataPoint,
-                    textMeasurer,
-                    yLabel,
-                    fontSize,
-                    customFormatter,
-                    tappedLocation,
-                    canvasWidth,
-                    canvasHeight,
-                    selected,
-                    lineColor
+                    yUnit = yUnit,
+                    dataPoint = dataPoint,
+                    textMeasurer = textMeasurer,
+                    yLabel = yLabel,
+                    fontSize = fontSize,
+                    customFormatter = customFormatter,
+                    tappedLocation = tappedLocation,
+                    canvasWidth = canvasWidth,
+                    canvasHeight = canvasHeight,
+                    selected = selected,
+                    lineColor = lineColor
                 )
             }
         }
@@ -168,63 +185,20 @@ fun GraphOptions(
     }
 }
 
-fun getGraphDetails(
-    uiState: ExerciseDetailsUiState,
-    detail: String,
-    detailOptions: List<String>
-) = uiState.history!!.map { history ->
-    when (detail) {
-        detailOptions[0] -> {
-            Pair(
-                history.date,
-                history.weight
-            )
-        }
-
-        detailOptions[1] -> {
-            Pair(
-                history.date,
-                history.reps.toDouble()
-            )
-        }
-
-        detailOptions[2] -> {
-            Pair(
-                history.date,
-                history.sets.toDouble()
-            )
-        }
-
-        detailOptions[3] -> {
-            Pair(
-                history.date,
-                history.weight * history.reps * history.sets
-            )
-        }
-
-        else -> {
-            Pair(
-                history.date,
-                history.weight
-            )
-        }
-    }
-}
-
 private fun DrawScope.drawAxis(
     canvasHeight: Float,
     canvasWidth: Float
 ) {
     drawLine(
         color = Color.Black,
-        start = Offset(50F, canvasHeight - 50F),
-        end = Offset(canvasWidth, canvasHeight - 50F),
+        start = Offset(X_OFFSET, canvasHeight - Y_OFFSET),
+        end = Offset(canvasWidth, canvasHeight - Y_OFFSET),
         strokeWidth = 2f
     )
     drawLine(
         color = Color.Black,
-        start = Offset(50F, 0F),
-        end = Offset(50F, canvasHeight - 50F),
+        start = Offset(X_OFFSET, 0F),
+        end = Offset(X_OFFSET, canvasHeight - Y_OFFSET),
         strokeWidth = 2f
     )
 }
@@ -235,14 +209,16 @@ private fun DrawScope.labelYAxis(
     yMin: Double,
     yGradient: Int,
     textMeasurer: TextMeasurer,
-    yAxisSpace: Float
+    yAxisSpace: Float,
+    yUnit: String
 ) {
+    val textSizeFloat = 90F
     (0..ySteps).forEach { index ->
         val labelValue = yMin + (index * yGradient)
         val label = if (labelValue.rem(1) == 0.0) {
-            labelValue.toInt().toString()
+            "${labelValue.toInt()} $yUnit"
         } else {
-            labelValue.toString()
+            "$labelValue $yUnit"
         }
         var fontSize = 14.sp
         var textSize: IntSize
@@ -253,11 +229,11 @@ private fun DrawScope.labelYAxis(
                 style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
             )
             textSize = textLayoutResult.size
-        } while (textSize.width > 40F)
+        } while (textSize.width > textSizeFloat)
         drawLine(
             color = Color.Black,
-            start = Offset(40F, (size.height - 75F) - (index * yAxisSpace)),
-            end = Offset(50F, (size.height - 75F) - (index * yAxisSpace)),
+            start = Offset(textSizeFloat, (size.height - Y_OFFSET - FIRST_POINT) - (index * yAxisSpace)),
+            end = Offset(X_OFFSET, (size.height - Y_OFFSET - FIRST_POINT) - (index * yAxisSpace)),
             strokeWidth = 2f
         )
         drawText(
@@ -265,10 +241,10 @@ private fun DrawScope.labelYAxis(
             text = label,
             topLeft = Offset(
                 0F,
-                (size.height - 75F) - (index * yAxisSpace) - textSize.height / 2
+                (size.height - Y_OFFSET - FIRST_POINT) - (index * yAxisSpace) - textSize.height / 2
             ),
             style = TextStyle(fontSize = fontSize),
-            size = Size(50F, yAxisSpace),
+            size = Size(textSizeFloat, yAxisSpace),
         )
     }
 }
@@ -297,7 +273,7 @@ private fun DrawScope.labelXAxis(
         textMeasurer = textMeasurer,
         text = startDate.format(customFormatter),
         style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
-        topLeft = Offset(75F, canvasHeight - 50F)
+        topLeft = Offset(X_OFFSET, canvasHeight - Y_OFFSET)
     )
 
     drawText(
@@ -306,14 +282,14 @@ private fun DrawScope.labelXAxis(
             (LocalDate.now().toEpochDay() + startDate.toEpochDay()) / 2
         ).format(customFormatter),
         style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
-        topLeft = Offset(25F + (canvasWidth - textSize.width) / 2, canvasHeight - 50F)
+        topLeft = Offset(X_OFFSET + (canvasWidth - X_OFFSET - textSize.width) / 2, canvasHeight - Y_OFFSET)
     )
 
     drawText(
         textMeasurer = textMeasurer,
         text = date,
         style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
-        topLeft = Offset(canvasWidth - 25F - textSize.width, canvasHeight - 50F)
+        topLeft = Offset(canvasWidth - FIRST_POINT - textSize.width, canvasHeight - Y_OFFSET)
     )
     return fontSize
 }
@@ -328,11 +304,12 @@ private fun DrawScope.drawDataPoints(
     yAxisSpace: Float,
     lineColor: Color
 ): List<Pair<Float, Float>> {
+    val xWidth = currentDate - startDate.toEpochDay()
     val dataPoints =
         points.filter { point -> !point.first.isBefore(startDate) }.map { point ->
             Pair(
-                75F + (canvasWidth - 100F) * (point.first.toEpochDay() - startDate.toEpochDay()) / (currentDate - startDate.toEpochDay()),
-                ((size.height - 75F) - ((point.second - yMin) / yGradient * yAxisSpace)).toFloat()
+                X_OFFSET + FIRST_POINT + (canvasWidth - X_OFFSET - 2 * FIRST_POINT) * (point.first.toEpochDay() - startDate.toEpochDay()) / xWidth,
+                ((size.height - Y_OFFSET - FIRST_POINT) - ((point.second - yMin) / yGradient * yAxisSpace)).toFloat()
             )
         }.sortedBy { point -> point.first }
 

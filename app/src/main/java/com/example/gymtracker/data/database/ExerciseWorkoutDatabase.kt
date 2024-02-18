@@ -8,31 +8,37 @@ import androidx.room.TypeConverters
 import com.example.gymtracker.converters.LocalDateConverter
 import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseDao
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryDao
+import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryDao
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
+import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryDao
+import com.example.gymtracker.data.exerciseWithHistory.ExerciseWithHistoryDao
 import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.data.workout.WorkoutDao
-import com.example.gymtracker.data.workoutWithExercises.WorkoutWithExercisesDao
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRef
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefDao
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistoryDao
+import com.example.gymtracker.data.workoutWithExercises.WorkoutWithExercisesDao
 
 @Database(
     entities = [
         Exercise::class,
-        ExerciseHistory::class,
+        WeightsExerciseHistory::class,
+        CardioExerciseHistory::class,
         Workout::class,
         WorkoutExerciseCrossRef::class,
         WorkoutHistory::class
     ],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(LocalDateConverter::class)
 abstract class ExerciseWorkoutDatabase : RoomDatabase() {
     abstract fun exerciseDao(): ExerciseDao
-    abstract fun exerciseHistoryDao(): ExerciseHistoryDao
+    abstract fun weightsExerciseHistoryDao(): WeightsExerciseHistoryDao
+    abstract fun cardioExerciseHistoryDao(): CardioExerciseHistoryDao
+    abstract fun exerciseWithHistoryDao(): ExerciseWithHistoryDao
     abstract fun workoutDao(): WorkoutDao
     abstract fun workoutExerciseCrossRefDao(): WorkoutExerciseCrossRefDao
     abstract fun workoutWithExercisesDao(): WorkoutWithExercisesDao

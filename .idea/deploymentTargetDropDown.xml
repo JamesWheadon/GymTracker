@@ -5,7 +5,19 @@
       <entry key="All Tests">
         <State />
       </entry>
+      <entry key="ExerciseDetailsCalendarKtTest">
+        <State />
+      </entry>
+      <entry key="RecordWorkoutHistoryScreenKtTest">
+        <State />
+      </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="recordWeightsExerciseCardClickingCheckboxRendersFormFields()">
+        <State />
+      </entry>
+      <entry key="recordWeightsExerciseCardClickingCheckboxRendersFormFieldsWithErrors()">
         <State />
       </entry>
     </value>

@@ -13,13 +13,13 @@ import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.verify
 
-val exercise1 = Exercise(1, "Curls", "Biceps", "Dumbbells")
-val exercise2 = Exercise(2, "Dips", "Triceps", "Dumbbells")
-
 class ExercisesScreenViewModelTest {
 
     private val repository: ExerciseRepository = mock()
     private val fakeRepository = FakeExerciseRepository()
+
+    private val exercise1 = Exercise(1, "Curls", "Biceps", "Dumbbells")
+    private val exercise2 = Exercise(2, "Dips", "Triceps", "Dumbbells")
 
     @get:Rule
     val coroutineTestRule = TestCoroutineRule()
@@ -44,7 +44,7 @@ class ExercisesScreenViewModelTest {
         viewModel.muscleGroupUiState.test {
             assertThat(awaitItem().size, equalTo(0))
 
-            fakeRepository.emitAllMuscleGroups(listOf("Biceps", "Tricpes"))
+            fakeRepository.emitAllMuscleGroups(listOf("Biceps", "Triceps"))
 
             assertThat(awaitItem().size, equalTo(2))
         }

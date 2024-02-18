@@ -1,6 +1,10 @@
 package com.example.gymtracker.ui.workout.history.create
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertCountEquals
@@ -16,31 +20,18 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistory
-import com.example.gymtracker.data.exerciseHistory.ExerciseHistoryRepository
-import com.example.gymtracker.data.workoutHistory.WorkoutHistory
-import com.example.gymtracker.data.workoutHistory.WorkoutHistoryRepository
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
-import com.example.gymtracker.ui.workout.history.WorkoutHistoryViewModel
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
-import org.mockito.Mock
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
-import java.time.LocalDate
 
 
 class RecordWorkoutHistoryScreenKtTest {
@@ -48,51 +39,45 @@ class RecordWorkoutHistoryScreenKtTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
-    @Mock
-    private lateinit var mockWorkoutHistoryRepository: WorkoutHistoryRepository
-    @Mock
-    private lateinit var mockExerciseHistoryRepository: ExerciseHistoryRepository
-
-    @Captor
-    lateinit var exerciseHistoryCaptor: ArgumentCaptor<ExerciseHistory>
-    private lateinit var workoutHistoryViewModel: WorkoutHistoryViewModel
-
     private val curlsExercise = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells")
     private val dipsExercise = ExerciseUiState(2, "Dips", "Triceps", "Bars")
+    private val treadmillExercise = ExerciseUiState(3, "Treadmill")
     private val workoutWithExercises =
-        WorkoutWithExercisesUiState(1, "Arms", listOf(curlsExercise, dipsExercise))
+        WorkoutWithExercisesUiState(
+            1,
+            "Arms",
+            listOf(curlsExercise, dipsExercise, treadmillExercise)
+        )
     private val integerErrorText = "Must be a positive number"
     private val decimalErrorText = "Must be a number"
 
     private val curlsExerciseTitle = rule.onNode(hasText("Curls"))
     private val dipsExerciseTitle = rule.onNode(hasText("Dips"))
+    private val treadmillExerciseTitle = rule.onNode(hasText("Treadmill"))
     private val recordTitle = rule.onNode(hasText("Record Workout"))
     private val curlsCheckbox =
         rule.onNode(hasClickAction() and hasSetTextAction().not() and hasAnySibling(hasText("Curls")))
+    private val treadmillCheckbox =
+        rule.onNode(hasClickAction() and hasSetTextAction().not() and hasAnySibling(hasText("Treadmill")))
     private val setsField = rule.onNode(hasContentDescription("Sets"))
     private val repsField = rule.onNode(hasContentDescription("Reps"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
+    private val minutestField = rule.onNode(hasContentDescription("Minutes"))
+    private val secondsField = rule.onNode(hasContentDescription("Seconds"))
+    private val distanceField = rule.onNode(hasContentDescription("Distance"))
+    private val caloriesField = rule.onNode(hasContentDescription("Calories"))
     private val unitField = rule.onNode(hasContentDescription("Units"))
     private val closeButton = rule.onNode(hasContentDescription("Close"))
     private val saveButton = rule.onNode(hasText("Save"))
-
-    @Before
-    fun setUp() {
-        MockitoAnnotations.initMocks(this)
-        workoutHistoryViewModel = WorkoutHistoryViewModel(
-            mockWorkoutHistoryRepository,
-            mockExerciseHistoryRepository
-        )
-    }
+    private val cardioError = rule.onNode(hasText("Must have a time, distance or calories entered"))
 
     @Test
-    fun rendersRecordExerciseCard() {
+    fun rendersRecordWeightsExerciseCard() {
         rule.setContent {
-            RecordExerciseCard(
+            RecordWeightsExerciseCard(
                 exercise = curlsExercise,
-                savedExerciseHistory = ExerciseHistoryUiState(),
-                selectExerciseFunction = { true },
-                deselectExerciseFunction = { true },
+                selectExerciseFunction = { },
+                deselectExerciseFunction = { },
                 errorStateChange = { _, _ -> },
                 exerciseHistory = null
             )
@@ -107,23 +92,22 @@ class RecordWorkoutHistoryScreenKtTest {
     }
 
     @Test
-    fun recordExerciseCardClickingCheckboxRendersFormFields() {
+    fun recordWeightsExerciseCardClickingCheckboxRendersFormFields() {
         var selected = false
         var deselected = false
         rule.setContent {
-            RecordExerciseCard(
+            var exerciseHistory: WeightsExerciseHistoryUiState? by remember { mutableStateOf(null) }
+            RecordWeightsExerciseCard(
                 exercise = curlsExercise,
-                savedExerciseHistory = ExerciseHistoryUiState(),
                 selectExerciseFunction = {
                     selected = true
-                    true
+                    exerciseHistory = WeightsExerciseHistoryUiState()
                 },
                 deselectExerciseFunction = {
                     deselected = true
-                    true
                 },
                 errorStateChange = { _, _ -> },
-                exerciseHistory = ExerciseHistoryUiState()
+                exerciseHistory = exerciseHistory
             )
         }
 
@@ -143,21 +127,20 @@ class RecordWorkoutHistoryScreenKtTest {
     }
 
     @Test
-    fun recordExerciseCardClickingCheckboxRendersFormFieldsWithErrors() {
+    fun recordWeightsExerciseCardClickingCheckboxRendersFormFieldsWithErrors() {
         var error = false
         var id = -1
 
         rule.setContent {
-            RecordExerciseCard(
+            RecordWeightsExerciseCard(
                 exercise = curlsExercise,
-                savedExerciseHistory = ExerciseHistoryUiState(),
-                selectExerciseFunction = { true },
-                deselectExerciseFunction = { true },
+                selectExerciseFunction = { },
+                deselectExerciseFunction = { },
                 errorStateChange = { exerciseId, exerciseError ->
                     error = exerciseError
                     id = exerciseId
-                                   },
-                exerciseHistory = ExerciseHistoryUiState()
+                },
+                exerciseHistory = WeightsExerciseHistoryUiState()
             )
         }
         curlsCheckbox.performClick()
@@ -171,21 +154,20 @@ class RecordWorkoutHistoryScreenKtTest {
     }
 
     @Test
-    fun returnsFalseErrorStateWhenNoErrorsInForm() {
+    fun returnsFalseErrorStateWhenNoErrorsInRecordWeightsExerciseCard() {
         var error = false
         var id = -1
 
         rule.setContent {
-            RecordExerciseCard(
+            RecordWeightsExerciseCard(
                 exercise = curlsExercise,
-                savedExerciseHistory = ExerciseHistoryUiState(),
-                selectExerciseFunction = { true },
-                deselectExerciseFunction = { true },
+                selectExerciseFunction = { },
+                deselectExerciseFunction = { },
                 errorStateChange = { exerciseId, exerciseError ->
                     error = exerciseError
                     id = exerciseId
                 },
-                exerciseHistory = ExerciseHistoryUiState()
+                exerciseHistory = WeightsExerciseHistoryUiState()
             )
         }
         curlsCheckbox.performClick()
@@ -199,6 +181,114 @@ class RecordWorkoutHistoryScreenKtTest {
         assertTextDoesNotContain(weightField, decimalErrorText)
         assertThat(error, equalTo(false))
         assertThat(id, equalTo(1))
+    }
+
+    @Test
+    fun rendersRecordCardioExerciseCard() {
+        rule.setContent {
+            RecordCardioExerciseCard(
+                exercise = treadmillExercise,
+                selectExerciseFunction = { },
+                deselectExerciseFunction = { },
+                errorStateChange = { _, _ -> },
+                exerciseHistory = null
+            )
+        }
+
+        treadmillExerciseTitle.assertExists()
+        treadmillCheckbox.assertExists()
+        minutestField.assertDoesNotExist()
+        secondsField.assertDoesNotExist()
+        distanceField.assertDoesNotExist()
+        caloriesField.assertDoesNotExist()
+        unitField.assertDoesNotExist()
+    }
+
+    @Test
+    fun recordCardioExerciseCardClickingCheckboxRendersFormFields() {
+        var selected = false
+        var deselected = false
+        rule.setContent {
+            var exerciseHistory: CardioExerciseHistoryUiState? by remember { mutableStateOf(null) }
+            RecordCardioExerciseCard(
+                exercise = treadmillExercise,
+                selectExerciseFunction = {
+                    selected = true
+                    exerciseHistory = CardioExerciseHistoryUiState()
+                },
+                deselectExerciseFunction = {
+                    deselected = true
+                },
+                errorStateChange = { _, _ -> },
+                exerciseHistory = exerciseHistory
+            )
+        }
+
+        treadmillCheckbox.performClick()
+
+        treadmillExerciseTitle.assertExists()
+        minutestField.assertExists()
+        secondsField.assertExists()
+        distanceField.assertExists()
+        caloriesField.assertExists()
+        unitField.assertExists()
+        assertThat(selected, equalTo(true))
+        assertThat(deselected, equalTo(false))
+
+        treadmillCheckbox.performClick()
+
+        assertThat(deselected, equalTo(true))
+    }
+
+    @Test
+    fun recordCardioExerciseCardClickingCheckboxRendersFormFieldsWithErrors() {
+        var error = false
+        var id = -1
+
+        rule.setContent {
+            RecordCardioExerciseCard(
+                exercise = treadmillExercise,
+                selectExerciseFunction = { },
+                deselectExerciseFunction = { },
+                errorStateChange = { exerciseId, exerciseError ->
+                    error = exerciseError
+                    id = exerciseId
+                },
+                exerciseHistory = CardioExerciseHistoryUiState()
+            )
+        }
+        treadmillCheckbox.performClick()
+        cardioError.assertExists()
+
+        assertThat(error, equalTo(true))
+        assertThat(id, equalTo(3))
+    }
+
+    @Test
+    fun returnsFalseErrorStateWhenNoErrorsInRecordCardioExerciseCard() {
+        var error = false
+        var id = -1
+        val exerciseHistory = CardioExerciseHistoryUiState()
+
+        rule.setContent {
+            RecordCardioExerciseCard(
+                exercise = treadmillExercise,
+                selectExerciseFunction = { },
+                deselectExerciseFunction = { },
+                errorStateChange = { exerciseId, exerciseError ->
+                    error = exerciseError
+                    id = exerciseId
+                },
+                exerciseHistory = exerciseHistory
+            )
+        }
+        treadmillCheckbox.performClick()
+        distanceField.performTextInput("10.0")
+
+        cardioError.assertDoesNotExist()
+        assertThat(exerciseHistory.distance, equalTo(10.0))
+        assertThat(error, equalTo(false))
+        assertThat(id, equalTo(3))
     }
 
     private fun assertTextDoesNotContain(
@@ -224,9 +314,10 @@ class RecordWorkoutHistoryScreenKtTest {
         recordTitle.assertExists()
         curlsExerciseTitle.assertExists()
         dipsExerciseTitle.assertExists()
+        treadmillExerciseTitle.assertExists()
         closeButton.assertExists()
         saveButton.assertExists()
-        rule.onAllNodes(hasClickAction()).assertCountEquals(4)
+        rule.onAllNodes(hasClickAction()).assertCountEquals(5)
     }
 
     @Test
@@ -268,16 +359,15 @@ class RecordWorkoutHistoryScreenKtTest {
 
     @Test
     fun recordWorkoutScreenSaveButtonSavesCheckedExercises() = runBlocking {
-        val workoutHistory = WorkoutHistory(0, 1, LocalDate.now())
-        `when`(mockWorkoutHistoryRepository.insert(workoutHistory)).thenReturn(1L)
-
+        var workout = WorkoutHistoryWithExercisesUiState()
         var dismissed = false
 
         rule.setContent {
             RecordWorkoutHistoryScreen(
                 uiState = workoutWithExercises,
-                onDismiss = { dismissed = true },
-                viewModel = workoutHistoryViewModel
+                titleText = "Record Workout",
+                workoutSaveFunction = { workout = it },
+                onDismiss = { dismissed = true }
             )
         }
 
@@ -292,42 +382,7 @@ class RecordWorkoutHistoryScreenKtTest {
 
         saveButton.performClick()
 
-        verify(mockWorkoutHistoryRepository).insert(workoutHistory)
-        verify(mockExerciseHistoryRepository, times(1)).insertHistory(capture(exerciseHistoryCaptor))
-        assertThat(exerciseHistoryCaptor.value.exerciseId, equalTo(1))
-        assertThat(dismissed, equalTo(true))
-    }
-
-    @Test
-    fun recordWorkoutScreenUpdateSaveButtonUpdatesCheckedExercises() = runBlocking {
-        val workoutHistory = WorkoutHistory(1, 1, LocalDate.now())
-
-        var dismissed = false
-
-        rule.setContent {
-            RecordWorkoutHistoryScreen(
-                uiState = workoutWithExercises,
-                onDismiss = { dismissed = true },
-                viewModel = workoutHistoryViewModel,
-                workoutHistory = WorkoutHistoryWithExercisesUiState(
-                    workoutHistoryId = 1,
-                    workoutId = 1,
-                    exercises = listOf(ExerciseHistoryUiState(exerciseId = 1, sets = 1, reps = 1))
-                ),
-                titleText = "Update Workout"
-            )
-        }
-
-        rule.onNode(hasText("Update Workout"))
-        recordTitle.assertDoesNotExist()
-
-        saveButton.assertIsEnabled()
-
-        saveButton.performClick()
-
-        verify(mockWorkoutHistoryRepository).update(workoutHistory)
-        verify(mockExerciseHistoryRepository, times(1)).update(capture(exerciseHistoryCaptor))
-        assertThat(exerciseHistoryCaptor.value.exerciseId, equalTo(1))
+        assertThat(workout.exercises.size, equalTo(1))
         assertThat(dismissed, equalTo(true))
     }
 
@@ -346,6 +401,4 @@ class RecordWorkoutHistoryScreenKtTest {
 
         assertThat(dismissed, equalTo(true))
     }
-
-    private fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
 }

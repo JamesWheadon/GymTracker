@@ -25,11 +25,14 @@ class LiveRecordWorkoutKtTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
-    private val curlsExercise = ExerciseUiState(id = 0, name = "Curls")
-    private val dipsExercise = ExerciseUiState(id = 1, name = "Dips")
-    private val pressExercise = ExerciseUiState(id = 2, name = "Press")
+    private val curlsExercise = ExerciseUiState(id = 0, name = "Curls", equipment = "Dumbbells", muscleGroup = "Biceps")
+    private val dipsExercise = ExerciseUiState(id = 1, name = "Dips", equipment = "Bars", muscleGroup = "Triceps")
+    private val pressExercise = ExerciseUiState(id = 2, name = "Press", equipment = "Bench", muscleGroup = "Pecs")
+    private val cardioExercise = ExerciseUiState(name = "Treadmill")
     private val workoutWithExercises =
         WorkoutWithExercisesUiState(exercises = listOf(curlsExercise, dipsExercise, pressExercise))
+    private val weightsWorkout = WorkoutWithExercisesUiState(exercises = listOf(curlsExercise))
+    private val cardioWorkout = WorkoutWithExercisesUiState(exercises = listOf(cardioExercise))
 
     private val curlsExerciseName = rule.onNode(hasText(curlsExercise.name))
     private val dipsExerciseName = rule.onNode(hasText(dipsExercise.name))
@@ -39,6 +42,7 @@ class LiveRecordWorkoutKtTest {
     private val repsField = rule.onNode(hasContentDescription("Reps"))
     private val restField = rule.onNode(hasContentDescription("Rest"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
+    private val distanceField = rule.onNode(hasContentDescription("Distance"))
     private val finishExercise = rule.onNode(hasText("Finish Exercise"))
     private val finishWorkout = rule.onNode(hasText("Finish Workout"))
 
@@ -176,5 +180,27 @@ class LiveRecordWorkoutKtTest {
 
         rule.onAllNodesWithText("Start").assertCountEquals(3)
         rule.onAllNodesWithText("Completed").assertCountEquals(0)
+    }
+
+    @Test
+    fun rendersRecordWeightsExerciseForWeightsExercise() {
+        rule.setContent {
+            LiveRecordWorkout(uiState = weightsWorkout, saveFunction = {}, finishFunction = {})
+        }
+
+        startButtons[0].performClick()
+        repsField.assertExists()
+        distanceField.assertDoesNotExist()
+    }
+
+    @Test
+    fun rendersRecordCardioExerciseForCardioExercise() {
+        rule.setContent {
+            LiveRecordWorkout(uiState = cardioWorkout, saveFunction = {}, finishFunction = {})
+        }
+
+        startButtons[0].performClick()
+        distanceField.assertExists()
+        repsField.assertDoesNotExist()
     }
 }

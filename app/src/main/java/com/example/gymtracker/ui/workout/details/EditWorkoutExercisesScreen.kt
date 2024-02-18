@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +54,7 @@ fun EditWorkoutExercisesScreen(
         factory = AppViewModelProvider.Factory
     )
 ) {
-    val chosenExercises = existingExercises.toMutableStateList()
+    val chosenExercises = remember { existingExercises.toMutableStateList() }
     val allExercises = exercisesViewModel.exerciseListUiState.collectAsState().value.exerciseList
     val remainingExercises = allExercises.filter { exercise ->
         !chosenExercises.contains(exercise)
@@ -67,7 +68,10 @@ fun EditWorkoutExercisesScreen(
         },
         deselectFunction = { exercise ->
             chosenExercises.remove(exercise)
-            workoutExerciseCrossRefViewModel.deleteExerciseFromWorkout(exercise.toExercise(), workout)
+            workoutExerciseCrossRefViewModel.deleteExerciseFromWorkout(
+                exercise.toExercise(),
+                workout
+            )
         },
         onDismiss = onDismiss,
         modifier = modifier
@@ -85,7 +89,8 @@ fun EditWorkoutExercisesScreen(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.4f))
     ) {
         Box(
@@ -95,7 +100,8 @@ fun EditWorkoutExercisesScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(
+                    modifier = Modifier
+                        .padding(
                             horizontal = 0.dp,
                             vertical = 24.dp
                         )
@@ -105,7 +111,12 @@ fun EditWorkoutExercisesScreen(
                         ExercisesList(chosenExercises, deselectFunction, "Workout Exercises", true)
                     }
                     if (remainingExercises.isNotEmpty()) {
-                        ExercisesList(remainingExercises, selectFunction, "Available Exercises", false)
+                        ExercisesList(
+                            remainingExercises,
+                            selectFunction,
+                            "Available Exercises",
+                            false
+                        )
                     }
                 }
             }

@@ -1,25 +1,25 @@
 package com.example.gymtracker.ui.exercise.details
 
-import com.example.gymtracker.ui.exercise.ExerciseDetailsUiState
-import com.example.gymtracker.ui.exercise.history.ExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import java.time.LocalDate
 
-
-val firstDate: LocalDate = LocalDate.now().minusDays(3)
-val secondDate: LocalDate = LocalDate.now().minusDays(5)
-
-class ExerciseDetailsGraphKtTest {
+class WeightsExerciseDetailsScreenKtTest {
 
     private val options = listOf("1", "2", "3", "4")
+    private val firstDate: LocalDate = LocalDate.now().minusDays(3)
+    private val secondDate: LocalDate = LocalDate.now().minusDays(5)
     private val exercise = ExerciseDetailsUiState(
-        name = "Curls",
-        muscleGroup = "Biceps",
-        equipment = "Dumbbells",
-        history = listOf(
-            ExerciseHistoryUiState(
+        ExerciseUiState(
+            name = "Curls",
+            muscleGroup = "Biceps",
+            equipment = "Dumbbells"
+        ),
+        weightsHistory = listOf(
+            WeightsExerciseHistoryUiState(
                 id = 1,
                 weight = 13.0,
                 sets = 1,
@@ -27,7 +27,7 @@ class ExerciseDetailsGraphKtTest {
                 rest = 1,
                 date = firstDate
             ),
-            ExerciseHistoryUiState(
+            WeightsExerciseHistoryUiState(
                 id = 1,
                 weight = 12.0,
                 sets = 2,
@@ -40,7 +40,7 @@ class ExerciseDetailsGraphKtTest {
 
     @Test
     fun getGraphDetailsForFirstOption() {
-        val result = getGraphDetails(exercise, "1", options)
+        val result = getWeightsGraphDetails(exercise, "1", options)
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
@@ -48,7 +48,7 @@ class ExerciseDetailsGraphKtTest {
 
     @Test
     fun getGraphDetailsForSecondOption() {
-        val result = getGraphDetails(exercise, "2", options)
+        val result = getWeightsGraphDetails(exercise, "2", options)
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(2.0, 3.0)))
@@ -56,7 +56,7 @@ class ExerciseDetailsGraphKtTest {
 
     @Test
     fun getGraphDetailsForThirdOption() {
-        val result = getGraphDetails(exercise, "3", options)
+        val result = getWeightsGraphDetails(exercise, "3", options)
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(1.0, 2.0)))
@@ -64,7 +64,7 @@ class ExerciseDetailsGraphKtTest {
 
     @Test
     fun getGraphDetailsForFourthOption() {
-        val result = getGraphDetails(exercise, "4", options)
+        val result = getWeightsGraphDetails(exercise, "4", options)
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(26.0, 72.0)))
@@ -72,7 +72,7 @@ class ExerciseDetailsGraphKtTest {
 
     @Test
     fun getGraphDetailsForOtherOption() {
-        val result = getGraphDetails(exercise, "5", options)
+        val result = getWeightsGraphDetails(exercise, "5", options)
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
