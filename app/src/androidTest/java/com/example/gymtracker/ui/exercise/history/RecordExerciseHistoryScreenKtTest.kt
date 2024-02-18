@@ -25,7 +25,7 @@ class RecordExerciseHistoryScreenKtTest {
         id = 0,
         exerciseId = 0,
         date = LocalDate.now(),
-        workoutId = 1,
+        workoutHistoryId = 1,
         weight = 1.0,
         sets = 1,
         reps = 1
@@ -34,7 +34,7 @@ class RecordExerciseHistoryScreenKtTest {
         id = 0,
         exerciseId = 0,
         date = LocalDate.now(),
-        workoutId = 1,
+        workoutHistoryId = 1,
         minutes = 60,
         seconds = 0
     )

@@ -7,7 +7,6 @@ import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRef
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
-import com.example.gymtracker.data.workoutHistory.WorkoutHistoryWithExerciseHistory
 
 data class WorkoutWithExercises(
     @Embedded val workout: Workout,

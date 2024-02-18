@@ -33,7 +33,8 @@ import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.details.HistoryDetails
+import com.example.gymtracker.ui.exercise.details.ExerciseHistoryDetails
+import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
@@ -121,14 +122,13 @@ fun WorkoutHistoryScreen(
         }
     }
     if (showDeleteWorkoutHistory) {
-        val (workoutHistory, exerciseHistories) = workoutHistoryUiState.toWorkoutAndExercises()
         Dialog(
             onDismissRequest = { showDeleteWorkoutHistory = false }
         ) {
             ActionConfirmation(
                 actionTitle = "Do you want to delete this workout?",
                 confirmFunction = {
-                    viewModel.deleteWorkoutHistory(workoutHistory, exerciseHistories)
+                    viewModel.deleteWorkoutHistory(workoutHistoryUiState)
                     onDismiss()
                 },
                 cancelFunction = { showDeleteWorkoutHistory = false }
@@ -168,14 +168,14 @@ fun WorkoutHistoryScreen(
 @Composable
 fun WorkoutHistoryExerciseCard(
     exercise: ExerciseUiState,
-    exerciseHistory: WeightsExerciseHistoryUiState
+    exerciseHistory: ExerciseHistoryUiState
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(text = exercise.name)
-        HistoryDetails(
+        ExerciseHistoryDetails(
             exerciseHistory = exerciseHistory,
             exercise = exercise,
             editEnabled = false,

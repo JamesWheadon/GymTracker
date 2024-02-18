@@ -28,16 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
 import com.example.gymtracker.ui.exercise.history.UpdateExerciseHistoryScreen
+import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
-import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.visualisations.Calendar
 import com.example.gymtracker.ui.visualisations.MonthPicker
@@ -57,6 +56,7 @@ fun ExerciseHistoryCalendar(
     val activeDays = listOf(uiState.weightsHistory, uiState.cardioHistory).flatten()
         .filter { history -> history.date.month == selectedMonth.month && history.date.year == selectedMonth.year }
         .map { history -> history.date.dayOfMonth }
+    val exerciseHistory = if (uiState.exercise.equipment == "") uiState.cardioHistory else uiState.weightsHistory
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
@@ -66,7 +66,7 @@ fun ExerciseHistoryCalendar(
                 selectedMonth.year, selectedMonth.monthValue, showDay!!
             )
             ExercisesOnDay(
-                exercises = uiState.weightsHistory.filter { history ->
+                exercises = exerciseHistory.filter { history ->
                     history.date == selectedDate
                 },
                 date = selectedDate,
@@ -89,7 +89,7 @@ fun ExerciseHistoryCalendar(
 
 @Composable
 fun ExercisesOnDay(
-    exercises: List<WeightsExerciseHistoryUiState>,
+    exercises: List<ExerciseHistoryUiState>,
     date: LocalDate,
     exercise: ExerciseUiState,
     onDismiss: () -> Unit,
@@ -109,10 +109,10 @@ fun ExercisesOnDay(
                 style = MaterialTheme.typography.headlineMedium
             )
             for (history in exercises) {
-                HistoryDetails(
+                ExerciseHistoryDetails(
                     exerciseHistory = history,
                     exercise = exercise,
-                    deleteFunction = { deleteHistory -> viewModel.deleteHistory(deleteHistory.toWeightsExerciseHistoryUiState()) },
+                    deleteFunction = { deleteHistory -> viewModel.deleteHistory(deleteHistory) },
                 )
             }
         }
@@ -132,10 +132,10 @@ fun ExercisesOnDay(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryDetails(
-    exerciseHistory: WeightsExerciseHistoryUiState,
+fun ExerciseHistoryDetails(
+    exerciseHistory: ExerciseHistoryUiState,
     exercise: ExerciseUiState,
-    deleteFunction: (WeightsExerciseHistory) -> Unit,
+    deleteFunction: (ExerciseHistoryUiState) -> Unit,
     modifier: Modifier = Modifier,
     editEnabled: Boolean = true
 ) {
@@ -146,30 +146,21 @@ fun HistoryDetails(
         onClick = { editExercise = true && editEnabled },
         modifier = modifier
     ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1F)
-            ) {
-                Text(text = "Sets: ${exerciseHistory.sets}")
-                Text(text = "Reps: ${exerciseHistory.reps}")
+        when (exerciseHistory) {
+            is WeightsExerciseHistoryUiState -> {
+                WeightsExerciseHistoryDetails(
+                    exerciseHistory = exerciseHistory,
+                    deleteFunction = { deleteExercise = true },
+                    editEnabled = editEnabled
+                )
             }
-            Column(
-                modifier = Modifier.weight(1F)
-            ) {
-                Text(text = "Weight: ${exerciseHistory.weight}kg")
-                Text(text = "Rest time: ${exerciseHistory.rest}")
-            }
-            if (editEnabled) {
-                IconButton(onClick = { deleteExercise = true }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        tint = Color.Red,
-                        contentDescription = "Delete history"
-                    )
-                }
+
+            is CardioExerciseHistoryUiState -> {
+                CardioExerciseHistoryDetails(
+                    exerciseHistory = exerciseHistory,
+                    deleteFunction = { deleteExercise = true },
+                    editEnabled = editEnabled
+                )
             }
         }
     }
@@ -190,18 +181,120 @@ fun HistoryDetails(
         ) {
             ActionConfirmation(
                 actionTitle = "Do you want to delete this exercise?",
-                confirmFunction = { deleteFunction(exerciseHistory.toWeightsExerciseHistory(exerciseId = exercise.id)) },
+                confirmFunction = {
+                    deleteFunction(
+                        exerciseHistory
+                    )
+                },
                 cancelFunction = { deleteExercise = false }
             )
         }
     }
 }
 
+@Composable
+fun WeightsExerciseHistoryDetails(
+    exerciseHistory: WeightsExerciseHistoryUiState,
+    deleteFunction: () -> Unit,
+    modifier: Modifier = Modifier,
+    editEnabled: Boolean
+) {
+    Row(
+        modifier = modifier.padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1F)
+        ) {
+            Text(text = "Sets: ${exerciseHistory.sets}")
+            Text(text = "Reps: ${exerciseHistory.reps}")
+        }
+        Column(
+            modifier = Modifier.weight(1F)
+        ) {
+            Text(text = "Weight: ${exerciseHistory.weight}kg")
+            Text(text = "Rest time: ${exerciseHistory.rest}")
+        }
+        if (editEnabled) {
+            IconButton(onClick = deleteFunction) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    tint = Color.Red,
+                    contentDescription = "Delete history"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CardioExerciseHistoryDetails(
+    exerciseHistory: CardioExerciseHistoryUiState,
+    deleteFunction: () -> Unit,
+    modifier: Modifier = Modifier,
+    editEnabled: Boolean = true
+) {
+    val seconds = (exerciseHistory.minutes ?: 0) * 60 + (exerciseHistory.seconds ?: 0)
+    val time = if (seconds >= 3600) {
+        "${seconds / 3600}:${
+            String.format(
+                "%02d",
+                (seconds % 3600) / 60
+            )
+        }:${String.format("%02d", seconds % 60)}"
+    } else if (seconds >= 60) {
+        "${String.format("%02d", seconds / 60)}:${String.format("%02d", seconds % 60)}"
+    } else {
+        "${String.format("%02d", seconds % 60)} s"
+    }
+    Row(
+        modifier = modifier.padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (seconds != 0 && exerciseHistory.distance != null && exerciseHistory.calories != null) {
+            Column(
+                modifier = Modifier.weight(1F)
+            ) {
+                Text(text = "Time: $time")
+            }
+            Column(
+                modifier = Modifier.weight(1F)
+            ) {
+                Text(text = "Distance: ${exerciseHistory.distance}km")
+                Text(text = "Calories: ${exerciseHistory.calories}kcal")
+            }
+        } else {
+            Column(
+                modifier = Modifier.weight(1F)
+            ) {
+                if (seconds != 0) {
+                    Text(text = "Time: $time")
+                }
+                if (exerciseHistory.distance != null) {
+                    Text(text = "Distance: ${exerciseHistory.distance}km")
+                }
+                if (exerciseHistory.calories != null) {
+                    Text(text = "Calories: ${exerciseHistory.calories}kcal")
+                }
+            }
+        }
+        if (editEnabled) {
+            IconButton(onClick = deleteFunction) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    tint = Color.Red,
+                    contentDescription = "Delete history"
+                )
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
-fun HistoryDetailsPreview() {
+fun WeightsHistoryDetailsPreview() {
     GymTrackerTheme(darkTheme = false) {
-        HistoryDetails(
+        WeightsExerciseHistoryDetails(
             exerciseHistory = WeightsExerciseHistoryUiState(
                 id = 1,
                 weight = 13.0,
@@ -211,12 +304,28 @@ fun HistoryDetailsPreview() {
                 date = LocalDate.now().minusDays(5)
 
             ),
-            exercise = ExerciseUiState(
-                name = "Curls",
-                muscleGroup = "Biceps",
-                equipment = "Dumbbells"
+            deleteFunction = { },
+            editEnabled = true
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CardioHistoryDetailsPreview() {
+    GymTrackerTheme(darkTheme = false) {
+        CardioExerciseHistoryDetails(
+            exerciseHistory = CardioExerciseHistoryUiState(
+                id = 1,
+                distance = 30.0,
+                minutes = 90,
+                seconds = 0,
+                calories = 800,
+                date = LocalDate.now().minusDays(5)
+
             ),
-            deleteFunction = { }
+            deleteFunction = { },
+            editEnabled = true
         )
     }
 }

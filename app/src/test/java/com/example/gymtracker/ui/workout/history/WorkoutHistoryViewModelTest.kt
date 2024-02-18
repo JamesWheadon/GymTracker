@@ -1,5 +1,6 @@
 package com.example.gymtracker.ui.workout.history
 
+import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistory
 import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
@@ -21,24 +22,36 @@ import java.time.LocalDate
 class WorkoutHistoryViewModelTest {
 
     private val workoutHistory = WorkoutHistory(workoutId = 1, date = LocalDate.now())
-    private val weightsExerciseHistory = WeightsExerciseHistoryUiState(
+    private val weightsExerciseHistoryUI = WeightsExerciseHistoryUiState(
         id = 1,
         exerciseId = 1,
         date = LocalDate.now(),
-        workoutId = 1,
         weight = 1.0,
         sets = 1,
         reps = 1,
         rest = 1
     )
-    private val cardioExerciseHistory = CardioExerciseHistoryUiState(
+    private val cardioExerciseHistoryUI = CardioExerciseHistoryUiState(
         id = 1,
         exerciseId = 1,
         date = LocalDate.now(),
         distance = 100.0
     )
+    private val weightsExerciseHistory =
+        WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now(), 1)
+    private val cardioExerciseHistory =
+        CardioExerciseHistory(1, 1, LocalDate.now(), distance = 100.0)
     private val savedWeightsExerciseHistory =
         WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now(), 1, 1)
+    private val savedCardioExerciseHistory =
+        CardioExerciseHistory(1, 1, LocalDate.now(), distance = 100.0, workoutHistoryId = 1)
+
+    private val workoutHistoryWithExercises = WorkoutHistoryWithExercisesUiState(
+        workoutHistoryId = workoutHistory.workoutHistoryId,
+        workoutId = workoutHistory.workoutId,
+        date = workoutHistory.date,
+        exercises = listOf(weightsExerciseHistoryUI, cardioExerciseHistoryUI)
+    )
 
     private val mockWorkoutHistoryRepository: WorkoutHistoryRepository = Mockito.mock()
     private val mockWeightsExerciseHistoryRepository: WeightsExerciseHistoryRepository =
@@ -59,30 +72,29 @@ class WorkoutHistoryViewModelTest {
     fun saveWorkoutToRepository() = runTest {
         `when`(mockWorkoutHistoryRepository.insert(workoutHistory)).thenReturn(1L)
 
-        viewModel.saveWorkoutHistory(
-            workoutHistory,
-            listOf(weightsExerciseHistory.toWeightsExerciseHistory()),
-            true
-        )
+        viewModel.saveWorkoutHistory(workoutHistoryWithExercises, true)
 
         verify(mockWorkoutHistoryRepository).insert(workoutHistory)
         verify(mockWeightsExerciseHistoryRepository).insertHistory(savedWeightsExerciseHistory)
+        verify(mockCardioExerciseHistoryRepository).insert(savedCardioExerciseHistory)
     }
 
     @Test
     fun updateWorkoutInRepository() = runTest {
-        viewModel.saveWorkoutHistory(workoutHistory, listOf(savedWeightsExerciseHistory), false)
+        viewModel.saveWorkoutHistory(workoutHistoryWithExercises, false)
 
         verify(mockWorkoutHistoryRepository).update(workoutHistory)
-        verify(mockWeightsExerciseHistoryRepository).update(savedWeightsExerciseHistory)
+        verify(mockWeightsExerciseHistoryRepository).update(weightsExerciseHistory)
+        verify(mockCardioExerciseHistoryRepository).update(cardioExerciseHistory)
     }
 
     @Test
     fun deleteWorkoutFromRepository() = runTest {
-        viewModel.deleteWorkoutHistory(workoutHistory, listOf(savedWeightsExerciseHistory))
+        viewModel.deleteWorkoutHistory(workoutHistoryWithExercises)
 
         verify(mockWorkoutHistoryRepository).delete(workoutHistory)
-        verify(mockWeightsExerciseHistoryRepository).delete(savedWeightsExerciseHistory)
+        verify(mockWeightsExerciseHistoryRepository).delete(weightsExerciseHistory)
+        verify(mockCardioExerciseHistoryRepository).delete(cardioExerciseHistory)
     }
 
     @Test
@@ -96,15 +108,15 @@ class WorkoutHistoryViewModelTest {
 
     @Test
     fun liveSaveWeightsWorkoutExerciseHistoryToRepository() = runTest {
-        viewModel.liveSaveWorkoutExerciseHistory(weightsExerciseHistory)
+        viewModel.liveSaveWorkoutExerciseHistory(weightsExerciseHistoryUI)
 
-        verify(mockWeightsExerciseHistoryRepository).insertHistory(weightsExerciseHistory.toWeightsExerciseHistory())
+        verify(mockWeightsExerciseHistoryRepository).insertHistory(weightsExerciseHistoryUI.toWeightsExerciseHistory())
     }
 
     @Test
     fun liveSaveCardioWorkoutExerciseHistoryToRepository() = runTest {
-        viewModel.liveSaveWorkoutExerciseHistory(cardioExerciseHistory)
+        viewModel.liveSaveWorkoutExerciseHistory(cardioExerciseHistoryUI)
 
-        verify(mockCardioExerciseHistoryRepository).insert(cardioExerciseHistory.toCardioExerciseHistory())
+        verify(mockCardioExerciseHistoryRepository).insert(cardioExerciseHistoryUI.toCardioExerciseHistory())
     }
 }

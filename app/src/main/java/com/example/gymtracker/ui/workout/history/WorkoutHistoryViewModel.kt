@@ -3,7 +3,6 @@ package com.example.gymtracker.ui.workout.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
-import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistoryRepository
@@ -27,23 +26,35 @@ class WorkoutHistoryViewModel(
     private val savedWorkoutID: StateFlow<Int> = _savedWorkoutID.asStateFlow()
 
     fun saveWorkoutHistory(
-        workoutHistory: WorkoutHistory,
-        workoutExercises: List<WeightsExerciseHistory>,
+        workoutHistory: WorkoutHistoryWithExercisesUiState,
         save: Boolean = true
     ) {
         viewModelScope.launch {
             if (save) {
-                val workoutHistoryId = workoutHistoryRepository.insert(workoutHistory).toInt()
-                workoutExercises.map { exerciseHistory ->
-                    exerciseHistory.workoutHistoryId = workoutHistoryId
-                    exerciseHistory
-                }.forEach { exerciseHistory ->
-                    weightsExerciseHistoryRepository.insertHistory(exerciseHistory)
+                val workoutHistoryId = workoutHistoryRepository.insert(workoutHistory.toWorkoutHistoryUiState().toWorkoutHistory()).toInt()
+                workoutHistory.exercises.forEach { exerciseHistory ->
+                    when (exerciseHistory) {
+                        is WeightsExerciseHistoryUiState -> {
+                            exerciseHistory.workoutHistoryId = workoutHistoryId
+                            weightsExerciseHistoryRepository.insertHistory(exerciseHistory.toWeightsExerciseHistory())
+                        }
+                        is CardioExerciseHistoryUiState -> {
+                            exerciseHistory.workoutHistoryId = workoutHistoryId
+                            cardioExerciseHistoryRepository.insert(exerciseHistory.toCardioExerciseHistory())
+                        }
+                    }
                 }
             } else {
-                workoutHistoryRepository.update(workoutHistory)
-                workoutExercises.forEach { exerciseHistory ->
-                    weightsExerciseHistoryRepository.update(exerciseHistory)
+                workoutHistoryRepository.update(workoutHistory.toWorkoutHistoryUiState().toWorkoutHistory())
+                workoutHistory.exercises.forEach { exerciseHistory ->
+                    when (exerciseHistory) {
+                        is WeightsExerciseHistoryUiState -> {
+                            weightsExerciseHistoryRepository.update(exerciseHistory.toWeightsExerciseHistory())
+                        }
+                        is CardioExerciseHistoryUiState -> {
+                            cardioExerciseHistoryRepository.update(exerciseHistory.toCardioExerciseHistory())
+                        }
+                    }
                 }
             }
         }
@@ -64,11 +75,11 @@ class WorkoutHistoryViewModel(
         viewModelScope.launch {
             when (workoutExercise) {
                 is WeightsExerciseHistoryUiState -> {
-                    workoutExercise.workoutId = savedWorkoutID.value
+                    workoutExercise.workoutHistoryId = savedWorkoutID.value
                     weightsExerciseHistoryRepository.insertHistory(workoutExercise.toWeightsExerciseHistory())
                 }
                 is CardioExerciseHistoryUiState -> {
-                    workoutExercise.workoutId = savedWorkoutID.value
+                    workoutExercise.workoutHistoryId = savedWorkoutID.value
                     cardioExerciseHistoryRepository.insert(workoutExercise.toCardioExerciseHistory())
                 }
             }
@@ -76,13 +87,19 @@ class WorkoutHistoryViewModel(
     }
 
     fun deleteWorkoutHistory(
-        workoutHistory: WorkoutHistory,
-        workoutExercises: List<WeightsExerciseHistory>
+        workoutHistory: WorkoutHistoryWithExercisesUiState
     ) {
         viewModelScope.launch {
-            workoutHistoryRepository.delete(workoutHistory)
-            workoutExercises.forEach { exerciseHistory ->
-                weightsExerciseHistoryRepository.delete(exerciseHistory)
+            workoutHistoryRepository.delete(workoutHistory.toWorkoutHistoryUiState().toWorkoutHistory())
+            workoutHistory.exercises.forEach { workoutExercise ->
+                when (workoutExercise) {
+                    is WeightsExerciseHistoryUiState -> {
+                        weightsExerciseHistoryRepository.delete(workoutExercise.toWeightsExerciseHistory())
+                    }
+                    is CardioExerciseHistoryUiState -> {
+                        cardioExerciseHistoryRepository.delete(workoutExercise.toCardioExerciseHistory())
+                    }
+                }
             }
         }
     }

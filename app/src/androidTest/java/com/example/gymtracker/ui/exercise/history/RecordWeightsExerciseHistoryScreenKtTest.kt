@@ -33,7 +33,7 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         id = 0,
         exerciseId = 0,
         date = LocalDate.now(),
-        workoutId = null,
+        workoutHistoryId = null,
         weight = 1.0,
         sets = 1,
         reps = 1

@@ -3,9 +3,11 @@ package com.example.gymtracker.ui.workout.history.create
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -17,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,25 +38,27 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymtracker.converters.DistanceUnits
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
+import com.example.gymtracker.converters.convertToKilometers
+import com.example.gymtracker.converters.getDistanceUnitFromShortForm
 import com.example.gymtracker.converters.getWeightUnitFromShortForm
-import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
-import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
+import com.example.gymtracker.ui.FormTimeField
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
+import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryViewModel
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
-import com.example.gymtracker.ui.workout.history.toWorkoutHistory
-import com.example.gymtracker.ui.workout.history.toWorkoutUiState
+import com.example.gymtracker.ui.workout.history.toWorkoutHistoryUiState
 import java.time.LocalDate
 
 private const val RECORD_WORKOUT = "Record Workout"
@@ -77,10 +82,9 @@ fun RecordWorkoutHistoryScreen(
                 uiState = uiState,
                 titleText = titleText,
                 workoutHistory = workoutHistory,
-                workoutSaveFunction = { workoutHistory, workoutExercises ->
+                workoutSaveFunction = { workoutHistoryWithExercises ->
                     viewModel.saveWorkoutHistory(
-                        workoutHistory,
-                        workoutExercises,
+                        workoutHistoryWithExercises,
                         titleText == RECORD_WORKOUT
                     )
                 },
@@ -102,19 +106,20 @@ fun RecordWorkoutHistoryScreen(
 }
 
 @Composable
-private fun RecordWorkoutHistoryScreen(
+fun RecordWorkoutHistoryScreen(
     uiState: WorkoutWithExercisesUiState,
     titleText: String,
-    workoutSaveFunction: (WorkoutHistory, List<WeightsExerciseHistory>) -> Unit,
+    workoutSaveFunction: (WorkoutHistoryWithExercisesUiState) -> Unit,
     onDismiss: () -> Unit,
     workoutHistory: WorkoutHistoryWithExercisesUiState = WorkoutHistoryWithExercisesUiState()
 ) {
-    val exerciseHistories: MutableList<WeightsExerciseHistoryUiState> = remember { workoutHistory.exercises.toMutableStateList() }
+    val exerciseHistories: MutableList<ExerciseHistoryUiState> =
+        remember { workoutHistory.exercises.toMutableStateList() }
     val exerciseErrors: MutableMap<Int, Boolean> = remember { mutableStateMapOf() }
     val workoutHistoryUiState = if (workoutHistory == WorkoutHistoryWithExercisesUiState()) {
         WorkoutHistoryUiState(workoutId = uiState.workoutId)
     } else {
-        workoutHistory.toWorkoutUiState()
+        workoutHistory.toWorkoutHistoryUiState()
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -122,22 +127,49 @@ private fun RecordWorkoutHistoryScreen(
     ) {
         Text(text = titleText)
         uiState.exercises.forEach { exercise ->
-            RecordExerciseCard(
-                exercise = exercise,
-                savedExerciseHistory = workoutHistory.exercises
-                    .firstOrNull { history -> history.exerciseId == exercise.id }
-                    ?: WeightsExerciseHistoryUiState(),
-                selectExerciseFunction = { exerciseHistories.add(WeightsExerciseHistoryUiState(exerciseId = exercise.id)) },
-                deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
-                errorStateChange = { exerciseId, exerciseError -> exerciseErrors[exerciseId] = exerciseError },
-                exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id }
-            )
+            if (exercise.equipment != "") {
+                RecordWeightsExerciseCard(
+                    exercise = exercise,
+                    selectExerciseFunction = {
+                        exerciseHistories.add(
+                            WeightsExerciseHistoryUiState(
+                                exerciseId = exercise.id
+                            )
+                        )
+                    },
+                    deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
+                    errorStateChange = { exerciseId, exerciseError ->
+                        exerciseErrors[exerciseId] = exerciseError
+                    },
+                    exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState
+                )
+            } else {
+                RecordCardioExerciseCard(
+                    exercise = exercise,
+                    selectExerciseFunction = {
+                        exerciseHistories.add(
+                            CardioExerciseHistoryUiState(
+                                exerciseId = exercise.id
+                            )
+                        )
+                    },
+                    deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
+                    errorStateChange = { exerciseId, exerciseError ->
+                        exerciseErrors[exerciseId] = exerciseError
+                    },
+                    exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? CardioExerciseHistoryUiState
+                )
+            }
         }
         Button(
             onClick = {
                 workoutSaveFunction(
-                    workoutHistoryUiState.toWorkoutHistory(),
-                    exerciseHistories.map { exerciseHistory -> exerciseHistory.toWeightsExerciseHistory() }
+                    WorkoutHistoryWithExercisesUiState(
+                        workoutId = workoutHistoryUiState.workoutId,
+                        workoutHistoryId = workoutHistoryUiState.workoutHistoryId,
+                        date = workoutHistoryUiState.date,
+                        exercises = exerciseHistories
+                    )
                 )
                 onDismiss()
             },
@@ -149,22 +181,14 @@ private fun RecordWorkoutHistoryScreen(
 }
 
 @Composable
-fun RecordExerciseCard(
+fun RecordWeightsExerciseCard(
     exercise: ExerciseUiState,
-    savedExerciseHistory: WeightsExerciseHistoryUiState,
-    selectExerciseFunction: () -> Boolean,
-    deselectExerciseFunction: () -> Boolean,
-    errorStateChange: (Int, Boolean) -> Unit,
-    exerciseHistory: WeightsExerciseHistoryUiState?
+    exerciseHistory: WeightsExerciseHistoryUiState?,
+    selectExerciseFunction: () -> Unit,
+    deselectExerciseFunction: () -> Unit,
+    errorStateChange: (Int, Boolean) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(savedExerciseHistory != WeightsExerciseHistoryUiState()) }
-    var setsState by remember { mutableStateOf(savedExerciseHistory.sets.toString()) }
-    var repsState by remember { mutableStateOf(savedExerciseHistory.reps.toString()) }
-    var weightState by remember { mutableStateOf(savedExerciseHistory.weight.toString()) }
-    var unitState by remember { mutableStateOf(WeightUnits.KILOGRAMS.shortForm) }
-    val setsError = setsState == "" || setsState.toInt() < 1
-    val repsError = repsState == "" || repsState.toInt() < 1
-    val weightError = weightState == "" || weightState.toDoubleOrNull() == null
+    var expanded by remember { mutableStateOf(exerciseHistory != null) }
     Card {
         Column {
             Box(
@@ -192,7 +216,14 @@ fun RecordExerciseCard(
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
             }
-            if (expanded && exerciseHistory != null) {
+            if (exerciseHistory != null) {
+                var setsState by remember { mutableStateOf(exerciseHistory.sets.toString()) }
+                var repsState by remember { mutableStateOf(exerciseHistory.reps.toString()) }
+                var weightState by remember { mutableStateOf(exerciseHistory.weight.toString()) }
+                var unitState by remember { mutableStateOf(WeightUnits.KILOGRAMS.shortForm) }
+                val setsError = setsState == "" || setsState.toInt() < 1
+                val repsError = repsState == "" || repsState.toInt() < 1
+                val weightError = weightState == "" || weightState.toDoubleOrNull() == null
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,
@@ -281,19 +312,169 @@ fun RecordExerciseCard(
                             .semantics { contentDescription = "Units" }
                     )
                 }
+                errorStateChange(exercise.id, setsError || repsError || weightError)
+            } else {
+                errorStateChange(exercise.id, false)
             }
         }
     }
-    if (expanded) {
-        errorStateChange(exercise.id, setsError || repsError || weightError)
-    } else {
-        errorStateChange(exercise.id, false)
+}
+
+@Composable
+fun RecordCardioExerciseCard(
+    exercise: ExerciseUiState,
+    exerciseHistory: CardioExerciseHistoryUiState?,
+    selectExerciseFunction: () -> Unit,
+    deselectExerciseFunction: () -> Unit,
+    errorStateChange: (Int, Boolean) -> Unit
+) {
+    var expanded by remember { mutableStateOf(exerciseHistory != null) }
+    Card {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = exercise.name,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .align(Alignment.Center),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Checkbox(
+                    checked = expanded,
+                    onCheckedChange = {
+                        if (expanded) {
+                            deselectExerciseFunction()
+                        } else {
+                            selectExerciseFunction()
+                        }
+                        expanded = !expanded
+                    },
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
+            if (exerciseHistory != null) {
+                var minutesState by remember {
+                    mutableStateOf(
+                        exerciseHistory.minutes?.toString() ?: ""
+                    )
+                }
+                var secondsState by remember {
+                    mutableStateOf(
+                        exerciseHistory.seconds?.toString() ?: ""
+                    )
+                }
+                var distanceState by remember {
+                    mutableStateOf(
+                        exerciseHistory.distance?.toString() ?: ""
+                    )
+                }
+                var caloriesState by remember {
+                    mutableStateOf(
+                        exerciseHistory.calories?.toString() ?: ""
+                    )
+                }
+                var unitState by remember { mutableStateOf(DistanceUnits.KILOMETERS.shortForm) }
+                val error = !((minutesState != "" && secondsState != "")
+                        || distanceState != ""
+                        || caloriesState != "")
+                FormTimeField(
+                    minutes = minutesState,
+                    seconds = secondsState,
+                    minutesOnChange = { minutes ->
+                        minutesState = Regex("[^0-9]").replace(minutes, "")
+                        if (minutesState != "") {
+                            exerciseHistory.minutes = minutesState.toInt()
+                        }
+                    },
+                    secondsOnChange = { seconds ->
+                        secondsState = Regex("[^0-9]").replace(seconds, "")
+                        if (secondsState != "") {
+                            exerciseHistory.seconds = secondsState.toInt()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 0.dp)
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.Top,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 0.dp)
+                ) {
+                    FormInformationField(
+                        label = "Distance",
+                        value = distanceState,
+                        onChange = { entry ->
+                            distanceState = Regex("[^0-9.]").replace(entry, "")
+                            if (distanceState != "" && distanceState.toDoubleOrNull() != null) {
+                                exerciseHistory.distance = convertToKilometers(
+                                    getDistanceUnitFromShortForm(unitState),
+                                    distanceState.toDouble()
+                                )
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(intrinsicSize = IntrinsicSize.Max)
+                            .padding(0.dp)
+                    )
+                    DropdownBox(
+                        options = listOf(
+                            DistanceUnits.METERS.shortForm,
+                            DistanceUnits.KILOMETERS.shortForm,
+                            DistanceUnits.MILES.shortForm
+                        ),
+                        onChange = { value ->
+                            unitState = value
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(0.dp)
+                            .height(intrinsicSize = IntrinsicSize.Max)
+                            .semantics { contentDescription = "Units" }
+                    )
+                }
+                FormInformationField(
+                    label = "Calories",
+                    value = caloriesState,
+                    onChange = { entry ->
+                        caloriesState = Regex("[^0-9]").replace(entry, "")
+                        if (caloriesState != "") {
+                            exerciseHistory.calories = caloriesState.toInt()
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 0.dp)
+                )
+                if (error) {
+                    Text(
+                        text = "Must have a time, distance or calories entered",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                errorStateChange(exercise.id, error)
+            } else {
+                errorStateChange(exercise.id, false)
+            }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun WorkoutsScreenPreview() {
+fun RecordWorkoutHistoryScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         RecordWorkoutHistoryScreen(
             uiState = WorkoutWithExercisesUiState(
@@ -304,9 +485,7 @@ fun WorkoutsScreenPreview() {
                     ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars"),
                     ExerciseUiState(
                         2,
-                        "Testing what happens if someone decides to have a ridiculously long exercise name",
-                        "Lats",
-                        "Dumbbells"
+                        "Testing what happens if someone decides to have a ridiculously long exercise name"
                     )
                 ),
                 workoutHistory = listOf(
@@ -315,8 +494,8 @@ fun WorkoutsScreenPreview() {
                 )
             ),
             titleText = RECORD_WORKOUT,
-            workoutSaveFunction = { _, _ -> },
-            onDismiss = {  }
+            workoutSaveFunction = { },
+            onDismiss = { }
         )
     }
 }

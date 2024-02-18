@@ -42,7 +42,7 @@ fun RecordExerciseHistoryScreen(
 @Composable
 fun UpdateExerciseHistoryScreen(
     exercise: ExerciseUiState,
-    history: WeightsExerciseHistoryUiState,
+    history: ExerciseHistoryUiState,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RecordExerciseHistoryViewModel = viewModel(

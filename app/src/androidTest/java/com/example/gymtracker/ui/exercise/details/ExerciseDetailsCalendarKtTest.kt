@@ -8,6 +8,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -56,9 +57,12 @@ class ExerciseDetailsCalendarKtTest {
     private val reps = rule.onNode(hasText("Reps: 2"))
     private val weight = rule.onNode(hasText("Weight: 13.0kg"))
     private val rest = rule.onNode(hasText("Rest time: 1"))
+    private val time = rule.onNode(hasText("Time: 10:00"))
+    private val distance = rule.onNode(hasText("Distance: 100.0km"))
+    private val calories = rule.onNode(hasText("Calories: 2500kcal"))
     private val deleteButton = rule.onNode(hasContentDescription("Delete history"))
 
-    private val exerciseHistory = WeightsExerciseHistoryUiState(
+    private val weightsExerciseHistory = WeightsExerciseHistoryUiState(
         id = 1,
         exerciseId = 1,
         date = LocalDate.now(),
@@ -67,23 +71,23 @@ class ExerciseDetailsCalendarKtTest {
         reps = 2,
         rest = 1
     )
+    private val cardioExerciseHistory = CardioExerciseHistoryUiState(
+        id = 1,
+        exerciseId = 2,
+        date = LocalDate.now(),
+        minutes = 10,
+        seconds = 0,
+        distance = 100.0,
+        calories = 2500
+    )
     private val exercise = ExerciseDetailsUiState(
         exercise = ExerciseUiState(
             name = NAME,
             muscleGroup = MUSCLE_GROUP,
             equipment = EQUIPMENT,
         ),
-        weightsHistory = listOf(
-            WeightsExerciseHistoryUiState(
-                id = 1,
-                exerciseId = 1,
-                date = LocalDate.now(),
-                weight = 13.0,
-                sets = 1,
-                reps = 2,
-                rest = 1
-            )
-        )
+        weightsHistory = listOf(weightsExerciseHistory),
+        cardioHistory = listOf(cardioExerciseHistory)
     )
 
     @Test
@@ -181,14 +185,14 @@ class ExerciseDetailsCalendarKtTest {
     }
 
     @Test
-    fun rendersHistoryDetailsCard() {
+    fun rendersWeightsExerciseHistoryDetailsCard() {
         var delete = false
 
         rule.setContent {
-            HistoryDetails(
-                exerciseHistory = exerciseHistory,
-                exercise = exercise.toExerciseUiState(),
-                deleteFunction = { delete = true }
+            WeightsExerciseHistoryDetails(
+                exerciseHistory = weightsExerciseHistory,
+                deleteFunction = { delete = true },
+                editEnabled = true
             )
         }
 
@@ -200,19 +204,14 @@ class ExerciseDetailsCalendarKtTest {
 
         deleteButton.performClick()
 
-        rule.onNode(hasText("Do you want to delete this exercise?")).assertExists()
-
-        rule.onNode(hasText("Yes")).performClick()
-
         assertThat(delete, equalTo(true))
     }
 
     @Test
-    fun rendersHistoryDetailsCardWithoutDeleteButton() {
+    fun rendersWeightsExerciseHistoryDetailsCardWithoutDeleteButton() {
         rule.setContent {
-            HistoryDetails(
-                exerciseHistory = exerciseHistory,
-                exercise = exercise.toExerciseUiState(),
+            WeightsExerciseHistoryDetails(
+                exerciseHistory = weightsExerciseHistory,
                 deleteFunction = { },
                 editEnabled = false
             )
@@ -222,6 +221,44 @@ class ExerciseDetailsCalendarKtTest {
         reps.assertExists()
         weight.assertExists()
         rest.assertExists()
+        deleteButton.assertDoesNotExist()
+    }
+
+    @Test
+    fun rendersCardioExerciseHistoryDetailsCard() {
+        var delete = false
+
+        rule.setContent {
+            CardioExerciseHistoryDetails(
+                exerciseHistory = cardioExerciseHistory,
+                deleteFunction = { delete = true },
+                editEnabled = true
+            )
+        }
+
+        time.assertExists()
+        distance.assertExists()
+        calories.assertExists()
+        deleteButton.assertExists()
+
+        deleteButton.performClick()
+
+        assertThat(delete, equalTo(true))
+    }
+
+    @Test
+    fun rendersCardioExerciseHistoryDetailsCardWithoutDeleteButton() {
+        rule.setContent {
+            CardioExerciseHistoryDetails(
+                exerciseHistory = cardioExerciseHistory,
+                deleteFunction = { },
+                editEnabled = false
+            )
+        }
+
+        time.assertExists()
+        distance.assertExists()
+        calories.assertExists()
         deleteButton.assertDoesNotExist()
     }
 }
