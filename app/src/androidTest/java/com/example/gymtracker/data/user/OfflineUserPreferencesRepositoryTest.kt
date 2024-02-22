@@ -10,10 +10,10 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 
-class UserPreferencesRepositoryTest {
+class OfflineUserPreferencesRepositoryTest {
 
     private val testContext: Context = ApplicationProvider.getApplicationContext()
-    private val repository: UserPreferencesRepository = UserPreferencesRepository(testContext)
+    private val repository: OfflineUserPreferencesRepository = OfflineUserPreferencesRepository(testContext)
 
     @Test
     fun userPreferencesRepository_testSaveDefaultWeightUnit() = runBlocking {
