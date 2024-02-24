@@ -6,5 +6,6 @@ enum class NavigationRoutes(val baseRoute: String, val navigationArgument: Strin
     WORKOUT_SELECTION_SCREEN("liveRecordWorkout"),
     EXERCISE_DETAILS_SCREEN(EXERCISES_SCREEN.baseRoute, navigationArgument = "exerciseId"),
     WORKOUT_DETAILS_SCREEN(WORKOUTS_SCREEN.baseRoute, navigationArgument = "workoutId"),
-    LIVE_RECORD_WORKOUT_SCREEN(WORKOUT_SELECTION_SCREEN.baseRoute, navigationArgument = "workoutId")
+    LIVE_RECORD_WORKOUT_SCREEN(WORKOUT_SELECTION_SCREEN.baseRoute, navigationArgument = "workoutId"),
+    USER_PREFERENCES_SCREEN("userPreferences")
 }

@@ -90,6 +90,7 @@ dependencies {
     androidTestImplementation(platform("androidx.compose:compose-bom:2022.10.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("org.mockito:mockito-android:2.24.5")
+    androidTestImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
 
     debugImplementation("androidx.compose.ui:ui-tooling")

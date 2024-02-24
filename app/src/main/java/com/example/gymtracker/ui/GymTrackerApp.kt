@@ -15,6 +15,8 @@ import com.example.gymtracker.ui.navigation.NavigationRoutes.EXERCISE_DETAILS_SC
 import com.example.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.example.gymtracker.ui.navigation.NavigationRoutes.WORKOUT_DETAILS_SCREEN
 import com.example.gymtracker.ui.navigation.getHomeNavigationOptionsForRoute
+import com.example.gymtracker.ui.user.UserPreferencesRoute
+import com.example.gymtracker.ui.user.UserPreferencesScreen
 import com.example.gymtracker.ui.workout.LiveRecordChooseWorkoutsScreen
 import com.example.gymtracker.ui.workout.WorkoutSelectionScreenRoute
 import com.example.gymtracker.ui.workout.WorkoutsRoute
@@ -35,42 +37,78 @@ fun GymTrackerApp(
         composable(route = ExercisesRoute.route) {
             ExercisesScreen(
                 navController = navController,
-                exerciseNavigationFunction = { id: Int -> navController.navigate(ExerciseDetailsRoute.getRouteForNavArgument(id)) },
-                homeNavigationOptions = getHomeNavigationOptionsForRoute(ExercisesRoute, navController)
+                exerciseNavigationFunction = { id: Int ->
+                    navController.navigate(
+                        ExerciseDetailsRoute.getRouteForNavArgument(id)
+                    )
+                },
+                homeNavigationOptions = getHomeNavigationOptionsForRoute(
+                    homeRoute = ExercisesRoute,
+                    navController = navController
+                )
             )
         }
         composable(route = WorkoutsRoute.route) {
             WorkoutsScreen(
                 navController = navController,
-                workoutNavigationFunction = { id: Int -> navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(id)) },
-                homeNavigationOptions = getHomeNavigationOptionsForRoute(WorkoutsRoute, navController)
+                workoutNavigationFunction = { id: Int ->
+                    navController.navigate(
+                        WorkoutDetailsRoute.getRouteForNavArgument(id)
+                    )
+                },
+                homeNavigationOptions = getHomeNavigationOptionsForRoute(
+                    homeRoute = WorkoutsRoute,
+                    navController = navController
+                )
             )
         }
-        composable(ExerciseDetailsRoute.route,
-            arguments = listOf(navArgument(EXERCISE_DETAILS_SCREEN.navigationArgument) { type = NavType.IntType })
+        composable(
+            route = ExerciseDetailsRoute.route,
+            arguments = listOf(navArgument(EXERCISE_DETAILS_SCREEN.navigationArgument) {
+                type = NavType.IntType
+            })
         ) {
             ExerciseDetailsScreen(
                 navController = navController
             )
         }
-        composable(WorkoutDetailsRoute.route,
-            arguments = listOf(navArgument(WORKOUT_DETAILS_SCREEN.navigationArgument) { type = NavType.IntType })
+        composable(
+            route = WorkoutDetailsRoute.route,
+            arguments = listOf(navArgument(WORKOUT_DETAILS_SCREEN.navigationArgument) {
+                type = NavType.IntType
+            })
         ) {
             WorkoutDetailsScreen(
                 navController = navController,
-                exerciseNavigationFunction = { id: Int -> navController.navigate(ExerciseDetailsRoute.getRouteForNavArgument(id)) },
+                exerciseNavigationFunction = { id: Int ->
+                    navController.navigate(
+                        ExerciseDetailsRoute.getRouteForNavArgument(id)
+                    )
+                },
             )
         }
-        composable(WorkoutSelectionScreenRoute.route) {
+        composable(route = WorkoutSelectionScreenRoute.route) {
             LiveRecordChooseWorkoutsScreen(
                 navController = navController,
-                workoutNavigationFunction = { id: Int -> navController.navigate(LiveRecordWorkoutRoute.getRouteForNavArgument(id)) }
+                workoutNavigationFunction = { id: Int ->
+                    navController.navigate(
+                        LiveRecordWorkoutRoute.getRouteForNavArgument(id)
+                    )
+                }
             )
         }
-        composable(LiveRecordWorkoutRoute.route,
-            arguments = listOf(navArgument(LIVE_RECORD_WORKOUT_SCREEN.navigationArgument) { type = NavType.IntType })
+        composable(
+            route = LiveRecordWorkoutRoute.route,
+            arguments = listOf(navArgument(LIVE_RECORD_WORKOUT_SCREEN.navigationArgument) {
+                type = NavType.IntType
+            })
         ) {
             LiveRecordWorkout(
+                navController = navController
+            )
+        }
+        composable(route = UserPreferencesRoute.route) {
+            UserPreferencesScreen(
                 navController = navController
             )
         }

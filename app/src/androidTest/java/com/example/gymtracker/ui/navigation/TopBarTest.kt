@@ -5,9 +5,11 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
+import com.example.gymtracker.ui.user.UserPreferencesRoute
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -18,6 +20,8 @@ import org.mockito.Mockito.anyInt
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.isNull
 
 class TopBarTest {
 
@@ -28,22 +32,24 @@ class TopBarTest {
     private val homeButton = rule.onNode(hasContentDescription("Home Button"))
     private val editButton = rule.onNode(hasContentDescription("Edit feature"))
     private val deleteButton = rule.onNode(hasContentDescription("Delete feature"))
+    private val settingsButton = rule.onNode(hasContentDescription("User Settings"))
 
     @Mock
     private lateinit var navController: NavHostController
+
     @Mock
     private lateinit var navGraph: NavGraph
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
 
         `when`(navController.previousBackStackEntry).thenReturn(null)
         `when`(navController.currentDestination).thenReturn(null)
     }
 
     @Test
-    fun buttonsDoNotExistWithNoFunctionsAndBackStack() {
+    fun buttonsDoNotExistWithNoFunctionsAndBackStackExceptUserSettings() {
         rule.setContent {
             TopBar(
                 text = "text test", navController = navController
@@ -54,11 +60,17 @@ class TopBarTest {
         homeButton.assertDoesNotExist()
         editButton.assertDoesNotExist()
         deleteButton.assertDoesNotExist()
+        settingsButton.assertExists()
     }
 
     @Test
     fun clickingBackButtonExecutesNavigateBack() {
-        `when`(navController.previousBackStackEntry).thenReturn(NavBackStackEntry.create(null, NavDestination("")))
+        `when`(navController.previousBackStackEntry).thenReturn(
+            NavBackStackEntry.create(
+                null,
+                NavDestination("")
+            )
+        )
 
         rule.setContent {
             TopBar(
@@ -122,8 +134,9 @@ class TopBarTest {
         rule.setContent {
             TopBar(
                 text = "text test",
-                navController = navController
-            ) { clicked = true }
+                navController = navController,
+                deleteFunction = { clicked = true }
+            )
         }
 
         backButton.assertDoesNotExist()
@@ -134,5 +147,34 @@ class TopBarTest {
         deleteButton.performClick()
 
         assertThat(clicked, equalTo(true))
+    }
+
+    @Test
+    fun clickingProfileButtonNavigatesToUserPreferences() {
+        rule.setContent {
+            TopBar(
+                text = "text test",
+                navController = navController
+            )
+        }
+
+        settingsButton.performClick()
+
+        verify(navController).navigate(argThat<NavDeepLinkRequest> { aBar: NavDeepLinkRequest ->
+            aBar.uri?.encodedPath?.contains(UserPreferencesRoute.route) ?: false
+        }, isNull(), isNull())
+    }
+
+    @Test
+    fun doesNotRenderProfileIconOnSettingsPage() {
+        rule.setContent {
+            TopBar(
+                text = "text test",
+                navController = navController,
+                settingsScreen = true
+            )
+        }
+
+        settingsButton.assertDoesNotExist()
     }
 }

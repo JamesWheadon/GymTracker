@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import com.example.gymtracker.ui.user.UserPreferencesRoute
 import com.example.gymtracker.ui.workout.WorkoutSelectionScreenRoute
 import com.example.gymtracker.ui.workout.history.create.live.LiveRecordWorkoutRoute
 
@@ -28,6 +30,7 @@ fun TopBar(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     homeScreen: Boolean = false,
+    settingsScreen: Boolean = false,
     editFunction: (() -> Unit)? = null,
     deleteFunction: (() -> Unit)? = null
 ) {
@@ -76,6 +79,14 @@ fun TopBar(
                         imageVector = Icons.Outlined.Delete,
                         tint = Color.Red,
                         contentDescription = "Delete feature"
+                    )
+                }
+            }
+            if (!settingsScreen) {
+                IconButton(onClick = { navController.navigate(route = UserPreferencesRoute.route) }) {
+                    Icon(
+                        imageVector = Icons.Outlined.AccountCircle,
+                        contentDescription = "User Settings"
                     )
                 }
             }

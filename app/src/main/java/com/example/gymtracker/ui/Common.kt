@@ -228,10 +228,11 @@ fun FormTimeField(
 fun DropdownBox(
     options: List<String>,
     onChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    selected: String? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(options.first()) }
+    var selectedOption by remember { mutableStateOf(selected?: options.first()) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
