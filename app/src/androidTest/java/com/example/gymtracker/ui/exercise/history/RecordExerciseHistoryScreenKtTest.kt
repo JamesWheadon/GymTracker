@@ -1,6 +1,7 @@
 package com.example.gymtracker.ui.exercise.history
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -8,6 +9,8 @@ import androidx.compose.ui.test.performClick
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
@@ -54,11 +57,14 @@ class RecordExerciseHistoryScreenKtTest {
     @Test
     fun rendersEmptyCreateFormForWeightsExercise() {
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = weightsExercise,
-                saveFunction = {},
-                onDismiss = {}
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordExerciseHistoryScreen(
+                    exercise = weightsExercise,
+                    saveFunction = {},
+                    onDismiss = {}
+                )
+            }
         }
 
         newWeightsExerciseTitle.assertExists()
@@ -74,11 +80,14 @@ class RecordExerciseHistoryScreenKtTest {
     fun clickCloseButtonToDismissForWeightsExercise() {
         var dismissed = false
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = weightsExercise,
-                saveFunction = {},
-                onDismiss = { dismissed = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordExerciseHistoryScreen(
+                    exercise = weightsExercise,
+                    saveFunction = {},
+                    onDismiss = { dismissed = true }
+                )
+            }
         }
 
         closeButton.performClick()
@@ -89,12 +98,15 @@ class RecordExerciseHistoryScreenKtTest {
     @Test
     fun passExistingWeightsHistoryToRenderScreenToUpdateHistory() {
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = weightsExercise,
-                saveFunction = {},
-                onDismiss = { },
-                history = weightsHistory
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordExerciseHistoryScreen(
+                    exercise = weightsExercise,
+                    saveFunction = {},
+                    onDismiss = { },
+                    history = weightsHistory
+                )
+            }
         }
 
         updateWeightsExerciseTitle.assertExists()
@@ -109,11 +121,14 @@ class RecordExerciseHistoryScreenKtTest {
     @Test
     fun rendersEmptyCreateFormForCardioExercise() {
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = cardioExercise,
-                saveFunction = {},
-                onDismiss = {}
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordExerciseHistoryScreen(
+                    exercise = cardioExercise,
+                    saveFunction = {},
+                    onDismiss = {}
+                )
+            }
         }
 
         newCardioExerciseTitle.assertExists()
@@ -129,11 +144,14 @@ class RecordExerciseHistoryScreenKtTest {
     fun clickCloseButtonToDismissForCardioExercise() {
         var dismissed = false
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = cardioExercise,
-                saveFunction = {},
-                onDismiss = { dismissed = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordExerciseHistoryScreen(
+                    exercise = cardioExercise,
+                    saveFunction = {},
+                    onDismiss = { dismissed = true }
+                )
+            }
         }
 
         closeButton.performClick()
@@ -144,12 +162,15 @@ class RecordExerciseHistoryScreenKtTest {
     @Test
     fun passExistingCardioHistoryToRenderScreenToUpdateHistory() {
         rule.setContent {
-            RecordExerciseHistoryScreen(
-                exercise = cardioExercise,
-                saveFunction = {},
-                onDismiss = { },
-                history = cardioHistory
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordExerciseHistoryScreen(
+                    exercise = cardioExercise,
+                    saveFunction = {},
+                    onDismiss = { },
+                    history = cardioHistory
+                )
+            }
         }
 
         updateCardioExerciseTitle.assertExists()

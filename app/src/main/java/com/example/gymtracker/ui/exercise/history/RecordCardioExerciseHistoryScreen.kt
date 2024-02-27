@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.converters.DistanceUnits
+import com.example.gymtracker.converters.convertToDistanceUnit
 import com.example.gymtracker.converters.convertToKilometers
 import com.example.gymtracker.converters.getDistanceUnitFromShortForm
 import com.example.gymtracker.ui.DropdownBox
@@ -31,6 +32,8 @@ import com.example.gymtracker.ui.FormTimeField
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 
 
 @Composable
@@ -42,11 +45,12 @@ fun RecordCardioExerciseHistoryCard(
     modifier: Modifier = Modifier,
     savedHistory: CardioExerciseHistoryUiState = CardioExerciseHistoryUiState()
 ) {
+    val userPreferencesUiState = LocalUserPreferences.current
     var minutesState by remember { mutableStateOf(savedHistory.minutes?.toString() ?: "") }
     var secondsState by remember { mutableStateOf(savedHistory.seconds?.toString() ?: "") }
     var caloriesState by remember { mutableStateOf(savedHistory.calories?.toString() ?: "") }
-    var distanceState by remember { mutableStateOf(savedHistory.distance?.toString() ?: "") }
-    var unitState by remember { mutableStateOf(DistanceUnits.KILOMETERS.shortForm) }
+    var distanceState by remember { mutableStateOf(getDistanceForUnit(savedHistory, userPreferencesUiState)) }
+    var unitState by remember { mutableStateOf(userPreferencesUiState.defaultDistanceUnit.shortForm) }
     Card(
         modifier = modifier
             .padding(vertical = 10.dp, horizontal = 10.dp),
@@ -107,7 +111,8 @@ fun RecordCardioExerciseHistoryCard(
                         .weight(1f)
                         .padding(0.dp)
                         .height(intrinsicSize = IntrinsicSize.Max)
-                        .semantics { contentDescription = "Units" }
+                        .semantics { contentDescription = "Units" },
+                    selected = unitState
                 )
             }
             FormInformationField(
@@ -186,4 +191,14 @@ fun SaveCardioExerciseHistoryButton(
             Text("Save")
         }
     }
+}
+
+private fun getDistanceForUnit(exerciseHistory: CardioExerciseHistoryUiState, userPreferencesUiState: UserPreferencesUiState) = if (exerciseHistory.distance != null) {
+    if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
+        exerciseHistory.distance.toString()
+    } else {
+        convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, exerciseHistory.distance!!).toString()
+    }
+} else {
+    ""
 }

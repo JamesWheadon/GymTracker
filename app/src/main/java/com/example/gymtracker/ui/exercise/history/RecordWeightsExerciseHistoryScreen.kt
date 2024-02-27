@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
+import com.example.gymtracker.converters.convertToWeightUnit
 import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.DropdownBox
@@ -33,6 +34,8 @@ import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
 import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import java.time.LocalDate
 
 
@@ -45,10 +48,11 @@ fun RecordWeightsExerciseHistoryCard(
     modifier: Modifier = Modifier,
     savedHistory: WeightsExerciseHistoryUiState = WeightsExerciseHistoryUiState()
 ) {
+    val userPreferencesUiState = LocalUserPreferences.current
     var setsState by remember { mutableStateOf(if (savedHistory == WeightsExerciseHistoryUiState()) "" else savedHistory.sets.toString()) }
     var repsState by remember { mutableStateOf(if (savedHistory == WeightsExerciseHistoryUiState()) "" else savedHistory.reps.toString()) }
-    var weightState by remember { mutableStateOf(if (savedHistory == WeightsExerciseHistoryUiState()) "" else savedHistory.weight.toString()) }
-    var unitState by remember { mutableStateOf(WeightUnits.KILOGRAMS.shortForm) }
+    var weightState by remember { mutableStateOf(if (savedHistory == WeightsExerciseHistoryUiState()) "" else getWeightForUnit(savedHistory, userPreferencesUiState)) }
+    var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit.shortForm) }
     Card(
         modifier = modifier
             .padding(vertical = 10.dp, horizontal = 10.dp),
@@ -124,7 +128,8 @@ fun RecordWeightsExerciseHistoryCard(
                     modifier = Modifier
                         .weight(1f)
                         .padding(0.dp)
-                        .semantics { contentDescription = "Units" }
+                        .semantics { contentDescription = "Units" },
+                    selected = userPreferencesUiState.defaultWeightUnit.shortForm
                 )
             }
             SaveWeightsExerciseHistoryButton(
@@ -184,3 +189,16 @@ private fun SaveWeightsExerciseHistoryButton(
         }
     }
 }
+
+private fun getWeightForUnit(
+    exerciseHistory: WeightsExerciseHistoryUiState,
+    userPreferencesUiState: UserPreferencesUiState
+) =
+    if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
+        exerciseHistory.weight.toString()
+    } else {
+        convertToWeightUnit(
+            userPreferencesUiState.defaultWeightUnit,
+            exerciseHistory.weight
+        ).toString()
+    }

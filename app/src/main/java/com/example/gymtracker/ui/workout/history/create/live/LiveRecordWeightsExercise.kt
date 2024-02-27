@@ -32,6 +32,7 @@ import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.user.LocalUserPreferences
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -81,10 +82,11 @@ fun LiveRecordWeightsExerciseInfo(
     onStart: (ExerciseData) -> Unit,
     onCancel: () -> Unit
 ) {
+    val userPreferencesUiState = LocalUserPreferences.current
     var repsState by rememberSaveable { mutableStateOf("") }
     var restState by rememberSaveable { mutableStateOf("") }
     var weightState by rememberSaveable { mutableStateOf("") }
-    var unitState by rememberSaveable { mutableStateOf(WeightUnits.KILOGRAMS.shortForm) }
+    var unitState by rememberSaveable { mutableStateOf(userPreferencesUiState.defaultWeightUnit.shortForm) }
     Column {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -145,7 +147,8 @@ fun LiveRecordWeightsExerciseInfo(
                 modifier = Modifier
                     .weight(1f)
                     .padding(0.dp)
-                    .semantics { contentDescription = "Units" }
+                    .semantics { contentDescription = "Units" },
+                selected = userPreferencesUiState.defaultWeightUnit.shortForm
             )
         }
         Row(

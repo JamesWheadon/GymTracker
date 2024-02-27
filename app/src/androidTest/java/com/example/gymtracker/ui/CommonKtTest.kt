@@ -255,6 +255,19 @@ class CommonKtTest {
     }
 
     @Test
+    fun shouldRenderDropdownWithSelectedChosenIfProvided() {
+        rule.setContent {
+            DropdownBox(
+                options = listOf("first", "second", "third"),
+                onChange = { },
+                selected = "third"
+            )
+        }
+
+        rule.onNode(hasText("third")).assertExists()
+    }
+
+    @Test
     fun shouldRenderActionConfirmationCardWithTitleYesNoOptionsAndCloseButton() {
         rule.setContent {
             ActionConfirmation(

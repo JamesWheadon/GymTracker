@@ -20,9 +20,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.R
 import com.example.gymtracker.converters.DistanceUnits
+import com.example.gymtracker.converters.convertToDistanceUnit
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import java.time.LocalDate
 
 
@@ -41,7 +44,9 @@ fun CardioExerciseDetailsScreen(
     ) {
         CardioExerciseInformation(innerPadding)
         if (uiState.cardioHistory.isNotEmpty()) {
-            CardioExerciseHistoryDetails(uiState = uiState)
+            CardioExerciseHistoryDetails(
+                uiState = uiState
+            )
             ExerciseHistoryCalendar(uiState = uiState)
         }
     }
@@ -62,11 +67,13 @@ private fun CardioExerciseInformation(
 }
 
 @Composable
-fun CardioExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
+fun CardioExerciseHistoryDetails(
+    uiState: ExerciseDetailsUiState
+) {
     val timeOptions = listOf("7 Days", "30 Days", "Past Year", "All Time")
     val detailOptions = listOf("Distance", "Time", "Calories")
     val yUnit = mapOf(
-        detailOptions[0] to DistanceUnits.KILOMETERS.shortForm,
+        detailOptions[0] to LocalUserPreferences.current.defaultDistanceUnit.shortForm,
         detailOptions[1] to "min",
         detailOptions[2] to "kcal"
     )
@@ -82,14 +89,20 @@ fun CardioExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
     )
     var detail by remember { mutableStateOf(detailOptions[0]) }
     var time by remember { mutableStateOf(timeOptions[0]) }
-    CardioExerciseDetailsBest(uiState)
+    CardioExerciseDetailsBest(uiState = uiState)
     GraphOptions(
         detailOptions = detailOptions,
         detailOnChange = { newDetail -> detail = newDetail },
-        timeOptions = timeOptions
-    ) { newTime -> time = newTime }
+        timeOptions = timeOptions,
+        timeOnChange = { newTime -> time = newTime }
+    )
     Graph(
-        points = getCardioGraphDetails(uiState, detail, detailOptions),
+        points = getCardioGraphDetails(
+            uiState,
+            detail,
+            detailOptions,
+            LocalUserPreferences.current
+        ),
         startDate = timeOptionToStartTime[time] ?: currentDate,
         yLabel = detail,
         yUnit = yUnit[detail]!!
@@ -97,9 +110,21 @@ fun CardioExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
 }
 
 @Composable
-private fun CardioExerciseDetailsBest(uiState: ExerciseDetailsUiState) {
-    val bestDistance = uiState.cardioHistory.maxOf { it.distance ?: 0.0 }
-    val bestTime = uiState.cardioHistory.maxOf { (it.minutes?.times(60) ?: 0) + (it.seconds ?: 0) }
+private fun CardioExerciseDetailsBest(
+    uiState: ExerciseDetailsUiState
+) {
+    val userPreferencesUiState = LocalUserPreferences.current
+    var bestDistance = uiState.cardioHistory.maxOf { it.distance ?: 0.0 }
+    if (userPreferencesUiState.defaultDistanceUnit != DistanceUnits.KILOMETERS) {
+        bestDistance =
+            convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, bestDistance)
+    }
+    val bestTime = if (userPreferencesUiState.displayShortestTime) {
+        uiState.cardioHistory.filter { it.minutes != null }
+            .minOfOrNull { (it.minutes?.times(60) ?: 0) + (it.seconds ?: 0) } ?: 0
+    } else {
+        uiState.cardioHistory.maxOf { (it.minutes?.times(60) ?: 0) + (it.seconds ?: 0) }
+    }
     val bestCalories = uiState.cardioHistory.maxOf { it.calories ?: 0 }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -108,7 +133,7 @@ private fun CardioExerciseDetailsBest(uiState: ExerciseDetailsUiState) {
     ) {
         if (bestDistance != 0.0) {
             ExerciseDetail(
-                exerciseInfo = "$bestDistance km",
+                exerciseInfo = "$bestDistance ${userPreferencesUiState.defaultDistanceUnit.shortForm}",
                 iconId = R.drawable.trophy_48dp,
                 iconDescription = "best exercise icon",
                 modifier = Modifier
@@ -154,14 +179,25 @@ private fun CardioExerciseDetailsBest(uiState: ExerciseDetailsUiState) {
 fun getCardioGraphDetails(
     uiState: ExerciseDetailsUiState,
     detail: String,
-    detailOptions: List<String>
+    detailOptions: List<String>,
+    userPreferencesUiState: UserPreferencesUiState
 ) = uiState.cardioHistory.map { history ->
     when (detail) {
         detailOptions[0] -> {
-            Pair(
-                history.date,
-                history.distance ?: 0.0
-            )
+            if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
+                Pair(
+                    history.date,
+                    history.distance ?: 0.0
+                )
+            } else {
+                Pair(
+                    history.date,
+                    convertToDistanceUnit(
+                        userPreferencesUiState.defaultDistanceUnit,
+                        history.distance ?: 0.0
+                    )
+                )
+            }
         }
 
         detailOptions[1] -> {
@@ -179,10 +215,20 @@ fun getCardioGraphDetails(
         }
 
         else -> {
-            Pair(
-                history.date,
-                history.distance ?: 0.0
-            )
+            if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
+                Pair(
+                    history.date,
+                    history.distance ?: 0.0
+                )
+            } else {
+                Pair(
+                    history.date,
+                    convertToDistanceUnit(
+                        userPreferencesUiState.defaultDistanceUnit,
+                        history.distance ?: 0.0
+                    )
+                )
+            }
         }
     }
 }.filter { pair -> pair.second != 0.0 }

@@ -1,15 +1,20 @@
 package com.example.gymtracker.ui.exercise.details
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import com.example.gymtracker.converters.DistanceUnits
+import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
@@ -56,9 +61,11 @@ class ExerciseDetailsCalendarKtTest {
     private val sets = rule.onNode(hasText("Sets: 1"))
     private val reps = rule.onNode(hasText("Reps: 2"))
     private val weight = rule.onNode(hasText("Weight: 13.0kg"))
+    private val poundsWeight = rule.onNode(hasText("Weight: 28.66lb"))
     private val rest = rule.onNode(hasText("Rest time: 1"))
     private val time = rule.onNode(hasText("Time: 10:00"))
     private val distance = rule.onNode(hasText("Distance: 100.0km"))
+    private val distanceMeters = rule.onNode(hasText("Distance: 100000.0m"))
     private val calories = rule.onNode(hasText("Calories: 2500kcal"))
     private val deleteButton = rule.onNode(hasContentDescription("Delete history"))
 
@@ -143,9 +150,12 @@ class ExerciseDetailsCalendarKtTest {
     @Test
     fun clickingActiveDayRendersHistoryDetailsAndClickingExerciseOpensEdit() {
         rule.setContent {
-            ExerciseHistoryCalendar(
-                uiState = exercise
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                ExerciseHistoryCalendar(
+                    uiState = exercise
+                )
+            }
         }
 
         rule.onNode(hasText(LocalDate.now().dayOfMonth.toString())).performClick()
@@ -165,9 +175,12 @@ class ExerciseDetailsCalendarKtTest {
     @Test
     fun clickingDeleteIconOnHistoryDetailsOpensActionConfirmationForDeletion() {
         rule.setContent {
-            ExerciseHistoryCalendar(
-                uiState = exercise
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                ExerciseHistoryCalendar(
+                    uiState = exercise
+                )
+            }
         }
 
         rule.onNode(hasText(LocalDate.now().dayOfMonth.toString())).performClick()
@@ -189,11 +202,14 @@ class ExerciseDetailsCalendarKtTest {
         var delete = false
 
         rule.setContent {
-            WeightsExerciseHistoryDetails(
-                exerciseHistory = weightsExerciseHistory,
-                deleteFunction = { delete = true },
-                editEnabled = true
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WeightsExerciseHistoryDetails(
+                    exerciseHistory = weightsExerciseHistory,
+                    deleteFunction = { delete = true },
+                    editEnabled = true
+                )
+            }
         }
 
         sets.assertExists()
@@ -210,11 +226,14 @@ class ExerciseDetailsCalendarKtTest {
     @Test
     fun rendersWeightsExerciseHistoryDetailsCardWithoutDeleteButton() {
         rule.setContent {
-            WeightsExerciseHistoryDetails(
-                exerciseHistory = weightsExerciseHistory,
-                deleteFunction = { },
-                editEnabled = false
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WeightsExerciseHistoryDetails(
+                    exerciseHistory = weightsExerciseHistory,
+                    deleteFunction = { },
+                    editEnabled = false
+                )
+            }
         }
 
         sets.assertExists()
@@ -225,15 +244,40 @@ class ExerciseDetailsCalendarKtTest {
     }
 
     @Test
+    fun rendersWeightsExerciseHistoryDetailsCardWithPoundsWeight() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState(
+                defaultWeightUnit = WeightUnits.POUNDS
+            )
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WeightsExerciseHistoryDetails(
+                    exerciseHistory = weightsExerciseHistory,
+                    deleteFunction = { },
+                    editEnabled = false
+                )
+            }
+        }
+
+        sets.assertExists()
+        reps.assertExists()
+        poundsWeight.assertExists()
+        rest.assertExists()
+        deleteButton.assertDoesNotExist()
+    }
+
+    @Test
     fun rendersCardioExerciseHistoryDetailsCard() {
         var delete = false
 
         rule.setContent {
-            CardioExerciseHistoryDetails(
-                exerciseHistory = cardioExerciseHistory,
-                deleteFunction = { delete = true },
-                editEnabled = true
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                CardioExerciseHistoryDetails(
+                    exerciseHistory = cardioExerciseHistory,
+                    deleteFunction = { delete = true },
+                    editEnabled = true
+                )
+            }
         }
 
         time.assertExists()
@@ -249,15 +293,39 @@ class ExerciseDetailsCalendarKtTest {
     @Test
     fun rendersCardioExerciseHistoryDetailsCardWithoutDeleteButton() {
         rule.setContent {
-            CardioExerciseHistoryDetails(
-                exerciseHistory = cardioExerciseHistory,
-                deleteFunction = { },
-                editEnabled = false
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                CardioExerciseHistoryDetails(
+                    exerciseHistory = cardioExerciseHistory,
+                    deleteFunction = { },
+                    editEnabled = false
+                )
+            }
         }
 
         time.assertExists()
         distance.assertExists()
+        calories.assertExists()
+        deleteButton.assertDoesNotExist()
+    }
+
+    @Test
+    fun rendersCardioExerciseHistoryDetailsCardWithMetersDistance() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState(
+                defaultDistanceUnit = DistanceUnits.METERS
+            )
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                CardioExerciseHistoryDetails(
+                    exerciseHistory = cardioExerciseHistory,
+                    deleteFunction = { },
+                    editEnabled = false
+                )
+            }
+        }
+
+        time.assertExists()
+        distanceMeters.assertExists()
         calories.assertExists()
         deleteButton.assertDoesNotExist()
     }

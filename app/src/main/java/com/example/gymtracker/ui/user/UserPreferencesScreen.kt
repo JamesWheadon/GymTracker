@@ -12,7 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -46,12 +45,12 @@ fun UserPreferencesScreen(
         factory = AppViewModelProvider.Factory
     )
 ) {
-    val uiState = viewModel.uiState.collectAsState().value
+    val uiState = LocalUserPreferences.current
     UserPreferencesScreen(
         uiState = uiState,
         navController = navController,
-        defaultDistanceUnitOnChange = { distanceUnit -> viewModel.updateDefaultDistanceUnit(DistanceUnits.valueOf(distanceUnit)) },
-        defaultWeightUnitOnChange = { weightUnit -> viewModel.updateDefaultWeightUnit(WeightUnits.valueOf(weightUnit)) },
+        defaultDistanceUnitOnChange = { distanceUnit -> viewModel.updateDefaultDistanceUnit(DistanceUnits.values().first { it.displayName == distanceUnit }) },
+        defaultWeightUnitOnChange = { weightUnit -> viewModel.updateDefaultWeightUnit(WeightUnits.values().first { it.displayName == weightUnit }) },
         displayHighestWeightOnChange = { viewModel.updateDisplayHighestWeight(it) },
         displayShortestTimeOnChange = { viewModel.updateDisplayShortestTime(it) },
         modifier = modifier
@@ -101,8 +100,8 @@ fun UserPreferencesScreen(
                     DropdownBox(
                         options = DistanceUnits.values().map { it.displayName },
                         onChange = defaultDistanceUnitOnChange,
-                        selected = uiState.defaultDistanceUnit.displayName,
-                        modifier = Modifier.weight(1f).semantics { contentDescription = "Distance choices" }
+                        modifier = Modifier.weight(1f).semantics { contentDescription = "Distance choices" },
+                                selected = uiState.defaultDistanceUnit.displayName
                     )
                 }
                 Row(
@@ -118,8 +117,8 @@ fun UserPreferencesScreen(
                     DropdownBox(
                         options = WeightUnits.values().map { it.displayName },
                         onChange = defaultWeightUnitOnChange,
-                        selected = uiState.defaultWeightUnit.displayName,
-                        modifier = Modifier.weight(1f).semantics { contentDescription = "Weight choices" }
+                        modifier = Modifier.weight(1f).semantics { contentDescription = "Weight choices" },
+                        selected = uiState.defaultWeightUnit.displayName
                     )
                 }
                 Row(

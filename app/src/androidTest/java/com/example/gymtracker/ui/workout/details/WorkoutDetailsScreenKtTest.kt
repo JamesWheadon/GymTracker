@@ -1,6 +1,7 @@
 package com.example.gymtracker.ui.workout.details
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
@@ -10,6 +11,8 @@ import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -62,7 +65,7 @@ class WorkoutDetailsScreenKtTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test
@@ -211,13 +214,16 @@ class WorkoutDetailsScreenKtTest {
         val dayOfMonth = LocalDate.now().dayOfMonth
 
         rule.setContent {
-            WorkoutDetailsScreen(
-                uiState = workoutWithExercises,
-                navController = navController,
-                exerciseNavigationFunction = { },
-                updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WorkoutDetailsScreen(
+                    uiState = workoutWithExercises,
+                    navController = navController,
+                    exerciseNavigationFunction = { },
+                    updateWorkoutFunction = { },
+                    deleteWorkoutFunction = { }
+                )
+            }
         }
 
         val dayNode = rule.onNode(hasText(dayOfMonth.toString()))

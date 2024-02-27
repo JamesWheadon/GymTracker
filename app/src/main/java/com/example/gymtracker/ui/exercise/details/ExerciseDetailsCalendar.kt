@@ -28,6 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymtracker.converters.DistanceUnits
+import com.example.gymtracker.converters.WeightUnits
+import com.example.gymtracker.converters.convertToDistanceUnit
+import com.example.gymtracker.converters.convertToWeightUnit
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
@@ -38,6 +42,7 @@ import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiS
 import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.user.LocalUserPreferences
 import com.example.gymtracker.ui.visualisations.Calendar
 import com.example.gymtracker.ui.visualisations.MonthPicker
 import java.time.LocalDate
@@ -199,6 +204,12 @@ fun WeightsExerciseHistoryDetails(
     modifier: Modifier = Modifier,
     editEnabled: Boolean
 ) {
+    val userPreferencesUiState = LocalUserPreferences.current
+    val weight = if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
+        exerciseHistory.weight
+    } else {
+        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, exerciseHistory.weight)
+    }
     Row(
         modifier = modifier.padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -212,7 +223,7 @@ fun WeightsExerciseHistoryDetails(
         Column(
             modifier = Modifier.weight(1F)
         ) {
-            Text(text = "Weight: ${exerciseHistory.weight}kg")
+            Text(text = "Weight: $weight${userPreferencesUiState.defaultWeightUnit.shortForm}")
             Text(text = "Rest time: ${exerciseHistory.rest}")
         }
         if (editEnabled) {
@@ -257,10 +268,16 @@ fun CardioExerciseHistoryDetails(
             ) {
                 Text(text = "Time: $time")
             }
+            val userPreferencesUiState = LocalUserPreferences.current
+            val distance = if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
+                exerciseHistory.distance
+            } else {
+                convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, exerciseHistory.distance!!)
+            }
             Column(
                 modifier = Modifier.weight(1F)
             ) {
-                Text(text = "Distance: ${exerciseHistory.distance}km")
+                Text(text = "Distance: $distance${userPreferencesUiState.defaultDistanceUnit.shortForm}")
                 Text(text = "Calories: ${exerciseHistory.calories}kcal")
             }
         } else {
@@ -271,7 +288,13 @@ fun CardioExerciseHistoryDetails(
                     Text(text = "Time: $time")
                 }
                 if (exerciseHistory.distance != null) {
-                    Text(text = "Distance: ${exerciseHistory.distance}km")
+                    val userPreferencesUiState = LocalUserPreferences.current
+                    val distance = if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
+                        exerciseHistory.distance
+                    } else {
+                        convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, exerciseHistory.distance!!)
+                    }
+                    Text(text = "Distance: $distance${userPreferencesUiState.defaultDistanceUnit.shortForm}")
                 }
                 if (exerciseHistory.calories != null) {
                     Text(text = "Calories: ${exerciseHistory.calories}kcal")

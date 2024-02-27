@@ -2,17 +2,19 @@ package com.example.gymtracker.ui.exercise.details
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
+import com.example.gymtracker.converters.DistanceUnits
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
-import org.junit.Before
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.MockitoAnnotations
 
 
 private const val NAME = "Treadmill"
@@ -96,12 +98,8 @@ class CardioExerciseDetailsScreenKtTest {
     private val bestMinutesTime = rule.onNode(hasText("20:00"))
     private val bestHoursTime = rule.onNode(hasText("1:30:00"))
     private val bestCalories = rule.onNode(hasText("450 kcal"))
-
-
-    @Before
-    fun setUp() {
-        MockitoAnnotations.initMocks(this)
-    }
+    private val bestDistanceMiles = rule.onNode(hasText("12.43 mi"))
+    private val quickestHoursTime = rule.onNode(hasText("10:00"))
 
     @Test
     fun rendersExerciseDetailsWithNoHistory() {
@@ -119,10 +117,13 @@ class CardioExerciseDetailsScreenKtTest {
     @Test
     fun rendersExerciseDetailsWithSecondsHistory() {
         rule.setContent {
-            CardioExerciseDetailsScreen(
-                uiState = exerciseSecondsBest,
-                innerPadding = PaddingValues(0.dp)
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                CardioExerciseDetailsScreen(
+                    uiState = exerciseSecondsBest,
+                    innerPadding = PaddingValues(0.dp)
+                )
+            }
         }
 
         cardioIcon.assertExists()
@@ -135,10 +136,13 @@ class CardioExerciseDetailsScreenKtTest {
     @Test
     fun rendersExerciseDetailsWithMinutesHistory() {
         rule.setContent {
-            CardioExerciseDetailsScreen(
-                uiState = exerciseMinutesBest,
-                innerPadding = PaddingValues(0.dp)
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                CardioExerciseDetailsScreen(
+                    uiState = exerciseMinutesBest,
+                    innerPadding = PaddingValues(0.dp)
+                )
+            }
         }
 
         cardioIcon.assertExists()
@@ -151,16 +155,41 @@ class CardioExerciseDetailsScreenKtTest {
     @Test
     fun rendersExerciseDetailsWithHoursHistory() {
         rule.setContent {
-            CardioExerciseDetailsScreen(
-                uiState = exerciseHoursBest,
-                innerPadding = PaddingValues(0.dp)
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                CardioExerciseDetailsScreen(
+                    uiState = exerciseHoursBest,
+                    innerPadding = PaddingValues(0.dp)
+                )
+            }
         }
 
         cardioIcon.assertExists()
         bestExerciseIcon.assertCountEquals(3)
         bestDistance.assertExists()
         bestHoursTime.assertExists()
+        bestCalories.assertExists()
+    }
+
+    @Test
+    fun rendersExerciseDetailsWithShortestTimeAndMilesDistance() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState(
+                displayShortestTime = true,
+                defaultDistanceUnit = DistanceUnits.MILES
+            )
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                CardioExerciseDetailsScreen(
+                    uiState = exerciseHoursBest,
+                    innerPadding = PaddingValues(0.dp)
+                )
+            }
+        }
+
+        cardioIcon.assertExists()
+        bestExerciseIcon.assertCountEquals(3)
+        bestDistanceMiles.assertExists()
+        quickestHoursTime.assertExists()
         bestCalories.assertExists()
     }
 }

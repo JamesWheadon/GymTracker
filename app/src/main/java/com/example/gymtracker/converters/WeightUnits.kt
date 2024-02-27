@@ -9,6 +9,8 @@ enum class WeightUnits(val displayName: String, val shortForm: String, val kiloC
 
 fun convertToKilograms(unit: WeightUnits, weight: Double): Double = round((weight / unit.kiloConversion) * 100) / 100
 
+fun convertToWeightUnit(unit: WeightUnits, weight: Double): Double = round((weight * unit.kiloConversion) * 100) / 100
+
 fun getWeightUnitFromShortForm(shortForm: String): WeightUnits {
     return WeightUnits.values().first { it.shortForm == shortForm }
 }

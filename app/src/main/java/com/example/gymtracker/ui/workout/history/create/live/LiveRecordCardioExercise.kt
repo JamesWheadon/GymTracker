@@ -35,6 +35,7 @@ import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.user.LocalUserPreferences
 
 
 @Composable
@@ -44,11 +45,12 @@ fun LiveRecordCardioExercise(
     exerciseCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val userPreferencesUiState = LocalUserPreferences.current
     var minutesState by remember { mutableStateOf("") }
     var secondsState by remember { mutableStateOf("") }
     var caloriesState by remember { mutableStateOf("") }
     var distanceState by remember { mutableStateOf("") }
-    var unitState by remember { mutableStateOf(DistanceUnits.KILOMETERS.shortForm) }
+    var unitState by remember { mutableStateOf(userPreferencesUiState.defaultDistanceUnit.shortForm) }
     val saveEnabled = (minutesState != "" && secondsState != "") ||
             caloriesState != "" || distanceState != ""
     Card(
@@ -107,7 +109,8 @@ fun LiveRecordCardioExercise(
                         .weight(1f)
                         .padding(0.dp)
                         .height(intrinsicSize = IntrinsicSize.Max)
-                        .semantics { contentDescription = "Units" }
+                        .semantics { contentDescription = "Units" },
+                    selected = userPreferencesUiState.defaultDistanceUnit.shortForm
                 )
             }
             FormInformationField(

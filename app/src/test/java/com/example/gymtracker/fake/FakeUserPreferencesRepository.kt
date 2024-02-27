@@ -6,19 +6,15 @@ import kotlinx.coroutines.flow.flowOf
 
 class FakeUserPreferencesRepository: UserPreferencesRepository {
     override suspend fun saveDefaultWeightUnit(defaultWeightUnit: String) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun saveDefaultDistanceUnit(defaultDistanceUnit: String) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun saveDisplayHighestWeight(displayHighestWeight: Boolean) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun saveDisplayShortestTime(displayShortestTime: Boolean) {
-        TODO("Not yet implemented")
     }
 
     override val isDefaultWeightUnit: Flow<String> = flowOf("lb")

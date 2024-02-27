@@ -25,9 +25,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.R
 import com.example.gymtracker.converters.WeightUnits
+import com.example.gymtracker.converters.convertToWeightUnit
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import java.time.LocalDate
 
 
@@ -83,7 +86,9 @@ private fun WeightsExerciseInformation(
 }
 
 @Composable
-fun WeightsExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
+fun WeightsExerciseHistoryDetails(
+    uiState: ExerciseDetailsUiState
+) {
     val timeOptions = listOf("7 Days", "30 Days", "Past Year", "All Time")
     val detailOptions = listOf("Max Weight", "Max Reps", "Max Sets", "Total Weight")
     val currentDate = LocalDate.now()
@@ -102,22 +107,27 @@ fun WeightsExerciseHistoryDetails(uiState: ExerciseDetailsUiState) {
     GraphOptions(
         detailOptions = detailOptions,
         detailOnChange = { newDetail -> detail = newDetail },
-        timeOptions = timeOptions
-    ) { newTime -> time = newTime }
+        timeOptions = timeOptions,
+        timeOnChange = { newTime -> time = newTime }
+    )
     Graph(
-        points = getWeightsGraphDetails(uiState, detail, detailOptions),
+        points = getWeightsGraphDetails(uiState, detail, detailOptions, LocalUserPreferences.current),
         startDate = timeOptionToStartTime[time] ?: currentDate,
         yLabel = detail,
-        yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) " ${WeightUnits.KILOGRAMS.shortForm}" else ""
+        yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) " ${LocalUserPreferences.current.defaultWeightUnit.shortForm}" else ""
     )
 }
 
 @Composable
-private fun WeightsExerciseDetailsBestAndRecent(uiState: ExerciseDetailsUiState) {
-    val bestWeight = uiState.weightsHistory.maxOf { history -> history.weight }
-    val best = uiState.weightsHistory
-        .filter { history -> history.weight == bestWeight }
-        .maxBy { history -> history.reps }
+private fun WeightsExerciseDetailsBestAndRecent(
+    uiState: ExerciseDetailsUiState
+) {
+    val userPreferencesUiState = LocalUserPreferences.current
+    val best = if (userPreferencesUiState.displayHighestWeight) {
+        uiState.weightsHistory.maxBy { history -> history.weight }
+    } else {
+        uiState.weightsHistory.maxBy { history -> history.weight * history.reps }
+    }
     val recent = uiState.weightsHistory.maxBy { history -> history.date.toEpochDay() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -125,7 +135,7 @@ private fun WeightsExerciseDetailsBestAndRecent(uiState: ExerciseDetailsUiState)
         modifier = Modifier.fillMaxWidth()
     ) {
         ExerciseDetail(
-            exerciseInfo = "${best.weight} ${WeightUnits.KILOGRAMS.shortForm} for ${best.reps} reps",
+            exerciseInfo = "${convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, best.weight)} ${userPreferencesUiState.defaultWeightUnit.shortForm} for ${best.reps} reps",
             iconId = R.drawable.trophy_48dp,
             iconDescription = "best exercise icon",
             modifier = Modifier
@@ -133,7 +143,7 @@ private fun WeightsExerciseDetailsBestAndRecent(uiState: ExerciseDetailsUiState)
                 .weight(1f)
         )
         ExerciseDetail(
-            exerciseInfo = "${recent.weight} ${WeightUnits.KILOGRAMS.shortForm} for ${recent.reps} reps",
+            exerciseInfo = "${convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, recent.weight)} ${userPreferencesUiState.defaultWeightUnit.shortForm} for ${recent.reps} reps",
             iconId = R.drawable.history_48px,
             iconDescription = "recent exercise icon",
             modifier = Modifier
@@ -171,14 +181,22 @@ fun ExerciseDetail(
 fun getWeightsGraphDetails(
     uiState: ExerciseDetailsUiState,
     detail: String,
-    detailOptions: List<String>
+    detailOptions: List<String>,
+    userPreferencesUiState: UserPreferencesUiState
 ) = uiState.weightsHistory.map { history ->
     when (detail) {
         detailOptions[0] -> {
-            Pair(
-                history.date,
-                history.weight
-            )
+            if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
+                Pair(
+                    history.date,
+                    history.weight
+                )
+            } else {
+                Pair(
+                    history.date,
+                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, history.weight)
+                )
+            }
         }
 
         detailOptions[1] -> {
@@ -203,10 +221,17 @@ fun getWeightsGraphDetails(
         }
 
         else -> {
-            Pair(
-                history.date,
-                history.weight
-            )
+            if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
+                Pair(
+                    history.date,
+                    history.weight
+                )
+            } else {
+                Pair(
+                    history.date,
+                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, history.weight)
+                )
+            }
         }
     }
 }
