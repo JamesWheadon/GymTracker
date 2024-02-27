@@ -76,6 +76,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
+    // Preferences
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:4.11.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
@@ -87,6 +90,7 @@ dependencies {
     androidTestImplementation(platform("androidx.compose:compose-bom:2022.10.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("org.mockito:mockito-android:2.24.5")
+    androidTestImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
 
     debugImplementation("androidx.compose.ui:ui-tooling")

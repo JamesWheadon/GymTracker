@@ -2,16 +2,18 @@ package com.example.gymtracker.ui.exercise.details
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
+import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import org.junit.Before
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.MockitoAnnotations
 import java.time.LocalDate
 
 private const val NAME = "Curls"
@@ -47,6 +49,14 @@ class WeightsExerciseDetailsScreenKtTest {
             ),
             WeightsExerciseHistoryUiState(
                 id = 1,
+                weight = 12.0,
+                sets = 1,
+                reps = 5,
+                rest = 1,
+                date = LocalDate.now().minusDays(3)
+            ),
+            WeightsExerciseHistoryUiState(
+                id = 1,
                 weight = 10.0,
                 sets = 1,
                 reps = 5,
@@ -64,13 +74,11 @@ class WeightsExerciseDetailsScreenKtTest {
     private val exerciseEquipmentIcon = rule.onNode(hasContentDescription("equipment icon"))
     private val bestExerciseIcon = rule.onNode(hasContentDescription("best exercise icon"))
     private val bestExercise = rule.onNode(hasText("13.0 kg for 2 reps"))
+    private val bestExerciseMostWeight = rule.onNode(hasText("26.46 lb for 5 reps"))
     private val recentExerciseIcon = rule.onNode(hasContentDescription("recent exercise icon"))
     private val recentExercise = rule.onNode(hasText("10.0 kg for 5 reps"))
+    private val recentExercisePounds = rule.onNode(hasText("22.05 lb for 5 reps"))
 
-    @Before
-    fun setUp() {
-        MockitoAnnotations.initMocks(this)
-    }
 
     @Test
     fun rendersExerciseDetailsWithNoHistory() {
@@ -92,10 +100,13 @@ class WeightsExerciseDetailsScreenKtTest {
     @Test
     fun rendersExerciseDetailsWithHistory() {
         rule.setContent {
-            WeightsExerciseDetailsScreen(
-                uiState = exercise,
-                innerPadding = PaddingValues(0.dp)
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WeightsExerciseDetailsScreen(
+                    uiState = exercise,
+                    innerPadding = PaddingValues(0.dp)
+                )
+            }
         }
 
         exerciseMuscleGroup.assertExists()
@@ -106,5 +117,30 @@ class WeightsExerciseDetailsScreenKtTest {
         recentExerciseIcon.assertExists()
         bestExercise.assertExists()
         recentExercise.assertExists()
+    }
+
+    @Test
+    fun rendersExerciseDetailsWithPoundsWeightAndHighestTotalSetWeight() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState(
+                displayHighestWeight = false,
+                defaultWeightUnit = WeightUnits.POUNDS
+            )
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WeightsExerciseDetailsScreen(
+                    uiState = exercise,
+                    innerPadding = PaddingValues(0.dp)
+                )
+            }
+        }
+
+        exerciseMuscleGroup.assertExists()
+        exerciseMuscleGroupIcon.assertExists()
+        exerciseEquipment.assertExists()
+        exerciseEquipmentIcon.assertExists()
+        bestExerciseIcon.assertExists()
+        recentExerciseIcon.assertExists()
+        bestExerciseMostWeight.assertExists()
+        recentExercisePounds.assertExists()
     }
 }

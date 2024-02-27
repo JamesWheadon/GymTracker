@@ -1,12 +1,15 @@
 package com.example.gymtracker.ui.exercise.details
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -46,7 +49,7 @@ class ExerciseDetailsScreenKtTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test
@@ -67,12 +70,15 @@ class ExerciseDetailsScreenKtTest {
     @Test
     fun rendersRecordExerciseHistoryDialog() {
         rule.setContent {
-            ExerciseDetailsScreen(
-                uiState = exercise,
-                navController = navController,
-                updateFunction = { },
-                deleteFunction = { }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                ExerciseDetailsScreen(
+                    uiState = exercise,
+                    navController = navController,
+                    updateFunction = { },
+                    deleteFunction = { }
+                )
+            }
         }
 
         newHistoryTitle.assertDoesNotExist()

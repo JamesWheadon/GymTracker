@@ -1,14 +1,18 @@
 package com.example.gymtracker.ui.workout.history.create.live
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
@@ -26,6 +30,8 @@ class LiveRecordWeightsExerciseKtTest {
     private val repsField = rule.onNode(hasContentDescription("Reps"))
     private val restField = rule.onNode(hasContentDescription("Rest"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
+    private val weightKilogramsChosen = rule.onNode(hasText("kg"))
+    private val weightPoundsChosen = rule.onNode(hasText("lb"))
     private val startButton = rule.onNode(hasText("Start"))
     private val cancelButton = rule.onNode(hasText("Cancel"))
 
@@ -125,10 +131,13 @@ class LiveRecordWeightsExerciseKtTest {
     @Test
     fun rendersLiveRecordExerciseInfo() {
         rule.setContent {
-            LiveRecordWeightsExerciseInfo(
-                onStart = { },
-                onCancel = {}
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWeightsExerciseInfo(
+                    onStart = { },
+                    onCancel = {}
+                )
+            }
         }
 
         repsField.assertExists()
@@ -142,10 +151,13 @@ class LiveRecordWeightsExerciseKtTest {
     fun liveRecordExerciseInfoClickingCancelCallsOnCancel() {
         var cancelled = false
         rule.setContent {
-            LiveRecordWeightsExerciseInfo(
-                onStart = { },
-                onCancel = { cancelled = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWeightsExerciseInfo(
+                    onStart = { },
+                    onCancel = { cancelled = true }
+                )
+            }
         }
 
         cancelButton.performClick()
@@ -157,10 +169,13 @@ class LiveRecordWeightsExerciseKtTest {
     fun liveRecordExerciseInfoClickingStartPopulatesExerciseData() {
         var exerciseData: ExerciseData? = null
         rule.setContent {
-            LiveRecordWeightsExerciseInfo(
-                onStart = { data -> exerciseData = data },
-                onCancel = { }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWeightsExerciseInfo(
+                    onStart = { data -> exerciseData = data },
+                    onCancel = { }
+                )
+            }
         }
 
         repsField.performClick()
@@ -180,11 +195,14 @@ class LiveRecordWeightsExerciseKtTest {
     fun rendersLiveRecordExerciseInfoAndClickingFinishExerciseReturnsHistory() {
         var exerciseHistory: WeightsExerciseHistoryUiState? = null
         rule.setContent {
-            LiveRecordWeightsExercise(
-                uiState = ExerciseUiState(name = "Curls"),
-                exerciseComplete = { history -> exerciseHistory = history },
-                exerciseCancel = { }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWeightsExercise(
+                    uiState = ExerciseUiState(name = "Curls"),
+                    exerciseComplete = { history -> exerciseHistory = history },
+                    exerciseCancel = { }
+                )
+            }
         }
 
         rule.onNode(hasText("Curls")).assertExists()
@@ -210,5 +228,39 @@ class LiveRecordWeightsExerciseKtTest {
         assertThat(exerciseHistory!!.reps, equalTo(5))
         assertThat(exerciseHistory!!.rest, equalTo(15))
         assertThat(exerciseHistory!!.weight, equalTo(13.0))
+    }
+
+    @Test
+    fun rendersLiveRecordExerciseInfoWithKilogramsChosen() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState(
+                defaultWeightUnit = WeightUnits.KILOGRAMS
+            )
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWeightsExerciseInfo(
+                    onStart = { },
+                    onCancel = {}
+                )
+            }
+        }
+
+        weightKilogramsChosen.assertExists()
+    }
+
+    @Test
+    fun rendersLiveRecordExerciseInfoWithPoundsChosen() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState(
+                defaultWeightUnit = WeightUnits.POUNDS
+            )
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWeightsExerciseInfo(
+                    onStart = { },
+                    onCancel = {}
+                )
+            }
+        }
+
+        weightPoundsChosen.assertExists()
     }
 }

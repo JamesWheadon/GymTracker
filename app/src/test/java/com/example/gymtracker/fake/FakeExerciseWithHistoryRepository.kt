@@ -19,5 +19,5 @@ class FakeExerciseWithHistoryRepository: ExerciseWithHistoryRepository {
         cardioHistory = listOf()
     )
 
-    override fun getExerciseWithHistoryStream(exerciseId: Int): Flow<ExerciseWithHistory>  = flowOf(exerciseWithHistory)
+    override fun getExerciseWithHistoryStream(exerciseId: Int): Flow<ExerciseWithHistory> = flowOf(exerciseWithHistory)
 }

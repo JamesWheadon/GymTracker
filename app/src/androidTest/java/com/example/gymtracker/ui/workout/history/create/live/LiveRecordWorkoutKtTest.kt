@@ -1,6 +1,7 @@
 package com.example.gymtracker.ui.workout.history.create.live
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -13,21 +14,24 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import org.hamcrest.CoreMatchers.equalTo
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.MockitoAnnotations
 
 class LiveRecordWorkoutKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
-    private val curlsExercise = ExerciseUiState(id = 0, name = "Curls", equipment = "Dumbbells", muscleGroup = "Biceps")
-    private val dipsExercise = ExerciseUiState(id = 1, name = "Dips", equipment = "Bars", muscleGroup = "Triceps")
-    private val pressExercise = ExerciseUiState(id = 2, name = "Press", equipment = "Bench", muscleGroup = "Pecs")
+    private val curlsExercise =
+        ExerciseUiState(id = 0, name = "Curls", equipment = "Dumbbells", muscleGroup = "Biceps")
+    private val dipsExercise =
+        ExerciseUiState(id = 1, name = "Dips", equipment = "Bars", muscleGroup = "Triceps")
+    private val pressExercise =
+        ExerciseUiState(id = 2, name = "Press", equipment = "Bench", muscleGroup = "Pecs")
     private val cardioExercise = ExerciseUiState(name = "Treadmill")
     private val workoutWithExercises =
         WorkoutWithExercisesUiState(exercises = listOf(curlsExercise, dipsExercise, pressExercise))
@@ -45,11 +49,6 @@ class LiveRecordWorkoutKtTest {
     private val distanceField = rule.onNode(hasContentDescription("Distance"))
     private val finishExercise = rule.onNode(hasText("Finish Exercise"))
     private val finishWorkout = rule.onNode(hasText("Finish Workout"))
-
-    @Before
-    fun setUp() {
-        MockitoAnnotations.initMocks(this)
-    }
 
     @Test
     fun rendersLiveRecordExerciseCardNotComplete() {
@@ -111,7 +110,11 @@ class LiveRecordWorkoutKtTest {
     @Test
     fun rendersLiveRecordWorkout() {
         rule.setContent {
-            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = {}, finishFunction = {})
+            LiveRecordWorkout(
+                uiState = workoutWithExercises,
+                saveFunction = {},
+                finishFunction = {}
+            )
         }
 
         curlsExerciseName.assertExists()
@@ -125,7 +128,14 @@ class LiveRecordWorkoutKtTest {
     fun rendersLiveRecordWorkoutCompleteExercise() {
         var saved = false
         rule.setContent {
-            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = { saved = true }, finishFunction = {})
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWorkout(
+                    uiState = workoutWithExercises,
+                    saveFunction = { saved = true },
+                    finishFunction = {}
+                )
+            }
         }
 
         curlsExerciseName.assertExists()
@@ -142,7 +152,8 @@ class LiveRecordWorkoutKtTest {
         restField.performTextInput("15")
         weightField.performClick()
         weightField.performTextInput("13.0")
-        rule.onNode(hasText("Start") and hasAnySibling(hasContentDescription("Reps"))).performClick()
+        rule.onNode(hasText("Start") and hasAnySibling(hasContentDescription("Reps")))
+            .performClick()
 
         finishExercise.performClick()
 
@@ -155,7 +166,10 @@ class LiveRecordWorkoutKtTest {
     fun rendersLiveRecordWorkoutCompleteWorkout() {
         var finished = false
         rule.setContent {
-            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = { }, finishFunction = { finished = true })
+            LiveRecordWorkout(
+                uiState = workoutWithExercises,
+                saveFunction = { },
+                finishFunction = { finished = true })
         }
 
         finishWorkout.performClick()
@@ -166,7 +180,14 @@ class LiveRecordWorkoutKtTest {
     @Test
     fun rendersLiveRecordWorkoutCancelExercise() {
         rule.setContent {
-            LiveRecordWorkout(uiState = workoutWithExercises, saveFunction = {}, finishFunction = {})
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWorkout(
+                    uiState = workoutWithExercises,
+                    saveFunction = {},
+                    finishFunction = {}
+                )
+            }
         }
 
         curlsExerciseName.assertExists()
@@ -185,7 +206,10 @@ class LiveRecordWorkoutKtTest {
     @Test
     fun rendersRecordWeightsExerciseForWeightsExercise() {
         rule.setContent {
-            LiveRecordWorkout(uiState = weightsWorkout, saveFunction = {}, finishFunction = {})
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWorkout(uiState = weightsWorkout, saveFunction = {}, finishFunction = {})
+            }
         }
 
         startButtons[0].performClick()
@@ -196,7 +220,10 @@ class LiveRecordWorkoutKtTest {
     @Test
     fun rendersRecordCardioExerciseForCardioExercise() {
         rule.setContent {
-            LiveRecordWorkout(uiState = cardioWorkout, saveFunction = {}, finishFunction = {})
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWorkout(uiState = cardioWorkout, saveFunction = {}, finishFunction = {})
+            }
         }
 
         startButtons[0].performClick()

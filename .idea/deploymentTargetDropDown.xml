@@ -5,19 +5,19 @@
       <entry key="All Tests">
         <State />
       </entry>
-      <entry key="ExerciseDetailsCalendarKtTest">
+      <entry key="RecordCardioExerciseHistoryScreenKtTest">
         <State />
       </entry>
-      <entry key="RecordWorkoutHistoryScreenKtTest">
+      <entry key="RecordWeightsExerciseHistoryScreenKtTest">
         <State />
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="recordWeightsExerciseCardClickingCheckboxRendersFormFields()">
+      <entry key="recordCardioExerciseCardClickingCheckboxRendersFormFieldsWithMilesUnitAutoDistanceConvert()">
         <State />
       </entry>
-      <entry key="recordWeightsExerciseCardClickingCheckboxRendersFormFieldsWithErrors()">
+      <entry key="recordWeightsExerciseCardClickingCheckboxRendersFormFieldsWithPoundsChosenAutoWeightConvert()">
         <State />
       </entry>
     </value>

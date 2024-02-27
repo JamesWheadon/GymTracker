@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -228,10 +229,16 @@ fun FormTimeField(
 fun DropdownBox(
     options: List<String>,
     onChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    selected: String? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(options.first()) }
+    var selectedOption by remember { mutableStateOf(selected?: options.first()) }
+    LaunchedEffect(selected) {
+        selected?.let { newValue ->
+            selectedOption = newValue
+        }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,

@@ -2,6 +2,7 @@ package com.example.gymtracker.ui.exercise.details
 
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -41,7 +42,7 @@ class CardioExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForFirstOption() {
-        val result = getCardioGraphDetails(exercise, "1", options)
+        val result = getCardioGraphDetails(exercise, "1", options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
         assertThat(result.map { it.second }, equalTo(listOf(5.0, 4.0)))
@@ -49,7 +50,7 @@ class CardioExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForSecondOption() {
-        val result = getCardioGraphDetails(exercise, "2", options)
+        val result = getCardioGraphDetails(exercise, "2", options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(1800.0, 1230.0)))
@@ -57,7 +58,7 @@ class CardioExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForThirdOption() {
-        val result = getCardioGraphDetails(exercise, "3", options)
+        val result = getCardioGraphDetails(exercise, "3", options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate, thirdDate)))
         assertThat(result.map { it.second }, equalTo(listOf(1000.0, 1200.0, 600.0)))
@@ -65,7 +66,7 @@ class CardioExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForOtherOption() {
-        val result = getCardioGraphDetails(exercise, "4", options)
+        val result = getCardioGraphDetails(exercise, "4", options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
         assertThat(result.map { it.second }, equalTo(listOf(5.0, 4.0)))

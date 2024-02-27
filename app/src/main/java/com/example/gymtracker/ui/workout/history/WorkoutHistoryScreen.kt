@@ -143,6 +143,7 @@ fun WorkoutHistoryScreen(
     exercises: List<ExerciseUiState>,
     modifier: Modifier = Modifier
 ) {
+    val exerciseIds = uiState.exercises.map { exerciseHistory -> exerciseHistory.exerciseId }
     Card(
         elevation = customCardElevation(),
         modifier = modifier
@@ -151,11 +152,7 @@ fun WorkoutHistoryScreen(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            items(exercises.filter { exercise ->
-                uiState.exercises
-                    .map { exerciseHistory -> exerciseHistory.exerciseId }
-                    .contains(exercise.id)
-            }) { exercise ->
+            items(exercises.filter { exercise -> exerciseIds.contains(exercise.id) }) { exercise ->
                 WorkoutHistoryExerciseCard(
                     exercise = exercise,
                     exerciseHistory = uiState.exercises.first { exerciseHistory -> exerciseHistory.exerciseId == exercise.id }

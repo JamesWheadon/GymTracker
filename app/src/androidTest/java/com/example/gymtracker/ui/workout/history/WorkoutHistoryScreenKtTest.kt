@@ -1,12 +1,15 @@
 package com.example.gymtracker.ui.workout.history
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -59,10 +62,13 @@ class WorkoutHistoryScreenKtTest {
     @Test
     fun rendersWorkoutHistoryExerciseCard() {
         rule.setContent {
-            WorkoutHistoryExerciseCard(
-                exercise = curls,
-                exerciseHistory = curlsHistory
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WorkoutHistoryExerciseCard(
+                    exercise = curls,
+                    exerciseHistory = curlsHistory
+                )
+            }
         }
 
         curlsExerciseName.assertExists()
@@ -76,11 +82,20 @@ class WorkoutHistoryScreenKtTest {
     @Test
     fun rendersWorkoutHistoryScreen() {
         rule.setContent {
-            WorkoutHistoryScreen(
-                workoutHistoryUiState = workoutHistory,
-                workoutUiState = WorkoutWithExercisesUiState(exercises = listOf(curls, dips, bench)),
-                onDismiss = { }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WorkoutHistoryScreen(
+                    workoutHistoryUiState = workoutHistory,
+                    workoutUiState = WorkoutWithExercisesUiState(
+                        exercises = listOf(
+                            curls,
+                            dips,
+                            bench
+                        )
+                    ),
+                    onDismiss = { }
+                )
+            }
         }
 
         curlsExerciseName.assertExists()
@@ -93,11 +108,20 @@ class WorkoutHistoryScreenKtTest {
     fun clickingXCallsOnDismiss() {
         var dismissed = false
         rule.setContent {
-            WorkoutHistoryScreen(
-                workoutHistoryUiState = workoutHistory,
-                workoutUiState = WorkoutWithExercisesUiState(exercises = listOf(curls, dips, bench)),
-                onDismiss = { dismissed = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WorkoutHistoryScreen(
+                    workoutHistoryUiState = workoutHistory,
+                    workoutUiState = WorkoutWithExercisesUiState(
+                        exercises = listOf(
+                            curls,
+                            dips,
+                            bench
+                        )
+                    ),
+                    onDismiss = { dismissed = true }
+                )
+            }
         }
 
         closeButton.performClick()
@@ -108,11 +132,20 @@ class WorkoutHistoryScreenKtTest {
     @Test
     fun clickingEditRendersRecordWorkoutHistoryScreenWithAlternateTitle() {
         rule.setContent {
-            WorkoutHistoryScreen(
-                workoutHistoryUiState = workoutHistory,
-                workoutUiState = WorkoutWithExercisesUiState(exercises = listOf(curls, dips, bench)),
-                onDismiss = { }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WorkoutHistoryScreen(
+                    workoutHistoryUiState = workoutHistory,
+                    workoutUiState = WorkoutWithExercisesUiState(
+                        exercises = listOf(
+                            curls,
+                            dips,
+                            bench
+                        )
+                    ),
+                    onDismiss = { }
+                )
+            }
         }
 
         editButton.performClick()
@@ -123,11 +156,20 @@ class WorkoutHistoryScreenKtTest {
     @Test
     fun clickingDeleteOpensActionConfirmation() {
         rule.setContent {
-            WorkoutHistoryScreen(
-                workoutHistoryUiState = workoutHistory,
-                workoutUiState = WorkoutWithExercisesUiState(exercises = listOf(curls, dips, bench)),
-                onDismiss = { }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WorkoutHistoryScreen(
+                    workoutHistoryUiState = workoutHistory,
+                    workoutUiState = WorkoutWithExercisesUiState(
+                        exercises = listOf(
+                            curls,
+                            dips,
+                            bench
+                        )
+                    ),
+                    onDismiss = { }
+                )
+            }
         }
 
         deleteButton.performClick()

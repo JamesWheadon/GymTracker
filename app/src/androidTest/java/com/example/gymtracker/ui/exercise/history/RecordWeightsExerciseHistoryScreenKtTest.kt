@@ -1,14 +1,18 @@
 package com.example.gymtracker.ui.exercise.history
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.user.LocalUserPreferences
+import com.example.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
@@ -27,6 +31,8 @@ class RecordWeightsExerciseHistoryScreenKtTest {
     private val repsField = rule.onNode(hasContentDescription("Reps"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
     private val unitsField = rule.onNode(hasContentDescription("Units"))
+    private val weightKilogramsChosen = rule.onNode(hasText("kg"))
+    private val weightPoundsChosen = rule.onNode(hasText("lb"))
 
     private val exercise = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
     private val history = WeightsExerciseHistoryUiState(
@@ -42,12 +48,15 @@ class RecordWeightsExerciseHistoryScreenKtTest {
     @Test
     fun rendersEmptyCreateForm() {
         rule.setContent {
-            RecordWeightsExerciseHistoryCard(
-                exerciseId = exercise.id,
-                cardTitle = cardTitleText,
-                saveFunction = {},
-                onDismiss = {}
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = cardTitleText,
+                    saveFunction = {},
+                    onDismiss = {}
+                )
+            }
         }
 
         cardTitle.assertExists()
@@ -63,12 +72,15 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         var created: WeightsExerciseHistoryUiState? = null
         var dismissed = false
         rule.setContent {
-            RecordWeightsExerciseHistoryCard(
-                exerciseId = exercise.id,
-                cardTitle = cardTitleText,
-                saveFunction = { created = it as WeightsExerciseHistoryUiState },
-                onDismiss = { dismissed = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = cardTitleText,
+                    saveFunction = { created = it as WeightsExerciseHistoryUiState },
+                    onDismiss = { dismissed = true }
+                )
+            }
         }
 
         repsField.performTextInput(history.reps.toString())
@@ -85,12 +97,15 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         var created: WeightsExerciseHistoryUiState? = null
         var dismissed = false
         rule.setContent {
-            RecordWeightsExerciseHistoryCard(
-                exerciseId = exercise.id,
-                cardTitle = cardTitleText,
-                saveFunction = { created = it as WeightsExerciseHistoryUiState },
-                onDismiss = { dismissed = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = cardTitleText,
+                    saveFunction = { created = it as WeightsExerciseHistoryUiState },
+                    onDismiss = { dismissed = true }
+                )
+            }
         }
 
         setsField.performTextInput(history.sets.toString())
@@ -107,12 +122,15 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         var created: WeightsExerciseHistoryUiState? = null
         var dismissed = false
         rule.setContent {
-            RecordWeightsExerciseHistoryCard(
-                exerciseId = exercise.id,
-                cardTitle = cardTitleText,
-                saveFunction = { created = it as WeightsExerciseHistoryUiState },
-                onDismiss = { dismissed = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = cardTitleText,
+                    saveFunction = { created = it as WeightsExerciseHistoryUiState },
+                    onDismiss = { dismissed = true }
+                )
+            }
         }
 
         setsField.performTextInput(history.sets.toString())
@@ -129,12 +147,15 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         var created: WeightsExerciseHistoryUiState? = null
         var dismissed = false
         rule.setContent {
-            RecordWeightsExerciseHistoryCard(
-                exerciseId = exercise.id,
-                cardTitle = cardTitleText,
-                saveFunction = { created = it as WeightsExerciseHistoryUiState },
-                onDismiss = { dismissed = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = cardTitleText,
+                    saveFunction = { created = it as WeightsExerciseHistoryUiState },
+                    onDismiss = { dismissed = true }
+                )
+            }
         }
 
         setsField.performTextInput(history.sets.toString())
@@ -150,17 +171,80 @@ class RecordWeightsExerciseHistoryScreenKtTest {
     @Test
     fun fillsFormFieldsWithInformationFromExistingHistory() {
         rule.setContent {
-            RecordWeightsExerciseHistoryCard(
-                exerciseId = exercise.id,
-                cardTitle = cardTitleText,
-                saveFunction = { },
-                onDismiss = { },
-                savedHistory = history
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = cardTitleText,
+                    saveFunction = { },
+                    onDismiss = { },
+                    savedHistory = history
+                )
+            }
         }
 
         setsField.assertTextContains(history.sets.toString())
         repsField.assertTextContains(history.reps.toString())
         weightField.assertTextContains(history.weight.toString())
+    }
+
+    @Test
+    fun rendersEmptyCreateFormWithKilogramsChosen() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState(
+                defaultWeightUnit = WeightUnits.KILOGRAMS
+            )
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = cardTitleText,
+                    saveFunction = {},
+                    onDismiss = {}
+                )
+            }
+        }
+
+        weightKilogramsChosen.assertExists()
+    }
+
+    @Test
+    fun rendersEmptyCreateFormWithPoundsChosen() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState(
+                defaultWeightUnit = WeightUnits.POUNDS
+            )
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = cardTitleText,
+                    saveFunction = {},
+                    onDismiss = {}
+                )
+            }
+        }
+
+        weightPoundsChosen.assertExists()
+    }
+
+    @Test
+    fun rendersEmptyCreateFormWithPoundsChosenWeightAutoConvert() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState(
+                defaultWeightUnit = WeightUnits.POUNDS
+            )
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = cardTitleText,
+                    saveFunction = {},
+                    onDismiss = {},
+                    savedHistory = WeightsExerciseHistoryUiState(
+                        weight = 10.0
+                    )
+                )
+            }
+        }
+
+        rule.onNode(hasText("22.05")).assertExists()
     }
 }
