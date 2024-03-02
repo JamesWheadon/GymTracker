@@ -3,12 +3,13 @@ package com.example.gymtracker.ui.exercise.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseRepository
 import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.example.gymtracker.data.exerciseWithHistory.ExerciseWithHistoryRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
+import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.exercise.toExercise
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -39,13 +40,14 @@ class ExerciseDetailsViewModel(
                 initialValue = ExerciseDetailsUiState()
             )
 
-    fun updateExercise(exercise: Exercise) {
+    fun updateExercise(exercise: ExerciseUiState) {
         viewModelScope.launch {
-            exerciseRepository.updateExercise(exercise)
+            exerciseRepository.updateExercise(exercise.toExercise())
         }
     }
 
-    fun deleteExercise(exercise: Exercise) {
+    fun deleteExercise(exerciseUiState: ExerciseUiState) {
+        val exercise = exerciseUiState.toExercise()
         viewModelScope.launch {
             if (exercise.equipment != "") {
                 weightsExerciseHistoryRepository.deleteAllForExercise(exercise)

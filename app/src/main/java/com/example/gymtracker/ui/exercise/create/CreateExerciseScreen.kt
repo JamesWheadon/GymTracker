@@ -34,7 +34,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.FormInformationFieldWithSuggestions
@@ -66,7 +65,7 @@ fun ExerciseInformationForm(
     formTitle: String,
     buttonText: String,
     onDismiss: () -> Unit,
-    createFunction: (Exercise) -> Unit,
+    createFunction: (ExerciseUiState) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExercisesScreenViewModel = viewModel(
         factory = AppViewModelProvider.Factory
@@ -94,14 +93,14 @@ fun ExerciseInformationForm(
     savedExerciseNames: List<String>,
     savedMuscleGroups: List<String>,
     exercise: ExerciseUiState,
-    createFunction: (Exercise) -> Unit,
+    createFunction: (ExerciseUiState) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 16.dp
     )
-    val idState by remember { mutableStateOf(exercise.id) }
+    val exerciseId = exercise.id
     var nameState by remember { mutableStateOf(exercise.name) }
     var equipmentState by remember { mutableStateOf(exercise.equipment) }
     var muscleState by remember { mutableStateOf(TextFieldValue(text = exercise.muscleGroup)) }
@@ -142,7 +141,9 @@ fun ExerciseInformationForm(
                         Switch(
                             checked = optionState,
                             onCheckedChange = { option -> optionState = option },
-                            modifier = Modifier.semantics { contentDescription = "exerciseTypeToggle" }
+                            modifier = Modifier.semantics {
+                                contentDescription = "exerciseTypeToggle"
+                            }
                         )
                         Text(
                             text = "Weights",
@@ -177,7 +178,7 @@ fun ExerciseInformationForm(
                     )
                 }
                 SaveExerciseFormButton(
-                    exerciseId = idState,
+                    exerciseId = exerciseId,
                     exerciseName = nameState,
                     exerciseEquipment = equipmentState,
                     exerciseMuscleGroup = muscleState.text,
@@ -275,14 +276,14 @@ private fun SaveExerciseFormButton(
     exerciseToggle: Boolean,
     errors: Boolean,
     buttonText: String,
-    saveFunction: (Exercise) -> Unit,
+    saveFunction: (ExerciseUiState) -> Unit,
     closeForm: () -> Unit
 ) {
     if ((!exerciseToggle && exerciseName != "") || (exerciseName != "" && exerciseEquipment != "" && exerciseMuscleGroup != "" && !errors)) {
         Button(onClick = {
             saveFunction(
-                Exercise(
-                    exerciseId = exerciseId,
+                ExerciseUiState(
+                    id = exerciseId,
                     name = exerciseName,
                     muscleGroup = exerciseMuscleGroup,
                     equipment = exerciseEquipment

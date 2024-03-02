@@ -13,9 +13,6 @@ interface CardioExerciseHistoryDao {
     @Query("SELECT * FROM cardio_exercise_history WHERE id = :id")
     fun get(id: Int): Flow<CardioExerciseHistory>
 
-    @Query("SELECT * FROM cardio_exercise_history WHERE exerciseId = :exerciseId")
-    fun getFullExerciseHistory(exerciseId: Int): Flow<List<CardioExerciseHistory>>
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(cardioExerciseHistory: CardioExerciseHistory)
 

@@ -24,7 +24,10 @@ class HomeNavigationInformationKtTest {
         val navigationTitles = navigationMap.keys
         assertThat(navigationMap.size, equalTo(2))
         assertThat(navigationTitles.map { it.title }, hasItems("Exercises", "Workouts"))
-        assertThat(navigationMap[navigationTitles.first { it.title == "Exercises" }], equalTo(false))
+        assertThat(
+            navigationMap[navigationTitles.first { it.title == "Exercises" }],
+            equalTo(false)
+        )
         assertThat(navigationMap[navigationTitles.first { it.title == "Workouts" }], equalTo(true))
     }
 }

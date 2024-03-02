@@ -7,16 +7,7 @@ class OfflineWeightsExerciseHistoryRepository(private val weightsExerciseHistory
     WeightsExerciseHistoryRepository {
     override fun getHistoryStream(id: Int): Flow<WeightsExerciseHistory?> = weightsExerciseHistoryDao.getHistory(id)
 
-    override fun getFullExerciseHistoryStream(exerciseId: Int): Flow<List<WeightsExerciseHistory>?> =
-        weightsExerciseHistoryDao.getFullExerciseHistory(exerciseId)
-
-    override fun getLatestHistoryStream(id: Int): Flow<WeightsExerciseHistory?> =
-        weightsExerciseHistoryDao.getLatestExerciseHistory(id)
-
-    override fun getRecentHistoryStream(id: Int, days: Int): Flow<List<WeightsExerciseHistory>?> =
-        weightsExerciseHistoryDao.getRecentExerciseHistory(id, days)
-
-    override suspend fun insertHistory(history: WeightsExerciseHistory) = weightsExerciseHistoryDao.insert(history)
+    override suspend fun insert(history: WeightsExerciseHistory) = weightsExerciseHistoryDao.insert(history)
 
     override suspend fun update(history: WeightsExerciseHistory) = weightsExerciseHistoryDao.update(history)
 

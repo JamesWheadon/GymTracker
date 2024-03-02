@@ -6,13 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface WeightsExerciseHistoryRepository {
     fun getHistoryStream(id: Int): Flow<WeightsExerciseHistory?>
 
-    fun getFullExerciseHistoryStream(exerciseId: Int): Flow<List<WeightsExerciseHistory>?>
-
-    fun getLatestHistoryStream(id: Int): Flow<WeightsExerciseHistory?>
-
-    fun getRecentHistoryStream(id: Int, days: Int): Flow<List<WeightsExerciseHistory>?>
-
-    suspend fun insertHistory(history: WeightsExerciseHistory)
+    suspend fun insert(history: WeightsExerciseHistory)
 
     suspend fun update(history: WeightsExerciseHistory)
 

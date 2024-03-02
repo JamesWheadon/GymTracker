@@ -35,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
@@ -47,8 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormInformationField(
     label: String,
@@ -66,12 +63,8 @@ fun FormInformationField(
             Text(text = label)
         },
         shape = RoundedCornerShape(8.dp),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = MaterialTheme.colorScheme.secondary,
-            disabledTextColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.secondary
         ),
         isError = error,
         supportingText = {
@@ -113,12 +106,8 @@ fun FormInformationFieldWithSuggestions(
             },
             singleLine = true,
             shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                disabledTextColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondary
             ),
             modifier = Modifier
                 .semantics { contentDescription = label }
@@ -159,7 +148,6 @@ fun FormInformationFieldWithSuggestions(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormTimeField(
     minutes: String,
@@ -181,15 +169,12 @@ fun FormTimeField(
                 Text(text = "Minutes")
             },
             shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                disabledTextColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondary
             ),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            modifier = Modifier.semantics { contentDescription = "Minutes" }
+            modifier = Modifier
+                .semantics { contentDescription = "Minutes" }
                 .weight(1f)
                 .padding(0.dp)
         )
@@ -200,12 +185,8 @@ fun FormTimeField(
                 Text(text = "Seconds")
             },
             shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                disabledTextColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondary
             ),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             isError = secondsError,
@@ -217,7 +198,8 @@ fun FormTimeField(
                     )
                 }
             },
-            modifier = Modifier.semantics { contentDescription = "Seconds" }
+            modifier = Modifier
+                .semantics { contentDescription = "Seconds" }
                 .weight(1f)
                 .padding(0.dp)
         )
@@ -233,7 +215,7 @@ fun DropdownBox(
     selected: String? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(selected?: options.first()) }
+    var selectedOption by remember { mutableStateOf(selected ?: options.first()) }
     LaunchedEffect(selected) {
         selected?.let { newValue ->
             selectedOption = newValue
@@ -253,12 +235,8 @@ fun DropdownBox(
             readOnly = true,
             singleLine = true,
             shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                disabledTextColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondary
             ),
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(

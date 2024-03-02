@@ -19,8 +19,13 @@ class RecordExerciseHistoryViewModel(
     fun saveHistory(newHistory: ExerciseHistoryUiState) {
         viewModelScope.launch {
             when (newHistory) {
-                is WeightsExerciseHistoryUiState -> weightsExerciseHistoryRepository.insertHistory(newHistory.toWeightsExerciseHistory())
-                is CardioExerciseHistoryUiState -> cardioExerciseHistoryRepository.insert(newHistory.toCardioExerciseHistory())
+                is WeightsExerciseHistoryUiState -> weightsExerciseHistoryRepository.insert(
+                    newHistory.toWeightsExerciseHistory()
+                )
+
+                is CardioExerciseHistoryUiState -> cardioExerciseHistoryRepository.insert(
+                    newHistory.toCardioExerciseHistory()
+                )
             }
         }
     }

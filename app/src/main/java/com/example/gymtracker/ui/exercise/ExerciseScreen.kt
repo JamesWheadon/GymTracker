@@ -23,7 +23,6 @@ import com.example.gymtracker.R
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
-
 @Composable
 fun ExerciseCard(
     exercise: ExerciseUiState,

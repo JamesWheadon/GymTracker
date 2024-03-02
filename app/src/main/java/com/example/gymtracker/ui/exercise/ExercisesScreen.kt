@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.create.CreateExerciseScreen
 import com.example.gymtracker.ui.navigation.HomeNavigationInformation
@@ -79,7 +82,7 @@ fun ExercisesScreen(
                 )
             }
         }
-    ){
+    ) {
         ExercisesScreen(
             exerciseListUiState = exerciseListUiState,
             exerciseNavigationFunction = exerciseNavigationFunction,
@@ -98,21 +101,24 @@ fun ExercisesScreen(
 }
 
 @Composable
-private fun ExercisesScreen(
+fun ExercisesScreen(
     exerciseListUiState: ExerciseListUiState,
     exerciseNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(0.dp)
+    Card(
+        shape = RoundedCornerShape(16.dp)
     ) {
-        items(exerciseListUiState.exerciseList) { exercise ->
-            ExerciseCard(
-                exercise = exercise,
-                navigationFunction = exerciseNavigationFunction
-            )
+        LazyColumn(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
+            items(exerciseListUiState.exerciseList) { exercise ->
+                ExerciseCard(
+                    exercise = exercise,
+                    navigationFunction = exerciseNavigationFunction
+                )
+            }
         }
     }
 }
@@ -135,6 +141,30 @@ fun ExerciseScreenPreview() {
                 )
             ),
             exerciseNavigationFunction = { }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExerciseScreenCardPreview() {
+    GymTrackerTheme(darkTheme = false) {
+        ExercisesScreen(
+            exerciseListUiState = ExerciseListUiState(
+                listOf(
+                    ExerciseUiState(0, "Curls", "Biceps", "Dumbbells"),
+                    ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars"),
+                    ExerciseUiState(
+                        2,
+                        "Testing what happens if someone decides to have a ridiculously long exercise name",
+                        "Lats",
+                        "Dumbbells"
+                    ),
+                )
+            ),
+            exerciseNavigationFunction = { },
+            navController = rememberNavController(),
+            homeNavigationOptions = mapOf()
         )
     }
 }

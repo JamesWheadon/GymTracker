@@ -192,11 +192,17 @@ fun RecordCardioExerciseCard(
     }
 }
 
-private fun getDistanceForUnit(exerciseHistory: CardioExerciseHistoryUiState, userPreferencesUiState: UserPreferencesUiState) = if (exerciseHistory.distance != null) {
+private fun getDistanceForUnit(
+    exerciseHistory: CardioExerciseHistoryUiState,
+    userPreferencesUiState: UserPreferencesUiState
+) = if (exerciseHistory.distance != null) {
     if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
         exerciseHistory.distance.toString()
     } else {
-        convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, exerciseHistory.distance!!).toString()
+        convertToDistanceUnit(
+            userPreferencesUiState.defaultDistanceUnit,
+            exerciseHistory.distance!!
+        ).toString()
     }
 } else {
     ""

@@ -9,7 +9,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.example.gymtracker.data.workout.Workout
+import com.example.gymtracker.ui.workout.WorkoutUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
@@ -73,7 +73,7 @@ class CreateWorkoutScreenKtTest {
 
     @Test
     fun enteringWorkoutNameClickingSaveButtonCallsSaveFunctionAndOnDismiss() {
-        var saved: Workout? = null
+        var saved: WorkoutUiState? = null
         var dismissed = false
         rule.setContent {
             CreateWorkoutForm(
@@ -99,7 +99,7 @@ class CreateWorkoutScreenKtTest {
                 saveFunction = { },
                 onDismiss = { },
                 screenTitle = "Create Workout",
-                workout = Workout(
+                workout = WorkoutUiState(
                     name = "Existing workout"
                 )
             )
@@ -110,27 +110,27 @@ class CreateWorkoutScreenKtTest {
 
     @Test
     fun createWorkoutFormWithExistingWorkoutSavesWithExistingId() {
-        var savedWorkout: Workout? = null
+        var savedWorkout: WorkoutUiState? = null
         var dismissed = false
         rule.setContent {
             CreateWorkoutForm(
                 saveFunction = { workout -> savedWorkout = workout },
                 onDismiss = { dismissed = true },
                 screenTitle = "Create Workout",
-                workout = Workout(
+                workout = WorkoutUiState(
                     workoutId = 2,
                     name = "Existing workout"
                 )
             )
         }
 
-        nameField.performTextInput(" updated")
+        nameField.performTextInput("Updated ")
 
         saveButton.performClick()
 
         assertThat(savedWorkout, notNullValue())
         assertThat(savedWorkout!!.workoutId, equalTo(2))
-        assertThat(savedWorkout!!.name, equalTo("Existing workout updated"))
+        assertThat(savedWorkout!!.name, equalTo("Updated Existing workout"))
         assertThat(dismissed, equalTo(true))
     }
 }

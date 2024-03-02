@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
-import com.example.gymtracker.data.workoutHistory.WorkoutHistory
 import com.example.gymtracker.data.workoutHistory.WorkoutHistoryRepository
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
@@ -36,7 +35,7 @@ class WorkoutHistoryViewModel(
                     when (exerciseHistory) {
                         is WeightsExerciseHistoryUiState -> {
                             exerciseHistory.workoutHistoryId = workoutHistoryId
-                            weightsExerciseHistoryRepository.insertHistory(exerciseHistory.toWeightsExerciseHistory())
+                            weightsExerciseHistoryRepository.insert(exerciseHistory.toWeightsExerciseHistory())
                         }
                         is CardioExerciseHistoryUiState -> {
                             exerciseHistory.workoutHistoryId = workoutHistoryId
@@ -61,10 +60,10 @@ class WorkoutHistoryViewModel(
     }
 
     fun liveSaveWorkoutHistory(
-        workoutHistory: WorkoutHistory
+        workoutHistory: WorkoutHistoryUiState
     ) {
         viewModelScope.launch {
-            val savedID = workoutHistoryRepository.insert(workoutHistory).toInt()
+            val savedID = workoutHistoryRepository.insert(workoutHistory.toWorkoutHistory()).toInt()
             _savedWorkoutID.emit(savedID)
         }
     }
@@ -76,7 +75,7 @@ class WorkoutHistoryViewModel(
             when (workoutExercise) {
                 is WeightsExerciseHistoryUiState -> {
                     workoutExercise.workoutHistoryId = savedWorkoutID.value
-                    weightsExerciseHistoryRepository.insertHistory(workoutExercise.toWeightsExerciseHistory())
+                    weightsExerciseHistoryRepository.insert(workoutExercise.toWeightsExerciseHistory())
                 }
                 is CardioExerciseHistoryUiState -> {
                     workoutExercise.workoutHistoryId = savedWorkoutID.value

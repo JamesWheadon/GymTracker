@@ -67,7 +67,7 @@ class ExercisesScreenViewModelTest {
     fun saveExerciseToRepository() = runTest {
         val viewModel = ExercisesScreenViewModel(repository)
 
-        viewModel.saveExercise(exercise1)
+        viewModel.saveExercise(exercise1.toExerciseUiState())
 
         verify(repository).insertExercise(exercise1)
     }

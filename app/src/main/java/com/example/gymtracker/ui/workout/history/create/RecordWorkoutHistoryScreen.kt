@@ -137,14 +137,16 @@ fun RecordWorkoutHistoryScreen(
         }
         Button(
             onClick = {
-                workoutSaveFunction(
-                    WorkoutHistoryWithExercisesUiState(
-                        workoutId = workoutHistoryUiState.workoutId,
-                        workoutHistoryId = workoutHistoryUiState.workoutHistoryId,
-                        date = workoutHistoryUiState.date,
-                        exercises = exerciseHistories
+                if (exerciseHistories.size > 0) {
+                    workoutSaveFunction(
+                        WorkoutHistoryWithExercisesUiState(
+                            workoutId = workoutHistoryUiState.workoutId,
+                            workoutHistoryId = workoutHistoryUiState.workoutHistoryId,
+                            date = workoutHistoryUiState.date,
+                            exercises = exerciseHistories
+                        )
                     )
-                )
+                }
                 onDismiss()
             },
             enabled = !exerciseErrors.values.reduce { acc, error -> acc || error }

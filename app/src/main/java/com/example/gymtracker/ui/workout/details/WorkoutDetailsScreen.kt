@@ -3,14 +3,17 @@ package com.example.gymtracker.ui.workout.details
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,7 +35,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseCard
@@ -42,6 +45,7 @@ import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.visualisations.Calendar
 import com.example.gymtracker.ui.visualisations.MonthPicker
+import com.example.gymtracker.ui.workout.WorkoutUiState
 import com.example.gymtracker.ui.workout.create.CreateWorkoutForm
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryScreen
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
@@ -77,14 +81,13 @@ fun WorkoutDetailsScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutDetailsScreen(
     uiState: WorkoutWithExercisesUiState,
     navController: NavHostController,
     exerciseNavigationFunction: (Int) -> Unit,
-    updateWorkoutFunction: (Workout) -> Unit,
-    deleteWorkoutFunction: (Workout) -> Unit,
+    updateWorkoutFunction: (WorkoutUiState) -> Unit,
+    deleteWorkoutFunction: (WorkoutUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showEditExercises by remember { mutableStateOf(false) }
@@ -122,10 +125,11 @@ fun WorkoutDetailsScreen(
             innerPadding = innerPadding,
             modifier = modifier
         )
+        Spacer(modifier = Modifier.height(72.dp))
     }
     if (showEditExercises) {
         EditWorkoutExercisesScreen(
-            workout = uiState.toWorkout(),
+            workout = uiState.toWorkoutUiState(),
             existingExercises = uiState.exercises,
             onDismiss = { showEditExercises = false }
         )
@@ -134,7 +138,7 @@ fun WorkoutDetailsScreen(
         Dialog(onDismissRequest = { showUpdateWorkout = false }) {
             CreateWorkoutForm(
                 screenTitle = "Update Workout",
-                workout = uiState.toWorkout(),
+                workout = uiState.toWorkoutUiState(),
                 saveFunction = updateWorkoutFunction,
                 onDismiss = { showUpdateWorkout = false }
             )
@@ -145,7 +149,7 @@ fun WorkoutDetailsScreen(
             ActionConfirmation(
                 actionTitle = "Delete ${uiState.name} Workout?",
                 confirmFunction = {
-                    deleteWorkoutFunction(uiState.toWorkout())
+                    deleteWorkoutFunction(uiState.toWorkoutUiState())
                     navController.popBackStack()
                 },
                 cancelFunction = { showDeleteWorkout = false }
@@ -175,7 +179,7 @@ private fun WorkoutDetailsScreen(
     modifier: Modifier = Modifier
 ) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
-    var selectedWorkoutHistoryId by remember { mutableStateOf(-1) }
+    var selectedWorkoutHistoryId by remember { mutableIntStateOf(-1) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -183,9 +187,16 @@ private fun WorkoutDetailsScreen(
             .verticalScroll(rememberScrollState())
             .padding(innerPadding)
     ) {
-        Column {
-            uiState.exercises.forEach { exercise ->
-                ExerciseCard(exercise = exercise, navigationFunction = exerciseNavigationFunction)
+        Card(
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column {
+                uiState.exercises.forEach { exercise ->
+                    ExerciseCard(
+                        exercise = exercise,
+                        navigationFunction = exerciseNavigationFunction
+                    )
+                }
             }
         }
         Button(onClick = editExercises) {

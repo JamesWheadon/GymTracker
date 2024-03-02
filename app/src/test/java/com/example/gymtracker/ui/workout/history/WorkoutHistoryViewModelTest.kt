@@ -22,6 +22,7 @@ import java.time.LocalDate
 class WorkoutHistoryViewModelTest {
 
     private val workoutHistory = WorkoutHistory(workoutId = 1, date = LocalDate.now())
+    private val workoutHistoryUiState = WorkoutHistoryUiState(workoutId = 1)
     private val weightsExerciseHistoryUI = WeightsExerciseHistoryUiState(
         id = 1,
         exerciseId = 1,
@@ -75,7 +76,7 @@ class WorkoutHistoryViewModelTest {
         viewModel.saveWorkoutHistory(workoutHistoryWithExercises, true)
 
         verify(mockWorkoutHistoryRepository).insert(workoutHistory)
-        verify(mockWeightsExerciseHistoryRepository).insertHistory(savedWeightsExerciseHistory)
+        verify(mockWeightsExerciseHistoryRepository).insert(savedWeightsExerciseHistory)
         verify(mockCardioExerciseHistoryRepository).insert(savedCardioExerciseHistory)
     }
 
@@ -101,7 +102,7 @@ class WorkoutHistoryViewModelTest {
     fun liveSaveWorkoutHistoryToRepository() = runTest {
         `when`(mockWorkoutHistoryRepository.insert(workoutHistory)).thenReturn(1L)
 
-        viewModel.liveSaveWorkoutHistory(workoutHistory)
+        viewModel.liveSaveWorkoutHistory(workoutHistoryUiState)
 
         verify(mockWorkoutHistoryRepository).insert(workoutHistory)
     }
@@ -110,7 +111,7 @@ class WorkoutHistoryViewModelTest {
     fun liveSaveWeightsWorkoutExerciseHistoryToRepository() = runTest {
         viewModel.liveSaveWorkoutExerciseHistory(weightsExerciseHistoryUI)
 
-        verify(mockWeightsExerciseHistoryRepository).insertHistory(weightsExerciseHistoryUI.toWeightsExerciseHistory())
+        verify(mockWeightsExerciseHistoryRepository).insert(weightsExerciseHistoryUI.toWeightsExerciseHistory())
     }
 
     @Test

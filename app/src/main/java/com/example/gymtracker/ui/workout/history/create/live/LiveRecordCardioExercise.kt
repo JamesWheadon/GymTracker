@@ -37,7 +37,6 @@ import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiS
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.user.LocalUserPreferences
 
-
 @Composable
 fun LiveRecordCardioExercise(
     uiState: ExerciseUiState,

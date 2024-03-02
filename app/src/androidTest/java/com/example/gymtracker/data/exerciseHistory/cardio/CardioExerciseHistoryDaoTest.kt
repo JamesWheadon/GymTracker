@@ -47,17 +47,6 @@ class CardioExerciseHistoryDaoTest {
     }
 
     @Test
-    fun daoSelectAllByExercise_RetrieveFullHistoryForExerciseFromDB() = runBlocking {
-        addMultipleCardioHistoryToDB()
-
-        val savedExerciseHistory = cardioExerciseHistoryDao.getFullExerciseHistory(
-            1
-        ).first()
-
-        assertThat(savedExerciseHistory.size, equalTo(2))
-    }
-
-    @Test
     fun daoDelete_DeleteHistoryFromDB() = runBlocking {
         val exerciseHistory = createCardioExerciseHistory(1, 1)
         cardioExerciseHistoryDao.insert(exerciseHistory)
@@ -86,8 +75,10 @@ class CardioExerciseHistoryDaoTest {
 
         cardioExerciseHistoryDao.deleteAllForExercise(1)
 
-        val savedHistory = cardioExerciseHistoryDao.getFullExerciseHistory(1).first()
-        assertThat(savedHistory.size, equalTo(0))
+        val firstHistory = cardioExerciseHistoryDao.get(1).first()
+        val secondHistory = cardioExerciseHistoryDao.get(2).first()
+        assertThat(firstHistory, equalTo(null))
+        assertThat(secondHistory, equalTo(null))
     }
 
     private fun createCardioExerciseHistory(id: Int, exerciseId: Int, minutes: Int = 60) = CardioExerciseHistory(id, exerciseId, date = LocalDate.now(), minutes = minutes)

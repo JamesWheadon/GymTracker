@@ -8,6 +8,7 @@ import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossR
 import com.example.gymtracker.fake.FakeWorkoutWithExercisesRepository
 import com.example.gymtracker.rules.TestCoroutineRule
 import com.example.gymtracker.ui.exercise.ExerciseUiState
+import com.example.gymtracker.ui.workout.toWorkoutUiState
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -66,7 +67,7 @@ class WorkoutDetailsViewModelTest {
             savedStateHandle = savedState
         )
 
-        viewModel.updateWorkout(workout)
+        viewModel.updateWorkout(workout.toWorkoutUiState())
 
         verify(mockWorkoutRepository).updateWorkout(workout)
     }
@@ -80,7 +81,7 @@ class WorkoutDetailsViewModelTest {
             savedStateHandle = savedState
         )
 
-        viewModel.deleteWorkout(workout)
+        viewModel.deleteWorkout(workout.toWorkoutUiState())
 
         verify(mockWorkoutRepository).deleteWorkout(workout)
         verify(mockWorkoutExerciseRepository).deleteAllCrossRefForWorkout(workout)

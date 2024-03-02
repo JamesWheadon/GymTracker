@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -15,8 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -34,13 +34,13 @@ import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.workout.WorkoutsRoute
 import com.example.gymtracker.ui.workout.details.WorkoutDetailsRoute
 import com.example.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryUiState
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryViewModel
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
-import com.example.gymtracker.ui.workout.history.toWorkoutHistory
 import java.time.LocalDate
 
 object LiveRecordWorkoutRoute : NavigationRoute {
@@ -51,7 +51,6 @@ object LiveRecordWorkoutRoute : NavigationRoute {
         "${LIVE_RECORD_WORKOUT_SCREEN.baseRoute}/${navArgument}"
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiveRecordWorkout(
     navController: NavHostController,
@@ -60,9 +59,7 @@ fun LiveRecordWorkout(
 ) {
     val uiState = detailsViewModel.uiState.collectAsState().value
     LaunchedEffect(uiState.workoutId != 0) {
-        historyViewModel.liveSaveWorkoutHistory(
-            WorkoutHistoryUiState(workoutId = uiState.workoutId).toWorkoutHistory()
-        )
+        historyViewModel.liveSaveWorkoutHistory(WorkoutHistoryUiState(workoutId = uiState.workoutId))
     }
     Scaffold(
         topBar = {
@@ -81,7 +78,13 @@ fun LiveRecordWorkout(
                 navController.popBackStack()
                 navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(uiState.workoutId))
             },
-            modifier = Modifier.padding(innerPadding).fillMaxWidth()
+            cancelFunction = {
+                navController.popBackStack()
+                navController.navigate(WorkoutsRoute.route)
+            },
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxWidth()
         )
     }
 }
@@ -91,10 +94,11 @@ fun LiveRecordWorkout(
     uiState: WorkoutWithExercisesUiState,
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     finishFunction: () -> Unit,
+    cancelFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val completedExercises = rememberSaveable(saver = IntListSaver) { mutableStateListOf() }
-    var currentExercise by rememberSaveable { mutableStateOf(-1) }
+    var currentExercise by rememberSaveable { mutableIntStateOf(-1) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -143,8 +147,17 @@ fun LiveRecordWorkout(
                 )
             }
         }
-        Button(onClick = { finishFunction() }) {
-            Text(text = "Finish Workout")
+        if (completedExercises.size > 0 || currentExercise != -1) {
+            Button(enabled = currentExercise == -1, onClick = { finishFunction() }) {
+                Text(text = "Finish Workout")
+            }
+        } else {
+            Button(
+                onClick = { cancelFunction() },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(text = "Cancel")
+            }
         }
     }
 }
@@ -243,7 +256,8 @@ fun LiveRecordWorkoutPreview() {
                 )
             ),
             saveFunction = { },
-            finishFunction = { }
+            finishFunction = { },
+            cancelFunction = { }
         )
     }
 }

@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
@@ -20,7 +21,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 
-class CommonKtTest {
+class FormFieldsKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
@@ -82,9 +83,8 @@ class CommonKtTest {
 
     @Test
     fun shouldGiveSuggestionsForTextTwoCharactersAndAboveThatMatchStart() {
-        var enteredText by mutableStateOf(TextFieldValue(text = ""))
-
         rule.setContent {
+            var enteredText by remember { mutableStateOf(TextFieldValue(text = "")) }
             FormInformationFieldWithSuggestions(
                 label = "Test Field",
                 value = enteredText,
@@ -94,6 +94,7 @@ class CommonKtTest {
         }
 
         val textField = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
+        textField.performClick()
         textField.performTextInput("Bi")
 
         var biceps = rule.onNode(hasText("Biceps"))
@@ -128,6 +129,7 @@ class CommonKtTest {
         }
 
         val textField = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
+        textField.performClick()
         textField.performTextInput("Bi")
 
         var biceps = rule.onNode(hasText("Biceps"))
@@ -147,8 +149,8 @@ class CommonKtTest {
 
     @Test
     fun shouldOnlyDisplayFirstThreeSuggestionsAlphabetically() {
-        var enteredText by mutableStateOf(TextFieldValue(text = ""))
         rule.setContent {
+            var enteredText by remember { mutableStateOf(TextFieldValue(text = "")) }
             FormInformationFieldWithSuggestions(
                 label = "Test Field",
                 value = enteredText,
@@ -158,6 +160,7 @@ class CommonKtTest {
         }
 
         val textField = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
+        textField.performClick()
         textField.performTextInput("Bi")
 
         val biceps = rule.onNode(hasText("Biceps"))

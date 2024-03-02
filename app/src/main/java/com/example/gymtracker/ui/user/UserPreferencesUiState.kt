@@ -4,7 +4,6 @@ import androidx.compose.runtime.compositionLocalOf
 import com.example.gymtracker.converters.DistanceUnits
 import com.example.gymtracker.converters.WeightUnits
 
-
 data class UserPreferencesUiState(
     val defaultDistanceUnit: DistanceUnits = DistanceUnits.KILOMETERS,
     val defaultWeightUnit: WeightUnits = WeightUnits.KILOGRAMS,

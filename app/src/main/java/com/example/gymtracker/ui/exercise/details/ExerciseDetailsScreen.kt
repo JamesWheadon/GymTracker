@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseUiState
@@ -61,14 +59,12 @@ fun ExerciseDetailsScreen(
     )
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseDetailsScreen(
     uiState: ExerciseDetailsUiState,
     navController: NavHostController,
-    updateFunction: (Exercise) -> Unit,
-    deleteFunction: (Exercise) -> Unit,
+    updateFunction: (ExerciseUiState) -> Unit,
+    deleteFunction: (ExerciseUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showRecord by remember { mutableStateOf(false) }
@@ -134,7 +130,7 @@ fun ExerciseDetailsScreen(
             ActionConfirmation(
                 actionTitle = "Delete ${uiState.exercise.name} Exercise?",
                 confirmFunction = {
-                    deleteFunction(uiState.toExercise())
+                    deleteFunction(uiState.toExerciseUiState())
                     navController.popBackStack()
                 },
                 cancelFunction = { deleteExercise = false })

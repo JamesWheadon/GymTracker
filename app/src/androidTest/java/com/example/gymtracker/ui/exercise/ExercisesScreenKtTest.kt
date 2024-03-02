@@ -34,17 +34,15 @@ class ExercisesScreenKtTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test
     fun rendersEmptyListOfExercises() {
         rule.setContent {
             ExercisesScreen(
-                navController = navController,
-                exerciseNavigationFunction = {},
                 exerciseListUiState = ExerciseListUiState(),
-                homeNavigationOptions = mapOf()
+                exerciseNavigationFunction = {}
             )
         }
 
@@ -56,15 +54,13 @@ class ExercisesScreenKtTest {
     fun rendersListOfExercises() {
         rule.setContent {
             ExercisesScreen(
-                navController = navController,
-                exerciseNavigationFunction = {},
                 exerciseListUiState = ExerciseListUiState(
                     exerciseList = listOf(
                         exercise1,
                         exercise2
                     )
                 ),
-                homeNavigationOptions = mapOf()
+                exerciseNavigationFunction = {},
             )
         }
 

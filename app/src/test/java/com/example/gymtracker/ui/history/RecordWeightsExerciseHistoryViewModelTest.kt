@@ -31,7 +31,7 @@ class RecordWeightsExerciseHistoryViewModelTest {
 
         viewModel.saveHistory(history.toWeightsExerciseHistoryUiState())
 
-        verify(weightsRepository).insertHistory(history)
+        verify(weightsRepository).insert(history)
     }
 
     @Test

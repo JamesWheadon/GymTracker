@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,7 +41,6 @@ import java.time.DayOfWeek
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
-
 
 @Composable
 fun Calendar(
@@ -184,10 +184,20 @@ fun MonthPicker(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "${yearMonthValue.month.getDisplayName(TextStyle.FULL, Locale.ENGLISH)} ${yearMonthValue.year}")
+            Text(
+                text = "${
+                    yearMonthValue.month.getDisplayName(
+                        TextStyle.FULL,
+                        Locale.ENGLISH
+                    )
+                } ${yearMonthValue.year}"
+            )
             Spacer(modifier = Modifier.width(4.dp))
             IconButton(onClick = { pickMonth = !pickMonth }) {
-                Icon(imageVector = if (pickMonth) Icons.Default.KeyboardArrowUp else Icons.Default.ArrowDropDown, contentDescription = "Change Month")
+                Icon(
+                    imageVector = if (pickMonth) Icons.Default.KeyboardArrowUp else Icons.Default.ArrowDropDown,
+                    contentDescription = "Change Month"
+                )
             }
         }
         if (pickMonth) {
@@ -206,7 +216,7 @@ fun YearMonthOptions(
     yearMonthValueOnChange: (YearMonth) -> Unit,
     closeFunction: () -> Unit
 ) {
-    var year by remember { mutableStateOf(yearMonthValue.year) }
+    var year by remember { mutableIntStateOf(yearMonthValue.year) }
     val currentTime = YearMonth.now()
     Box {
         Card {
@@ -217,7 +227,7 @@ fun YearMonthOptions(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     IconButton(onClick = { year-- }) {
-                        Icon(Icons.Default.ArrowBack, "Previous Year")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Previous Year")
                     }
                     Text(text = year.toString())
                     IconButton(
@@ -225,7 +235,7 @@ fun YearMonthOptions(
                         enabled = year < YearMonth.now().year
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ArrowForward,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = "Next Year",
                             modifier = Modifier.alpha(if (year < YearMonth.now().year) 1F else 0F)
                         )
@@ -258,7 +268,10 @@ fun YearMonthOptions(
                                 ),
                             ) {
                                 Text(
-                                    text = yearMonthOption.month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+                                    text = yearMonthOption.month.getDisplayName(
+                                        TextStyle.SHORT,
+                                        Locale.ENGLISH
+                                    )
                                 )
                             }
                         }

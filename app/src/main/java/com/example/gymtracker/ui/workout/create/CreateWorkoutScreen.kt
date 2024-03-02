@@ -25,18 +25,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.workout.WorkoutUiState
 
 @Composable
 fun CreateWorkoutForm(
     screenTitle: String,
-    saveFunction: (Workout) -> Unit,
+    saveFunction: (WorkoutUiState) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    workout: Workout = Workout(name = "")
+    workout: WorkoutUiState = WorkoutUiState()
 ) {
     var nameState by remember { mutableStateOf(workout.name) }
     Box {
@@ -99,14 +99,14 @@ fun CreateWorkoutForm(
 @Composable
 fun SaveWorkoutFormButton(
     workoutName: String,
-    saveFunction: (Workout) -> Unit,
+    saveFunction: (WorkoutUiState) -> Unit,
     closeForm: () -> Unit,
-    existingWorkout: Workout
+    existingWorkout: WorkoutUiState
 ) {
     Button(
         onClick = {
             saveFunction(
-                Workout(
+                WorkoutUiState(
                     workoutId = existingWorkout.workoutId,
                     name = workoutName
                 )
@@ -139,7 +139,7 @@ fun CreateWorkoutFormExistingWorkoutPreview() {
             saveFunction = { },
             onDismiss = { },
             screenTitle = "Create Workout",
-            workout = Workout(name = "Test")
+            workout = WorkoutUiState(name = "Test")
         )
     }
 }

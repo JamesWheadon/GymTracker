@@ -33,17 +33,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
-import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseDetail
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
-import com.example.gymtracker.ui.exercise.toExercise
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.workout.WorkoutUiState
 
 @Composable
 fun EditWorkoutExercisesScreen(
-    workout: Workout,
+    workout: WorkoutUiState,
     existingExercises: List<ExerciseUiState>,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
@@ -64,14 +63,11 @@ fun EditWorkoutExercisesScreen(
         remainingExercises = remainingExercises,
         selectFunction = { exercise ->
             chosenExercises.add(exercise)
-            workoutExerciseCrossRefViewModel.saveExerciseToWorkout(exercise.toExercise(), workout)
+            workoutExerciseCrossRefViewModel.saveExerciseToWorkout(exercise, workout)
         },
         deselectFunction = { exercise ->
             chosenExercises.remove(exercise)
-            workoutExerciseCrossRefViewModel.deleteExerciseFromWorkout(
-                exercise.toExercise(),
-                workout
-            )
+            workoutExerciseCrossRefViewModel.deleteExerciseFromWorkout(exercise, workout)
         },
         onDismiss = onDismiss,
         modifier = modifier
@@ -186,19 +182,28 @@ fun AddRemoveExerciseCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (exercise.equipment != "") {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ExerciseDetail(
+                        exerciseInfo = exercise.muscleGroup,
+                        iconId = R.drawable.info_48px,
+                        iconDescription = "exercise icon"
+                    )
+                    ExerciseDetail(
+                        exerciseInfo = exercise.equipment,
+                        iconId = R.drawable.exercise_filled_48px,
+                        iconDescription = "exercise icon"
+                    )
+                }
+            } else {
                 ExerciseDetail(
-                    exerciseInfo = exercise.muscleGroup,
-                    iconId = R.drawable.info_48px,
-                    iconDescription = "exercise icon"
-                )
-                ExerciseDetail(
-                    exerciseInfo = exercise.equipment,
-                    iconId = R.drawable.exercise_filled_48px,
-                    iconDescription = "exercise icon"
+                    exerciseInfo = "Cardio",
+                    iconId = R.drawable.cardio_48dp,
+                    iconDescription = "cardio icon",
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -217,6 +222,10 @@ fun AddExerciseScreenPreview() {
                     "Dips",
                     "Triceps",
                     "Dumbbells And Bars"
+                ),
+                ExerciseUiState(
+                    1,
+                    "Treadmill"
                 ),
             ),
             selectFunction = { },

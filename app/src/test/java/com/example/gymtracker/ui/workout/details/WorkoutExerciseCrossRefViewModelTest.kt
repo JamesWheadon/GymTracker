@@ -4,6 +4,8 @@ import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.rules.TestCoroutineRule
+import com.example.gymtracker.ui.exercise.toExerciseUiState
+import com.example.gymtracker.ui.workout.toWorkoutUiState
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -24,7 +26,7 @@ class WorkoutExerciseCrossRefViewModelTest {
     fun insertWorkoutExerciseCrossRefInToRepository() = runTest {
         viewModel = WorkoutExerciseCrossRefViewModel(mockRepository)
 
-        viewModel.saveExerciseToWorkout(exercise, workout)
+        viewModel.saveExerciseToWorkout(exercise.toExerciseUiState(), workout.toWorkoutUiState())
 
         verify(mockRepository).saveExerciseToWorkout(exercise, workout)
     }
@@ -33,7 +35,10 @@ class WorkoutExerciseCrossRefViewModelTest {
     fun deleteWorkoutExerciseCrossRefFromRepository() = runTest {
         viewModel = WorkoutExerciseCrossRefViewModel(mockRepository)
 
-        viewModel.deleteExerciseFromWorkout(exercise, workout)
+        viewModel.deleteExerciseFromWorkout(
+            exercise.toExerciseUiState(),
+            workout.toWorkoutUiState()
+        )
 
         verify(mockRepository).deleteExerciseFromWorkout(exercise, workout)
     }

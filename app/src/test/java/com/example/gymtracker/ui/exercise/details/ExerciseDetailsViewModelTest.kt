@@ -12,6 +12,7 @@ import com.example.gymtracker.fake.FakeExerciseRepository
 import com.example.gymtracker.fake.FakeExerciseWithHistoryRepository
 import com.example.gymtracker.fake.FakeWeightsExerciseHistoryRepository
 import com.example.gymtracker.rules.TestCoroutineRule
+import com.example.gymtracker.ui.exercise.toExerciseUiState
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -52,7 +53,8 @@ class ExerciseDetailsViewModelTest {
         )
         viewModel.uiState.test {
             assertThat(
-                awaitItem(), equalTo(fakeExerciseWithHistoryRepository.exerciseWithHistory.toExerciseDetailsUiState())
+                awaitItem(),
+                equalTo(fakeExerciseWithHistoryRepository.exerciseWithHistory.toExerciseDetailsUiState())
             )
         }
     }
@@ -68,7 +70,7 @@ class ExerciseDetailsViewModelTest {
             savedStateHandle = savedState
         )
 
-        viewModel.updateExercise(cardioExercise)
+        viewModel.updateExercise(cardioExercise.toExerciseUiState())
 
         verify(mockExerciseRepository).updateExercise(cardioExercise)
     }
@@ -84,7 +86,7 @@ class ExerciseDetailsViewModelTest {
             savedStateHandle = savedState
         )
 
-        viewModel.deleteExercise(weightsExercise)
+        viewModel.deleteExercise(weightsExercise.toExerciseUiState())
 
         verify(mockWeightsExerciseHistoryRepository).deleteAllForExercise(weightsExercise)
         verify(mockWorkoutExerciseRepository).deleteAllCrossRefForExercise(weightsExercise)
@@ -103,7 +105,7 @@ class ExerciseDetailsViewModelTest {
             savedStateHandle = savedState
         )
 
-        viewModel.deleteExercise(cardioExercise)
+        viewModel.deleteExercise(cardioExercise.toExerciseUiState())
 
         verify(mockCardioExerciseHistoryRepository).deleteAllForExercise(cardioExercise)
         verify(mockWorkoutExerciseRepository).deleteAllCrossRefForExercise(cardioExercise)

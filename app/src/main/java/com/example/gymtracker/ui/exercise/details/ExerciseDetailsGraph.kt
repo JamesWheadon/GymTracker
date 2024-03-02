@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -50,7 +49,6 @@ private const val X_OFFSET = 100F
 private const val Y_OFFSET = 50F
 private const val FIRST_POINT = 25F
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun Graph(
     points: List<Pair<LocalDate, Double>>,
@@ -60,7 +58,6 @@ fun Graph(
     yUnit: String = ""
 ) {
     var tappedLocation by remember { mutableStateOf(Offset.Zero) }
-
     val customFormatter = DateTimeFormatter.ofPattern("dd/MM")
     val lineColor = MaterialTheme.colorScheme.primary
     val textMeasurer = rememberTextMeasurer()
@@ -163,6 +160,7 @@ fun GraphOptions(
 ) {
     Row(
         horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.Top,
         modifier = Modifier.fillMaxWidth()
     ) {
         DropdownBox(
@@ -203,7 +201,6 @@ private fun DrawScope.drawAxis(
     )
 }
 
-@OptIn(ExperimentalTextApi::class)
 private fun DrawScope.labelYAxis(
     ySteps: Int,
     yMin: Double,
@@ -232,7 +229,10 @@ private fun DrawScope.labelYAxis(
         } while (textSize.width > textSizeFloat)
         drawLine(
             color = Color.Black,
-            start = Offset(textSizeFloat, (size.height - Y_OFFSET - FIRST_POINT) - (index * yAxisSpace)),
+            start = Offset(
+                textSizeFloat,
+                (size.height - Y_OFFSET - FIRST_POINT) - (index * yAxisSpace)
+            ),
             end = Offset(X_OFFSET, (size.height - Y_OFFSET - FIRST_POINT) - (index * yAxisSpace)),
             strokeWidth = 2f
         )
@@ -249,7 +249,6 @@ private fun DrawScope.labelYAxis(
     }
 }
 
-@OptIn(ExperimentalTextApi::class)
 private fun DrawScope.labelXAxis(
     customFormatter: DateTimeFormatter?,
     textMeasurer: TextMeasurer,
@@ -282,7 +281,10 @@ private fun DrawScope.labelXAxis(
             (LocalDate.now().toEpochDay() + startDate.toEpochDay()) / 2
         ).format(customFormatter),
         style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
-        topLeft = Offset(X_OFFSET + (canvasWidth - X_OFFSET - textSize.width) / 2, canvasHeight - Y_OFFSET)
+        topLeft = Offset(
+            X_OFFSET + (canvasWidth - X_OFFSET - textSize.width) / 2,
+            canvasHeight - Y_OFFSET
+        )
     )
 
     drawText(
@@ -335,7 +337,6 @@ private fun DrawScope.drawDataPoints(
     return dataPoints
 }
 
-@OptIn(ExperimentalTextApi::class)
 private fun DrawScope.dataPointInformation(
     yUnit: String,
     dataPoint: Pair<LocalDate, Double>,
