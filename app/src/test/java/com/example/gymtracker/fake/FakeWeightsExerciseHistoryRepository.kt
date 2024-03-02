@@ -18,13 +18,7 @@ class FakeWeightsExerciseHistoryRepository : WeightsExerciseHistoryRepository {
         return flowOf(null)
     }
 
-    override fun getFullExerciseHistoryStream(exerciseId: Int): Flow<List<WeightsExerciseHistory>?> = allHistoryFlow
-
-    override fun getLatestHistoryStream(id: Int): Flow<WeightsExerciseHistory?> = flowOf(null)
-
-    override fun getRecentHistoryStream(id: Int, days: Int): Flow<List<WeightsExerciseHistory>?> = allHistoryFlow
-
-    override suspend fun insertHistory(history: WeightsExerciseHistory) {
+    override suspend fun insert(history: WeightsExerciseHistory) {
     }
 
     override suspend fun update(history: WeightsExerciseHistory) {

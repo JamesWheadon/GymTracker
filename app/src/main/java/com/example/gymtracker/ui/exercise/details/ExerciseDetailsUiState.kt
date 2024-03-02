@@ -1,6 +1,5 @@
 package com.example.gymtracker.ui.exercise.details
 
-import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exerciseWithHistory.ExerciseWithHistory
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
@@ -8,7 +7,6 @@ import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUi
 import com.example.gymtracker.ui.exercise.history.state.toCardioExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.toExerciseUiState
-
 
 data class ExerciseDetailsUiState(
     val exercise: ExerciseUiState = ExerciseUiState(),
@@ -24,13 +22,6 @@ fun ExerciseWithHistory.toExerciseDetailsUiState(): ExerciseDetailsUiState = Exe
 
 fun ExerciseDetailsUiState.toExerciseUiState(): ExerciseUiState = ExerciseUiState(
     id = exercise.id,
-    name = exercise.name,
-    muscleGroup = exercise.muscleGroup,
-    equipment = exercise.equipment
-)
-
-fun ExerciseDetailsUiState.toExercise(): Exercise = Exercise(
-    exerciseId = exercise.id,
     name = exercise.name,
     muscleGroup = exercise.muscleGroup,
     equipment = exercise.equipment

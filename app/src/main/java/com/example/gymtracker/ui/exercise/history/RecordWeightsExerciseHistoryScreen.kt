@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
@@ -34,10 +36,10 @@ import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
 import com.example.gymtracker.ui.exercise.history.state.toWeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.user.LocalUserPreferences
 import com.example.gymtracker.ui.user.UserPreferencesUiState
 import java.time.LocalDate
-
 
 @Composable
 fun RecordWeightsExerciseHistoryCard(
@@ -51,7 +53,14 @@ fun RecordWeightsExerciseHistoryCard(
     val userPreferencesUiState = LocalUserPreferences.current
     var setsState by remember { mutableStateOf(if (savedHistory == WeightsExerciseHistoryUiState()) "" else savedHistory.sets.toString()) }
     var repsState by remember { mutableStateOf(if (savedHistory == WeightsExerciseHistoryUiState()) "" else savedHistory.reps.toString()) }
-    var weightState by remember { mutableStateOf(if (savedHistory == WeightsExerciseHistoryUiState()) "" else getWeightForUnit(savedHistory, userPreferencesUiState)) }
+    var weightState by remember {
+        mutableStateOf(
+            if (savedHistory == WeightsExerciseHistoryUiState()) "" else getWeightForUnit(
+                savedHistory,
+                userPreferencesUiState
+            )
+        )
+    }
     var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit.shortForm) }
     Card(
         modifier = modifier
@@ -60,7 +69,8 @@ fun RecordWeightsExerciseHistoryCard(
     ) {
         Column(
             modifier = modifier
-                .fillMaxWidth().padding(0.dp, 12.dp),
+                .fillMaxWidth()
+                .padding(0.dp, 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -69,7 +79,7 @@ fun RecordWeightsExerciseHistoryCard(
             )
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 0.dp)
@@ -100,7 +110,7 @@ fun RecordWeightsExerciseHistoryCard(
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 0.dp)
@@ -202,3 +212,19 @@ private fun getWeightForUnit(
             exerciseHistory.weight
         ).toString()
     }
+
+@Preview(showBackground = true)
+@Composable
+fun RecordExerciseHistoryScreenPreview() {
+    val userPreferencesUiState = UserPreferencesUiState()
+    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+        GymTrackerTheme(darkTheme = false) {
+            RecordWeightsExerciseHistoryCard(
+                exerciseId = 1,
+                cardTitle = "",
+                saveFunction = {},
+                onDismiss = {}
+            )
+        }
+    }
+}

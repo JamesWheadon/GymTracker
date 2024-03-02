@@ -15,7 +15,6 @@ import com.example.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.example.gymtracker.ui.workout.details.WorkoutExerciseCrossRefViewModel
 import com.example.gymtracker.ui.workout.history.WorkoutHistoryViewModel
 
-
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {

@@ -50,7 +50,7 @@ class EditWorkoutExercisesScreenKtTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
 
         `when`(exerciseRepository.getAllExercisesStream()).thenReturn(flowOf(listOf(curlsExerciseUiState.toExercise())))
         `when`(exerciseRepository.getAllMuscleGroupsStream()).thenReturn(flowOf(listOf(curlsExerciseUiState.muscleGroup)))

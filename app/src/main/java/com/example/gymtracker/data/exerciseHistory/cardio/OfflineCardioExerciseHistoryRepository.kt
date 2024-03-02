@@ -1,14 +1,9 @@
 package com.example.gymtracker.data.exerciseHistory.cardio
 
 import com.example.gymtracker.data.exercise.Exercise
-import kotlinx.coroutines.flow.Flow
 
 class OfflineCardioExerciseHistoryRepository(private val cardioExerciseHistoryDao: CardioExerciseHistoryDao) :
     CardioExerciseHistoryRepository {
-    override fun getStream(id: Int): Flow<CardioExerciseHistory?> = cardioExerciseHistoryDao.get(id)
-
-    override fun getFullExerciseHistoryStream(exerciseId: Int): Flow<List<CardioExerciseHistory>?> =
-        cardioExerciseHistoryDao.getFullExerciseHistory(exerciseId)
 
     override suspend fun insert(history: CardioExerciseHistory) = cardioExerciseHistoryDao.insert(history)
 

@@ -62,17 +62,6 @@ class ExerciseDaoTest {
     }
 
     @Test
-    fun daoSelectByMuscleGroup_RetrieveMultipleExerciseFromDB() = runBlocking {
-        exerciseDao.insert(exercise1)
-        exerciseDao.insert(exercise2)
-
-        val savedExercise = exerciseDao.getAllExercisesByMuscleGroup(exercise1.muscleGroup).first()
-
-        assertThat(exercise1, equalTo(savedExercise[0]))
-        assertThat(savedExercise.size, equalTo(1))
-    }
-
-    @Test
     fun daoDelete_DeleteExerciseFromDB() = runBlocking {
         exerciseDao.insert(exercise1)
         exerciseDao.delete(exercise1)

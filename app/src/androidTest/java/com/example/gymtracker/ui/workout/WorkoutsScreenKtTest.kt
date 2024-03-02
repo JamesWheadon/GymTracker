@@ -37,7 +37,7 @@ class WorkoutsScreenKtTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test
@@ -124,7 +124,7 @@ class WorkoutsScreenKtTest {
                 workoutListUiState = WorkoutListUiState(
                     workoutList = workoutList
                 ),
-                createWorkout = { workout -> workoutList.add(workout.toWorkoutUiState()) },
+                createWorkout = { workout -> workoutList.add(workout) },
                 navController = navController,
                 workoutNavigationFunction = { },
                 homeNavigationOptions = mapOf()

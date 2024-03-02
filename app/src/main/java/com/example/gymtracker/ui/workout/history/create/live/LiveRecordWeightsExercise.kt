@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,6 +27,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.converters.WeightUnits
+import com.example.gymtracker.converters.convertToKilograms
+import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.customCardElevation
@@ -120,7 +123,7 @@ fun LiveRecordWeightsExerciseInfo(
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 0.dp)
@@ -148,7 +151,7 @@ fun LiveRecordWeightsExerciseInfo(
                     .weight(1f)
                     .padding(0.dp)
                     .semantics { contentDescription = "Units" },
-                selected = userPreferencesUiState.defaultWeightUnit.shortForm
+                selected = unitState
             )
         }
         Row(
@@ -161,7 +164,14 @@ fun LiveRecordWeightsExerciseInfo(
                     ExerciseData(
                         reps = repsState.toInt(),
                         rest = restState.toInt(),
-                        weight = weightState.toDouble()
+                        weight = if (unitState == WeightUnits.KILOGRAMS.shortForm) {
+                            weightState.toDouble()
+                        } else {
+                            convertToKilograms(
+                                getWeightUnitFromShortForm(unitState),
+                                weightState.toDouble()
+                            )
+                        }
                     )
                 )
             }) {
@@ -188,7 +198,7 @@ fun LiveRecordExerciseSetsAndTimer(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        var setsComplete by rememberSaveable { mutableStateOf(0) }
+        var setsComplete by rememberSaveable { mutableIntStateOf(0) }
         var resting by rememberSaveable { mutableStateOf(false) }
         Text(text = "Sets Completed: $setsComplete")
         if (resting) {
@@ -214,7 +224,7 @@ fun Timer(
     rest: Int,
     finished: () -> Unit
 ) {
-    var time by rememberSaveable { mutableStateOf(rest) }
+    var time by rememberSaveable { mutableIntStateOf(rest) }
     LaunchedEffect(Unit) {
         while (time > 0) {
             delay(1.seconds)

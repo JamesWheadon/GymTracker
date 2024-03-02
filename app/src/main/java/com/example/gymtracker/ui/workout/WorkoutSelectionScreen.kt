@@ -1,19 +1,19 @@
 package com.example.gymtracker.ui.workout
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -27,7 +27,6 @@ object WorkoutSelectionScreenRoute : NavigationRoute {
     override val route = WORKOUT_SELECTION_SCREEN.baseRoute
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiveRecordChooseWorkoutsScreen(
     navController: NavHostController,
@@ -58,23 +57,21 @@ fun LiveRecordChooseWorkoutsScreen(
     modifier: Modifier = Modifier
 ) {
     Card(
-        elevation = customCardElevation()
+        elevation = customCardElevation(),
+        shape = RoundedCornerShape(16.dp),
+        modifier = modifier
     ) {
         LazyColumn(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .semantics { contentDescription = "workoutColumn" },
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             items(workoutListUiState.workoutList) { workout ->
                 WorkoutCard(
                     workout = workout,
-                    navigationFunction = workoutNavigationFunction,
-                    modifier = Modifier.padding(16.dp, 0.dp)
+                    navigationFunction = workoutNavigationFunction
                 )
-            }
-            item {
-                Spacer(modifier = Modifier.height(0.dp))
             }
         }
     }

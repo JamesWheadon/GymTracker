@@ -44,7 +44,7 @@ class WorkoutScreenViewModelTest {
     fun saveWorkoutToRepository() = runTest {
         val viewModel = WorkoutScreenViewModel(mockRepository)
 
-        viewModel.saveWorkout(workout1)
+        viewModel.saveWorkout(workout1.toWorkoutUiState())
 
         verify(mockRepository).insertWorkout(workout1)
     }

@@ -2,17 +2,15 @@ package com.example.gymtracker.ui.workout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.ui.AppViewModelProvider
+import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.navigation.HomeNavigationInformation
 import com.example.gymtracker.ui.navigation.HomeScreenCardWrapper
 import com.example.gymtracker.ui.navigation.NavigationRoute
@@ -70,7 +69,7 @@ fun WorkoutsScreen(
 @Composable
 fun WorkoutsScreen(
     workoutListUiState: WorkoutListUiState,
-    createWorkout: (Workout) -> Unit,
+    createWorkout: (WorkoutUiState) -> Unit,
     navController: NavHostController,
     workoutNavigationFunction: (Int) -> Unit,
     homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
@@ -122,7 +121,7 @@ fun WorkoutsScreen(
         val newWorkout = workoutListUiState.workoutList.firstOrNull { it.name == newWorkoutName }
         if (newWorkout != null) {
             EditWorkoutExercisesScreen(
-                workout = newWorkout.toWorkout(),
+                workout = newWorkout,
                 existingExercises = listOf(),
                 onDismiss = { showWorkoutExercises = false }
             )
@@ -136,57 +135,54 @@ private fun WorkoutsScreen(
     workoutNavigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
-            .semantics { contentDescription = "workoutColumn" },
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    Card(
+        shape = RoundedCornerShape(16.dp)
     ) {
-        items(workoutListUiState.workoutList) { workout ->
-            WorkoutCard(
-                workout = workout,
-                navigationFunction = workoutNavigationFunction,
-                modifier = Modifier.padding(16.dp, 0.dp)
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(0.dp))
+        LazyColumn(
+            modifier = modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = "workoutColumn" },
+            verticalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
+            items(workoutListUiState.workoutList) { workout ->
+                WorkoutCard(
+                    workout = workout,
+                    navigationFunction = workoutNavigationFunction
+                )
+            }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutCard(
     workout: WorkoutUiState,
     navigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val customCardElevation = CardDefaults.cardElevation(
-        defaultElevation = 8.dp,
-        pressedElevation = 2.dp,
-        focusedElevation = 4.dp
-    )
-    Card(
-        modifier = modifier,
-        elevation = customCardElevation,
+    Button(
+        shape = RectangleShape,
         onClick = { navigationFunction(workout.workoutId) }
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+        Card(
+            modifier = modifier,
+            elevation = customCardElevation()
         ) {
-            Text(
-                text = workout.name,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = workout.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

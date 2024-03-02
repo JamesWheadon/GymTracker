@@ -1,8 +1,10 @@
 package com.example.gymtracker.ui.navigation
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Delete
@@ -39,6 +41,7 @@ fun TopBar(
             Text(
                 text = text,
                 style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.horizontalScroll(rememberScrollState())
             )
         },
         navigationIcon = {
@@ -57,7 +60,7 @@ fun TopBar(
                 if (navController.previousBackStackEntry != null) {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back Button"
                         )
                     }
@@ -92,7 +95,11 @@ fun TopBar(
             }
             if (homeScreen) {
                 IconButton(onClick = {
-                    if (!navController.popBackStack(route = LiveRecordWorkoutRoute.route, inclusive = false)) {
+                    if (!navController.popBackStack(
+                            route = LiveRecordWorkoutRoute.route,
+                            inclusive = false
+                        )
+                    ) {
                         navController.navigate(WorkoutSelectionScreenRoute.route)
                     }
                 }) {

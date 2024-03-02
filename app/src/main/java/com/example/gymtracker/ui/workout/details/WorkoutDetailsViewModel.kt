@@ -3,10 +3,11 @@ package com.example.gymtracker.ui.workout.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gymtracker.data.workout.Workout
 import com.example.gymtracker.data.workout.WorkoutRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
 import com.example.gymtracker.data.workoutWithExercises.WorkoutWithExercisesRepository
+import com.example.gymtracker.ui.workout.WorkoutUiState
+import com.example.gymtracker.ui.workout.toWorkout
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -37,16 +38,16 @@ class WorkoutDetailsViewModel(
                 initialValue = WorkoutWithExercisesUiState()
             )
 
-    fun updateWorkout(workout: Workout) {
+    fun updateWorkout(workout: WorkoutUiState) {
         viewModelScope.launch {
-            workoutRepository.updateWorkout(workout)
+            workoutRepository.updateWorkout(workout.toWorkout())
         }
     }
 
-    fun deleteWorkout(workout: Workout) {
+    fun deleteWorkout(workout: WorkoutUiState) {
         viewModelScope.launch {
-            workoutExerciseCrossRefRepository.deleteAllCrossRefForWorkout(workout)
-            workoutRepository.deleteWorkout(workout)
+            workoutExerciseCrossRefRepository.deleteAllCrossRefForWorkout(workout.toWorkout())
+            workoutRepository.deleteWorkout(workout.toWorkout())
         }
     }
 }

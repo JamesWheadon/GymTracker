@@ -4,7 +4,6 @@ import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flowOf
 
 class FakeExerciseRepository : ExerciseRepository {
 
@@ -30,12 +29,7 @@ class FakeExerciseRepository : ExerciseRepository {
         allExerciseNamesFlow.emit(value)
     }
 
-    override fun getExerciseStream(id: Int): Flow<Exercise?> = flowOf(exercise)
-
     override fun getAllExercisesStream(): Flow<List<Exercise>> = allExercisesFlow
-
-    override fun getAllMuscleGroupExercisesStream(muscleGroup: String): Flow<List<Exercise>> =
-        allExercisesFlow
 
     override fun getAllMuscleGroupsStream(): Flow<List<String>> = allMuscleGroupsFlow
 

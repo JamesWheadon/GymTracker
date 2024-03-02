@@ -13,15 +13,6 @@ interface WeightsExerciseHistoryDao {
     @Query("SELECT * FROM weights_exercise_history WHERE id = :id")
     fun getHistory(id: Int): Flow<WeightsExerciseHistory>
 
-    @Query("SELECT * FROM weights_exercise_history WHERE exerciseId = :exerciseId")
-    fun getFullExerciseHistory(exerciseId: Int): Flow<List<WeightsExerciseHistory>>
-
-    @Query("SELECT * FROM weights_exercise_history WHERE exerciseId = :exerciseId ORDER BY date DESC LIMIT 1")
-    fun getLatestExerciseHistory(exerciseId: Int): Flow<WeightsExerciseHistory>
-
-    @Query("SELECT * FROM weights_exercise_history WHERE exerciseId = :exerciseId AND date > strftime('%s','now') / 86400 - :days")
-    fun getRecentExerciseHistory(exerciseId: Int, days: Int): Flow<List<WeightsExerciseHistory>>
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(weightsExerciseHistory: WeightsExerciseHistory)
 

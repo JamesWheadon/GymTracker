@@ -35,7 +35,6 @@ import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.user.LocalUserPreferences
 import com.example.gymtracker.ui.user.UserPreferencesUiState
 
-
 @Composable
 fun RecordCardioExerciseHistoryCard(
     exerciseId: Int,
@@ -49,7 +48,14 @@ fun RecordCardioExerciseHistoryCard(
     var minutesState by remember { mutableStateOf(savedHistory.minutes?.toString() ?: "") }
     var secondsState by remember { mutableStateOf(savedHistory.seconds?.toString() ?: "") }
     var caloriesState by remember { mutableStateOf(savedHistory.calories?.toString() ?: "") }
-    var distanceState by remember { mutableStateOf(getDistanceForUnit(savedHistory, userPreferencesUiState)) }
+    var distanceState by remember {
+        mutableStateOf(
+            getDistanceForUnit(
+                savedHistory,
+                userPreferencesUiState
+            )
+        )
+    }
     var unitState by remember { mutableStateOf(userPreferencesUiState.defaultDistanceUnit.shortForm) }
     Card(
         modifier = modifier
@@ -193,11 +199,17 @@ fun SaveCardioExerciseHistoryButton(
     }
 }
 
-private fun getDistanceForUnit(exerciseHistory: CardioExerciseHistoryUiState, userPreferencesUiState: UserPreferencesUiState) = if (exerciseHistory.distance != null) {
+private fun getDistanceForUnit(
+    exerciseHistory: CardioExerciseHistoryUiState,
+    userPreferencesUiState: UserPreferencesUiState
+) = if (exerciseHistory.distance != null) {
     if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
         exerciseHistory.distance.toString()
     } else {
-        convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, exerciseHistory.distance!!).toString()
+        convertToDistanceUnit(
+            userPreferencesUiState.defaultDistanceUnit,
+            exerciseHistory.distance!!
+        ).toString()
     }
 } else {
     ""

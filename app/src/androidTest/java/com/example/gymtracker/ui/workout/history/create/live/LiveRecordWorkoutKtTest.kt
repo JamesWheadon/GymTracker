@@ -169,7 +169,8 @@ class LiveRecordWorkoutKtTest {
             LiveRecordWorkout(
                 uiState = workoutWithExercises,
                 saveFunction = { },
-                finishFunction = { finished = true })
+                finishFunction = { finished = true }
+            )
         }
 
         finishWorkout.performClick()
@@ -229,5 +230,25 @@ class LiveRecordWorkoutKtTest {
         startButtons[0].performClick()
         distanceField.assertExists()
         repsField.assertDoesNotExist()
+    }
+
+    @Test
+    fun rendersLiveRecordWorkoutDisabledCompleteButtonWhenExerciseInProgress() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWorkout(
+                    uiState = workoutWithExercises,
+                    saveFunction = { },
+                    finishFunction = { }
+                )
+            }
+        }
+
+        finishWorkout.assertIsEnabled()
+
+        startButtons[0].performClick()
+
+        finishWorkout.assertIsNotEnabled()
     }
 }

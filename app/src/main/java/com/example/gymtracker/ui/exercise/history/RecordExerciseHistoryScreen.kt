@@ -9,7 +9,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.ui.AppViewModelProvider
@@ -17,8 +16,6 @@ import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import com.example.gymtracker.ui.theme.GymTrackerTheme
-
 
 @Composable
 fun RecordExerciseHistoryScreen(
@@ -102,21 +99,5 @@ fun RecordExerciseHistoryScreen(
                 contentDescription = "Close"
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RecordExerciseHistoryScreenPreview() {
-    GymTrackerTheme(darkTheme = false) {
-        RecordExerciseHistoryScreen(
-            exercise = ExerciseUiState(
-                name = "Curls",
-                muscleGroup = "Biceps",
-                equipment = "Dumbbells"
-            ),
-            saveFunction = {},
-            onDismiss = {}
-        )
     }
 }

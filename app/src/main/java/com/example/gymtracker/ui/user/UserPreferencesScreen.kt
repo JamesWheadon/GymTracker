@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -57,8 +56,6 @@ fun UserPreferencesScreen(
     )
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserPreferencesScreen(
     uiState: UserPreferencesUiState,
@@ -74,7 +71,8 @@ fun UserPreferencesScreen(
         topBar = {
             TopBar(
                 text = "User Settings",
-                navController = navController
+                navController = navController,
+                settingsScreen = true
             )
         }
     ) { innerPadding ->

@@ -7,9 +7,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.ui.exercise.ExerciseUiState
-import com.example.gymtracker.ui.exercise.toExerciseUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
@@ -30,8 +28,8 @@ class CreateExerciseScreenKtTest {
     private val closeButton = rule.onNode(hasContentDescription("Close"))
     private val nameError = rule.onNode(hasText("Name already taken"))
 
-    private val exercise = Exercise(0, "Test Curls", "Biceps", "Dumbbells")
-    private val savedExercise = Exercise(1, "Saved Curls", "Biceps", "Dumbbells")
+    private val exercise = ExerciseUiState(0, "Test Curls", "Biceps", "Dumbbells")
+    private val savedExercise = ExerciseUiState(1, "Saved Curls", "Biceps", "Dumbbells")
 
     @Test
     fun rendersEmptyCreateForm() {
@@ -79,7 +77,7 @@ class CreateExerciseScreenKtTest {
 
     @Test
     fun doesNotSaveAndDismissWithEmptyExerciseName() {
-        var created: Exercise? = null
+        var created: ExerciseUiState? = null
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
@@ -104,7 +102,7 @@ class CreateExerciseScreenKtTest {
 
     @Test
     fun doesNotSaveAndDismissWithEmptyEquipment() {
-        var created: Exercise? = null
+        var created: ExerciseUiState? = null
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
@@ -129,7 +127,7 @@ class CreateExerciseScreenKtTest {
 
     @Test
     fun doesNotSaveAndDismissWithEmptyMuscleGroup() {
-        var created: Exercise? = null
+        var created: ExerciseUiState? = null
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
@@ -154,7 +152,7 @@ class CreateExerciseScreenKtTest {
 
     @Test
     fun savesAndDismissCreateScreenWithAllFieldsFull() {
-        var created: Exercise? = null
+        var created: ExerciseUiState? = null
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
@@ -185,7 +183,7 @@ class CreateExerciseScreenKtTest {
                 buttonText = "Create",
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
-                exercise = exercise.toExerciseUiState(),
+                exercise = exercise,
                 onDismiss = { },
                 createFunction = { }
             )
@@ -205,7 +203,7 @@ class CreateExerciseScreenKtTest {
                 buttonText = "Create",
                 savedExerciseNames = listOf(savedExercise.name),
                 savedMuscleGroups = listOf(),
-                exercise = savedExercise.toExerciseUiState(),
+                exercise = savedExercise,
                 onDismiss = { },
                 createFunction = { }
             )
@@ -219,7 +217,7 @@ class CreateExerciseScreenKtTest {
 
     @Test
     fun cantSaveWithErrorMessageWhenExerciseNameAlreadyTaken() {
-        var created: Exercise? = null
+        var created: ExerciseUiState? = null
         var dismissed = false
 
         rule.setContent {
@@ -228,7 +226,7 @@ class CreateExerciseScreenKtTest {
                 buttonText = "Create",
                 savedExerciseNames = listOf(savedExercise.name),
                 savedMuscleGroups = listOf(),
-                exercise = savedExercise.toExerciseUiState(),
+                exercise = savedExercise,
                 onDismiss = { dismissed = true },
                 createFunction = { newExercise -> created = newExercise }
             )
@@ -273,7 +271,7 @@ class CreateExerciseScreenKtTest {
 
     @Test
     fun createCardioExerciseWithJustNameField() {
-        var created: Exercise? = null
+        var created: ExerciseUiState? = null
         var dismissed = false
 
         rule.setContent {
@@ -300,7 +298,7 @@ class CreateExerciseScreenKtTest {
 
     @Test
     fun doesNotCreateCardioExerciseWithEmptyNameField() {
-        var created: Exercise? = null
+        var created: ExerciseUiState? = null
         var dismissed = false
 
         rule.setContent {

@@ -11,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +49,6 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-
 @Composable
 fun ExerciseHistoryCalendar(
     uiState: ExerciseDetailsUiState,
@@ -61,7 +59,8 @@ fun ExerciseHistoryCalendar(
     val activeDays = listOf(uiState.weightsHistory, uiState.cardioHistory).flatten()
         .filter { history -> history.date.month == selectedMonth.month && history.date.year == selectedMonth.year }
         .map { history -> history.date.dayOfMonth }
-    val exerciseHistory = if (uiState.exercise.equipment == "") uiState.cardioHistory else uiState.weightsHistory
+    val exerciseHistory =
+        if (uiState.exercise.equipment == "") uiState.cardioHistory else uiState.weightsHistory
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
@@ -135,7 +134,6 @@ fun ExercisesOnDay(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseHistoryDetails(
     exerciseHistory: ExerciseHistoryUiState,
@@ -224,7 +222,9 @@ fun WeightsExerciseHistoryDetails(
             modifier = Modifier.weight(1F)
         ) {
             Text(text = "Weight: $weight${userPreferencesUiState.defaultWeightUnit.shortForm}")
-            Text(text = "Rest time: ${exerciseHistory.rest}")
+            if (exerciseHistory.rest != null) {
+                Text(text = "Rest time: ${exerciseHistory.rest}")
+            }
         }
         if (editEnabled) {
             IconButton(onClick = deleteFunction) {
@@ -269,11 +269,15 @@ fun CardioExerciseHistoryDetails(
                 Text(text = "Time: $time")
             }
             val userPreferencesUiState = LocalUserPreferences.current
-            val distance = if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
-                exerciseHistory.distance
-            } else {
-                convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, exerciseHistory.distance!!)
-            }
+            val distance =
+                if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
+                    exerciseHistory.distance
+                } else {
+                    convertToDistanceUnit(
+                        userPreferencesUiState.defaultDistanceUnit,
+                        exerciseHistory.distance!!
+                    )
+                }
             Column(
                 modifier = Modifier.weight(1F)
             ) {
@@ -289,11 +293,15 @@ fun CardioExerciseHistoryDetails(
                 }
                 if (exerciseHistory.distance != null) {
                     val userPreferencesUiState = LocalUserPreferences.current
-                    val distance = if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
-                        exerciseHistory.distance
-                    } else {
-                        convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, exerciseHistory.distance!!)
-                    }
+                    val distance =
+                        if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
+                            exerciseHistory.distance
+                        } else {
+                            convertToDistanceUnit(
+                                userPreferencesUiState.defaultDistanceUnit,
+                                exerciseHistory.distance!!
+                            )
+                        }
                     Text(text = "Distance: $distance${userPreferencesUiState.defaultDistanceUnit.shortForm}")
                 }
                 if (exerciseHistory.calories != null) {

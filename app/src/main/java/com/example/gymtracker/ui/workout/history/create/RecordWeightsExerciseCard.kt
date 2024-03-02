@@ -76,7 +76,14 @@ fun RecordWeightsExerciseCard(
                 val userPreferencesUiState = LocalUserPreferences.current
                 var setsState by remember { mutableStateOf(exerciseHistory.sets.toString()) }
                 var repsState by remember { mutableStateOf(exerciseHistory.reps.toString()) }
-                var weightState by remember { mutableStateOf(getWeightForUnit(exerciseHistory, userPreferencesUiState)) }
+                var weightState by remember {
+                    mutableStateOf(
+                        getWeightForUnit(
+                            exerciseHistory,
+                            userPreferencesUiState
+                        )
+                    )
+                }
                 var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit.shortForm) }
                 val setsError = setsState == "" || setsState.toInt() < 1
                 val repsError = repsState == "" || repsState.toInt() < 1
@@ -124,7 +131,7 @@ fun RecordWeightsExerciseCard(
                 }
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.Top,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp, vertical = 0.dp)

@@ -2,7 +2,6 @@ package com.example.gymtracker.ui.exercise
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gymtracker.data.exercise.Exercise
 import com.example.gymtracker.data.exercise.ExerciseRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -47,9 +46,9 @@ class ExercisesScreenViewModel(
                 initialValue = listOf()
             )
 
-    fun saveExercise(newExercise: Exercise) {
+    fun saveExercise(newExercise: ExerciseUiState) {
         viewModelScope.launch {
-            exerciseRepository.insertExercise(newExercise)
+            exerciseRepository.insertExercise(newExercise.toExercise())
         }
     }
 }

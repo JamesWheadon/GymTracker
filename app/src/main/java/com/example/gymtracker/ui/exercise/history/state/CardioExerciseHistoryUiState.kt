@@ -3,7 +3,6 @@ package com.example.gymtracker.ui.exercise.history.state
 import com.example.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistory
 import java.time.LocalDate
 
-
 data class CardioExerciseHistoryUiState(
     override val id: Int = 0,
     override val exerciseId: Int = 0,
