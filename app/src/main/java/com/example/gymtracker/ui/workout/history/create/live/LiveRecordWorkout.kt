@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,6 +34,7 @@ import com.example.gymtracker.ui.navigation.NavigationRoute
 import com.example.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.example.gymtracker.ui.navigation.TopBar
 import com.example.gymtracker.ui.theme.GymTrackerTheme
+import com.example.gymtracker.ui.workout.WorkoutsRoute
 import com.example.gymtracker.ui.workout.details.WorkoutDetailsRoute
 import com.example.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.example.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
@@ -76,6 +78,10 @@ fun LiveRecordWorkout(
                 navController.popBackStack()
                 navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(uiState.workoutId))
             },
+            cancelFunction = {
+                navController.popBackStack()
+                navController.navigate(WorkoutsRoute.route)
+            },
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxWidth()
@@ -88,6 +94,7 @@ fun LiveRecordWorkout(
     uiState: WorkoutWithExercisesUiState,
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     finishFunction: () -> Unit,
+    cancelFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val completedExercises = rememberSaveable(saver = IntListSaver) { mutableStateListOf() }
@@ -140,8 +147,17 @@ fun LiveRecordWorkout(
                 )
             }
         }
-        Button(enabled = currentExercise == -1, onClick = { finishFunction() }) {
-            Text(text = "Finish Workout")
+        if (completedExercises.size > 0 || currentExercise != -1) {
+            Button(enabled = currentExercise == -1, onClick = { finishFunction() }) {
+                Text(text = "Finish Workout")
+            }
+        } else {
+            Button(
+                onClick = { cancelFunction() },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(text = "Cancel")
+            }
         }
     }
 }
@@ -240,7 +256,8 @@ fun LiveRecordWorkoutPreview() {
                 )
             ),
             saveFunction = { },
-            finishFunction = { }
+            finishFunction = { },
+            cancelFunction = { }
         )
     }
 }

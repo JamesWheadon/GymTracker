@@ -77,6 +77,8 @@ class RecordWorkoutHistoryScreenKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordWorkoutHistoryScreen(
                     uiState = workoutWithExercises,
+                    titleText = "Record Workout",
+                    workoutSaveFunction = { },
                     onDismiss = { }
                 )
             }
@@ -98,6 +100,8 @@ class RecordWorkoutHistoryScreenKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordWorkoutHistoryScreen(
                     uiState = workoutWithExercises,
+                    titleText = "Record Workout",
+                    workoutSaveFunction = { },
                     onDismiss = { }
                 )
             }
@@ -114,7 +118,7 @@ class RecordWorkoutHistoryScreenKtTest {
     }
 
     @Test
-    fun recordWorkoutScreenSaveButtonSavesCheckedExercises() = runBlocking {
+    fun recordWorkoutScreenSaveButtonSavesCheckedExercises() {
         var workout = WorkoutHistoryWithExercisesUiState()
         var dismissed = false
 
@@ -142,6 +146,29 @@ class RecordWorkoutHistoryScreenKtTest {
         saveButton.performClick()
 
         assertThat(workout.exercises.size, equalTo(1))
+        assertThat(dismissed, equalTo(true))
+    }
+
+    @Test
+    fun recordWorkoutScreenSaveButtonDoesNotSaveWithNoExercises() {
+        var saved = false
+        var dismissed = false
+
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWorkoutHistoryScreen(
+                    uiState = workoutWithExercises,
+                    titleText = "Record Workout",
+                    workoutSaveFunction = { saved = true },
+                    onDismiss = { dismissed = true }
+                )
+            }
+        }
+
+        saveButton.performClick()
+
+        assertThat(saved, equalTo(false))
         assertThat(dismissed, equalTo(true))
     }
 

@@ -49,6 +49,7 @@ class LiveRecordWorkoutKtTest {
     private val distanceField = rule.onNode(hasContentDescription("Distance"))
     private val finishExercise = rule.onNode(hasText("Finish Exercise"))
     private val finishWorkout = rule.onNode(hasText("Finish Workout"))
+    private val cancel = rule.onNode(hasText("Cancel"))
 
     @Test
     fun rendersLiveRecordExerciseCardNotComplete() {
@@ -112,14 +113,16 @@ class LiveRecordWorkoutKtTest {
         rule.setContent {
             LiveRecordWorkout(
                 uiState = workoutWithExercises,
-                saveFunction = {},
-                finishFunction = {}
+                saveFunction = { },
+                finishFunction = { },
+                cancelFunction = { }
             )
         }
 
         curlsExerciseName.assertExists()
         dipsExerciseName.assertExists()
         pressExerciseName.assertExists()
+        cancel.assertExists()
         startButtons.assertCountEquals(3)
         completedText.assertCountEquals(0)
     }
@@ -133,7 +136,8 @@ class LiveRecordWorkoutKtTest {
                 LiveRecordWorkout(
                     uiState = workoutWithExercises,
                     saveFunction = { saved = true },
-                    finishFunction = {}
+                    finishFunction = { },
+                    cancelFunction = { }
                 )
             }
         }
@@ -166,12 +170,29 @@ class LiveRecordWorkoutKtTest {
     fun rendersLiveRecordWorkoutCompleteWorkout() {
         var finished = false
         rule.setContent {
-            LiveRecordWorkout(
-                uiState = workoutWithExercises,
-                saveFunction = { },
-                finishFunction = { finished = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWorkout(
+                    uiState = workoutWithExercises,
+                    saveFunction = { },
+                    finishFunction = { finished = true },
+                    cancelFunction = { }
+                )
+            }
         }
+
+        startButtons[0].performClick()
+
+        repsField.performClick()
+        repsField.performTextInput("5")
+        restField.performClick()
+        restField.performTextInput("15")
+        weightField.performClick()
+        weightField.performTextInput("13.0")
+        rule.onNode(hasText("Start") and hasAnySibling(hasContentDescription("Reps")))
+            .performClick()
+
+        finishExercise.performClick()
 
         finishWorkout.performClick()
 
@@ -185,8 +206,9 @@ class LiveRecordWorkoutKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 LiveRecordWorkout(
                     uiState = workoutWithExercises,
-                    saveFunction = {},
-                    finishFunction = {}
+                    saveFunction = { },
+                    finishFunction = { },
+                    cancelFunction = { }
                 )
             }
         }
@@ -209,7 +231,12 @@ class LiveRecordWorkoutKtTest {
         rule.setContent {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-                LiveRecordWorkout(uiState = weightsWorkout, saveFunction = {}, finishFunction = {})
+                LiveRecordWorkout(
+                    uiState = weightsWorkout,
+                    saveFunction = { },
+                    finishFunction = { },
+                    cancelFunction = { }
+                )
             }
         }
 
@@ -223,7 +250,12 @@ class LiveRecordWorkoutKtTest {
         rule.setContent {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-                LiveRecordWorkout(uiState = cardioWorkout, saveFunction = {}, finishFunction = {})
+                LiveRecordWorkout(
+                    uiState = cardioWorkout,
+                    saveFunction = { },
+                    finishFunction = { },
+                    cancelFunction = { }
+                )
             }
         }
 
@@ -240,12 +272,13 @@ class LiveRecordWorkoutKtTest {
                 LiveRecordWorkout(
                     uiState = workoutWithExercises,
                     saveFunction = { },
-                    finishFunction = { }
+                    finishFunction = { },
+                    cancelFunction = { }
                 )
             }
         }
 
-        finishWorkout.assertIsEnabled()
+        finishWorkout.assertDoesNotExist()
 
         startButtons[0].performClick()
 
