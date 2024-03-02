@@ -2,6 +2,10 @@ package com.example.gymtracker.ui
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasContentDescription
@@ -77,96 +81,98 @@ class FormFieldsKtTest {
         rule.onNode(hasText("Bismuth")).assertDoesNotExist()
     }
 
-//    @Test
-//    fun shouldGiveSuggestionsForTextTwoCharactersAndAboveThatMatchStart() {
-//        var enteredText by mutableStateOf(TextFieldValue(text = ""))
-//
-//        rule.setContent {
-//            FormInformationFieldWithSuggestions(
-//                label = "Test Field",
-//                value = enteredText,
-//                onChange = { enteredText = it },
-//                suggestions = listOf("Biceps", "Bicycle", "Bismuth")
-//            )
-//        }
-//
-//        val textField = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
-//        textField.performTextInput("Bi")
-//
-//        var biceps = rule.onNode(hasText("Biceps"))
-//        var bicycle = rule.onNode(hasText("Bicycle"))
-//        var bismuth = rule.onNode(hasText("Bismuth"))
-//
-//        biceps.assertExists()
-//        bicycle.assertExists()
-//        bismuth.assertExists()
-//
-//        textField.performTextInput("c")
-//
-//        biceps = rule.onNode(hasText("Biceps"))
-//        bicycle = rule.onNode(hasText("Bicycle"))
-//        bismuth = rule.onNode(hasText("Bismuth"))
-//
-//        biceps.assertExists()
-//        bicycle.assertExists()
-//        bismuth.assertDoesNotExist()
-//    }
+    @Test
+    fun shouldGiveSuggestionsForTextTwoCharactersAndAboveThatMatchStart() {
+        rule.setContent {
+            var enteredText by remember { mutableStateOf(TextFieldValue(text = "")) }
+            FormInformationFieldWithSuggestions(
+                label = "Test Field",
+                value = enteredText,
+                onChange = { enteredText = it },
+                suggestions = listOf("Biceps", "Bicycle", "Bismuth")
+            )
+        }
 
-//    @Test
-//    fun clickingSuggestionsEntersSuggestionInToTextFieldValue() {
-//        var enteredText by mutableStateOf(TextFieldValue(text = ""))
-//        rule.setContent {
-//            FormInformationFieldWithSuggestions(
-//                label = "Test Field",
-//                value = enteredText,
-//                onChange = { enteredText = it },
-//                suggestions = listOf("Biceps", "Bicycle", "Bismuth")
-//            )
-//        }
-//
-//        val textField = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
-//        textField.performTextInput("Bi")
-//
-//        var biceps = rule.onNode(hasText("Biceps"))
-//
-//        biceps.performClick()
-//
-//        assertThat(enteredText.text, equalTo("Biceps"))
-//
-//        biceps = rule.onNode(hasText("Biceps") and hasParent(hasScrollAction()))
-//        val bicycle = rule.onNode(hasText("Bicycle"))
-//        val bismuth = rule.onNode(hasText("Bismuth"))
-//
-//        biceps.assertExists()
-//        bicycle.assertDoesNotExist()
-//        bismuth.assertDoesNotExist()
-//    }
+        val textField = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
+        textField.performClick()
+        textField.performTextInput("Bi")
 
-//    @Test
-//    fun shouldOnlyDisplayFirstThreeSuggestionsAlphabetically() {
-//        var enteredText by mutableStateOf(TextFieldValue(text = ""))
-//        rule.setContent {
-//            FormInformationFieldWithSuggestions(
-//                label = "Test Field",
-//                value = enteredText,
-//                onChange = { enteredText = it },
-//                suggestions = listOf("Biceps", "Bicycle", "Bismuth", "Biscuits")
-//            )
-//        }
-//
-//        val textField = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
-//        textField.performTextInput("Bi")
-//
-//        val biceps = rule.onNode(hasText("Biceps"))
-//        val bicycle = rule.onNode(hasText("Bicycle"))
-//        val bismuth = rule.onNode(hasText("Bismuth"))
-//        val biscuits = rule.onNode(hasText("Biscuits"))
-//
-//        biceps.assertExists()
-//        bicycle.assertExists()
-//        bismuth.assertDoesNotExist()
-//        biscuits.assertExists()
-//    }
+        var biceps = rule.onNode(hasText("Biceps"))
+        var bicycle = rule.onNode(hasText("Bicycle"))
+        var bismuth = rule.onNode(hasText("Bismuth"))
+
+        biceps.assertExists()
+        bicycle.assertExists()
+        bismuth.assertExists()
+
+        textField.performTextInput("c")
+
+        biceps = rule.onNode(hasText("Biceps"))
+        bicycle = rule.onNode(hasText("Bicycle"))
+        bismuth = rule.onNode(hasText("Bismuth"))
+
+        biceps.assertExists()
+        bicycle.assertExists()
+        bismuth.assertDoesNotExist()
+    }
+
+    @Test
+    fun clickingSuggestionsEntersSuggestionInToTextFieldValue() {
+        var enteredText by mutableStateOf(TextFieldValue(text = ""))
+        rule.setContent {
+            FormInformationFieldWithSuggestions(
+                label = "Test Field",
+                value = enteredText,
+                onChange = { enteredText = it },
+                suggestions = listOf("Biceps", "Bicycle", "Bismuth")
+            )
+        }
+
+        val textField = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
+        textField.performClick()
+        textField.performTextInput("Bi")
+
+        var biceps = rule.onNode(hasText("Biceps"))
+
+        biceps.performClick()
+
+        assertThat(enteredText.text, equalTo("Biceps"))
+
+        biceps = rule.onNode(hasText("Biceps") and hasParent(hasScrollAction()))
+        val bicycle = rule.onNode(hasText("Bicycle"))
+        val bismuth = rule.onNode(hasText("Bismuth"))
+
+        biceps.assertExists()
+        bicycle.assertDoesNotExist()
+        bismuth.assertDoesNotExist()
+    }
+
+    @Test
+    fun shouldOnlyDisplayFirstThreeSuggestionsAlphabetically() {
+        rule.setContent {
+            var enteredText by remember { mutableStateOf(TextFieldValue(text = "")) }
+            FormInformationFieldWithSuggestions(
+                label = "Test Field",
+                value = enteredText,
+                onChange = { enteredText = it },
+                suggestions = listOf("Biceps", "Bicycle", "Bismuth", "Biscuits")
+            )
+        }
+
+        val textField = rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
+        textField.performClick()
+        textField.performTextInput("Bi")
+
+        val biceps = rule.onNode(hasText("Biceps"))
+        val bicycle = rule.onNode(hasText("Bicycle"))
+        val bismuth = rule.onNode(hasText("Bismuth"))
+        val biscuits = rule.onNode(hasText("Biscuits"))
+
+        biceps.assertExists()
+        bicycle.assertExists()
+        bismuth.assertDoesNotExist()
+        biscuits.assertExists()
+    }
 
     @Test
     fun shouldRenderFormTimeField() {
