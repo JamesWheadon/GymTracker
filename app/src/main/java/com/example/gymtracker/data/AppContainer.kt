@@ -10,6 +10,8 @@ import com.example.gymtracker.data.exerciseHistory.weights.OfflineWeightsExercis
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.example.gymtracker.data.exerciseWithHistory.ExerciseWithHistoryRepository
 import com.example.gymtracker.data.exerciseWithHistory.OfflineExerciseWithHistoryRepository
+import com.example.gymtracker.data.history.HistoryRepository
+import com.example.gymtracker.data.history.OfflineHistoryRepository
 import com.example.gymtracker.data.user.OfflineUserPreferencesRepository
 import com.example.gymtracker.data.user.UserPreferencesRepository
 import com.example.gymtracker.data.workout.OfflineWorkoutRepository
@@ -31,6 +33,7 @@ interface AppContainer {
     val workoutWithExerciseRepository: WorkoutWithExercisesRepository
     val workoutHistoryRepository: WorkoutHistoryRepository
     val userPreferencesRepository: UserPreferencesRepository
+    val historyRepository: HistoryRepository
 }
 
 class AppDataContainer(private val context: Context) : AppContainer {
@@ -60,5 +63,8 @@ class AppDataContainer(private val context: Context) : AppContainer {
     }
     override val userPreferencesRepository: UserPreferencesRepository by lazy {
         OfflineUserPreferencesRepository(context)
+    }
+    override val historyRepository: HistoryRepository by lazy {
+        OfflineHistoryRepository(ExerciseWorkoutDatabase.getDatabase(context).historyDao())
     }
 }

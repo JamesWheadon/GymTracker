@@ -2,33 +2,17 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="All Tests">
-        <State />
-      </entry>
-      <entry key="FormFieldsKtTest">
+      <entry key="HistoryDaoTest">
         <State />
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="rendersLiveRecordWorkoutDisabledCompleteButtonWhenExerciseInProgress()">
+      <entry key="daoGetWorkoutHistoryDates_getsDatesFromDB()">
         <State />
       </entry>
-      <entry key="shouldOnlyDisplayFirstThreeSuggestionsAlphabetically()">
-        <State>
-          <targetSelectedWithDropDown>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\Whead\.android\avd\Pixel_6_API_34.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-03-01T22:05:53.655309600Z" />
-        </State>
+      <entry key="daoGetWorkoutsForDate_getsWorkoutsFromDB()">
+        <State />
       </entry>
     </value>
   </component>
