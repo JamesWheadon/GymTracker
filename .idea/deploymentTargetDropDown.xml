@@ -2,16 +2,16 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="HistoryDaoTest">
+      <entry key="OverallHistoryScreenKtTest">
         <State />
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="daoGetWorkoutHistoryDates_getsDatesFromDB()">
+      <entry key="overallHistoryScreenClickingDayRendersHistoryOnDay()">
         <State />
       </entry>
-      <entry key="daoGetWorkoutsForDate_getsWorkoutsFromDB()">
+      <entry key="rendersHistoryOnDay()">
         <State />
       </entry>
     </value>
