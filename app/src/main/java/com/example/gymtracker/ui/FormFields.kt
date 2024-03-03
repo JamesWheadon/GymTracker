@@ -338,6 +338,13 @@ fun customCardElevation(): CardElevation {
     )
 }
 
+@Composable
+fun noCardElevation(): CardElevation {
+    return CardDefaults.cardElevation(
+        defaultElevation = 0.dp
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ActionConfirmationPreview() {

@@ -59,6 +59,7 @@ fun RecordWorkoutHistoryScreen(
                 workoutSaveFunction = { workoutHistoryWithExercises ->
                     viewModel.saveWorkoutHistory(
                         workoutHistoryWithExercises,
+                        workoutHistory,
                         titleText == RECORD_WORKOUT
                     )
                 },

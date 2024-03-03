@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.gymtracker.ui.AppViewModelProvider
+import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseCard
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.navigation.HomeNavigationInformation
@@ -119,7 +122,7 @@ fun OverallHistoryScreen(
             .map { date -> date.dayOfMonth }
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier
+        modifier = modifier.padding(horizontal = 8.dp)
     ) {
         if (showHistory) {
             HistoryOnDay(
@@ -160,45 +163,61 @@ fun HistoryOnDay(
     modifier: Modifier = Modifier
 ) {
     Box {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Card(
+            elevation = customCardElevation(),
+            modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text(
-                text = date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
-                style = MaterialTheme.typography.headlineMedium
-            )
-            if (workoutsOnDateUiState.isNotEmpty()) {
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
-                    text = "Workouts",
-                    style = MaterialTheme.typography.headlineMedium
+                    text = date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
-                workoutsOnDateUiState.forEach { workout ->
-                    WorkoutCard(
-                        workout = workout,
-                        navigationFunction = workoutNavigationFunction
+                if (workoutsOnDateUiState.isNotEmpty()) {
+                    Text(
+                        text = "Workouts",
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+                    Card(
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        workoutsOnDateUiState.forEach { workout ->
+                            WorkoutCard(
+                                workout = workout,
+                                navigationFunction = workoutNavigationFunction
+                            )
+                        }
+                    }
                 }
-            }
-            if (exercisesOnDateUiState.isNotEmpty()) {
-                Text(
-                    text = "Exercises",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                exercisesOnDateUiState.forEach { exercise ->
-                    ExerciseCard(
-                        exercise = exercise,
-                        navigationFunction = exerciseNavigationFunction
+                if (exercisesOnDateUiState.isNotEmpty()) {
+                    Text(
+                        text = "Exercises",
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+                    Card(
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        exercisesOnDateUiState.forEach { exercise ->
+                            ExerciseCard(
+                                exercise = exercise,
+                                navigationFunction = exerciseNavigationFunction
+                            )
+                        }
+                    }
                 }
             }
         }
         IconButton(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .offset((-8).dp, (-12).dp),
+                .offset((-8).dp, (12).dp),
             onClick = { onDismiss() }
         ) {
             Icon(
