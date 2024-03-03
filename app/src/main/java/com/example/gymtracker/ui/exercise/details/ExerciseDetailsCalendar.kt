@@ -40,6 +40,7 @@ import com.example.gymtracker.ui.exercise.history.UpdateExerciseHistoryScreen
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.example.gymtracker.ui.noCardElevation
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import com.example.gymtracker.ui.user.LocalUserPreferences
 import com.example.gymtracker.ui.visualisations.Calendar
@@ -140,12 +141,13 @@ fun ExerciseHistoryDetails(
     exercise: ExerciseUiState,
     deleteFunction: (ExerciseHistoryUiState) -> Unit,
     modifier: Modifier = Modifier,
-    editEnabled: Boolean = true
+    editEnabled: Boolean = true,
+    elevation: Boolean = true
 ) {
     var editExercise by remember { mutableStateOf(false) }
     var deleteExercise by remember { mutableStateOf(false) }
     Card(
-        elevation = customCardElevation(),
+        elevation = if (elevation) customCardElevation() else noCardElevation(),
         onClick = { editExercise = true && editEnabled },
         modifier = modifier
     ) {

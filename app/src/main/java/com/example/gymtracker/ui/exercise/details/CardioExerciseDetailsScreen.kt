@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -98,17 +99,22 @@ fun CardioExerciseHistoryDetails(
         timeOptions = timeOptions,
         timeOnChange = { newTime -> time = newTime }
     )
-    Graph(
-        points = getCardioGraphDetails(
-            uiState,
-            detail,
-            detailOptions,
-            LocalUserPreferences.current
-        ),
-        startDate = timeOptionToStartTime[time] ?: currentDate,
-        yLabel = detail,
-        yUnit = yUnit[detail]!!
+    val dataPoints = getCardioGraphDetails(
+        uiState = uiState,
+        detail = detail,
+        detailOptions = detailOptions,
+        userPreferencesUiState = LocalUserPreferences.current
     )
+    if (dataPoints.isNotEmpty()) {
+        Graph(
+            points = dataPoints,
+            startDate = timeOptionToStartTime[time] ?: currentDate,
+            yLabel = detail,
+            yUnit = yUnit[detail]!!
+        )
+    } else {
+        Text(text = "No data for range")
+    }
 }
 
 @Composable

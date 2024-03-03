@@ -26,6 +26,7 @@ class WorkoutHistoryViewModel(
 
     fun saveWorkoutHistory(
         workoutHistory: WorkoutHistoryWithExercisesUiState,
+        existingWorkoutHistory: WorkoutHistoryWithExercisesUiState,
         save: Boolean = true
     ) {
         viewModelScope.launch {
@@ -44,14 +45,35 @@ class WorkoutHistoryViewModel(
                     }
                 }
             } else {
-                workoutHistoryRepository.update(workoutHistory.toWorkoutHistoryUiState().toWorkoutHistory())
                 workoutHistory.exercises.forEach { exerciseHistory ->
                     when (exerciseHistory) {
                         is WeightsExerciseHistoryUiState -> {
-                            weightsExerciseHistoryRepository.update(exerciseHistory.toWeightsExerciseHistory())
+                            if (exerciseHistory.id == 0) {
+                                exerciseHistory.workoutHistoryId = workoutHistory.workoutHistoryId
+                                weightsExerciseHistoryRepository.insert(exerciseHistory.toWeightsExerciseHistory())
+                            } else {
+                                weightsExerciseHistoryRepository.update(exerciseHistory.toWeightsExerciseHistory())
+                            }
                         }
                         is CardioExerciseHistoryUiState -> {
-                            cardioExerciseHistoryRepository.update(exerciseHistory.toCardioExerciseHistory())
+                            if (exerciseHistory.id == 0) {
+                                exerciseHistory.workoutHistoryId = workoutHistory.workoutHistoryId
+                                cardioExerciseHistoryRepository.insert(exerciseHistory.toCardioExerciseHistory())
+                            } else {
+                                cardioExerciseHistoryRepository.update(exerciseHistory.toCardioExerciseHistory())
+                            }
+                        }
+                    }
+                }
+                existingWorkoutHistory.exercises.forEach { exerciseHistory ->
+                    if (!workoutHistory.exercises.map { it.exerciseId }.contains(exerciseHistory.exerciseId)) {
+                        when (exerciseHistory) {
+                            is WeightsExerciseHistoryUiState -> {
+                                weightsExerciseHistoryRepository.delete(exerciseHistory.toWeightsExerciseHistory())
+                            }
+                            is CardioExerciseHistoryUiState -> {
+                                cardioExerciseHistoryRepository.delete(exerciseHistory.toCardioExerciseHistory())
+                            }
                         }
                     }
                 }

@@ -8,6 +8,7 @@ enum class NavigationRoutes(
 ) {
     EXERCISES_SCREEN("exercises", homeRoute = true, homeNavigationTitle = "Exercises"),
     WORKOUTS_SCREEN("workouts", homeRoute = true, homeNavigationTitle = "Workouts"),
+    OVERALL_HISTORY_SCREEN("history", homeRoute = true, homeNavigationTitle = "History"),
     WORKOUT_SELECTION_SCREEN("liveRecordWorkout"),
     EXERCISE_DETAILS_SCREEN(EXERCISES_SCREEN.baseRoute, navigationArgument = "exerciseId"),
     WORKOUT_DETAILS_SCREEN(WORKOUTS_SCREEN.baseRoute, navigationArgument = "workoutId"),

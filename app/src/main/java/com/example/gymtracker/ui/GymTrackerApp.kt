@@ -14,6 +14,8 @@ import com.example.gymtracker.ui.exercise.ExercisesRoute
 import com.example.gymtracker.ui.exercise.ExercisesScreen
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsRoute
 import com.example.gymtracker.ui.exercise.details.ExerciseDetailsScreen
+import com.example.gymtracker.ui.history.OverallHistoryRoute
+import com.example.gymtracker.ui.history.OverallHistoryScreen
 import com.example.gymtracker.ui.navigation.NavigationRoutes.EXERCISE_DETAILS_SCREEN
 import com.example.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.example.gymtracker.ui.navigation.NavigationRoutes.WORKOUT_DETAILS_SCREEN
@@ -44,6 +46,20 @@ fun GymTrackerApp(
             navController = navController,
             startDestination = ExercisesRoute.route,
         ) {
+            composable(route = WorkoutsRoute.route) {
+                WorkoutsScreen(
+                    navController = navController,
+                    workoutNavigationFunction = { id: Int ->
+                        navController.navigate(
+                            WorkoutDetailsRoute.getRouteForNavArgument(id)
+                        )
+                    },
+                    homeNavigationOptions = getHomeNavigationOptionsForRoute(
+                        homeRoute = WorkoutsRoute,
+                        navController = navController
+                    )
+                )
+            }
             composable(route = ExercisesRoute.route) {
                 ExercisesScreen(
                     navController = navController,
@@ -58,16 +74,21 @@ fun GymTrackerApp(
                     )
                 )
             }
-            composable(route = WorkoutsRoute.route) {
-                WorkoutsScreen(
+            composable(route = OverallHistoryRoute.route) {
+                OverallHistoryScreen(
                     navController = navController,
+                    exerciseNavigationFunction = { id: Int ->
+                        navController.navigate(
+                            ExerciseDetailsRoute.getRouteForNavArgument(id)
+                        )
+                    },
                     workoutNavigationFunction = { id: Int ->
                         navController.navigate(
                             WorkoutDetailsRoute.getRouteForNavArgument(id)
                         )
                     },
                     homeNavigationOptions = getHomeNavigationOptionsForRoute(
-                        homeRoute = WorkoutsRoute,
+                        homeRoute = OverallHistoryRoute,
                         navController = navController
                     )
                 )
