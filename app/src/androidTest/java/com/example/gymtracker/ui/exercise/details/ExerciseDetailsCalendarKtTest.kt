@@ -48,9 +48,9 @@ class ExerciseDetailsCalendarKtTest {
             } ${currentMonth.year}"
         )
     )
-    private val chooseMonthButton = rule.onNode(hasContentDescription("Change Month"))
-    private val previousYearButton = rule.onNode(hasContentDescription("Previous Year"))
-    private val nextYearButton = rule.onNode(hasContentDescription("Next Year"))
+    private val chooseMonthButton = rule.onNode(hasContentDescription("change month"))
+    private val previousYearButton = rule.onNode(hasContentDescription("previous year"))
+    private val nextYearButton = rule.onNode(hasContentDescription("next year"))
     private val date = rule.onNode(
         hasText(
             "Exercises on ${
@@ -60,13 +60,13 @@ class ExerciseDetailsCalendarKtTest {
     )
     private val sets = rule.onNode(hasText("Sets: 1"))
     private val reps = rule.onNode(hasText("Reps: 2"))
-    private val weight = rule.onNode(hasText("Weight: 13.0kg"))
-    private val poundsWeight = rule.onNode(hasText("Weight: 28.66lb"))
-    private val rest = rule.onNode(hasText("Rest time: 1"))
+    private val weight = rule.onNode(hasText("Weight: 13.00 kg"))
+    private val poundsWeight = rule.onNode(hasText("Weight: 28.66 lb"))
+    private val rest = rule.onNode(hasText("Rest time: 1 s"))
     private val time = rule.onNode(hasText("Time: 10:00"))
-    private val distance = rule.onNode(hasText("Distance: 100.0km"))
-    private val distanceMeters = rule.onNode(hasText("Distance: 100000.0m"))
-    private val calories = rule.onNode(hasText("Calories: 2500kcal"))
+    private val distance = rule.onNode(hasText("Distance: 100.00 km"))
+    private val distanceMeters = rule.onNode(hasText("Distance: 100000.00 m"))
+    private val calories = rule.onNode(hasText("Calories: 2500 kcal"))
     private val deleteButton = rule.onNode(hasContentDescription("Delete history"))
 
     private val weightsExerciseHistory = WeightsExerciseHistoryUiState(

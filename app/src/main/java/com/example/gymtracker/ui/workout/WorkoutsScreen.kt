@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.navigation.HomeNavigationInformation
@@ -79,7 +81,7 @@ fun WorkoutsScreen(
     var showWorkoutExercises by remember { mutableStateOf(false) }
     var newWorkoutName by remember { mutableStateOf("") }
     HomeScreenCardWrapper(
-        title = "My Workouts",
+        title = stringResource(id = R.string.workouts),
         navController = navController,
         homeNavigationOptions = homeNavigationOptions,
         floatingActionButton = {
@@ -91,7 +93,7 @@ fun WorkoutsScreen(
                 Icon(
                     imageVector = Icons.Default.Add,
                     tint = Color.Black,
-                    contentDescription = "Add Workout"
+                    contentDescription = stringResource(id = R.string.add_workout)
                 )
             }
         }
@@ -113,7 +115,7 @@ fun WorkoutsScreen(
                     newWorkoutName = workout.name
                 },
                 onDismiss = { showCreate = false },
-                screenTitle = "Create Workout"
+                screenTitle = stringResource(id = R.string.create_workout)
             )
         }
     }
@@ -138,10 +140,11 @@ private fun WorkoutsScreen(
     Card(
         shape = RoundedCornerShape(16.dp)
     ) {
+        val workoutColumnContentDescription = stringResource(id = R.string.workout_column)
         LazyColumn(
             modifier = modifier
                 .fillMaxWidth()
-                .semantics { contentDescription = "workoutColumn" },
+                .semantics { contentDescription = workoutColumnContentDescription },
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             items(workoutListUiState.workoutList) { workout ->

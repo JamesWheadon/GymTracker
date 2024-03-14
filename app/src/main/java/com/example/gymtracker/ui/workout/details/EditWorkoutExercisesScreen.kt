@@ -1,5 +1,6 @@
 package com.example.gymtracker.ui.workout.details
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -104,14 +106,19 @@ fun EditWorkoutExercisesScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     if (chosenExercises.isNotEmpty()) {
-                        ExercisesList(chosenExercises, deselectFunction, "Workout Exercises", true)
+                        ExercisesList(
+                            exercises = chosenExercises,
+                            clickFunction = deselectFunction,
+                            listTitle = R.string.workout_exercises,
+                            exercisesSelected = true
+                        )
                     }
                     if (remainingExercises.isNotEmpty()) {
                         ExercisesList(
-                            remainingExercises,
-                            selectFunction,
-                            "Available Exercises",
-                            false
+                            exercises = remainingExercises,
+                            clickFunction = selectFunction,
+                            listTitle = R.string.available_exercises,
+                            exercisesSelected = false
                         )
                     }
                 }
@@ -124,7 +131,7 @@ fun EditWorkoutExercisesScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Close"
+                    contentDescription = stringResource(id = R.string.close)
                 )
             }
         }
@@ -135,11 +142,11 @@ fun EditWorkoutExercisesScreen(
 fun ExercisesList(
     exercises: List<ExerciseUiState>,
     clickFunction: (ExerciseUiState) -> Unit,
-    listTitle: String,
+    @StringRes listTitle: Int,
     exercisesSelected: Boolean
 ) {
     Text(
-        text = listTitle,
+        text = stringResource(id = listTitle),
         style = MaterialTheme.typography.headlineLarge
     )
     exercises.forEach { exercise ->
@@ -168,11 +175,16 @@ fun AddRemoveExerciseCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            val checkboxContentDescription = if (checked) {
+                stringResource(id = R.string.deselect_exercise, exercise.name)
+            } else {
+                stringResource(id = R.string.select_exercise, exercise.name)
+            }
             Checkbox(
                 checked = checked,
                 onCheckedChange = { clickFunction(exercise) },
                 modifier = Modifier.semantics {
-                    contentDescription = "${if (checked) "Deselect" else "Select"} ${exercise.name}"
+                    contentDescription = checkboxContentDescription
                 }
             )
             Text(
@@ -190,19 +202,19 @@ fun AddRemoveExerciseCard(
                     ExerciseDetail(
                         exerciseInfo = exercise.muscleGroup,
                         iconId = R.drawable.info_48px,
-                        iconDescription = "exercise icon"
+                        iconDescription = R.string.muscle_icon
                     )
                     ExerciseDetail(
                         exerciseInfo = exercise.equipment,
                         iconId = R.drawable.exercise_filled_48px,
-                        iconDescription = "exercise icon"
+                        iconDescription = R.string.equipment_icon
                     )
                 }
             } else {
                 ExerciseDetail(
-                    exerciseInfo = "Cardio",
+                    exerciseInfo = stringResource(id = R.string.cardio),
                     iconId = R.drawable.cardio_48dp,
-                    iconDescription = "cardio icon",
+                    iconDescription = R.string.cardio_icon,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

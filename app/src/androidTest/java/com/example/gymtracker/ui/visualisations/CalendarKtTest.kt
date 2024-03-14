@@ -207,8 +207,8 @@ class CalendarKtTest {
         }
 
         val month = rule.onNode(hasText("October 2023"))
-        val searchButton = rule.onNode(hasContentDescription("Change Month"))
-        val backArrow = rule.onNode(hasContentDescription("Previous Year"))
+        val searchButton = rule.onNode(hasContentDescription("change month"))
+        val backArrow = rule.onNode(hasContentDescription("previous year"))
 
         month.assertExists()
         searchButton.assertExists()
@@ -225,8 +225,8 @@ class CalendarKtTest {
         }
 
         val month = rule.onNode(hasText("October 2023"))
-        val searchButton = rule.onNode(hasContentDescription("Change Month"))
-        val backArrow = rule.onNode(hasContentDescription("Previous Year"))
+        val searchButton = rule.onNode(hasContentDescription("change month"))
+        val backArrow = rule.onNode(hasContentDescription("previous year"))
 
         backArrow.assertDoesNotExist()
 
@@ -248,8 +248,8 @@ class CalendarKtTest {
         }
 
         val year = rule.onNode(hasText("2022"))
-        val backArrow = rule.onNode(hasContentDescription("Previous Year"))
-        val forwardArrow = rule.onNode(hasContentDescription("Next Year"))
+        val backArrow = rule.onNode(hasContentDescription("previous year"))
+        val forwardArrow = rule.onNode(hasContentDescription("next year"))
         val closeButton = rule.onNode(hasContentDescription("Close"))
 
         year.assertExists()
@@ -273,8 +273,8 @@ class CalendarKtTest {
 
         val yearPrevious = rule.onNode(hasText((Year.now().value - 1).toString()))
         val yearNow = rule.onNode(hasText((Year.now().value).toString()))
-        val backArrow = rule.onNode(hasContentDescription("Previous Year"))
-        val forwardArrow = rule.onNode(hasContentDescription("Next Year"))
+        val backArrow = rule.onNode(hasContentDescription("previous year"))
+        val forwardArrow = rule.onNode(hasContentDescription("next year"))
         val closeButton = rule.onNode(hasContentDescription("Close"))
 
         val yearPosition = yearPrevious.fetchSemanticsNode().positionInRoot
@@ -312,7 +312,7 @@ class CalendarKtTest {
         }
 
         val year = rule.onNode(hasText((Year.now().value - 1).toString()))
-        val backArrow = rule.onNode(hasContentDescription("Previous Year"))
+        val backArrow = rule.onNode(hasContentDescription("previous year"))
         val closeButton = rule.onNode(hasContentDescription("Close"))
 
         backArrow.assertExists()
@@ -355,8 +355,8 @@ class CalendarKtTest {
         }
 
         val year = rule.onNode(hasText((Year.now().minusYears(1).value).toString()))
-        val backArrow = rule.onNode(hasContentDescription("Previous Year"))
-        val nextArrow = rule.onNode(hasContentDescription("Next Year"))
+        val backArrow = rule.onNode(hasContentDescription("previous year"))
+        val nextArrow = rule.onNode(hasContentDescription("next year"))
         val closeButton = rule.onNode(hasContentDescription("Close"))
 
         backArrow.assertExists()

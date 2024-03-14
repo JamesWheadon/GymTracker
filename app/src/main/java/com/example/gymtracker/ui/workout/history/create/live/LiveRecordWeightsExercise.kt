@@ -21,14 +21,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.gymtracker.R
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
-import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.customCardElevation
@@ -89,7 +90,7 @@ fun LiveRecordWeightsExerciseInfo(
     var repsState by rememberSaveable { mutableStateOf("") }
     var restState by rememberSaveable { mutableStateOf("") }
     var weightState by rememberSaveable { mutableStateOf("") }
-    var unitState by rememberSaveable { mutableStateOf(userPreferencesUiState.defaultWeightUnit.shortForm) }
+    var unitState by rememberSaveable { mutableStateOf(userPreferencesUiState.defaultWeightUnit) }
     Column {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -99,7 +100,7 @@ fun LiveRecordWeightsExerciseInfo(
                 .padding(horizontal = 12.dp, vertical = 0.dp)
         ) {
             FormInformationField(
-                label = "Reps",
+                label = R.string.reps,
                 value = repsState,
                 onChange = { entry ->
                     repsState = entry
@@ -110,7 +111,7 @@ fun LiveRecordWeightsExerciseInfo(
                     .padding(0.dp)
             )
             FormInformationField(
-                label = "Rest",
+                label = R.string.rest,
                 value = restState,
                 onChange = { entry ->
                     restState = entry
@@ -129,7 +130,7 @@ fun LiveRecordWeightsExerciseInfo(
                 .padding(horizontal = 12.dp, vertical = 0.dp)
         ) {
             FormInformationField(
-                label = "Weight",
+                label = R.string.weight,
                 value = weightState,
                 onChange = { entry ->
                     weightState = entry
@@ -139,18 +140,16 @@ fun LiveRecordWeightsExerciseInfo(
                     .weight(1f)
                     .padding(0.dp)
             )
+            val unitsContentDescription = stringResource(id = R.string.units)
             DropdownBox(
-                options = listOf(
-                    WeightUnits.KILOGRAMS.shortForm,
-                    WeightUnits.POUNDS.shortForm
-                ),
+                options = WeightUnits.values().associateWith { it.shortForm },
                 onChange = { value ->
                     unitState = value
                 },
                 modifier = Modifier
                     .weight(1f)
                     .padding(0.dp)
-                    .semantics { contentDescription = "Units" },
+                    .semantics { contentDescription = unitsContentDescription },
                 selected = unitState
             )
         }
@@ -164,18 +163,18 @@ fun LiveRecordWeightsExerciseInfo(
                     ExerciseData(
                         reps = repsState.toInt(),
                         rest = restState.toInt(),
-                        weight = if (unitState == WeightUnits.KILOGRAMS.shortForm) {
+                        weight = if (unitState == WeightUnits.KILOGRAMS) {
                             weightState.toDouble()
                         } else {
                             convertToKilograms(
-                                getWeightUnitFromShortForm(unitState),
+                                unitState,
                                 weightState.toDouble()
                             )
                         }
                     )
                 )
             }) {
-                Text(text = "Start")
+                Text(text = stringResource(id = R.string.start))
             }
             Button(
                 onClick = {
@@ -183,7 +182,7 @@ fun LiveRecordWeightsExerciseInfo(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(id = R.string.cancel))
             }
         }
     }
@@ -200,7 +199,7 @@ fun LiveRecordExerciseSetsAndTimer(
     ) {
         var setsComplete by rememberSaveable { mutableIntStateOf(0) }
         var resting by rememberSaveable { mutableStateOf(false) }
-        Text(text = "Sets Completed: $setsComplete")
+        Text(text = stringResource(id = R.string.sets_completed, setsComplete))
         if (resting) {
             Timer(rest = exerciseData.rest!!) {
                 resting = false
@@ -210,11 +209,11 @@ fun LiveRecordExerciseSetsAndTimer(
                 setsComplete++
                 resting = true
             }) {
-                Text(text = "Finish Set")
+                Text(text = stringResource(id = R.string.finish_set))
             }
         }
         Button(onClick = { exerciseFinished(setsComplete) }) {
-            Text(text = "Finish Exercise")
+            Text(text = stringResource(id = R.string.finish_exercise))
         }
     }
 }
@@ -232,9 +231,15 @@ fun Timer(
         }
         finished()
     }
-    Text(text = String.format("%02d:%02d", time / 60, time % 60))
+    Text(
+        text = stringResource(
+            id = R.string.rest_timer,
+            String.format("%02d", time / 60),
+            String.format("%02d", time % 60)
+        )
+    )
     Button(onClick = finished) {
-        Text(text = "Stop")
+        Text(text = stringResource(id = R.string.stop))
     }
 }
 

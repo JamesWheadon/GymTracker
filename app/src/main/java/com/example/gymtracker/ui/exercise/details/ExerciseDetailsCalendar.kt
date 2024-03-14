@@ -23,10 +23,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymtracker.R
 import com.example.gymtracker.converters.DistanceUnits
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToDistanceUnit
@@ -110,7 +112,10 @@ fun ExercisesOnDay(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Exercises on ${date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))}",
+                text = stringResource(
+                    id = R.string.exercises_on,
+                    date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+                ),
                 style = MaterialTheme.typography.headlineMedium
             )
             for (history in exercises) {
@@ -129,7 +134,7 @@ fun ExercisesOnDay(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(id = R.string.close)
             )
         }
     }
@@ -185,7 +190,7 @@ fun ExerciseHistoryDetails(
             onDismissRequest = { deleteExercise = false }
         ) {
             ActionConfirmation(
-                actionTitle = "Do you want to delete this exercise?",
+                actionTitle = stringResource(id = R.string.delete_exercise_confirm),
                 confirmFunction = {
                     deleteFunction(
                         exerciseHistory
@@ -217,15 +222,19 @@ fun WeightsExerciseHistoryDetails(
         Column(
             modifier = Modifier.weight(1F)
         ) {
-            Text(text = "Sets: ${exerciseHistory.sets}")
-            Text(text = "Reps: ${exerciseHistory.reps}")
+            Text(text = stringResource(id = R.string.display_sets, exerciseHistory.sets))
+            Text(text = stringResource(id = R.string.display_reps, exerciseHistory.reps))
         }
         Column(
             modifier = Modifier.weight(1F)
         ) {
-            Text(text = "Weight: $weight${userPreferencesUiState.defaultWeightUnit.shortForm}")
+            Text(text = stringResource(
+                id = R.string.display_weight,
+                weight,
+                stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
+            ))
             if (exerciseHistory.rest != null) {
-                Text(text = "Rest time: ${exerciseHistory.rest}")
+                Text(text = stringResource(id = R.string.display_rest, exerciseHistory.rest!!))
             }
         }
         if (editEnabled) {
@@ -233,7 +242,7 @@ fun WeightsExerciseHistoryDetails(
                 Icon(
                     imageVector = Icons.Outlined.Delete,
                     tint = Color.Red,
-                    contentDescription = "Delete history"
+                    contentDescription = stringResource(id = R.string.delete_history)
                 )
             }
         }
@@ -249,16 +258,23 @@ fun CardioExerciseHistoryDetails(
 ) {
     val seconds = (exerciseHistory.minutes ?: 0) * 60 + (exerciseHistory.seconds ?: 0)
     val time = if (seconds >= 3600) {
-        "${seconds / 3600}:${
-            String.format(
-                "%02d",
-                (seconds % 3600) / 60
-            )
-        }:${String.format("%02d", seconds % 60)}"
+        stringResource(
+            id = R.string.display_hours,
+            seconds / 3600,
+            String.format("%02d", (seconds % 3600) / 60),
+            String.format("%02d", seconds % 60)
+        )
     } else if (seconds >= 60) {
-        "${String.format("%02d", seconds / 60)}:${String.format("%02d", seconds % 60)}"
+        stringResource(
+            id = R.string.display_minutes,
+            String.format("%02d", (seconds % 3600) / 60),
+            String.format("%02d", seconds % 60)
+        )
     } else {
-        "${String.format("%02d", seconds % 60)} s"
+        stringResource(
+            id = R.string.display_seconds,
+            String.format("%02d", seconds % 60)
+        )
     }
     Row(
         modifier = modifier.padding(8.dp),
@@ -268,7 +284,7 @@ fun CardioExerciseHistoryDetails(
             Column(
                 modifier = Modifier.weight(1F)
             ) {
-                Text(text = "Time: $time")
+                Text(text = stringResource(id = R.string.exercise_time, time))
             }
             val userPreferencesUiState = LocalUserPreferences.current
             val distance =
@@ -283,15 +299,15 @@ fun CardioExerciseHistoryDetails(
             Column(
                 modifier = Modifier.weight(1F)
             ) {
-                Text(text = "Distance: $distance${userPreferencesUiState.defaultDistanceUnit.shortForm}")
-                Text(text = "Calories: ${exerciseHistory.calories}kcal")
+                Text(text = stringResource(id = R.string.exercise_distance, distance!!, stringResource(id = userPreferencesUiState.defaultDistanceUnit.shortForm)))
+                Text(text = stringResource(id = R.string.exercise_calories, exerciseHistory.calories!!))
             }
         } else {
             Column(
                 modifier = Modifier.weight(1F)
             ) {
                 if (seconds != 0) {
-                    Text(text = "Time: $time")
+                    Text(text = stringResource(id = R.string.exercise_time, time))
                 }
                 if (exerciseHistory.distance != null) {
                     val userPreferencesUiState = LocalUserPreferences.current
@@ -304,10 +320,9 @@ fun CardioExerciseHistoryDetails(
                                 exerciseHistory.distance!!
                             )
                         }
-                    Text(text = "Distance: $distance${userPreferencesUiState.defaultDistanceUnit.shortForm}")
-                }
+                    Text(text = stringResource(id = R.string.exercise_distance, distance!!, stringResource(id = userPreferencesUiState.defaultDistanceUnit.shortForm)))
                 if (exerciseHistory.calories != null) {
-                    Text(text = "Calories: ${exerciseHistory.calories}kcal")
+                    Text(text = stringResource(id = R.string.exercise_calories, exerciseHistory.calories!!))                }
                 }
             }
         }
@@ -316,7 +331,7 @@ fun CardioExerciseHistoryDetails(
                 Icon(
                     imageVector = Icons.Outlined.Delete,
                     tint = Color.Red,
-                    contentDescription = "Delete history"
+                    contentDescription = stringResource(id = R.string.delete_history)
                 )
             }
         }

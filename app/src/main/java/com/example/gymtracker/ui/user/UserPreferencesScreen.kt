@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.gymtracker.R
 import com.example.gymtracker.converters.DistanceUnits
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.ui.AppViewModelProvider
@@ -48,8 +50,14 @@ fun UserPreferencesScreen(
     UserPreferencesScreen(
         uiState = uiState,
         navController = navController,
-        defaultDistanceUnitOnChange = { distanceUnit -> viewModel.updateDefaultDistanceUnit(DistanceUnits.values().first { it.displayName == distanceUnit }) },
-        defaultWeightUnitOnChange = { weightUnit -> viewModel.updateDefaultWeightUnit(WeightUnits.values().first { it.displayName == weightUnit }) },
+        defaultDistanceUnitOnChange = { distanceUnit ->
+            viewModel.updateDefaultDistanceUnit(
+                DistanceUnits.values().first { it.displayName == distanceUnit })
+        },
+        defaultWeightUnitOnChange = { weightUnit ->
+            viewModel.updateDefaultWeightUnit(
+                WeightUnits.values().first { it.displayName == weightUnit })
+        },
         displayHighestWeightOnChange = { viewModel.updateDisplayHighestWeight(it) },
         displayShortestTimeOnChange = { viewModel.updateDisplayShortestTime(it) },
         modifier = modifier
@@ -60,8 +68,8 @@ fun UserPreferencesScreen(
 fun UserPreferencesScreen(
     uiState: UserPreferencesUiState,
     navController: NavHostController,
-    defaultDistanceUnitOnChange: (String) -> Unit,
-    defaultWeightUnitOnChange: (String) -> Unit,
+    defaultDistanceUnitOnChange: (Int) -> Unit,
+    defaultWeightUnitOnChange: (Int) -> Unit,
     displayHighestWeightOnChange: (Boolean) -> Unit,
     displayShortestTimeOnChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -70,7 +78,7 @@ fun UserPreferencesScreen(
         modifier = modifier,
         topBar = {
             TopBar(
-                text = "User Settings",
+                text = stringResource(id = R.string.user_preferences),
                 navController = navController,
                 settingsScreen = true
             )
@@ -83,7 +91,9 @@ fun UserPreferencesScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize().padding(16.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -91,15 +101,22 @@ fun UserPreferencesScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Distances",
+                        text = stringResource(id = R.string.distances),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp)
                     )
+                    val distancesContentDescription = stringResource(id = R.string.distance_choices)
                     DropdownBox(
-                        options = DistanceUnits.values().map { it.displayName },
-                        onChange = defaultDistanceUnitOnChange,
-                        modifier = Modifier.weight(1f).semantics { contentDescription = "Distance choices" },
-                                selected = uiState.defaultDistanceUnit.displayName
+                        options = DistanceUnits.values().associateWith { it.displayName },
+                        onChange = { value ->
+                            defaultDistanceUnitOnChange(value.shortForm)
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics { contentDescription = distancesContentDescription },
+                        selected = uiState.defaultDistanceUnit
                     )
                 }
                 Row(
@@ -108,15 +125,22 @@ fun UserPreferencesScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Weight",
+                        text = stringResource(id = R.string.weight),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp)
                     )
+                    val weightsContentDescription = stringResource(id = R.string.weight_choices)
                     DropdownBox(
-                        options = WeightUnits.values().map { it.displayName },
-                        onChange = defaultWeightUnitOnChange,
-                        modifier = Modifier.weight(1f).semantics { contentDescription = "Weight choices" },
-                        selected = uiState.defaultWeightUnit.displayName
+                        options = WeightUnits.values().associateWith { it.displayName },
+                        onChange = { value ->
+                            defaultWeightUnitOnChange(value.shortForm)
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics { contentDescription = weightsContentDescription },
+                        selected = uiState.defaultWeightUnit
                     )
                 }
                 Row(
@@ -125,22 +149,23 @@ fun UserPreferencesScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Highest single weight rep",
+                        text = stringResource(id = R.string.highest_single_weight_rep),
                         textAlign = TextAlign.Right,
                         fontWeight = if (uiState.displayHighestWeight) null else FontWeight.Bold,
                         modifier = Modifier.weight(1f)
                     )
+                    val weightToggleContentDescription = stringResource(id = R.string.weight_display_toggle)
                     Switch(
                         checked = uiState.displayHighestWeight,
                         onCheckedChange = displayHighestWeightOnChange,
                         modifier = Modifier
                             .semantics {
-                                contentDescription = "Weight display toggle"
+                                contentDescription = weightToggleContentDescription
                             }
                             .padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = "Most weight per set",
+                        text = stringResource(id = R.string.most_weight_per_set),
                         fontWeight = if (uiState.displayHighestWeight) FontWeight.Bold else null,
                         modifier = Modifier.weight(1f)
                     )
@@ -151,20 +176,21 @@ fun UserPreferencesScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Longest Time",
+                        text = stringResource(id = R.string.longest_time),
                         textAlign = TextAlign.Right,
                         fontWeight = if (uiState.displayShortestTime) null else FontWeight.Bold,
                         modifier = Modifier.weight(1f)
                     )
+                    val timeToggleContentDescription = stringResource(id = R.string.time_display_toggle)
                     Switch(
                         checked = uiState.displayShortestTime,
                         onCheckedChange = displayShortestTimeOnChange,
                         modifier = Modifier
-                            .semantics { contentDescription = "Time display toggle" }
+                            .semantics { contentDescription = timeToggleContentDescription }
                             .padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = "Shortest Time",
+                        text = stringResource(id = R.string.shortest_time),
                         fontWeight = if (uiState.displayShortestTime) FontWeight.Bold else null,
                         modifier = Modifier.weight(1f)
                     )

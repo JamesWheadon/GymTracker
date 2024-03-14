@@ -37,7 +37,7 @@ class RecordCardioExerciseCardKtTest {
     private val secondsField = rule.onNode(hasContentDescription("Seconds"))
     private val distanceField = rule.onNode(hasContentDescription("Distance"))
     private val caloriesField = rule.onNode(hasContentDescription("Calories"))
-    private val unitField = rule.onNode(hasContentDescription("Units"))
+    private val unitField = rule.onNode(hasContentDescription("units"))
     private val distanceKilometersChosen = rule.onNode(hasText("km"))
     private val distanceMilesChosen = rule.onNode(hasText("mi"))
     private val distanceMetersChosen = rule.onNode(hasText("m"))

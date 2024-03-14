@@ -18,14 +18,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.gymtracker.R
 import com.example.gymtracker.converters.DistanceUnits
 import com.example.gymtracker.converters.convertToDistanceUnit
 import com.example.gymtracker.converters.convertToKilometers
-import com.example.gymtracker.converters.getDistanceUnitFromShortForm
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.FormTimeField
@@ -56,7 +57,7 @@ fun RecordCardioExerciseHistoryCard(
             )
         )
     }
-    var unitState by remember { mutableStateOf(userPreferencesUiState.defaultDistanceUnit.shortForm) }
+    var unitState by remember { mutableStateOf(userPreferencesUiState.defaultDistanceUnit) }
     Card(
         modifier = modifier
             .padding(vertical = 10.dp, horizontal = 10.dp),
@@ -93,7 +94,7 @@ fun RecordCardioExerciseHistoryCard(
                     .padding(horizontal = 12.dp, vertical = 0.dp)
             ) {
                 FormInformationField(
-                    label = "Distance",
+                    label = R.string.distance,
                     value = distanceState,
                     onChange = { entry ->
                         distanceState = Regex("[^0-9.]").replace(entry, "")
@@ -104,12 +105,9 @@ fun RecordCardioExerciseHistoryCard(
                         .height(intrinsicSize = IntrinsicSize.Max)
                         .padding(0.dp)
                 )
+                val unitsContentDescription = stringResource(id = R.string.units)
                 DropdownBox(
-                    options = listOf(
-                        DistanceUnits.METERS.shortForm,
-                        DistanceUnits.KILOMETERS.shortForm,
-                        DistanceUnits.MILES.shortForm
-                    ),
+                    options = DistanceUnits.values().associateWith { unit -> unit.shortForm },
                     onChange = { value ->
                         unitState = value
                     },
@@ -117,12 +115,12 @@ fun RecordCardioExerciseHistoryCard(
                         .weight(1f)
                         .padding(0.dp)
                         .height(intrinsicSize = IntrinsicSize.Max)
-                        .semantics { contentDescription = "Units" },
+                        .semantics { contentDescription = unitsContentDescription },
                     selected = unitState
                 )
             }
             FormInformationField(
-                label = "Calories",
+                label = R.string.calories,
                 value = caloriesState,
                 onChange = { entry ->
                     caloriesState = Regex("[^0-9]").replace(entry, "")
@@ -153,49 +151,61 @@ fun SaveCardioExerciseHistoryButton(
     secondsState: String,
     caloriesState: String,
     distanceState: String,
-    unitState: String,
+    unitState: DistanceUnits,
     exerciseId: Int,
     savedHistory: CardioExerciseHistoryUiState,
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     onDismiss: () -> Unit
 ) {
-    if ((minutesState != "" && secondsState != "" && secondsState.toInt() < 60) || caloriesState != "" || distanceState != "") {
-        Button(onClick = {
-            val distance = if (distanceState == "") {
-                null
-            } else {
-                val unit = getDistanceUnitFromShortForm(unitState)
-                convertToKilometers(unit, distanceState.toDouble())
-            }
-            val minutes = minutesState.toIntOrNull()
-            val seconds = secondsState.toIntOrNull()
-            val history = if (savedHistory == CardioExerciseHistoryUiState()) {
-                CardioExerciseHistoryUiState(
-                    exerciseId = exerciseId,
-                    distance = distance,
-                    minutes = minutes,
-                    seconds = seconds,
-                    calories = caloriesState.toIntOrNull()
-                )
-            } else {
-                savedHistory.distance = distance
-                savedHistory.minutes = minutes
-                savedHistory.seconds = seconds
-                savedHistory.calories = caloriesState.toIntOrNull()
-                savedHistory
-            }
-            saveFunction(history)
-            onDismiss()
-        }) {
-            Text("Save")
-        }
+    val enabled =
+        (minutesState != "" && secondsState != "" && secondsState.toInt() < 60) || caloriesState != "" || distanceState != ""
+    Button(onClick = {
+        val history = createHistory(
+            distanceState,
+            unitState,
+            minutesState,
+            secondsState,
+            savedHistory,
+            exerciseId,
+            caloriesState
+        )
+        saveFunction(history)
+        onDismiss()
+    }, enabled = enabled) {
+        Text(stringResource(id = R.string.save))
+    }
+}
+
+private fun createHistory(
+    distanceState: String,
+    unitState: DistanceUnits,
+    minutesState: String,
+    secondsState: String,
+    savedHistory: CardioExerciseHistoryUiState,
+    exerciseId: Int,
+    caloriesState: String
+): CardioExerciseHistoryUiState {
+    val distance = if (distanceState == "") {
+        null
     } else {
-        Button(
-            onClick = { },
-            enabled = false
-        ) {
-            Text("Save")
-        }
+        convertToKilometers(unitState, distanceState.toDouble())
+    }
+    val minutes = minutesState.toIntOrNull()
+    val seconds = secondsState.toIntOrNull()
+    return if (savedHistory == CardioExerciseHistoryUiState()) {
+        CardioExerciseHistoryUiState(
+            exerciseId = exerciseId,
+            distance = distance,
+            minutes = minutes,
+            seconds = seconds,
+            calories = caloriesState.toIntOrNull()
+        )
+    } else {
+        savedHistory.distance = distance
+        savedHistory.minutes = minutes
+        savedHistory.seconds = seconds
+        savedHistory.calories = caloriesState.toIntOrNull()
+        savedHistory
     }
 }
 

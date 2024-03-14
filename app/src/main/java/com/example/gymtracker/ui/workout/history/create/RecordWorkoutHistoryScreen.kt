@@ -18,9 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseUiState
@@ -74,7 +76,7 @@ fun RecordWorkoutHistoryScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(id = R.string.close)
             )
         }
     }
@@ -152,7 +154,7 @@ fun RecordWorkoutHistoryScreen(
             },
             enabled = !exerciseErrors.values.reduce { acc, error -> acc || error }
         ) {
-            Text(text = "Save")
+            Text(text = stringResource(id = R.string.save))
         }
     }
 }

@@ -19,15 +19,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.gymtracker.R
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
 import com.example.gymtracker.converters.convertToWeightUnit
-import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
@@ -61,7 +62,7 @@ fun RecordWeightsExerciseHistoryCard(
             )
         )
     }
-    var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit.shortForm) }
+    var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit) }
     Card(
         modifier = modifier
             .padding(vertical = 10.dp, horizontal = 10.dp),
@@ -85,7 +86,7 @@ fun RecordWeightsExerciseHistoryCard(
                     .padding(horizontal = 12.dp, vertical = 0.dp)
             ) {
                 FormInformationField(
-                    label = "Sets",
+                    label = R.string.sets,
                     value = setsState,
                     onChange = { entry ->
                         setsState = entry
@@ -97,7 +98,7 @@ fun RecordWeightsExerciseHistoryCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 FormInformationField(
-                    label = "Reps",
+                    label = R.string.reps,
                     value = repsState,
                     onChange = { entry ->
                         repsState = entry
@@ -116,7 +117,7 @@ fun RecordWeightsExerciseHistoryCard(
                     .padding(horizontal = 12.dp, vertical = 0.dp)
             ) {
                 FormInformationField(
-                    label = "Weight",
+                    label = R.string.weight,
                     value = weightState,
                     onChange = { entry ->
                         weightState = entry
@@ -127,19 +128,17 @@ fun RecordWeightsExerciseHistoryCard(
                         .padding(0.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
+                val unitsContentDescription = stringResource(id = R.string.units)
                 DropdownBox(
-                    options = listOf(
-                        WeightUnits.KILOGRAMS.shortForm,
-                        WeightUnits.POUNDS.shortForm
-                    ),
+                    options = WeightUnits.values().associateWith { unit -> unit.shortForm },
                     onChange = { value ->
                         unitState = value
                     },
                     modifier = Modifier
                         .weight(1f)
                         .padding(0.dp)
-                        .semantics { contentDescription = "Units" },
-                    selected = userPreferencesUiState.defaultWeightUnit.shortForm
+                        .semantics { contentDescription = unitsContentDescription },
+                    selected = unitState
                 )
             }
             SaveWeightsExerciseHistoryButton(
@@ -161,19 +160,18 @@ private fun SaveWeightsExerciseHistoryButton(
     setsState: String,
     repsState: String,
     weightState: String,
-    unitState: String,
+    unitState: WeightUnits,
     exerciseId: Int,
     savedHistory: WeightsExerciseHistoryUiState,
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     onDismiss: () -> Unit
 ) {
-    if (setsState != "" && repsState != "" && weightState != "" && unitState != "") {
+    if (setsState != "" && repsState != "" && weightState != "") {
         val weight = weightState.toDouble()
-        val unit = getWeightUnitFromShortForm(unitState)
         val history = if (savedHistory == WeightsExerciseHistoryUiState()) {
             WeightsExerciseHistory(
                 exerciseId = exerciseId,
-                weight = convertToKilograms(unit, weight),
+                weight = convertToKilograms(unitState, weight),
                 sets = setsState.toInt(),
                 reps = repsState.toInt(),
                 date = LocalDate.now()
@@ -181,7 +179,7 @@ private fun SaveWeightsExerciseHistoryButton(
         } else {
             savedHistory.sets = setsState.toInt()
             savedHistory.reps = repsState.toInt()
-            savedHistory.weight = convertToKilograms(unit, weight)
+            savedHistory.weight = convertToKilograms(unitState, weight)
             savedHistory.toWeightsExerciseHistory(exerciseId)
         }
         Button(onClick = {

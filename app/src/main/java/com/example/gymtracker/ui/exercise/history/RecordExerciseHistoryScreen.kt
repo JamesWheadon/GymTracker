@@ -9,8 +9,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
@@ -65,13 +67,13 @@ fun RecordExerciseHistoryScreen(
     modifier: Modifier = Modifier,
     history: ExerciseHistoryUiState? = null
 ) {
-    val titleStart = history.let { if (it == null) "New" else "Update" }
+    val title = history.let { if (it == null) R.string.new_workout else R.string.update_workout }
     Box {
         if (exercise.equipment != "") {
             val savedHistory = history?: WeightsExerciseHistoryUiState()
             RecordWeightsExerciseHistoryCard(
                 exerciseId = exercise.id,
-                cardTitle = "$titleStart ${exercise.name} Workout",
+                cardTitle = stringResource(id = title, exercise.name),
                 saveFunction = saveFunction,
                 onDismiss = onDismiss,
                 modifier = modifier,
@@ -81,7 +83,7 @@ fun RecordExerciseHistoryScreen(
             val savedHistory = history?: CardioExerciseHistoryUiState()
             RecordCardioExerciseHistoryCard(
                 exerciseId = exercise.id,
-                cardTitle = "$titleStart ${exercise.name} Workout",
+                cardTitle = stringResource(id = title, exercise.name),
                 saveFunction = saveFunction,
                 onDismiss = onDismiss,
                 modifier = modifier,
@@ -96,7 +98,7 @@ fun RecordExerciseHistoryScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(id = R.string.close)
             )
         }
     }

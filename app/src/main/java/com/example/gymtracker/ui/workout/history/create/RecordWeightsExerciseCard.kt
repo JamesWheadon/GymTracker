@@ -19,16 +19,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.gymtracker.R
 import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.converters.convertToKilograms
 import com.example.gymtracker.converters.convertToWeightUnit
-import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.exercise.ExerciseUiState
@@ -84,7 +85,7 @@ fun RecordWeightsExerciseCard(
                         )
                     )
                 }
-                var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit.shortForm) }
+                var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit) }
                 val setsError = setsState == "" || setsState.toInt() < 1
                 val repsError = repsState == "" || repsState.toInt() < 1
                 val weightError = weightState == "" || weightState.toDoubleOrNull() == null
@@ -96,7 +97,7 @@ fun RecordWeightsExerciseCard(
                         .padding(horizontal = 12.dp, vertical = 0.dp)
                 ) {
                     FormInformationField(
-                        label = "Sets",
+                        label = R.string.sets,
                         value = setsState,
                         onChange = { entry ->
                             setsState = entry.replace("""[^0-9]""".toRegex(), "")
@@ -106,14 +107,14 @@ fun RecordWeightsExerciseCard(
                         },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                         error = setsError,
-                        errorMessage = "Must be a positive number",
+                        errorMessage = R.string.positive_number_error,
                         modifier = Modifier
                             .weight(1f)
                             .padding(0.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     FormInformationField(
-                        label = "Reps",
+                        label = R.string.reps,
                         value = repsState,
                         onChange = { entry ->
                             repsState = entry.replace("""[^0-9]""".toRegex(), "")
@@ -123,7 +124,7 @@ fun RecordWeightsExerciseCard(
                         },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                         error = repsError,
-                        errorMessage = "Must be a positive number",
+                        errorMessage = R.string.positive_number_error,
                         modifier = Modifier
                             .weight(1f)
                             .padding(0.dp)
@@ -137,35 +138,33 @@ fun RecordWeightsExerciseCard(
                         .padding(horizontal = 12.dp, vertical = 0.dp)
                 ) {
                     FormInformationField(
-                        label = "Weight",
+                        label = R.string.weight,
                         value = weightState,
                         onChange = { entry ->
                             weightState = entry.replace("""[^0-9-.]""".toRegex(), "")
                             if (weightState != "" && weightState.toDoubleOrNull() != null) {
                                 exerciseHistory.weight = convertToKilograms(
-                                    getWeightUnitFromShortForm(unitState),
+                                    unitState,
                                     weightState.toDouble()
                                 )
                             }
                         },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
                         error = weightError,
-                        errorMessage = "Must be a number",
+                        errorMessage = R.string.number_error,
                         modifier = Modifier
                             .weight(1f)
                             .padding(0.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
+                    val unitsContentDescription = stringResource(id = R.string.units)
                     DropdownBox(
-                        options = listOf(
-                            WeightUnits.KILOGRAMS.shortForm,
-                            WeightUnits.POUNDS.shortForm
-                        ),
+                        options = WeightUnits.values().associateWith { it.shortForm },
                         onChange = { value ->
                             unitState = value
                             if (weightState != "") {
                                 exerciseHistory.weight = convertToKilograms(
-                                    getWeightUnitFromShortForm(unitState),
+                                    unitState,
                                     weightState.toDouble()
                                 )
                             }
@@ -173,7 +172,7 @@ fun RecordWeightsExerciseCard(
                         modifier = Modifier
                             .weight(1f)
                             .padding(0.dp)
-                            .semantics { contentDescription = "Units" },
+                            .semantics { contentDescription = unitsContentDescription },
                         selected = unitState
                     )
                 }

@@ -1,5 +1,6 @@
 package com.example.gymtracker.ui.exercise
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -79,12 +81,12 @@ fun WeightsExerciseCard(
                     ExerciseDetail(
                         exerciseInfo = exercise.muscleGroup,
                         iconId = R.drawable.info_48px,
-                        iconDescription = "muscle icon"
+                        iconDescription = R.string.muscle_icon
                     )
                     ExerciseDetail(
                         exerciseInfo = exercise.equipment,
                         iconId = R.drawable.exercise_filled_48px,
-                        iconDescription = "equipment icon"
+                        iconDescription = R.string.equipment_icon
                     )
                 }
             }
@@ -121,9 +123,9 @@ fun CardioExerciseCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 ExerciseDetail(
-                    exerciseInfo = "Cardio",
+                    exerciseInfo = stringResource(id = R.string.cardio),
                     iconId = R.drawable.cardio_48dp,
-                    iconDescription = "cardio icon",
+                    iconDescription = R.string.cardio_icon,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -135,7 +137,7 @@ fun CardioExerciseCard(
 fun ExerciseDetail(
     exerciseInfo: String,
     iconId: Int,
-    iconDescription: String,
+    @StringRes iconDescription: Int,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -145,7 +147,7 @@ fun ExerciseDetail(
     ) {
         Icon(
             painter = painterResource(id = iconId),
-            contentDescription = iconDescription,
+            contentDescription = stringResource(id = iconDescription),
             tint = MaterialTheme.colorScheme.tertiary,
             modifier = Modifier.size(20.dp)
         )

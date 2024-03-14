@@ -20,16 +20,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.gymtracker.R
 import com.example.gymtracker.converters.DistanceUnits
 import com.example.gymtracker.converters.convertToDistanceUnit
 import com.example.gymtracker.converters.convertToKilometers
-import com.example.gymtracker.converters.getDistanceUnitFromShortForm
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.FormTimeField
@@ -99,7 +100,7 @@ fun RecordCardioExerciseCard(
                         getDistanceForUnit(exerciseHistory, userPreferences)
                     )
                 }
-                var unitState by remember { mutableStateOf(userPreferences.defaultDistanceUnit.shortForm) }
+                var unitState by remember { mutableStateOf(userPreferences.defaultDistanceUnit) }
                 val error = !((minutesState != "" && secondsState != "")
                         || distanceState != ""
                         || caloriesState != "")
@@ -130,15 +131,12 @@ fun RecordCardioExerciseCard(
                         .padding(horizontal = 12.dp, vertical = 0.dp)
                 ) {
                     FormInformationField(
-                        label = "Distance",
+                        label = R.string.distance,
                         value = distanceState,
                         onChange = { entry ->
                             distanceState = Regex("[^0-9.]").replace(entry, "")
                             if (distanceState != "" && distanceState.toDoubleOrNull() != null) {
-                                exerciseHistory.distance = convertToKilometers(
-                                    getDistanceUnitFromShortForm(unitState),
-                                    distanceState.toDouble()
-                                )
+                                exerciseHistory.distance = convertToKilometers(unitState, distanceState.toDouble())
                             }
                         },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
@@ -147,12 +145,9 @@ fun RecordCardioExerciseCard(
                             .height(intrinsicSize = IntrinsicSize.Max)
                             .padding(0.dp)
                     )
+                    val unitsContentDescription = stringResource(id = R.string.units)
                     DropdownBox(
-                        options = listOf(
-                            DistanceUnits.METERS.shortForm,
-                            DistanceUnits.KILOMETERS.shortForm,
-                            DistanceUnits.MILES.shortForm
-                        ),
+                        options = DistanceUnits.values().associateWith { unit -> unit.shortForm },
                         onChange = { value ->
                             unitState = value
                         },
@@ -160,12 +155,12 @@ fun RecordCardioExerciseCard(
                             .weight(1f)
                             .padding(0.dp)
                             .height(intrinsicSize = IntrinsicSize.Max)
-                            .semantics { contentDescription = "Units" },
+                            .semantics { contentDescription = unitsContentDescription },
                         selected = unitState
                     )
                 }
                 FormInformationField(
-                    label = "Calories",
+                    label = R.string.calories,
                     value = caloriesState,
                     onChange = { entry ->
                         caloriesState = Regex("[^0-9]").replace(entry, "")
@@ -180,7 +175,7 @@ fun RecordCardioExerciseCard(
                 )
                 if (error) {
                     Text(
-                        text = "Must have a time, distance or calories entered",
+                        text = stringResource(id = R.string.cardio_error),
                         color = MaterialTheme.colorScheme.error
                     )
                 }

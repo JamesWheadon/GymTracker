@@ -3,7 +3,7 @@ package com.example.gymtracker.ui.navigation
 import androidx.navigation.NavHostController
 
 data class HomeNavigationInformation(
-    val title: String,
+    val title: Int,
     val navigationFunction: () -> Unit
 )
 

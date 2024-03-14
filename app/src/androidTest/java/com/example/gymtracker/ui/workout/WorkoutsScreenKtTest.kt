@@ -24,7 +24,7 @@ class WorkoutsScreenKtTest {
     @Mock
     private lateinit var navController: NavHostController
 
-    private val lazyColumn = rule.onNode(hasContentDescription("workoutColumn"))
+    private val lazyColumn = rule.onNode(hasContentDescription("workout column"))
     private val createWorkoutButton = rule.onNode(hasContentDescription("Add Workout"))
     private val createWorkoutFormTitle = rule.onNode(hasText("Create Workout"))
     private val createWorkoutFormNameField = rule.onNode(hasContentDescription("Workout Name"))

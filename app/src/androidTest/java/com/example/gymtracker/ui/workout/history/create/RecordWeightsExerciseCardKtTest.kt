@@ -44,7 +44,7 @@ class RecordWeightsExerciseCardKtTest {
     private val setsField = rule.onNode(hasContentDescription("Sets"))
     private val repsField = rule.onNode(hasContentDescription("Reps"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
-    private val unitField = rule.onNode(hasContentDescription("Units"))
+    private val unitField = rule.onNode(hasContentDescription("units"))
     private val weightKilogramsChosen = rule.onNode(hasText("kg"))
     private val weightPoundsChosen = rule.onNode(hasText("lb"))
 

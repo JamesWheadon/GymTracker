@@ -6,6 +6,8 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
+import com.example.gymtracker.R
+import com.example.gymtracker.getResourceString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -23,14 +25,14 @@ class UserPreferencesScreenKtTest {
 
     private val distancesLabel = rule.onNode(hasText("Distances"))
     private val weightsLabel = rule.onNode(hasText("Weight"))
-    private val distanceDropdown = rule.onNode(hasContentDescription("Distance choices"))
-    private val weightDropdown = rule.onNode(hasContentDescription("Weight choices"))
+    private val distanceDropdown = rule.onNode(hasContentDescription(getResourceString(R.string.distance_choices)))
+    private val weightDropdown = rule.onNode(hasContentDescription(getResourceString(R.string.weight_choices)))
     private val singleRep = rule.onNode(hasText("Highest single weight rep"))
     private val highestSet = rule.onNode(hasText("Most weight per set"))
-    private val highestWeightToggle = rule.onNode(hasContentDescription("Weight display toggle"))
+    private val highestWeightToggle = rule.onNode(hasContentDescription(getResourceString(R.string.weight_display_toggle)))
     private val longestTime = rule.onNode(hasText("Longest Time"))
     private val shortestTime = rule.onNode(hasText("Shortest Time"))
-    private val shortestTimeToggle = rule.onNode(hasContentDescription("Time display toggle"))
+    private val shortestTimeToggle = rule.onNode(hasContentDescription(getResourceString(R.string.time_display_toggle)))
 
     @Mock
     private lateinit var navController: NavHostController
@@ -67,7 +69,7 @@ class UserPreferencesScreenKtTest {
 
     @Test
     fun userPreferencesScreenClickingDistanceDropdownOptionCallsDistanceOnChange() {
-        var selected: String? = null
+        var selected: Int? = null
         rule.setContent {
             UserPreferencesScreen(
                 uiState = uiState,
@@ -82,12 +84,12 @@ class UserPreferencesScreenKtTest {
         distanceDropdown.performClick()
         rule.onNode(hasText("Meters")).performClick()
 
-        assertThat(selected, equalTo("Meters"))
+        assertThat(selected, equalTo(R.string.meters_short_form))
     }
 
     @Test
     fun userPreferencesScreenClickingWeightDropdownOptionCallsWeightOnChange() {
-        var selected: String? = null
+        var selected: Int? = null
         rule.setContent {
             UserPreferencesScreen(
                 uiState = uiState,
@@ -102,7 +104,7 @@ class UserPreferencesScreenKtTest {
         weightDropdown.performClick()
         rule.onNode(hasText("Pounds")).performClick()
 
-        assertThat(selected, equalTo("Pounds"))
+        assertThat(selected, equalTo(R.string.pounds_short_form))
     }
 
     @Test

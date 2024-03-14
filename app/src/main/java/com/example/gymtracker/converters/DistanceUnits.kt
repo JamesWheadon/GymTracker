@@ -1,17 +1,19 @@
 package com.example.gymtracker.converters
 
+import androidx.annotation.StringRes
+import com.example.gymtracker.R
 import kotlin.math.round
 
-enum class DistanceUnits(val displayName: String, val shortForm: String, val kilometerConversion: Float) {
-    METERS("Meters", "m", 1000f),
-    KILOMETERS("Kilometers", "km", 1f),
-    MILES("Miles", "mi", 0.62137f)
+enum class DistanceUnits(@StringRes val displayName: Int, @StringRes val shortForm: Int, val kilometerConversion: Float) {
+    METERS(R.string.meters_display_name, R.string.meters_short_form, 1000f),
+    KILOMETERS(R.string.kilometers_display_name, R.string.kilometers_short_form, 1f),
+    MILES(R.string.miles_display_name, R.string.miles_short_form, 0.62137f)
 }
 
 fun convertToKilometers(unit: DistanceUnits, weight: Double): Double = round((weight / unit.kilometerConversion) * 100) / 100
 
 fun convertToDistanceUnit(unit: DistanceUnits, weight: Double): Double = round((weight * unit.kilometerConversion) * 100) / 100
 
-fun getDistanceUnitFromShortForm(shortForm: String): DistanceUnits {
+fun getDistanceUnitFromShortForm(shortForm: Int): DistanceUnits {
     return DistanceUnits.values().first { it.shortForm == shortForm }
 }

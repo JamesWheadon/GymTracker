@@ -1,14 +1,17 @@
 package com.example.gymtracker.ui.navigation
 
+import androidx.annotation.StringRes
+import com.example.gymtracker.R
+
 enum class NavigationRoutes(
     val baseRoute: String,
     val navigationArgument: String = "",
     val homeRoute: Boolean = false,
-    val homeNavigationTitle: String = ""
+    @StringRes val homeNavigationTitle: Int = 0
 ) {
-    EXERCISES_SCREEN("exercises", homeRoute = true, homeNavigationTitle = "Exercises"),
-    WORKOUTS_SCREEN("workouts", homeRoute = true, homeNavigationTitle = "Workouts"),
-    OVERALL_HISTORY_SCREEN("history", homeRoute = true, homeNavigationTitle = "History"),
+    EXERCISES_SCREEN("exercises", homeRoute = true, homeNavigationTitle = R.string.exercises),
+    WORKOUTS_SCREEN("workouts", homeRoute = true, homeNavigationTitle = R.string.workouts),
+    OVERALL_HISTORY_SCREEN("history", homeRoute = true, homeNavigationTitle = R.string.history),
     WORKOUT_SELECTION_SCREEN("liveRecordWorkout"),
     EXERCISE_DETAILS_SCREEN(EXERCISES_SCREEN.baseRoute, navigationArgument = "exerciseId"),
     WORKOUT_DETAILS_SCREEN(WORKOUTS_SCREEN.baseRoute, navigationArgument = "workoutId"),

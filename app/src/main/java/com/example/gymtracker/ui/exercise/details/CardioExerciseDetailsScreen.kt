@@ -14,11 +14,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.R
@@ -60,9 +61,9 @@ private fun CardioExerciseInformation(
     innerPadding: PaddingValues
 ) {
     ExerciseDetail(
-        exerciseInfo = "Cardio",
+        exerciseInfo = stringResource(id = R.string.cardio),
         iconId = R.drawable.cardio_48dp,
-        iconDescription = "cardio icon",
+        iconDescription = R.string.cardio_icon,
         modifier = Modifier
             .fillMaxWidth()
             .padding(innerPadding)
@@ -73,15 +74,15 @@ private fun CardioExerciseInformation(
 fun CardioExerciseHistoryDetails(
     uiState: ExerciseDetailsUiState
 ) {
-    val timeOptions = listOf("7 Days", "30 Days", "Past Year", "All Time")
-    val detailOptions = listOf("Distance", "Time", "Calories")
+    val timeOptions = listOf(R.string.seven_days, R.string.thirty_days, R.string.past_year, R.string.all_time)
+    val detailOptions = listOf(R.string.distance, R.string.time, R.string.calories)
     val yUnit = mapOf(
         detailOptions[0] to LocalUserPreferences.current.defaultDistanceUnit.shortForm,
-        detailOptions[1] to "min",
-        detailOptions[2] to "kcal"
+        detailOptions[1] to R.string.minute_unit,
+        detailOptions[2] to R.string.calories_unit
     )
     val currentDate = LocalDate.now()
-    val timeOptionToStartTime = mapOf<String, LocalDate>(
+    val timeOptionToStartTime = mapOf<Int, LocalDate>(
         Pair(timeOptions[0], currentDate.minusDays(7)),
         Pair(timeOptions[1], currentDate.minusDays(30)),
         Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
@@ -90,8 +91,8 @@ fun CardioExerciseHistoryDetails(
             uiState.cardioHistory.minBy { history -> history.date.toEpochDay() }.date
         ),
     )
-    var detail by remember { mutableStateOf(detailOptions[0]) }
-    var time by remember { mutableStateOf(timeOptions[0]) }
+    var detail by remember { mutableIntStateOf(detailOptions[0]) }
+    var time by remember { mutableIntStateOf(timeOptions[0]) }
     CardioExerciseDetailsBest(uiState = uiState)
     GraphOptions(
         detailOptions = detailOptions,
@@ -109,11 +110,11 @@ fun CardioExerciseHistoryDetails(
         Graph(
             points = dataPoints,
             startDate = timeOptionToStartTime[time] ?: currentDate,
-            yLabel = detail,
-            yUnit = yUnit[detail]!!
+            yLabel = stringResource(id = detail),
+            yUnit = stringResource(id = yUnit[detail]!!)
         )
     } else {
-        Text(text = "No data for range")
+        Text(text = stringResource(id = R.string.no_data_error))
     }
 }
 
@@ -141,9 +142,13 @@ private fun CardioExerciseDetailsBest(
     ) {
         if (bestDistance != 0.0) {
             ExerciseDetail(
-                exerciseInfo = "$bestDistance ${userPreferencesUiState.defaultDistanceUnit.shortForm}",
+                exerciseInfo = stringResource(
+                    id = R.string.best_distance,
+                    bestDistance,
+                    stringResource(id = userPreferencesUiState.defaultDistanceUnit.shortForm)
+                ),
                 iconId = R.drawable.trophy_48dp,
-                iconDescription = "best exercise icon",
+                iconDescription = R.string.best_exercise_icon,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -151,21 +156,28 @@ private fun CardioExerciseDetailsBest(
         }
         if (bestTime != 0) {
             val bestTimeString = if (bestTime >= 3600) {
-                "${bestTime / 3600}:${
-                    String.format(
-                        "%02d",
-                        (bestTime % 3600) / 60
-                    )
-                }:${String.format("%02d", bestTime % 60)}"
+                stringResource(
+                    id = R.string.display_hours,
+                    bestTime / 3600,
+                    String.format("%02d", (bestTime % 3600) / 60),
+                    String.format("%02d", bestTime % 60)
+                )
             } else if (bestTime >= 60) {
-                "${String.format("%02d", bestTime / 60)}:${String.format("%02d", bestTime % 60)}"
+                stringResource(
+                    id = R.string.display_minutes,
+                    String.format("%02d", (bestTime % 3600) / 60),
+                    String.format("%02d", bestTime % 60)
+                )
             } else {
-                "${String.format("%02d", bestTime % 60)} s"
+                stringResource(
+                    id = R.string.display_seconds,
+                    String.format("%02d", bestTime % 60)
+                )
             }
             ExerciseDetail(
                 exerciseInfo = bestTimeString,
                 iconId = R.drawable.trophy_48dp,
-                iconDescription = "best exercise icon",
+                iconDescription = R.string.best_exercise_icon,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -173,9 +185,9 @@ private fun CardioExerciseDetailsBest(
         }
         if (bestCalories != 0) {
             ExerciseDetail(
-                exerciseInfo = "$bestCalories kcal",
+                exerciseInfo = stringResource(id = R.string.best_calories, bestCalories),
                 iconId = R.drawable.trophy_48dp,
-                iconDescription = "best exercise icon",
+                iconDescription = R.string.best_exercise_icon,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -186,8 +198,8 @@ private fun CardioExerciseDetailsBest(
 
 fun getCardioGraphDetails(
     uiState: ExerciseDetailsUiState,
-    detail: String,
-    detailOptions: List<String>,
+    detail: Int,
+    detailOptions: List<Int>,
     userPreferencesUiState: UserPreferencesUiState
 ) = uiState.cardioHistory.map { history ->
     when (detail) {

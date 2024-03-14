@@ -7,8 +7,10 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import com.example.gymtracker.R
 import com.example.gymtracker.data.exercise.ExerciseRepository
 import com.example.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
+import com.example.gymtracker.getResourceString
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.example.gymtracker.ui.exercise.toExercise
@@ -126,7 +128,7 @@ class EditWorkoutExercisesScreenKtTest {
             ExercisesList(
                 exercises = listOf(curlsExerciseUiState, dipsExerciseUiState),
                 clickFunction = { },
-                listTitle = "Test List",
+                listTitle = R.string.workout_exercises,
                 exercisesSelected = true
             )
         }
@@ -134,7 +136,7 @@ class EditWorkoutExercisesScreenKtTest {
         val curlsCheckBox = rule.onNode(hasContentDescription("Deselect Curls"))
         val dipsCheckBox = rule.onNode(hasContentDescription("Deselect Dips"))
 
-        rule.onNode(hasText("Test List")).assertExists()
+        rule.onNode(hasText(getResourceString(R.string.workout_exercises))).assertExists()
         curlsExercise.assertExists()
         curlsMuscle.assertExists()
         curlsEquipment.assertExists()

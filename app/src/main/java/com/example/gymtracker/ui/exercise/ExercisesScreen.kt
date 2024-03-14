@@ -20,12 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.create.CreateExerciseScreen
 import com.example.gymtracker.ui.navigation.HomeNavigationInformation
@@ -66,7 +68,7 @@ fun ExercisesScreen(
 ) {
     var showCreate by remember { mutableStateOf(false) }
     HomeScreenCardWrapper(
-        title = "My Exercises",
+        title = stringResource(id = R.string.my_exercises),
         navController = navController,
         homeNavigationOptions = homeNavigationOptions,
         floatingActionButton = {
@@ -78,7 +80,7 @@ fun ExercisesScreen(
                 Icon(
                     imageVector = Icons.Default.Add,
                     tint = Color.Black,
-                    contentDescription = "Add Exercise"
+                    contentDescription = stringResource(id = R.string.add_exercise)
                 )
             }
         }

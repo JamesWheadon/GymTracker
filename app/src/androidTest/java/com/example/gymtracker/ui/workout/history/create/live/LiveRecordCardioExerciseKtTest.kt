@@ -28,7 +28,7 @@ class LiveRecordCardioExerciseKtTest {
     private val minutesField = rule.onNode(hasContentDescription("Minutes"))
     private val secondsField = rule.onNode(hasContentDescription("Seconds"))
     private val distanceField = rule.onNode(hasContentDescription("Distance"))
-    private val unitsField = rule.onNode(hasContentDescription("Units"))
+    private val unitsField = rule.onNode(hasContentDescription("units"))
     private val caloriesField = rule.onNode(hasContentDescription("Calories"))
     private val distanceKilometersChosen = rule.onNode(hasText("km"))
     private val distanceMilesChosen = rule.onNode(hasText("mi"))

@@ -7,6 +7,8 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import com.example.gymtracker.R
+import com.example.gymtracker.getResourceString
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -18,8 +20,11 @@ class CreateExerciseScreenKtTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
-    private val createButton = rule.onNode(hasText("Create"))
-    private val typeToggle = rule.onNode(hasContentDescription("exerciseTypeToggle"))
+    private val createTitleResourceId = R.string.create_exercise_title
+    private val createResourceId = R.string.create
+
+    private val createButton = rule.onNode(hasText(getResourceString(createResourceId)))
+    private val typeToggle = rule.onNode(hasContentDescription(getResourceString(R.string.exercise_type_toggle)))
     private val weightsType = rule.onNode(hasText("Weights"))
     private val cardioType = rule.onNode(hasText("Cardio"))
     private val nameField = rule.onNode(hasContentDescription("Exercise Name"))
@@ -35,8 +40,8 @@ class CreateExerciseScreenKtTest {
     fun rendersEmptyCreateForm() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(),
@@ -60,8 +65,8 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(),
@@ -81,8 +86,8 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(),
@@ -106,8 +111,8 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(),
@@ -131,8 +136,8 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(),
@@ -156,8 +161,8 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(),
@@ -179,8 +184,8 @@ class CreateExerciseScreenKtTest {
     fun fillsInFieldsWithInformationOfExercisePassedIn() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = exercise,
@@ -199,8 +204,8 @@ class CreateExerciseScreenKtTest {
     fun displaysErrorMessageWhenExerciseNameAlreadyTaken() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(savedExercise.name),
                 savedMuscleGroups = listOf(),
                 exercise = savedExercise,
@@ -222,8 +227,8 @@ class CreateExerciseScreenKtTest {
 
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(savedExercise.name),
                 savedMuscleGroups = listOf(),
                 exercise = savedExercise,
@@ -246,8 +251,8 @@ class CreateExerciseScreenKtTest {
     fun typeToggleChangesAvailableInformationFields() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(),
@@ -276,8 +281,8 @@ class CreateExerciseScreenKtTest {
 
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(),
@@ -303,8 +308,8 @@ class CreateExerciseScreenKtTest {
 
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(),
@@ -324,8 +329,8 @@ class CreateExerciseScreenKtTest {
     fun updateCardioExerciseWithNameField() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = "Create New Exercise",
-                buttonText = "Create",
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
                 exercise = ExerciseUiState(name = "Cardio"),

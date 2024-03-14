@@ -1,5 +1,6 @@
 package com.example.gymtracker.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,11 +31,13 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
@@ -44,23 +47,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
+import com.example.gymtracker.R
+import com.example.gymtracker.converters.DistanceUnits
+import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
 fun FormInformationField(
-    label: String,
+    @StringRes label: Int,
     value: String,
     onChange: (String) -> Unit,
     keyboardOptions: KeyboardOptions,
     modifier: Modifier = Modifier,
     error: Boolean = false,
-    errorMessage: String = ""
+    @StringRes errorMessage: Int = R.string.default_error
 ) {
+    val labelString = stringResource(id = label)
     TextField(
         value = value,
         onValueChange = onChange,
         label = {
-            Text(text = label)
+            Text(text = labelString)
         },
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.colors(
@@ -70,27 +77,27 @@ fun FormInformationField(
         supportingText = {
             if (error) {
                 Text(
-                    text = errorMessage,
+                    text = stringResource(id = errorMessage),
                     color = MaterialTheme.colorScheme.error
                 )
             }
         },
         keyboardOptions = keyboardOptions,
-        modifier = modifier.semantics { contentDescription = label }
+        modifier = modifier.semantics { contentDescription = labelString }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormInformationFieldWithSuggestions(
-    label: String,
+    @StringRes label: Int,
     value: TextFieldValue,
     onChange: (TextFieldValue) -> Unit,
     suggestions: List<String>,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-
+    val labelString = stringResource(id = label)
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = {
@@ -102,7 +109,7 @@ fun FormInformationFieldWithSuggestions(
             value = value,
             onValueChange = onChange,
             label = {
-                Text(text = label)
+                Text(text = labelString)
             },
             singleLine = true,
             shape = RoundedCornerShape(8.dp),
@@ -110,7 +117,7 @@ fun FormInformationFieldWithSuggestions(
                 focusedContainerColor = MaterialTheme.colorScheme.secondary
             ),
             modifier = Modifier
-                .semantics { contentDescription = label }
+                .semantics { contentDescription = labelString }
                 .menuAnchor()
         )
         val valueText = value.text
@@ -157,6 +164,8 @@ fun FormTimeField(
     modifier: Modifier = Modifier
 ) {
     val secondsError = seconds != "" && seconds.toInt() >= 60
+    val minutesString = stringResource(id = R.string.minutes)
+    val secondsString = stringResource(id = R.string.seconds)
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top,
@@ -166,7 +175,7 @@ fun FormTimeField(
             value = minutes,
             onValueChange = minutesOnChange,
             label = {
-                Text(text = "Minutes")
+                Text(text = minutesString)
             },
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors(
@@ -174,7 +183,7 @@ fun FormTimeField(
             ),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier
-                .semantics { contentDescription = "Minutes" }
+                .semantics { contentDescription = minutesString }
                 .weight(1f)
                 .padding(0.dp)
         )
@@ -182,7 +191,7 @@ fun FormTimeField(
             value = seconds,
             onValueChange = secondsOnChange,
             label = {
-                Text(text = "Seconds")
+                Text(text = secondsString)
             },
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors(
@@ -193,13 +202,13 @@ fun FormTimeField(
             supportingText = {
                 if (secondsError) {
                     Text(
-                        text = "Value must be between 0 and 59",
+                        text = stringResource(id = R.string.seconds_error),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
             },
             modifier = Modifier
-                .semantics { contentDescription = "Seconds" }
+                .semantics { contentDescription = secondsString }
                 .weight(1f)
                 .padding(0.dp)
         )
@@ -209,13 +218,13 @@ fun FormTimeField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropdownBox(
-    options: List<String>,
-    onChange: (String) -> Unit,
+    @StringRes options: List<Int>,
+    onChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    selected: String? = null
+    selected: Int? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(selected ?: options.first()) }
+    var selectedOption by remember { mutableIntStateOf(selected ?: options.first()) }
     LaunchedEffect(selected) {
         selected?.let { newValue ->
             selectedOption = newValue
@@ -230,7 +239,7 @@ fun DropdownBox(
         modifier = modifier
     ) {
         TextField(
-            value = selectedOption,
+            value = stringResource(id = selectedOption),
             onValueChange = { onChange(selectedOption) },
             readOnly = true,
             singleLine = true,
@@ -254,7 +263,7 @@ fun DropdownBox(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = item,
+                            text = stringResource(id = item),
                             style = MaterialTheme.typography.labelSmall
                         )
                     },
@@ -269,6 +278,132 @@ fun DropdownBox(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownBox(
+    options: Map<DistanceUnits, Int>,
+    onChange: (DistanceUnits) -> Unit,
+    modifier: Modifier = Modifier,
+    selected: DistanceUnits? = null
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf(selected ?: DistanceUnits.KILOMETERS) }
+    LaunchedEffect(selected) {
+        selected?.let { newValue ->
+            selectedOption = newValue
+        }
+    }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
+        modifier = modifier
+    ) {
+        TextField(
+            value = stringResource(id = options[selectedOption]!!),
+            onValueChange = { onChange(selectedOption) },
+            readOnly = true,
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondary
+            ),
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded
+                )
+            },
+            modifier = Modifier
+                .menuAnchor()
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { item ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = item.value),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
+                    onClick = {
+                        selectedOption = item.key
+                        expanded = false
+                        onChange(item.key)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownBox(
+    options: Map<WeightUnits, Int>,
+    onChange: (WeightUnits) -> Unit,
+    modifier: Modifier = Modifier,
+    selected: WeightUnits? = null
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf(selected ?: WeightUnits.KILOGRAMS) }
+    LaunchedEffect(selected) {
+        selected?.let { newValue ->
+            selectedOption = newValue
+        }
+    }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
+        modifier = modifier
+    ) {
+        TextField(
+            value = stringResource(id = options[selectedOption]!!),
+            onValueChange = { onChange(selectedOption) },
+            readOnly = true,
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondary
+            ),
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded
+                )
+            },
+            modifier = Modifier
+                .menuAnchor()
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { item ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = item.value),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
+                    onClick = {
+                        selectedOption = item.key
+                        expanded = false
+                        onChange(item.key)
+                    }
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun ActionConfirmation(
     actionTitle: String,
@@ -276,14 +411,11 @@ fun ActionConfirmation(
     cancelFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val customCardElevation = CardDefaults.cardElevation(
-        defaultElevation = 16.dp
-    )
     Box {
         Card(
             modifier = modifier
                 .padding(vertical = 10.dp, horizontal = 10.dp),
-            elevation = customCardElevation
+            elevation = customCardElevation()
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -362,7 +494,7 @@ fun ActionConfirmationPreview() {
 fun FormInformationFieldWithSuggestionsPreview() {
     GymTrackerTheme(darkTheme = false) {
         FormInformationFieldWithSuggestions(
-            label = "Test Field",
+            label = R.string.minutes,
             value = TextFieldValue(text = "Bi"),
             onChange = { },
             suggestions = listOf("Biceps", "Bicycle", "Bismuth")

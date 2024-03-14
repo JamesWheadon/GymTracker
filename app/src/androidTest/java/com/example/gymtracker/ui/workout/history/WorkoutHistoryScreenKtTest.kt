@@ -52,12 +52,12 @@ class WorkoutHistoryScreenKtTest {
     private val benchExerciseName = rule.onNode(hasText("Bench"))
     private val sets = rule.onNode(hasText("Sets: 1"))
     private val reps = rule.onNode(hasText("Reps: 1"))
-    private val weight = rule.onNode(hasText("Weight: 1.0kg"))
-    private val rest = rule.onNode(hasText("Rest time: 1"))
+    private val weight = rule.onNode(hasText("Weight: 1.00 kg"))
+    private val rest = rule.onNode(hasText("Rest time: 1 s"))
     private val deleteHistoryButton = rule.onNode(hasContentDescription("Delete history"))
     private val closeButton = rule.onNode(hasContentDescription("Close"))
-    private val editButton = rule.onNode(hasContentDescription("Edit"))
-    private val deleteButton = rule.onNode(hasContentDescription("Delete"))
+    private val editButton = rule.onNode(hasContentDescription("edit"))
+    private val deleteButton = rule.onNode(hasContentDescription("delete"))
 
     @Test
     fun rendersWorkoutHistoryExerciseCard() {
@@ -137,6 +137,7 @@ class WorkoutHistoryScreenKtTest {
                 WorkoutHistoryScreen(
                     workoutHistoryUiState = workoutHistory,
                     workoutUiState = WorkoutWithExercisesUiState(
+                        name = "a",
                         exercises = listOf(
                             curls,
                             dips,
@@ -150,7 +151,7 @@ class WorkoutHistoryScreenKtTest {
 
         editButton.performClick()
 
-        rule.onNode(hasText("Update Workout")).assertExists()
+        rule.onNode(hasText("Update a Workout")).assertExists()
     }
 
     @Test

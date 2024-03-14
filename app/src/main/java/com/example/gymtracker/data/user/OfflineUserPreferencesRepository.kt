@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.gymtracker.converters.DistanceUnits
 import com.example.gymtracker.converters.WeightUnits
@@ -18,19 +18,19 @@ import java.io.IOException
 class OfflineUserPreferencesRepository(private val context: Context): UserPreferencesRepository {
     private companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settingPrefs")
-        val DEFAULT_WEIGHT_UNIT = stringPreferencesKey("default_weight_unit")
-        val DEFAULT_DISTANCE_UNIT = stringPreferencesKey("default_distance_unit")
+        val DEFAULT_WEIGHT_UNIT = intPreferencesKey("default_weight_unit")
+        val DEFAULT_DISTANCE_UNIT = intPreferencesKey("default_distance_unit")
         val DISPLAY_HIGHEST_WEIGHT = booleanPreferencesKey("display_highest_weight")
         val DISPLAY_SHORTEST_TIME = booleanPreferencesKey("display_shortest_time")
     }
 
-    override suspend fun saveDefaultWeightUnit(defaultWeightUnit: String) {
+    override suspend fun saveDefaultWeightUnit(defaultWeightUnit: Int) {
         context.dataStore.edit { preferences ->
             preferences[DEFAULT_WEIGHT_UNIT] = defaultWeightUnit
         }
     }
 
-    override suspend fun saveDefaultDistanceUnit(defaultDistanceUnit: String) {
+    override suspend fun saveDefaultDistanceUnit(defaultDistanceUnit: Int) {
         context.dataStore.edit { preferences ->
             preferences[DEFAULT_DISTANCE_UNIT] = defaultDistanceUnit
         }
@@ -48,7 +48,7 @@ class OfflineUserPreferencesRepository(private val context: Context): UserPrefer
         }
     }
 
-    override val isDefaultWeightUnit: Flow<String> = context.dataStore.data.catch {
+    override val isDefaultWeightUnit: Flow<Int> = context.dataStore.data.catch {
         if (it is IOException) {
             emit(emptyPreferences())
         } else {
@@ -58,7 +58,7 @@ class OfflineUserPreferencesRepository(private val context: Context): UserPrefer
         preferences[DEFAULT_WEIGHT_UNIT] ?: WeightUnits.KILOGRAMS.shortForm
     }
 
-    override val isDefaultDistanceUnit: Flow<String> = context.dataStore.data.catch {
+    override val isDefaultDistanceUnit: Flow<Int> = context.dataStore.data.catch {
         if (it is IOException) {
             emit(emptyPreferences())
         } else {

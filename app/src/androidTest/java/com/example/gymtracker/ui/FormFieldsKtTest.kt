@@ -16,6 +16,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.TextFieldValue
+import com.example.gymtracker.R
+import com.example.gymtracker.getResourceString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
@@ -31,14 +33,14 @@ class FormFieldsKtTest {
         var enteredText = ""
         rule.setContent {
             FormInformationField(
-                label = "Test Field",
+                label = R.string.close,
                 value = "",
                 onChange = { enteredText = it },
                 keyboardOptions = KeyboardOptions.Default
             )
         }
 
-        val textField = rule.onNode(hasContentDescription("Test Field"))
+        val textField = rule.onNode(hasContentDescription(getResourceString(R.string.close)))
         textField.performTextInput("Test text input")
         assertThat(enteredText, equalTo("Test text input"))
     }
@@ -47,16 +49,16 @@ class FormFieldsKtTest {
     fun shouldDisplayErrorMessageWhenError() {
         rule.setContent {
             FormInformationField(
-                label = "Test Field",
+                label = R.string.close,
                 value = "",
                 onChange = { },
                 keyboardOptions = KeyboardOptions.Default,
                 error = true,
-                errorMessage = "Test error message"
+                errorMessage = R.string.default_error
             )
         }
 
-        val errorMessage = rule.onNode(hasText("Test error message"))
+        val errorMessage = rule.onNode(hasText(getResourceString(R.string.default_error)))
         errorMessage.assertExists()
     }
 
@@ -65,7 +67,7 @@ class FormFieldsKtTest {
         var enteredText = TextFieldValue(text = "")
         rule.setContent {
             FormInformationFieldWithSuggestions(
-                label = "Test Field",
+                label = R.string.close,
                 value = enteredText,
                 onChange = { enteredText = it },
                 suggestions = listOf("Biceps", "Bicycle", "Bismuth")
@@ -86,7 +88,7 @@ class FormFieldsKtTest {
         rule.setContent {
             var enteredText by remember { mutableStateOf(TextFieldValue(text = "")) }
             FormInformationFieldWithSuggestions(
-                label = "Test Field",
+                label = R.string.close,
                 value = enteredText,
                 onChange = { enteredText = it },
                 suggestions = listOf("Biceps", "Bicycle", "Bismuth")
@@ -121,7 +123,7 @@ class FormFieldsKtTest {
         var enteredText by mutableStateOf(TextFieldValue(text = ""))
         rule.setContent {
             FormInformationFieldWithSuggestions(
-                label = "Test Field",
+                label = R.string.close,
                 value = enteredText,
                 onChange = { enteredText = it },
                 suggestions = listOf("Biceps", "Bicycle", "Bismuth")
@@ -152,7 +154,7 @@ class FormFieldsKtTest {
         rule.setContent {
             var enteredText by remember { mutableStateOf(TextFieldValue(text = "")) }
             FormInformationFieldWithSuggestions(
-                label = "Test Field",
+                label = R.string.close,
                 value = enteredText,
                 onChange = { enteredText = it },
                 suggestions = listOf("Biceps", "Bicycle", "Bismuth", "Biscuits")
@@ -227,20 +229,23 @@ class FormFieldsKtTest {
 
     @Test
     fun shouldUpdateValueSelectedInDropdown() {
-        var selected = ""
+        var selected = 0
         rule.setContent {
             DropdownBox(
-                options = listOf("first", "second"),
+                options = listOf(R.string.kilograms_display_name, R.string.pounds_display_name),
                 onChange = { selected = it }
             )
         }
 
+        val kilograms = getResourceString(R.string.kilograms_display_name)
+        val pounds = getResourceString(R.string.pounds_display_name)
+
         val dropdownBox =
             rule.onNode(hasText("", substring = true) and !hasParent(hasScrollAction()))
-        val firstOption = rule.onNode(hasText("first") and hasParent(hasScrollAction()))
-        val secondOption = rule.onNode(hasText("second") and hasParent(hasScrollAction()))
+        val firstOption = rule.onNode(hasText(kilograms) and hasParent(hasScrollAction()))
+        val secondOption = rule.onNode(hasText(pounds) and hasParent(hasScrollAction()))
 
-        dropdownBox.assertTextEquals("first")
+        dropdownBox.assertTextEquals(kilograms)
         firstOption.assertDoesNotExist()
         secondOption.assertDoesNotExist()
 
@@ -253,21 +258,21 @@ class FormFieldsKtTest {
 
         firstOption.assertDoesNotExist()
         secondOption.assertDoesNotExist()
-        dropdownBox.assertTextEquals("second")
-        assertThat(selected, equalTo("second"))
+        dropdownBox.assertTextEquals(pounds)
+        assertThat(selected, equalTo(R.string.pounds_display_name))
     }
 
     @Test
     fun shouldRenderDropdownWithSelectedChosenIfProvided() {
         rule.setContent {
             DropdownBox(
-                options = listOf("first", "second", "third"),
+                options = listOf(R.string.miles_display_name, R.string.kilometers_display_name, R.string.meters_display_name),
                 onChange = { },
-                selected = "third"
+                selected = R.string.meters_display_name
             )
         }
 
-        rule.onNode(hasText("third")).assertExists()
+        rule.onNode(hasText(getResourceString(R.string.meters_display_name))).assertExists()
     }
 
     @Test

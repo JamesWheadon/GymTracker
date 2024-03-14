@@ -1,5 +1,6 @@
 package com.example.gymtracker.ui.exercise.details
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,12 +18,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.R
@@ -71,7 +73,7 @@ private fun WeightsExerciseInformation(
         ExerciseDetail(
             exerciseInfo = uiState.exercise.muscleGroup,
             iconId = R.drawable.info_48px,
-            iconDescription = "exercise icon",
+            iconDescription = R.string.muscle_icon,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
@@ -79,7 +81,7 @@ private fun WeightsExerciseInformation(
         ExerciseDetail(
             exerciseInfo = uiState.exercise.equipment,
             iconId = R.drawable.exercise_filled_48px,
-            iconDescription = "equipment icon",
+            iconDescription = R.string.equipment_icon,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
@@ -91,10 +93,12 @@ private fun WeightsExerciseInformation(
 fun WeightsExerciseHistoryDetails(
     uiState: ExerciseDetailsUiState
 ) {
-    val timeOptions = listOf("7 Days", "30 Days", "Past Year", "All Time")
-    val detailOptions = listOf("Max Weight", "Max Reps", "Max Sets", "Total Weight")
+    val timeOptions =
+        listOf(R.string.seven_days, R.string.thirty_days, R.string.past_year, R.string.all_time)
+    val detailOptions =
+        listOf(R.string.max_weight, R.string.max_reps, R.string.max_sets, R.string.total_weight)
     val currentDate = LocalDate.now()
-    val timeOptionToStartTime = mapOf<String, LocalDate>(
+    val timeOptionToStartTime = mapOf<Int, LocalDate>(
         Pair(timeOptions[0], currentDate.minusDays(7)),
         Pair(timeOptions[1], currentDate.minusDays(30)),
         Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
@@ -103,8 +107,8 @@ fun WeightsExerciseHistoryDetails(
             uiState.weightsHistory.minBy { history -> history.date.toEpochDay() }.date
         ),
     )
-    var detail by remember { mutableStateOf(detailOptions[0]) }
-    var time by remember { mutableStateOf(timeOptions[0]) }
+    var detail by remember { mutableIntStateOf(detailOptions[0]) }
+    var time by remember { mutableIntStateOf(timeOptions[0]) }
     WeightsExerciseDetailsBestAndRecent(uiState)
     GraphOptions(
         detailOptions = detailOptions,
@@ -113,10 +117,15 @@ fun WeightsExerciseHistoryDetails(
         timeOnChange = { newTime -> time = newTime }
     )
     Graph(
-        points = getWeightsGraphDetails(uiState, detail, detailOptions, LocalUserPreferences.current),
+        points = getWeightsGraphDetails(
+            uiState,
+            detail,
+            detailOptions,
+            LocalUserPreferences.current
+        ),
         startDate = timeOptionToStartTime[time] ?: currentDate,
-        yLabel = detail,
-        yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) " ${LocalUserPreferences.current.defaultWeightUnit.shortForm}" else ""
+        yLabel = stringResource(id = detail),
+        yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) stringResource(id = LocalUserPreferences.current.defaultWeightUnit.shortForm) else ""
     )
 }
 
@@ -137,17 +146,27 @@ private fun WeightsExerciseDetailsBestAndRecent(
         modifier = Modifier.fillMaxWidth()
     ) {
         ExerciseDetail(
-            exerciseInfo = "${convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, best.weight)} ${userPreferencesUiState.defaultWeightUnit.shortForm} for ${best.reps} reps",
+            exerciseInfo = stringResource(
+                id = R.string.weights_exercise_reps,
+                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, best.weight),
+                stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
+                best.reps
+            ),
             iconId = R.drawable.trophy_48dp,
-            iconDescription = "best exercise icon",
+            iconDescription = R.string.best_exercise_icon,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
         )
         ExerciseDetail(
-            exerciseInfo = "${convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, recent.weight)} ${userPreferencesUiState.defaultWeightUnit.shortForm} for ${recent.reps} reps",
+            exerciseInfo = stringResource(
+                id = R.string.weights_exercise_reps,
+                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, recent.weight),
+                stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
+                recent.reps
+            ),
             iconId = R.drawable.history_48px,
-            iconDescription = "recent exercise icon",
+            iconDescription = R.string.recent_exercise_icon,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
@@ -159,7 +178,7 @@ private fun WeightsExerciseDetailsBestAndRecent(
 fun ExerciseDetail(
     exerciseInfo: String,
     iconId: Int,
-    iconDescription: String,
+    @StringRes iconDescription: Int,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -169,7 +188,7 @@ fun ExerciseDetail(
     ) {
         Icon(
             painter = painterResource(id = iconId),
-            contentDescription = iconDescription,
+            contentDescription = stringResource(id = iconDescription),
             tint = MaterialTheme.colorScheme.tertiary,
             modifier = Modifier.size(20.dp)
         )
@@ -182,8 +201,8 @@ fun ExerciseDetail(
 
 fun getWeightsGraphDetails(
     uiState: ExerciseDetailsUiState,
-    detail: String,
-    detailOptions: List<String>,
+    detail: Int,
+    detailOptions: List<Int>,
     userPreferencesUiState: UserPreferencesUiState
 ) = uiState.weightsHistory.map { history ->
     when (detail) {

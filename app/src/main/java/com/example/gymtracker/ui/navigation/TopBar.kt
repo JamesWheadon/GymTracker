@@ -20,7 +20,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.user.UserPreferencesRoute
 import com.example.gymtracker.ui.workout.WorkoutSelectionScreenRoute
 import com.example.gymtracker.ui.workout.history.create.live.LiveRecordWorkoutRoute
@@ -53,7 +55,7 @@ fun TopBar(
                     IconButton(onClick = { navController.navigate(navController.graph.startDestinationId) }) {
                         Icon(
                             imageVector = Icons.Filled.Home,
-                            contentDescription = "Home Button"
+                            contentDescription = stringResource(id = R.string.home_button)
                         )
                     }
                 }
@@ -61,7 +63,7 @@ fun TopBar(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back Button"
+                            contentDescription = stringResource(id = R.string.back_button)
                         )
                     }
                 }
@@ -72,7 +74,7 @@ fun TopBar(
                 IconButton(onClick = editFunction) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Edit feature"
+                        contentDescription = stringResource(id = R.string.edit_feature)
                     )
                 }
             }
@@ -81,7 +83,7 @@ fun TopBar(
                     Icon(
                         imageVector = Icons.Outlined.Delete,
                         tint = Color.Red,
-                        contentDescription = "Delete feature"
+                        contentDescription = stringResource(id = R.string.delete_feature)
                     )
                 }
             }
@@ -89,7 +91,7 @@ fun TopBar(
                 IconButton(onClick = { navController.navigate(route = UserPreferencesRoute.route) }) {
                     Icon(
                         imageVector = Icons.Outlined.AccountCircle,
-                        contentDescription = "User Settings"
+                        contentDescription = stringResource(id = R.string.user_settings)
                     )
                 }
             }
@@ -105,7 +107,7 @@ fun TopBar(
                 }) {
                     Icon(
                         imageVector = Icons.Outlined.PlayArrow,
-                        contentDescription = "Live Record Workout"
+                        contentDescription = stringResource(id = R.string.live_record_workout)
                     )
                 }
             }

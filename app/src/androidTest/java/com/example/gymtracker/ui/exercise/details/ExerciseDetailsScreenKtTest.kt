@@ -40,11 +40,11 @@ class ExerciseDetailsScreenKtTest {
     )
 
     private val exerciseName = rule.onNode(hasText(NAME) and hasContentDescription("Exercise Name").not())
-    private val addHistoryButton = rule.onNode(hasContentDescription("Add Workout"))
+    private val addHistoryButton = rule.onNode(hasContentDescription("Record exercise"))
     private val newHistoryTitle = rule.onNode(hasText("New $NAME Workout"))
-    private val editExerciseButton = rule.onNode(hasContentDescription("Edit feature"))
+    private val editExerciseButton = rule.onNode(hasContentDescription("edit feature"))
     private val updateExerciseTitle = rule.onNode(hasText("Update Exercise"))
-    private val deleteExerciseButton = rule.onNode(hasContentDescription("Delete feature"))
+    private val deleteExerciseButton = rule.onNode(hasContentDescription("delete feature"))
     private val deleteExerciseTitle = rule.onNode(hasText("Delete $NAME Exercise?"))
 
     @Before

@@ -16,11 +16,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseUiState
@@ -89,7 +91,7 @@ fun ExerciseDetailsScreen(
                 Icon(
                     imageVector = Icons.Default.Add,
                     tint = Color.Black,
-                    contentDescription = "Add Workout"
+                    contentDescription = stringResource(id = R.string.record_exercise)
                 )
             }
         }
@@ -115,8 +117,8 @@ fun ExerciseDetailsScreen(
             onDismissRequest = { updateExercise = false }
         ) {
             ExerciseInformationForm(
-                formTitle = "Update Exercise",
-                buttonText = "Save",
+                formTitle = R.string.update_exercise,
+                buttonText = R.string.save,
                 onDismiss = { updateExercise = false },
                 createFunction = updateFunction,
                 exercise = uiState.toExerciseUiState()
@@ -128,7 +130,7 @@ fun ExerciseDetailsScreen(
             onDismissRequest = { deleteExercise = false }
         ) {
             ActionConfirmation(
-                actionTitle = "Delete ${uiState.exercise.name} Exercise?",
+                actionTitle = stringResource(id = R.string.delete_exercise, uiState.exercise.name),
                 confirmFunction = {
                     deleteFunction(uiState.toExerciseUiState())
                     navController.popBackStack()

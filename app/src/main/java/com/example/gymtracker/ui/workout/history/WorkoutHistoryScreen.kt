@@ -24,11 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
@@ -80,7 +82,7 @@ fun WorkoutHistoryScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Edit,
-                contentDescription = "Edit"
+                contentDescription = stringResource(id = R.string.edit)
             )
         }
         IconButton(
@@ -92,7 +94,7 @@ fun WorkoutHistoryScreen(
             Icon(
                 imageVector = Icons.Outlined.Delete,
                 tint = Color.Red,
-                contentDescription = "Delete"
+                contentDescription = stringResource(id = R.string.delete)
             )
         }
         IconButton(
@@ -103,7 +105,7 @@ fun WorkoutHistoryScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(id = R.string.close)
             )
         }
     }
@@ -117,7 +119,7 @@ fun WorkoutHistoryScreen(
                 onDismiss = { showEditWorkoutHistory = false },
                 modifier = Modifier.fillMaxSize(),
                 workoutHistory = workoutHistoryUiState,
-                titleText = "Update Workout"
+                titleText = stringResource(id = R.string.update_workout, workoutUiState.name)
             )
         }
     }
@@ -126,7 +128,7 @@ fun WorkoutHistoryScreen(
             onDismissRequest = { showDeleteWorkoutHistory = false }
         ) {
             ActionConfirmation(
-                actionTitle = "Do you want to delete this workout?",
+                actionTitle = stringResource(id = R.string.delete_workout_confirm),
                 confirmFunction = {
                     viewModel.deleteWorkoutHistory(workoutHistoryUiState)
                     onDismiss()

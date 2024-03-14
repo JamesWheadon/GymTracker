@@ -28,11 +28,11 @@ class TopBarTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
-    private val backButton = rule.onNode(hasContentDescription("Back Button"))
-    private val homeButton = rule.onNode(hasContentDescription("Home Button"))
-    private val editButton = rule.onNode(hasContentDescription("Edit feature"))
-    private val deleteButton = rule.onNode(hasContentDescription("Delete feature"))
-    private val settingsButton = rule.onNode(hasContentDescription("User Settings"))
+    private val backButton = rule.onNode(hasContentDescription("back button"))
+    private val homeButton = rule.onNode(hasContentDescription("home button"))
+    private val editButton = rule.onNode(hasContentDescription("edit feature"))
+    private val deleteButton = rule.onNode(hasContentDescription("delete feature"))
+    private val settingsButton = rule.onNode(hasContentDescription("user settings"))
 
     @Mock
     private lateinit var navController: NavHostController

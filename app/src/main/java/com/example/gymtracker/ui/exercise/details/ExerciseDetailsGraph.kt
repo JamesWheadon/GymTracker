@@ -1,5 +1,6 @@
 package com.example.gymtracker.ui.exercise.details
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -153,10 +154,10 @@ fun Graph(
 
 @Composable
 fun GraphOptions(
-    detailOptions: List<String>,
-    detailOnChange: (String) -> Unit,
-    timeOptions: List<String>,
-    timeOnChange: (String) -> Unit
+    @StringRes detailOptions: List<Int>,
+    detailOnChange: (Int) -> Unit,
+    @StringRes timeOptions: List<Int>,
+    timeOnChange: (Int) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.End,

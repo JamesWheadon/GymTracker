@@ -12,11 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.navigation.NavigationRoute
@@ -37,7 +39,7 @@ fun LiveRecordChooseWorkoutsScreen(
     Scaffold(
         topBar = {
             TopBar(
-                text = "Select Workout to record",
+                text = stringResource(id = R.string.select_record_workout),
                 navController = navController
             )
         }
@@ -61,10 +63,11 @@ fun LiveRecordChooseWorkoutsScreen(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
     ) {
+        val columnContentDescription = stringResource(id = R.string.workout_column)
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .semantics { contentDescription = "workoutColumn" },
+                .semantics { contentDescription = columnContentDescription },
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             items(workoutListUiState.workoutList) { workout ->

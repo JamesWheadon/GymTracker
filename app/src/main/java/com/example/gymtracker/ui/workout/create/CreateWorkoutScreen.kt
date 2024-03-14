@@ -22,9 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.theme.GymTrackerTheme
@@ -66,7 +68,7 @@ fun CreateWorkoutForm(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     FormInformationField(
-                        label = "Workout Name",
+                        label = R.string.workout_name,
                         value = nameState,
                         onChange = { entry ->
                             nameState = entry
@@ -90,7 +92,7 @@ fun CreateWorkoutForm(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(id = R.string.close)
             )
         }
     }
@@ -115,7 +117,7 @@ fun SaveWorkoutFormButton(
         },
         enabled = workoutName != ""
     ) {
-        Text("Save")
+        Text(stringResource(id = R.string.save))
     }
 }
 

@@ -22,11 +22,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
@@ -64,7 +66,7 @@ fun LiveRecordWorkout(
     Scaffold(
         topBar = {
             TopBar(
-                text = "Record ${uiState.name} Workout",
+                text = stringResource(id = R.string.record_workout, uiState.name),
                 navController = navController
             )
         }
@@ -149,14 +151,14 @@ fun LiveRecordWorkout(
         }
         if (completedExercises.size > 0 || currentExercise != -1) {
             Button(enabled = currentExercise == -1, onClick = { finishFunction() }) {
-                Text(text = "Finish Workout")
+                Text(text = stringResource(id = R.string.finish_workout))
             }
         } else {
             Button(
                 onClick = { cancelFunction() },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(id = R.string.cancel))
             }
         }
     }
@@ -188,13 +190,13 @@ fun LiveRecordWorkoutExerciseCard(
                 overflow = TextOverflow.Ellipsis
             )
             if (completed) {
-                Text(text = "Completed")
+                Text(text = stringResource(id = R.string.completed))
             } else {
                 Button(
                     onClick = startFunction,
                     enabled = !recording
                 ) {
-                    Text(text = "Start")
+                    Text(text = stringResource(id = R.string.start))
                 }
             }
         }

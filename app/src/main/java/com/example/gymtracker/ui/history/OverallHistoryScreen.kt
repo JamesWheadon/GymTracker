@@ -22,10 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.exercise.ExerciseCard
@@ -88,7 +90,7 @@ fun OverallHistoryScreen(
     modifier: Modifier = Modifier
 ) {
     HomeScreenCardWrapper(
-        title = "History",
+        title = stringResource(id = R.string.history),
         navController = navController,
         homeNavigationOptions = homeNavigationOptions
     ) {
@@ -180,7 +182,7 @@ fun HistoryOnDay(
                 )
                 if (workoutsOnDateUiState.isNotEmpty()) {
                     Text(
-                        text = "Workouts",
+                        text = stringResource(id = R.string.workouts),
                         style = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
@@ -197,7 +199,7 @@ fun HistoryOnDay(
                 }
                 if (exercisesOnDateUiState.isNotEmpty()) {
                     Text(
-                        text = "Exercises",
+                        text = stringResource(id = R.string.exercises),
                         style = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
@@ -222,7 +224,7 @@ fun HistoryOnDay(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(id = R.string.close)
             )
         }
     }

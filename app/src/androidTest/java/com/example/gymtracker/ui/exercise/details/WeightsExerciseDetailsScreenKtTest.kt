@@ -70,13 +70,13 @@ class WeightsExerciseDetailsScreenKtTest {
         rule.onNode(hasText(EQUIPMENT) and hasContentDescription("Equipment").not())
     private val exerciseMuscleGroup =
         rule.onNode(hasText(MUSCLE_GROUP) and hasContentDescription("Muscle Group").not())
-    private val exerciseMuscleGroupIcon = rule.onNode(hasContentDescription("exercise icon"))
+    private val exerciseMuscleGroupIcon = rule.onNode(hasContentDescription("muscle icon"))
     private val exerciseEquipmentIcon = rule.onNode(hasContentDescription("equipment icon"))
     private val bestExerciseIcon = rule.onNode(hasContentDescription("best exercise icon"))
-    private val bestExercise = rule.onNode(hasText("13.0 kg for 2 reps"))
+    private val bestExercise = rule.onNode(hasText("13.00 kg for 2 reps"))
     private val bestExerciseMostWeight = rule.onNode(hasText("26.46 lb for 5 reps"))
     private val recentExerciseIcon = rule.onNode(hasContentDescription("recent exercise icon"))
-    private val recentExercise = rule.onNode(hasText("10.0 kg for 5 reps"))
+    private val recentExercise = rule.onNode(hasText("10.00 kg for 5 reps"))
     private val recentExercisePounds = rule.onNode(hasText("22.05 lb for 5 reps"))
 
 

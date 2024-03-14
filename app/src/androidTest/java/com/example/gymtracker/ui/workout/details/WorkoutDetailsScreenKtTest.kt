@@ -59,8 +59,8 @@ class WorkoutDetailsScreenKtTest {
     private val workoutTitle = rule.onNode(hasText("Test Workout"))
     private val curlsExercise = rule.onNode(hasText("Curls"))
     private val dipsExercise = rule.onNode(hasText("Dips"))
-    private val editButton = rule.onNode(hasContentDescription("Edit feature"))
-    private val deleteButton = rule.onNode(hasContentDescription("Delete feature"))
+    private val editButton = rule.onNode(hasContentDescription("edit feature"))
+    private val deleteButton = rule.onNode(hasContentDescription("delete feature"))
     private val editExercisesButton = rule.onNode(hasText("Edit Exercises"))
 
     @Before
@@ -137,7 +137,7 @@ class WorkoutDetailsScreenKtTest {
 
         editButton.performClick()
 
-        rule.onNode(hasText("Update Workout")).assertExists()
+        rule.onNode(hasText("Update Test Workout Workout")).assertExists()
     }
 
     @Test

@@ -33,9 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.DayOfWeek
 import java.time.YearMonth
@@ -196,7 +198,7 @@ fun MonthPicker(
             IconButton(onClick = { pickMonth = !pickMonth }) {
                 Icon(
                     imageVector = if (pickMonth) Icons.Default.KeyboardArrowUp else Icons.Default.ArrowDropDown,
-                    contentDescription = "Change Month"
+                    contentDescription = stringResource(id = R.string.change_month)
                 )
             }
         }
@@ -227,7 +229,10 @@ fun YearMonthOptions(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     IconButton(onClick = { year-- }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Previous Year")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.previous_year)
+                        )
                     }
                     Text(text = year.toString())
                     IconButton(
@@ -236,7 +241,7 @@ fun YearMonthOptions(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Next Year",
+                            contentDescription = stringResource(id = R.string.next_year),
                             modifier = Modifier.alpha(if (year < YearMonth.now().year) 1F else 0F)
                         )
                     }
@@ -287,7 +292,7 @@ fun YearMonthOptions(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(id = R.string.close)
             )
         }
     }

@@ -7,6 +7,8 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onParent
+import com.example.gymtracker.R
+import com.example.gymtracker.getResourceString
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
@@ -38,14 +40,14 @@ class ExerciseDetailsGraphKtTest {
     fun rendersGraphOptions() {
         rule.setContent {
             GraphOptions(
-                detailOptions = listOf("1", "2"),
+                detailOptions = listOf(R.string.kilometers_display_name, R.string.miles_display_name),
                 detailOnChange = {},
-                timeOptions = listOf("a", "b"),
+                timeOptions = listOf(R.string.seven_days, R.string.thirty_days),
                 timeOnChange = {}
             )
         }
 
-        rule.onNode(hasText("1")).assertExists()
-        rule.onNode(hasText("a")).assertExists()
+        rule.onNode(hasText(getResourceString(R.string.kilometers_display_name))).assertExists()
+        rule.onNode(hasText(getResourceString(R.string.seven_days))).assertExists()
     }
 }
