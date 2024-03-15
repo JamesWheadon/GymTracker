@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.DropdownBox
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -62,6 +64,7 @@ fun Graph(
     val customFormatter = DateTimeFormatter.ofPattern("dd/MM")
     val lineColor = MaterialTheme.colorScheme.primary
     val textMeasurer = rememberTextMeasurer()
+    val dateText = stringResource(id = R.string.date)
     Box(
         modifier = modifier
             .padding(horizontal = 8.dp, vertical = 12.dp),
@@ -133,7 +136,6 @@ fun Graph(
                 dataPoints.firstOrNull { point -> abs(point.first - tappedLocation.x) + abs(point.second - tappedLocation.y) < 20 }
             if (selected != null) {
                 val dataPoint = points[dataPoints.indexOf(selected)]
-
                 dataPointInformation(
                     yUnit = yUnit,
                     dataPoint = dataPoint,
@@ -145,7 +147,8 @@ fun Graph(
                     canvasWidth = canvasWidth,
                     canvasHeight = canvasHeight,
                     selected = selected,
-                    lineColor = lineColor
+                    lineColor = lineColor,
+                    dateText = dateText
                 )
             }
         }
@@ -349,7 +352,8 @@ private fun DrawScope.dataPointInformation(
     canvasWidth: Float,
     canvasHeight: Float,
     selected: Pair<Float, Float>,
-    lineColor: Color
+    lineColor: Color,
+    dateText: String
 ) {
     val xDataLabel = if (yUnit == "") {
         dataPoint.second.toString()
@@ -428,7 +432,7 @@ private fun DrawScope.dataPointInformation(
 
     drawText(
         textMeasurer = textMeasurer,
-        text = "Date",
+        text = dateText,
         style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
         topLeft = boxTopLeft.plus(Offset(15f, 15f + topRowHeight + 10f))
     )

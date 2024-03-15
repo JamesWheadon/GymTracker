@@ -1,5 +1,6 @@
 package com.example.gymtracker.ui.visualisations
 
+import android.icu.text.DateFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,8 +43,10 @@ import com.example.gymtracker.R
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 import java.time.DayOfWeek
 import java.time.YearMonth
+import java.time.ZoneId
 import java.time.format.TextStyle
-import java.util.Locale
+import java.util.Date
+
 
 @Composable
 fun Calendar(
@@ -78,7 +82,7 @@ fun DaysOfWeek(
     ) {
         for (day in DayOfWeek.values()) {
             Text(
-                text = day.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
+                text = day.getDisplayName(TextStyle.SHORT, LocalConfiguration.current.locales[0]),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1F)
             )
@@ -186,14 +190,9 @@ fun MonthPicker(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "${
-                    yearMonthValue.month.getDisplayName(
-                        TextStyle.FULL,
-                        Locale.ENGLISH
-                    )
-                } ${yearMonthValue.year}"
-            )
+            val monthEndDate = Date.from(yearMonthValue.atEndOfMonth().atStartOfDay(ZoneId.systemDefault()).toInstant())
+            val monthYearString = DateFormat.getPatternInstance(DateFormat.YEAR_MONTH, LocalConfiguration.current.locales[0]).format(monthEndDate)
+            Text(text = monthYearString)
             Spacer(modifier = Modifier.width(4.dp))
             IconButton(onClick = { pickMonth = !pickMonth }) {
                 Icon(
@@ -273,10 +272,7 @@ fun YearMonthOptions(
                                 ),
                             ) {
                                 Text(
-                                    text = yearMonthOption.month.getDisplayName(
-                                        TextStyle.SHORT,
-                                        Locale.ENGLISH
-                                    )
+                                    text = yearMonthOption.month.getDisplayName(TextStyle.SHORT, LocalConfiguration.current.locales[0])
                                 )
                             }
                         }
@@ -311,7 +307,20 @@ fun CalendarPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(locale = "es", showBackground = true)
+@Composable
+fun CalendarPreviewSpanish() {
+    GymTrackerTheme(darkTheme = false) {
+        Calendar(
+            month = 10,
+            year = 2023,
+            activeDays = listOf(),
+            dayFunction = { }
+        )
+    }
+}
+
+@Preview(locale = "en", showBackground = true)
 @Composable
 fun MonthPickerPreview() {
     GymTrackerTheme(darkTheme = false) {
@@ -322,9 +331,32 @@ fun MonthPickerPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(locale = "de", showBackground = true)
+@Composable
+fun MonthPickerPreviewGerman() {
+    GymTrackerTheme(darkTheme = false) {
+        MonthPicker(
+            yearMonthValue = YearMonth.now(),
+            yearMonthValueOnChange = { }
+        )
+    }
+}
+
+@Preview(locale = "en", showBackground = true)
 @Composable
 fun YearMonthOptionsPreview() {
+    GymTrackerTheme(darkTheme = false) {
+        YearMonthOptions(
+            yearMonthValue = YearMonth.now(),
+            yearMonthValueOnChange = { },
+            closeFunction = { }
+        )
+    }
+}
+
+@Preview(locale = "fr", showBackground = true)
+@Composable
+fun YearMonthOptionsPreviewFrench() {
     GymTrackerTheme(darkTheme = false) {
         YearMonthOptions(
             yearMonthValue = YearMonth.now(),

@@ -439,12 +439,12 @@ fun ActionConfirmation(
                         onClick = { confirmFunction() },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
-                        Text(text = "Yes")
+                        Text(text = stringResource(id = R.string.yes))
                     }
                     Button(
                         onClick = { cancelFunction() }
                     ) {
-                        Text(text = "No")
+                        Text(text = stringResource(id = R.string.no))
                     }
                 }
             }
@@ -457,7 +457,7 @@ fun ActionConfirmation(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(id = R.string.close)
             )
         }
     }
