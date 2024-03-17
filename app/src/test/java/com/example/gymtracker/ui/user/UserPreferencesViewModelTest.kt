@@ -1,9 +1,9 @@
 package com.example.gymtracker.ui.user
 
 import app.cash.turbine.test
-import com.example.gymtracker.converters.DistanceUnits
-import com.example.gymtracker.converters.WeightUnits
 import com.example.gymtracker.data.user.UserPreferencesRepository
+import com.example.gymtracker.enums.DistanceUnits
+import com.example.gymtracker.enums.WeightUnits
 import com.example.gymtracker.fake.FakeUserPreferencesRepository
 import com.example.gymtracker.rules.TestCoroutineRule
 import kotlinx.coroutines.test.runTest

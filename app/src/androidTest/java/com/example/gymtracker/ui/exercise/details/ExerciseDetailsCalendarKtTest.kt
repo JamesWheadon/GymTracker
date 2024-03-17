@@ -8,8 +8,8 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
-import com.example.gymtracker.converters.DistanceUnits
-import com.example.gymtracker.converters.WeightUnits
+import com.example.gymtracker.enums.DistanceUnits
+import com.example.gymtracker.enums.WeightUnits
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState

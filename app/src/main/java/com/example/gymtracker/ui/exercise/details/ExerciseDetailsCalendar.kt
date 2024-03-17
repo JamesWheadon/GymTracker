@@ -29,10 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
-import com.example.gymtracker.converters.DistanceUnits
-import com.example.gymtracker.converters.WeightUnits
-import com.example.gymtracker.converters.convertToDistanceUnit
-import com.example.gymtracker.converters.convertToWeightUnit
+import com.example.gymtracker.enums.DistanceUnits
+import com.example.gymtracker.enums.WeightUnits
+import com.example.gymtracker.enums.convertToDistanceUnit
+import com.example.gymtracker.enums.convertToWeightUnit
 import com.example.gymtracker.ui.ActionConfirmation
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.customCardElevation

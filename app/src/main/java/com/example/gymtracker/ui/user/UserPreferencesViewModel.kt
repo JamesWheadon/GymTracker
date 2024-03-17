@@ -2,11 +2,11 @@ package com.example.gymtracker.ui.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gymtracker.converters.DistanceUnits
-import com.example.gymtracker.converters.WeightUnits
-import com.example.gymtracker.converters.getDistanceUnitFromShortForm
-import com.example.gymtracker.converters.getWeightUnitFromShortForm
 import com.example.gymtracker.data.user.UserPreferencesRepository
+import com.example.gymtracker.enums.DistanceUnits
+import com.example.gymtracker.enums.WeightUnits
+import com.example.gymtracker.enums.getDistanceUnitFromShortForm
+import com.example.gymtracker.enums.getWeightUnitFromShortForm
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn

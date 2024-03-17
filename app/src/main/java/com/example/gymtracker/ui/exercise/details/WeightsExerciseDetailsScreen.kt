@@ -28,8 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.R
-import com.example.gymtracker.converters.WeightUnits
-import com.example.gymtracker.converters.convertToWeightUnit
+import com.example.gymtracker.enums.WeightUnits
+import com.example.gymtracker.enums.convertToWeightUnit
 import com.example.gymtracker.ui.exercise.ExerciseUiState
 import com.example.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.example.gymtracker.ui.theme.GymTrackerTheme

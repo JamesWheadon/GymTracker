@@ -8,8 +8,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.gymtracker.converters.DistanceUnits
-import com.example.gymtracker.converters.WeightUnits
+import com.example.gymtracker.enums.DistanceUnits
+import com.example.gymtracker.enums.WeightUnits
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map

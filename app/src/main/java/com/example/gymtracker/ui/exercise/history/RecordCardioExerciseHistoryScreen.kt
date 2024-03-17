@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -21,12 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.R
-import com.example.gymtracker.converters.DistanceUnits
-import com.example.gymtracker.converters.convertToDistanceUnit
-import com.example.gymtracker.converters.convertToKilometers
+import com.example.gymtracker.enums.DistanceUnits
+import com.example.gymtracker.enums.FormTypes
+import com.example.gymtracker.enums.convertToDistanceUnit
+import com.example.gymtracker.enums.convertToKilometers
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.FormTimeField
@@ -77,10 +76,10 @@ fun RecordCardioExerciseHistoryCard(
                 minutes = minutesState,
                 seconds = secondsState,
                 minutesOnChange = { minutes ->
-                    minutesState = Regex("[^0-9]").replace(minutes, "")
+                    minutesState = minutes
                 },
                 secondsOnChange = { seconds ->
-                    secondsState = Regex("[^0-9]").replace(seconds, "")
+                    secondsState = seconds
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,10 +95,10 @@ fun RecordCardioExerciseHistoryCard(
                 FormInformationField(
                     label = R.string.distance,
                     value = distanceState,
-                    onChange = { entry ->
-                        distanceState = Regex("[^0-9.]").replace(entry, "")
+                    onChange = { distance ->
+                        distanceState = distance
                     },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                    formType = FormTypes.DOUBLE,
                     modifier = Modifier
                         .weight(1f)
                         .height(intrinsicSize = IntrinsicSize.Max)
@@ -122,10 +121,10 @@ fun RecordCardioExerciseHistoryCard(
             FormInformationField(
                 label = R.string.calories,
                 value = caloriesState,
-                onChange = { entry ->
-                    caloriesState = Regex("[^0-9]").replace(entry, "")
+                onChange = { calories ->
+                    caloriesState = calories
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                formType = FormTypes.INTEGER,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 0.dp)

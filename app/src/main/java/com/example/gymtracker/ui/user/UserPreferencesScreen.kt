@@ -24,8 +24,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.gymtracker.R
-import com.example.gymtracker.converters.DistanceUnits
-import com.example.gymtracker.converters.WeightUnits
+import com.example.gymtracker.enums.DistanceUnits
+import com.example.gymtracker.enums.WeightUnits
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.customCardElevation

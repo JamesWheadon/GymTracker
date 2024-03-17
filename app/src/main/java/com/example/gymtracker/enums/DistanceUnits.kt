@@ -1,4 +1,4 @@
-package com.example.gymtracker.converters
+package com.example.gymtracker.enums
 
 import androidx.annotation.StringRes
 import com.example.gymtracker.R

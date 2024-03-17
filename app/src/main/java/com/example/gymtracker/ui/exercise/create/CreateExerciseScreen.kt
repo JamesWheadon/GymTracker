@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -37,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymtracker.R
+import com.example.gymtracker.enums.FormTypes
 import com.example.gymtracker.ui.AppViewModelProvider
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.FormInformationFieldWithSuggestions
@@ -230,7 +230,7 @@ private fun WeightsExerciseInformationForm(
             label = R.string.exercise_name,
             value = nameState,
             onChange = nameStateOnChange,
-            keyboardOptions = KeyboardOptions.Default,
+            formType = FormTypes.STRING,
             error = nameError,
             errorMessage = R.string.exercise_name_taken
         )
@@ -238,7 +238,7 @@ private fun WeightsExerciseInformationForm(
             label = R.string.equipment,
             value = equipmentState,
             onChange = equipmentStateOnChange,
-            keyboardOptions = KeyboardOptions.Default
+            formType = FormTypes.STRING,
         )
         FormInformationFieldWithSuggestions(
             label = R.string.muscle_group,
@@ -265,7 +265,7 @@ private fun CardioExerciseInformationForm(
             label = R.string.exercise_name,
             value = nameState,
             onChange = nameStateOnChange,
-            keyboardOptions = KeyboardOptions.Default,
+            formType = FormTypes.STRING,
             error = nameError,
             errorMessage = R.string.exercise_name_taken
         )

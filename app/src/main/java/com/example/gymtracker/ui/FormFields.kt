@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -41,15 +40,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.example.gymtracker.R
-import com.example.gymtracker.converters.DistanceUnits
-import com.example.gymtracker.converters.WeightUnits
+import com.example.gymtracker.enums.DistanceUnits
+import com.example.gymtracker.enums.FormTypes
+import com.example.gymtracker.enums.WeightUnits
 import com.example.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
@@ -57,15 +56,34 @@ fun FormInformationField(
     @StringRes label: Int,
     value: String,
     onChange: (String) -> Unit,
-    keyboardOptions: KeyboardOptions,
+    formType: FormTypes,
     modifier: Modifier = Modifier,
     error: Boolean = false,
     @StringRes errorMessage: Int = R.string.default_error
 ) {
     val labelString = stringResource(id = label)
+    val decimalSeparator = stringResource(id = R.string.decimal_separator)
     TextField(
-        value = value,
-        onValueChange = onChange,
+        value = if (formType == FormTypes.DOUBLE) value.replace(",", decimalSeparator) else value,
+        onValueChange = { newValue ->
+            when (formType) {
+                FormTypes.STRING -> {
+                    onChange(newValue)
+                }
+
+                FormTypes.DOUBLE -> {
+                    if (newValue.matches(Regex(formType.regexPattern))) {
+                        onChange(newValue)
+                    }
+                }
+
+                else -> {
+                    if (newValue.matches(Regex(formType.regexPattern))) {
+                        onChange(newValue.replace(",", "."))
+                    }
+                }
+            }
+        },
         label = {
             Text(text = labelString)
         },
@@ -82,7 +100,7 @@ fun FormInformationField(
                 )
             }
         },
-        keyboardOptions = keyboardOptions,
+        keyboardOptions = formType.keyboardOptions,
         modifier = modifier.semantics { contentDescription = labelString }
     )
 }
@@ -164,51 +182,28 @@ fun FormTimeField(
     modifier: Modifier = Modifier
 ) {
     val secondsError = seconds != "" && seconds.toInt() >= 60
-    val minutesString = stringResource(id = R.string.minutes)
-    val secondsString = stringResource(id = R.string.seconds)
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top,
         modifier = modifier
     ) {
-        TextField(
+        FormInformationField(
+            label = R.string.minutes,
             value = minutes,
-            onValueChange = minutesOnChange,
-            label = {
-                Text(text = minutesString)
-            },
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondary
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            onChange = minutesOnChange,
+            formType = FormTypes.INTEGER,
             modifier = Modifier
-                .semantics { contentDescription = minutesString }
                 .weight(1f)
                 .padding(0.dp)
         )
-        TextField(
+        FormInformationField(
+            label = R.string.seconds,
             value = seconds,
-            onValueChange = secondsOnChange,
-            label = {
-                Text(text = secondsString)
-            },
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondary
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            isError = secondsError,
-            supportingText = {
-                if (secondsError) {
-                    Text(
-                        text = stringResource(id = R.string.seconds_error),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
+            onChange = secondsOnChange,
+            formType = FormTypes.INTEGER,
+            error = secondsError,
+            errorMessage = R.string.seconds_error,
             modifier = Modifier
-                .semantics { contentDescription = secondsString }
                 .weight(1f)
                 .padding(0.dp)
         )

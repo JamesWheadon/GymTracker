@@ -10,7 +10,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.example.gymtracker.converters.DistanceUnits
+import com.example.gymtracker.enums.DistanceUnits
 import com.example.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.example.gymtracker.ui.user.LocalUserPreferences
 import com.example.gymtracker.ui.user.UserPreferencesUiState

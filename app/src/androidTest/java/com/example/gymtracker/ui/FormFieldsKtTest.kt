@@ -1,7 +1,6 @@
 package com.example.gymtracker.ui
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +16,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.gymtracker.R
+import com.example.gymtracker.enums.FormTypes
 import com.example.gymtracker.getResourceString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -36,7 +36,7 @@ class FormFieldsKtTest {
                 label = R.string.close,
                 value = "",
                 onChange = { enteredText = it },
-                keyboardOptions = KeyboardOptions.Default
+                formType = FormTypes.STRING,
             )
         }
 
@@ -52,7 +52,7 @@ class FormFieldsKtTest {
                 label = R.string.close,
                 value = "",
                 onChange = { },
-                keyboardOptions = KeyboardOptions.Default,
+                formType = FormTypes.INTEGER,
                 error = true,
                 errorMessage = R.string.default_error
             )

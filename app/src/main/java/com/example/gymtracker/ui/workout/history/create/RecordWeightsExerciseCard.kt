@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
@@ -22,14 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.R
-import com.example.gymtracker.converters.WeightUnits
-import com.example.gymtracker.converters.convertToKilograms
-import com.example.gymtracker.converters.convertToWeightUnit
+import com.example.gymtracker.enums.FormTypes
+import com.example.gymtracker.enums.WeightUnits
+import com.example.gymtracker.enums.convertToKilograms
+import com.example.gymtracker.enums.convertToWeightUnit
 import com.example.gymtracker.ui.DropdownBox
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.exercise.ExerciseUiState
@@ -99,13 +98,13 @@ fun RecordWeightsExerciseCard(
                     FormInformationField(
                         label = R.string.sets,
                         value = setsState,
-                        onChange = { entry ->
-                            setsState = entry.replace("""[^0-9]""".toRegex(), "")
+                        onChange = { sets ->
+                            setsState = sets
                             if (setsState != "") {
                                 exerciseHistory.sets = setsState.toInt()
                             }
                         },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                        formType = FormTypes.INTEGER,
                         error = setsError,
                         errorMessage = R.string.positive_number_error,
                         modifier = Modifier
@@ -116,13 +115,13 @@ fun RecordWeightsExerciseCard(
                     FormInformationField(
                         label = R.string.reps,
                         value = repsState,
-                        onChange = { entry ->
-                            repsState = entry.replace("""[^0-9]""".toRegex(), "")
+                        onChange = { reps ->
+                            repsState = reps
                             if (repsState != "") {
                                 exerciseHistory.reps = repsState.toInt()
                             }
                         },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                        formType = FormTypes.INTEGER,
                         error = repsError,
                         errorMessage = R.string.positive_number_error,
                         modifier = Modifier
@@ -140,8 +139,8 @@ fun RecordWeightsExerciseCard(
                     FormInformationField(
                         label = R.string.weight,
                         value = weightState,
-                        onChange = { entry ->
-                            weightState = entry.replace("""[^0-9-.]""".toRegex(), "")
+                        onChange = { weight ->
+                            weightState = weight
                             if (weightState != "" && weightState.toDoubleOrNull() != null) {
                                 exerciseHistory.weight = convertToKilograms(
                                     unitState,
@@ -149,7 +148,7 @@ fun RecordWeightsExerciseCard(
                                 )
                             }
                         },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                        formType = FormTypes.DOUBLE,
                         error = weightError,
                         errorMessage = R.string.number_error,
                         modifier = Modifier

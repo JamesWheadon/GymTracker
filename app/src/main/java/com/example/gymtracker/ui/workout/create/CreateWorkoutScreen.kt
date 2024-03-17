@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymtracker.R
+import com.example.gymtracker.enums.FormTypes
 import com.example.gymtracker.ui.FormInformationField
 import com.example.gymtracker.ui.customCardElevation
 import com.example.gymtracker.ui.theme.GymTrackerTheme
@@ -73,7 +73,7 @@ fun CreateWorkoutForm(
                         onChange = { entry ->
                             nameState = entry
                         },
-                        keyboardOptions = KeyboardOptions.Default
+                        formType = FormTypes.STRING,
                     )
                     SaveWorkoutFormButton(
                         workoutName = nameState,
