@@ -30,10 +30,6 @@ class WorkoutHistoryViewModelTest {
     private val newCardioExerciseHistoryUI = CardioExerciseHistoryUiState(exerciseId = 4)
     private val oldWeightsExerciseHistoryUI = WeightsExerciseHistoryUiState(id = 3, exerciseId = 5, workoutHistoryId = 1)
     private val oldCardioExerciseHistoryUI = CardioExerciseHistoryUiState(id = 3, exerciseId = 6, workoutHistoryId = 1)
-    private val weightsExerciseHistory =
-        WeightsExerciseHistory(1, 1, 0.0, 0, 0, LocalDate.now(), null)
-    private val cardioExerciseHistory =
-        CardioExerciseHistory(1, 2, LocalDate.now())
     private val savedWeightsExerciseHistory =
         WeightsExerciseHistory(1, 1, 0.0, 0, 0, LocalDate.now(), null, 1)
     private val savedCardioExerciseHistory =

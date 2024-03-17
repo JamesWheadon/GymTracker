@@ -101,7 +101,7 @@ fun EditWorkoutExercisesScreen(
                     modifier = Modifier
                         .padding(
                             horizontal = 0.dp,
-                            vertical = 24.dp
+                            vertical = 40.dp
                         )
                         .verticalScroll(rememberScrollState())
                 ) {
