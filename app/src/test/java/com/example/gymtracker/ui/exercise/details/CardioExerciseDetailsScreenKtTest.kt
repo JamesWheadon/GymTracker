@@ -10,7 +10,7 @@ import java.time.LocalDate
 
 class CardioExerciseDetailsScreenKtTest {
 
-    private val options = listOf("1", "2", "3")
+    private val options = listOf(1, 2, 3)
     private val firstDate: LocalDate = LocalDate.now().minusDays(3)
     private val secondDate: LocalDate = LocalDate.now().minusDays(5)
     private val thirdDate: LocalDate = LocalDate.now().minusDays(7)
@@ -42,7 +42,7 @@ class CardioExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForFirstOption() {
-        val result = getCardioGraphDetails(exercise, "1", options, UserPreferencesUiState())
+        val result = getCardioGraphDetails(exercise, 1, options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
         assertThat(result.map { it.second }, equalTo(listOf(5.0, 4.0)))
@@ -50,7 +50,7 @@ class CardioExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForSecondOption() {
-        val result = getCardioGraphDetails(exercise, "2", options, UserPreferencesUiState())
+        val result = getCardioGraphDetails(exercise, 2, options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(1800.0, 1230.0)))
@@ -58,7 +58,7 @@ class CardioExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForThirdOption() {
-        val result = getCardioGraphDetails(exercise, "3", options, UserPreferencesUiState())
+        val result = getCardioGraphDetails(exercise, 3, options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate, thirdDate)))
         assertThat(result.map { it.second }, equalTo(listOf(1000.0, 1200.0, 600.0)))
@@ -66,7 +66,7 @@ class CardioExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForOtherOption() {
-        val result = getCardioGraphDetails(exercise, "4", options, UserPreferencesUiState())
+        val result = getCardioGraphDetails(exercise, 4, options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
         assertThat(result.map { it.second }, equalTo(listOf(5.0, 4.0)))

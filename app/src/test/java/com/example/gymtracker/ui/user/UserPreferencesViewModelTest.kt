@@ -41,7 +41,7 @@ class UserPreferencesViewModelTest {
 
         viewModel.updateDefaultDistanceUnit(DistanceUnits.MILES)
 
-        verify(repository).saveDefaultDistanceUnit("mi")
+        verify(repository).saveDefaultDistanceUnit(DistanceUnits.MILES.shortForm)
     }
 
     @Test
@@ -50,7 +50,7 @@ class UserPreferencesViewModelTest {
 
         viewModel.updateDefaultWeightUnit(WeightUnits.POUNDS)
 
-        verify(repository).saveDefaultWeightUnit("lb")
+        verify(repository).saveDefaultWeightUnit(WeightUnits.POUNDS.shortForm)
     }
 
     @Test

@@ -106,8 +106,8 @@ class WorkoutHistoryViewModelTest {
         viewModel.deleteWorkoutHistory(workoutHistoryWithExercises)
 
         verify(mockWorkoutHistoryRepository).delete(workoutHistory)
-        verify(mockWeightsExerciseHistoryRepository).delete(weightsExerciseHistory)
-        verify(mockCardioExerciseHistoryRepository).delete(cardioExerciseHistory)
+        verify(mockWeightsExerciseHistoryRepository).delete(savedWeightsExerciseHistory)
+        verify(mockCardioExerciseHistoryRepository).delete(savedCardioExerciseHistory)
     }
 
     @Test

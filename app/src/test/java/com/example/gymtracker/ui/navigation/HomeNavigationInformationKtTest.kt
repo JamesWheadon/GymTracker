@@ -1,6 +1,7 @@
 package com.example.gymtracker.ui.navigation
 
 import androidx.navigation.NavHostController
+import com.example.gymtracker.R
 import com.example.gymtracker.ui.exercise.ExercisesRoute
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.hasItems
@@ -21,9 +22,9 @@ class HomeNavigationInformationKtTest {
 
         val navigationTitles = navigationMap.keys
         assertThat(navigationMap.size, equalTo(3))
-        assertThat(navigationTitles.map { it.title }, hasItems("Exercises", "Workouts", "History"))
-        assertThat(navigationMap[navigationTitles.first { it.title == "Exercises" }], equalTo(false))
-        assertThat(navigationMap[navigationTitles.first { it.title == "Workouts" }], equalTo(true))
-        assertThat(navigationMap[navigationTitles.first { it.title == "History" }], equalTo(true))
+        assertThat(navigationTitles.map { it.title }, hasItems(R.string.exercises, R.string.workouts, R.string.history))
+        assertThat(navigationMap[navigationTitles.first { it.title == R.string.exercises }], equalTo(false))
+        assertThat(navigationMap[navigationTitles.first { it.title == R.string.workouts }], equalTo(true))
+        assertThat(navigationMap[navigationTitles.first { it.title == R.string.history }], equalTo(true))
     }
 }

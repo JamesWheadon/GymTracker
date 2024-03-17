@@ -1,14 +1,15 @@
 package com.example.gymtracker.fake
 
+import com.example.gymtracker.R
 import com.example.gymtracker.data.user.UserPreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class FakeUserPreferencesRepository: UserPreferencesRepository {
-    override suspend fun saveDefaultWeightUnit(defaultWeightUnit: String) {
+    override suspend fun saveDefaultWeightUnit(defaultWeightUnit: Int) {
     }
 
-    override suspend fun saveDefaultDistanceUnit(defaultDistanceUnit: String) {
+    override suspend fun saveDefaultDistanceUnit(defaultDistanceUnit: Int) {
     }
 
     override suspend fun saveDisplayHighestWeight(displayHighestWeight: Boolean) {
@@ -17,8 +18,8 @@ class FakeUserPreferencesRepository: UserPreferencesRepository {
     override suspend fun saveDisplayShortestTime(displayShortestTime: Boolean) {
     }
 
-    override val isDefaultWeightUnit: Flow<String> = flowOf("lb")
-    override val isDefaultDistanceUnit: Flow<String> = flowOf("m")
+    override val isDefaultWeightUnit: Flow<Int> = flowOf(R.string.pounds_short_form)
+    override val isDefaultDistanceUnit: Flow<Int> = flowOf(R.string.meters_short_form)
     override val isDisplayHighestWeight: Flow<Boolean> = flowOf(false)
     override val isDisplayShortestTime: Flow<Boolean> = flowOf(false)
 }

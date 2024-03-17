@@ -10,7 +10,7 @@ import java.time.LocalDate
 
 class WeightsExerciseDetailsScreenKtTest {
 
-    private val options = listOf("1", "2", "3", "4")
+    private val options = listOf(1, 2, 3, 4)
     private val firstDate: LocalDate = LocalDate.now().minusDays(3)
     private val secondDate: LocalDate = LocalDate.now().minusDays(5)
     private val exercise = ExerciseDetailsUiState(
@@ -41,7 +41,7 @@ class WeightsExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForFirstOption() {
-        val result = getWeightsGraphDetails(exercise, "1", options, UserPreferencesUiState())
+        val result = getWeightsGraphDetails(exercise, 1, options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
@@ -49,7 +49,7 @@ class WeightsExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForSecondOption() {
-        val result = getWeightsGraphDetails(exercise, "2", options, UserPreferencesUiState())
+        val result = getWeightsGraphDetails(exercise, 2, options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(2.0, 3.0)))
@@ -57,7 +57,7 @@ class WeightsExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForThirdOption() {
-        val result = getWeightsGraphDetails(exercise, "3", options, UserPreferencesUiState())
+        val result = getWeightsGraphDetails(exercise, 3, options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(1.0, 2.0)))
@@ -65,7 +65,7 @@ class WeightsExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForFourthOption() {
-        val result = getWeightsGraphDetails(exercise, "4", options, UserPreferencesUiState())
+        val result = getWeightsGraphDetails(exercise, 4, options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(26.0, 72.0)))
@@ -73,7 +73,7 @@ class WeightsExerciseDetailsScreenKtTest {
 
     @Test
     fun getGraphDetailsForOtherOption() {
-        val result = getWeightsGraphDetails(exercise, "5", options, UserPreferencesUiState())
+        val result = getWeightsGraphDetails(exercise, 5, options, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
