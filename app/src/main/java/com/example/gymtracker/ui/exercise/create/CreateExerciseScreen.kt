@@ -108,7 +108,7 @@ fun ExerciseInformationForm(
     var equipmentState by remember { mutableStateOf(exercise.equipment) }
     var muscleState by remember { mutableStateOf(TextFieldValue(text = exercise.muscleGroup)) }
     var optionState by remember { mutableStateOf(exercise == ExerciseUiState() || exercise.equipment != "") }
-    val nameError = savedExerciseNames.map(String::lowercase).contains(nameState.lowercase())
+    val nameError = nameState != exercise.name && savedExerciseNames.map(String::lowercase).contains(nameState.lowercase())
     Box {
         Card(
             modifier = modifier

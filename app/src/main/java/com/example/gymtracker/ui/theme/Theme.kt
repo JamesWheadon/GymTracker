@@ -11,38 +11,30 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val darkColorScheme = darkColorScheme(
-    primary = Primary,
-    secondary = Secondary,
-    tertiary = Tertiary,
-    background = Background,
-    onBackground = OnBackground,
-    surface = Surface,
-    onSurface = OnSurface,
-    error = Error
+private val lightColorScheme = lightColorScheme(
+    primary = primary,
+    secondary = secondary,
+    tertiary = tertiary,
+    background = background,
+    onBackground = onBackground,
+    surface = surface,
+    onSurface = onSurface,
+    error = error,
+    primaryContainer = primaryContainer,
+    onPrimaryContainer = onPrimaryContainer
 )
 
-private val lightColorScheme = lightColorScheme(
-    primary = Primary,
-    secondary = Secondary,
-    tertiary = Tertiary,
-    background = Background,
-    onBackground = OnBackground,
-    surface = Surface,
-    onSurface = OnSurface,
-    error = Error,
-    primaryContainer = Surface,
-    onPrimaryContainer = OnSurface
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val darkColorScheme = darkColorScheme(
+    primary = darkPrimary,
+    secondary = darkSecondary,
+    tertiary = darkTertiary,
+    background = darkBackground,
+    onBackground = darkOnBackground,
+    surface = darkSurface,
+    onSurface = darkOnSurface,
+    error = darkError,
+    primaryContainer = darkPrimaryContainer,
+    onPrimaryContainer = darkOnPrimaryContainer
 )
 
 @Composable

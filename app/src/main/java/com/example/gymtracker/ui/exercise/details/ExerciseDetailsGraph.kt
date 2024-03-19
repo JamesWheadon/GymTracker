@@ -62,7 +62,9 @@ fun Graph(
 ) {
     var tappedLocation by remember { mutableStateOf(Offset.Zero) }
     val customFormatter = DateTimeFormatter.ofPattern("dd/MM")
-    val lineColor = MaterialTheme.colorScheme.primary
+    val lineColour = MaterialTheme.colorScheme.primary
+    val textAxisColour = MaterialTheme.colorScheme.onSurface
+    val boxColour = MaterialTheme.colorScheme.background
     val textMeasurer = rememberTextMeasurer()
     val dateText = stringResource(id = R.string.date)
     Box(
@@ -101,7 +103,8 @@ fun Graph(
 
             drawAxis(
                 canvasHeight = canvasHeight,
-                canvasWidth = canvasWidth
+                canvasWidth = canvasWidth,
+                axisColour = textAxisColour
             )
 
             labelYAxis(
@@ -110,7 +113,8 @@ fun Graph(
                 yGradient = yGradient,
                 textMeasurer = textMeasurer,
                 yAxisSpace = yAxisSpace,
-                yUnit = yUnit
+                yUnit = yUnit,
+                textColour = textAxisColour
             )
 
             val fontSize = labelXAxis(
@@ -118,7 +122,8 @@ fun Graph(
                 textMeasurer = textMeasurer,
                 startDate = startDate,
                 canvasHeight = canvasHeight,
-                canvasWidth = canvasWidth
+                canvasWidth = canvasWidth,
+                textColour = textAxisColour
             )
 
             val dataPoints = drawDataPoints(
@@ -129,7 +134,7 @@ fun Graph(
                 yMin = yMin,
                 yGradient = yGradient,
                 yAxisSpace = yAxisSpace,
-                lineColor = lineColor
+                lineColor = lineColour
             )
 
             val selected =
@@ -147,7 +152,9 @@ fun Graph(
                     canvasWidth = canvasWidth,
                     canvasHeight = canvasHeight,
                     selected = selected,
-                    lineColor = lineColor,
+                    lineColor = lineColour,
+                    textColour = textAxisColour,
+                    backgroundColour = boxColour,
                     dateText = dateText
                 )
             }
@@ -189,16 +196,17 @@ fun GraphOptions(
 
 private fun DrawScope.drawAxis(
     canvasHeight: Float,
-    canvasWidth: Float
+    canvasWidth: Float,
+    axisColour: Color
 ) {
     drawLine(
-        color = Color.Black,
+        color = axisColour,
         start = Offset(X_OFFSET, canvasHeight - Y_OFFSET),
         end = Offset(canvasWidth, canvasHeight - Y_OFFSET),
         strokeWidth = 2f
     )
     drawLine(
-        color = Color.Black,
+        color = axisColour,
         start = Offset(X_OFFSET, 0F),
         end = Offset(X_OFFSET, canvasHeight - Y_OFFSET),
         strokeWidth = 2f
@@ -211,7 +219,8 @@ private fun DrawScope.labelYAxis(
     yGradient: Int,
     textMeasurer: TextMeasurer,
     yAxisSpace: Float,
-    yUnit: String
+    yUnit: String,
+    textColour: Color
 ) {
     val textSizeFloat = 90F
     (0..ySteps).forEach { index ->
@@ -227,12 +236,12 @@ private fun DrawScope.labelYAxis(
             fontSize = fontSize.times(0.9)
             val textLayoutResult = textMeasurer.measure(
                 text = AnnotatedString(label),
-                style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
+                style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center, color = textColour)
             )
             textSize = textLayoutResult.size
         } while (textSize.width > textSizeFloat)
         drawLine(
-            color = Color.Black,
+            color = textColour,
             start = Offset(
                 textSizeFloat,
                 (size.height - Y_OFFSET - FIRST_POINT) - (index * yAxisSpace)
@@ -247,7 +256,7 @@ private fun DrawScope.labelYAxis(
                 0F,
                 (size.height - Y_OFFSET - FIRST_POINT) - (index * yAxisSpace) - textSize.height / 2
             ),
-            style = TextStyle(fontSize = fontSize),
+            style = TextStyle(fontSize = fontSize, color = textColour),
             size = Size(textSizeFloat, yAxisSpace),
         )
     }
@@ -258,7 +267,8 @@ private fun DrawScope.labelXAxis(
     textMeasurer: TextMeasurer,
     startDate: LocalDate,
     canvasHeight: Float,
-    canvasWidth: Float
+    canvasWidth: Float,
+    textColour: Color
 ): TextUnit {
     val date = LocalDate.now().format(customFormatter)
     var fontSize = 14.sp
@@ -275,7 +285,7 @@ private fun DrawScope.labelXAxis(
     drawText(
         textMeasurer = textMeasurer,
         text = startDate.format(customFormatter),
-        style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
+        style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center, color = textColour),
         topLeft = Offset(X_OFFSET, canvasHeight - Y_OFFSET)
     )
 
@@ -284,7 +294,7 @@ private fun DrawScope.labelXAxis(
         text = LocalDate.ofEpochDay(
             (LocalDate.now().toEpochDay() + startDate.toEpochDay()) / 2
         ).format(customFormatter),
-        style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
+        style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center, color = textColour),
         topLeft = Offset(
             X_OFFSET + (canvasWidth - X_OFFSET - textSize.width) / 2,
             canvasHeight - Y_OFFSET
@@ -294,7 +304,7 @@ private fun DrawScope.labelXAxis(
     drawText(
         textMeasurer = textMeasurer,
         text = date,
-        style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center),
+        style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center, color = textColour),
         topLeft = Offset(canvasWidth - FIRST_POINT - textSize.width, canvasHeight - Y_OFFSET)
     )
     return fontSize
@@ -353,6 +363,8 @@ private fun DrawScope.dataPointInformation(
     canvasHeight: Float,
     selected: Pair<Float, Float>,
     lineColor: Color,
+    backgroundColour: Color,
+    textColour: Color,
     dateText: String
 ) {
     val xDataLabel = if (yUnit == "") {
@@ -408,7 +420,7 @@ private fun DrawScope.dataPointInformation(
         }
 
     drawRoundRect(
-        color = Color.White,
+        color = backgroundColour,
         topLeft = boxTopLeft,
         size = Size(boxWidth, boxHeight),
         cornerRadius = CornerRadius(cornerRadius),
@@ -426,28 +438,28 @@ private fun DrawScope.dataPointInformation(
     drawText(
         textMeasurer = textMeasurer,
         text = yLabel,
-        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
+        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center, color = textColour),
         topLeft = boxTopLeft.plus(Offset(15f, 15f))
     )
 
     drawText(
         textMeasurer = textMeasurer,
         text = dateText,
-        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
+        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center, color = textColour),
         topLeft = boxTopLeft.plus(Offset(15f, 15f + topRowHeight + 10f))
     )
 
     drawText(
         textMeasurer = textMeasurer,
         text = xDataLabel,
-        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
+        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center, color = textColour),
         topLeft = boxTopLeft.plus(Offset(15f + frontColumnWidth + 10f, 15f))
     )
 
     drawText(
         textMeasurer = textMeasurer,
         text = dataPoint.first.format(customFormatter),
-        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
+        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center, color = textColour),
         topLeft = boxTopLeft.plus(
             Offset(
                 15f + frontColumnWidth + 10f,
