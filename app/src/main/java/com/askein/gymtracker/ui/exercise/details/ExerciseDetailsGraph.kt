@@ -1,5 +1,6 @@
 package com.askein.gymtracker.ui.exercise.details
 
+import android.icu.text.DateFormat
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
@@ -35,14 +37,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.DropdownBox
+import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.time.ZoneId
+import java.util.Date
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -61,7 +66,7 @@ fun Graph(
     yUnit: String = ""
 ) {
     var tappedLocation by remember { mutableStateOf(Offset.Zero) }
-    val customFormatter = DateTimeFormatter.ofPattern("dd/MM")
+    val customFormatter = DateFormat.getDateInstance(DateFormat.SHORT, LocalConfiguration.current.locales[0])
     val lineColour = MaterialTheme.colorScheme.primary
     val textAxisColour = MaterialTheme.colorScheme.onSurface
     val boxColour = MaterialTheme.colorScheme.background
@@ -236,7 +241,11 @@ private fun DrawScope.labelYAxis(
             fontSize = fontSize.times(0.9)
             val textLayoutResult = textMeasurer.measure(
                 text = AnnotatedString(label),
-                style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center, color = textColour)
+                style = TextStyle(
+                    fontSize = fontSize,
+                    textAlign = TextAlign.Center,
+                    color = textColour
+                )
             )
             textSize = textLayoutResult.size
         } while (textSize.width > textSizeFloat)
@@ -263,14 +272,14 @@ private fun DrawScope.labelYAxis(
 }
 
 private fun DrawScope.labelXAxis(
-    customFormatter: DateTimeFormatter?,
+    customFormatter: DateFormat,
     textMeasurer: TextMeasurer,
     startDate: LocalDate,
     canvasHeight: Float,
     canvasWidth: Float,
     textColour: Color
 ): TextUnit {
-    val date = LocalDate.now().format(customFormatter)
+    val date = customFormatter.format(LocalDate.now().toDate())
     var fontSize = 14.sp
     var textSize: IntSize
     do {
@@ -284,16 +293,16 @@ private fun DrawScope.labelXAxis(
 
     drawText(
         textMeasurer = textMeasurer,
-        text = startDate.format(customFormatter),
+        text = customFormatter.format(startDate.toDate()),
         style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center, color = textColour),
         topLeft = Offset(X_OFFSET, canvasHeight - Y_OFFSET)
     )
 
     drawText(
         textMeasurer = textMeasurer,
-        text = LocalDate.ofEpochDay(
+        text = customFormatter.format(LocalDate.ofEpochDay(
             (LocalDate.now().toEpochDay() + startDate.toEpochDay()) / 2
-        ).format(customFormatter),
+        ).toDate()),
         style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center, color = textColour),
         topLeft = Offset(
             X_OFFSET + (canvasWidth - X_OFFSET - textSize.width) / 2,
@@ -357,7 +366,7 @@ private fun DrawScope.dataPointInformation(
     textMeasurer: TextMeasurer,
     yLabel: String,
     fontSize: TextUnit,
-    customFormatter: DateTimeFormatter?,
+    customFormatter: DateFormat,
     tappedLocation: Offset,
     canvasWidth: Float,
     canvasHeight: Float,
@@ -389,7 +398,7 @@ private fun DrawScope.dataPointInformation(
     )
 
     val yDataSize = textMeasurer.measure(
-        text = AnnotatedString(dataPoint.first.format(customFormatter)),
+        text = AnnotatedString(customFormatter.format(dataPoint.first.toDate())),
         style = TextStyle(fontSize = fontSize, textAlign = TextAlign.Center)
     )
 
@@ -458,7 +467,7 @@ private fun DrawScope.dataPointInformation(
 
     drawText(
         textMeasurer = textMeasurer,
-        text = dataPoint.first.format(customFormatter),
+        text = customFormatter.format(dataPoint.first.toDate()),
         style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center, color = textColour),
         topLeft = boxTopLeft.plus(
             Offset(
@@ -467,4 +476,40 @@ private fun DrawScope.dataPointInformation(
             )
         )
     )
+}
+
+fun LocalDate.toDate(): Date = Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
+
+@Preview(showBackground = true)
+@Composable
+fun GraphPreview() {
+    GymTrackerTheme(darkTheme = false) {
+        Graph(
+            points = listOf(
+                Pair(LocalDate.now(), 10.0),
+                Pair(LocalDate.now().minusDays(3), 30.0),
+                Pair(LocalDate.now().minusDays(5), 20.0)
+            ),
+            startDate = LocalDate.now().minusDays(7),
+            yLabel = "Time",
+            yUnit = "mins"
+        )
+    }
+}
+
+@Preview(locale = "de", showBackground = true)
+@Composable
+fun GraphPreviewGerman() {
+    GymTrackerTheme(darkTheme = false) {
+        Graph(
+            points = listOf(
+                Pair(LocalDate.now(), 10.0),
+                Pair(LocalDate.now().minusDays(3), 30.0),
+                Pair(LocalDate.now().minusDays(5), 20.0)
+            ),
+            startDate = LocalDate.now().minusDays(7),
+            yLabel = "Time",
+            yUnit = "mins"
+        )
+    }
 }
