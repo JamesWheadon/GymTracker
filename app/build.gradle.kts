@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.gymtracker"
+    namespace = "com.askein.gymtracker"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.gymtracker"
+        applicationId = "com.askein.gymtracker"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
