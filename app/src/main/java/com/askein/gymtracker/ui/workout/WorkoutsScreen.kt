@@ -147,7 +147,7 @@ private fun WorkoutsScreen(
                 .semantics { contentDescription = workoutColumnContentDescription },
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            items(workoutListUiState.workoutList) { workout ->
+            items(workoutListUiState.workoutList.sortedBy { it.name }) { workout ->
                 WorkoutCard(
                     workout = workout,
                     navigationFunction = workoutNavigationFunction

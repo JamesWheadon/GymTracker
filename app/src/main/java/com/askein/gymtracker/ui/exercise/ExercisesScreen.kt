@@ -115,7 +115,7 @@ fun ExercisesScreen(
             modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            items(exerciseListUiState.exerciseList) { exercise ->
+            items(exerciseListUiState.exerciseList.sortedBy { it.name }) { exercise ->
                 ExerciseCard(
                     exercise = exercise,
                     navigationFunction = exerciseNavigationFunction
