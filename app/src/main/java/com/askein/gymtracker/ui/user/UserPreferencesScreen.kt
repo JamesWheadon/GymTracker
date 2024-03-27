@@ -51,12 +51,10 @@ fun UserPreferencesScreen(
         uiState = uiState,
         navController = navController,
         defaultDistanceUnitOnChange = { distanceUnit ->
-            viewModel.updateDefaultDistanceUnit(
-                DistanceUnits.values().first { it.displayName == distanceUnit })
+            viewModel.updateDefaultDistanceUnit(distanceUnit)
         },
         defaultWeightUnitOnChange = { weightUnit ->
-            viewModel.updateDefaultWeightUnit(
-                WeightUnits.values().first { it.displayName == weightUnit })
+            viewModel.updateDefaultWeightUnit(weightUnit)
         },
         displayHighestWeightOnChange = { viewModel.updateDisplayHighestWeight(it) },
         displayShortestTimeOnChange = { viewModel.updateDisplayShortestTime(it) },
