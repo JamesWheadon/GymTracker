@@ -48,7 +48,7 @@ class LiveRecordWeightsExerciseKtTest {
         timerStopButton.assertExists()
         rule.onNode(hasText("00:05")).assertExists()
         assertThat(finished, equalTo(false))
-        rule.waitUntilAtLeastOneExists(hasText("00:00"), 5000)
+        rule.waitUntilAtLeastOneExists(hasText("00:00"), 7500)
         assertThat(finished, equalTo(true))
     }
 

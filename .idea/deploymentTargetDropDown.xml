@@ -5,10 +5,16 @@
       <entry key="All Tests">
         <State />
       </entry>
-      <entry key="CreateExerciseScreenKtTest">
+      <entry key="FormFieldsKtTest">
         <State />
       </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="rendersTimerThatCountsDown()">
+        <State />
+      </entry>
+      <entry key="shouldOnlyAllowValidDecimalsAndNegativeAtStartForDecimalForm()">
         <State />
       </entry>
     </value>
