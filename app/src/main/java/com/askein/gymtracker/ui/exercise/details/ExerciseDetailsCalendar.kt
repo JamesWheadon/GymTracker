@@ -16,6 +16,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiS
 import com.askein.gymtracker.ui.noCardElevation
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
+import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import com.askein.gymtracker.ui.visualisations.Calendar
 import com.askein.gymtracker.ui.visualisations.MonthPicker
 import java.time.LocalDate
@@ -216,7 +218,7 @@ fun WeightsExerciseHistoryDetails(
         convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, exerciseHistory.weight)
     }
     Row(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier.padding(8.dp).fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -224,15 +226,13 @@ fun WeightsExerciseHistoryDetails(
         ) {
             Text(text = stringResource(id = R.string.display_sets, exerciseHistory.sets))
             Text(text = stringResource(id = R.string.display_reps, exerciseHistory.reps))
-        }
-        Column(
-            modifier = Modifier.weight(1F)
-        ) {
-            Text(text = stringResource(
-                id = R.string.display_weight,
-                weight,
-                stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
-            ))
+            Text(
+                text = stringResource(
+                    id = R.string.display_weight,
+                    weight,
+                    stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
+                )
+            )
             if (exerciseHistory.rest != null) {
                 Text(text = stringResource(id = R.string.display_rest, exerciseHistory.rest!!))
             }
@@ -277,52 +277,40 @@ fun CardioExerciseHistoryDetails(
         )
     }
     Row(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier.padding(8.dp).fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (seconds != 0 && exerciseHistory.distance != null && exerciseHistory.calories != null) {
-            Column(
-                modifier = Modifier.weight(1F)
-            ) {
+        Column(
+            modifier = Modifier.weight(1F)
+        ) {
+            if (seconds != 0) {
                 Text(text = stringResource(id = R.string.exercise_time, time))
             }
-            val userPreferencesUiState = LocalUserPreferences.current
-            val distance =
-                if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
-                    exerciseHistory.distance
-                } else {
-                    convertToDistanceUnit(
-                        userPreferencesUiState.defaultDistanceUnit,
-                        exerciseHistory.distance!!
+            if (exerciseHistory.distance != null) {
+                val userPreferencesUiState = LocalUserPreferences.current
+                val distance =
+                    if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
+                        exerciseHistory.distance
+                    } else {
+                        convertToDistanceUnit(
+                            userPreferencesUiState.defaultDistanceUnit,
+                            exerciseHistory.distance!!
+                        )
+                    }
+                Text(
+                    text = stringResource(
+                        id = R.string.exercise_distance,
+                        distance!!,
+                        stringResource(id = userPreferencesUiState.defaultDistanceUnit.shortForm)
                     )
-                }
-            Column(
-                modifier = Modifier.weight(1F)
-            ) {
-                Text(text = stringResource(id = R.string.exercise_distance, distance!!, stringResource(id = userPreferencesUiState.defaultDistanceUnit.shortForm)))
-                Text(text = stringResource(id = R.string.exercise_calories, exerciseHistory.calories!!))
-            }
-        } else {
-            Column(
-                modifier = Modifier.weight(1F)
-            ) {
-                if (seconds != 0) {
-                    Text(text = stringResource(id = R.string.exercise_time, time))
-                }
-                if (exerciseHistory.distance != null) {
-                    val userPreferencesUiState = LocalUserPreferences.current
-                    val distance =
-                        if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
-                            exerciseHistory.distance
-                        } else {
-                            convertToDistanceUnit(
-                                userPreferencesUiState.defaultDistanceUnit,
-                                exerciseHistory.distance!!
-                            )
-                        }
-                    Text(text = stringResource(id = R.string.exercise_distance, distance!!, stringResource(id = userPreferencesUiState.defaultDistanceUnit.shortForm)))
+                )
                 if (exerciseHistory.calories != null) {
-                    Text(text = stringResource(id = R.string.exercise_calories, exerciseHistory.calories!!))                }
+                    Text(
+                        text = stringResource(
+                            id = R.string.exercise_calories,
+                            exerciseHistory.calories!!
+                        )
+                    )
                 }
             }
         }
@@ -341,39 +329,45 @@ fun CardioExerciseHistoryDetails(
 @Preview(showBackground = true)
 @Composable
 fun WeightsHistoryDetailsPreview() {
-    GymTrackerTheme(darkTheme = false) {
-        WeightsExerciseHistoryDetails(
-            exerciseHistory = WeightsExerciseHistoryUiState(
-                id = 1,
-                weight = 13.0,
-                sets = 1,
-                reps = 2,
-                rest = 1,
-                date = LocalDate.now().minusDays(5)
+    val userPreferencesUiState = UserPreferencesUiState()
+    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+        GymTrackerTheme(darkTheme = false) {
+            WeightsExerciseHistoryDetails(
+                exerciseHistory = WeightsExerciseHistoryUiState(
+                    id = 1,
+                    weight = 13.0,
+                    sets = 1,
+                    reps = 2,
+                    rest = 1,
+                    date = LocalDate.now().minusDays(5)
 
-            ),
-            deleteFunction = { },
-            editEnabled = true
-        )
+                ),
+                deleteFunction = { },
+                editEnabled = true
+            )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun CardioHistoryDetailsPreview() {
-    GymTrackerTheme(darkTheme = false) {
-        CardioExerciseHistoryDetails(
-            exerciseHistory = CardioExerciseHistoryUiState(
-                id = 1,
-                distance = 30.0,
-                minutes = 90,
-                seconds = 0,
-                calories = 800,
-                date = LocalDate.now().minusDays(5)
+    val userPreferencesUiState = UserPreferencesUiState()
+    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+        GymTrackerTheme(darkTheme = false) {
+            CardioExerciseHistoryDetails(
+                exerciseHistory = CardioExerciseHistoryUiState(
+                    id = 1,
+                    distance = 30.0,
+                    minutes = 90,
+                    seconds = 0,
+                    calories = 800,
+                    date = LocalDate.now().minusDays(5)
 
-            ),
-            deleteFunction = { },
-            editEnabled = true
-        )
+                ),
+                deleteFunction = { },
+                editEnabled = true
+            )
+        }
     }
 }

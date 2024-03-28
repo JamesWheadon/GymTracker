@@ -11,10 +11,10 @@
       <entry key="app">
         <State />
       </entry>
-      <entry key="rendersTimerThatCountsDown()">
+      <entry key="clickingSuggestionsEntersSuggestionInToTextFieldValue()">
         <State />
       </entry>
-      <entry key="shouldOnlyAllowValidDecimalsAndNegativeAtStartForDecimalForm()">
+      <entry key="rendersTimerThatCountsDown()">
         <State />
       </entry>
     </value>
