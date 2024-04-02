@@ -61,7 +61,7 @@ fun LiveRecordChooseWorkoutsScreen(
     Card(
         elevation = customCardElevation(),
         shape = RoundedCornerShape(16.dp),
-        modifier = modifier
+        modifier = modifier.padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         val columnContentDescription = stringResource(id = R.string.workout_column)
         LazyColumn(

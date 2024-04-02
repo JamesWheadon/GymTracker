@@ -1,6 +1,7 @@
 package com.askein.gymtracker.ui.workout
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,7 +39,7 @@ import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.navigation.HomeNavigationInformation
-import com.askein.gymtracker.ui.navigation.HomeScreenCardWrapper
+import com.askein.gymtracker.ui.navigation.HomeScreenWrapper
 import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
@@ -80,7 +81,7 @@ fun WorkoutsScreen(
     var showCreate by remember { mutableStateOf(false) }
     var showWorkoutExercises by remember { mutableStateOf(false) }
     var newWorkoutName by remember { mutableStateOf("") }
-    HomeScreenCardWrapper(
+    HomeScreenWrapper(
         title = stringResource(id = R.string.workouts),
         navController = navController,
         homeNavigationOptions = homeNavigationOptions,
@@ -138,7 +139,8 @@ private fun WorkoutsScreen(
     modifier: Modifier = Modifier
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         val workoutColumnContentDescription = stringResource(id = R.string.workout_column)
         LazyColumn(
@@ -165,7 +167,8 @@ fun WorkoutCard(
 ) {
     Button(
         shape = RectangleShape,
-        onClick = { navigationFunction(workout.workoutId) }
+        onClick = { navigationFunction(workout.workoutId) },
+        contentPadding = PaddingValues(12.dp)
     ) {
         Card(
             modifier = modifier,

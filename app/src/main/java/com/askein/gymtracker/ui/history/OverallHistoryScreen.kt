@@ -33,7 +33,7 @@ import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.ExerciseCard
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.navigation.HomeNavigationInformation
-import com.askein.gymtracker.ui.navigation.HomeScreenCardWrapper
+import com.askein.gymtracker.ui.navigation.HomeScreenWrapper
 import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
@@ -89,7 +89,7 @@ fun OverallHistoryScreen(
     dateSelector: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    HomeScreenCardWrapper(
+    HomeScreenWrapper(
         title = stringResource(id = R.string.history),
         navController = navController,
         homeNavigationOptions = homeNavigationOptions
@@ -124,7 +124,7 @@ fun OverallHistoryScreen(
             .map { date -> date.dayOfMonth }
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier.padding(horizontal = 8.dp)
+        modifier = modifier.padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         if (showHistory) {
             HistoryOnDay(

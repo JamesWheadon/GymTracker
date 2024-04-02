@@ -127,7 +127,6 @@ fun WorkoutDetailsScreen(
             innerPadding = innerPadding,
             modifier = modifier
         )
-        Spacer(modifier = Modifier.height(72.dp))
     }
     if (showEditExercises) {
         EditWorkoutExercisesScreen(
@@ -186,11 +185,13 @@ private fun WorkoutDetailsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
+            .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(innerPadding)
+            .padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         Card(
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.padding(innerPadding)
         ) {
             Column {
                 uiState.exercises.forEach { exercise ->
@@ -233,6 +234,7 @@ private fun WorkoutDetailsScreen(
                 }.workoutHistoryId
             }
         )
+        Spacer(modifier = Modifier.height(72.dp))
     }
 }
 

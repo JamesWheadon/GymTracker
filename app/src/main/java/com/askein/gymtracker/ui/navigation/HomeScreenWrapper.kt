@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 @Composable
-fun HomeScreenCardWrapper(
+fun HomeScreenWrapper(
     title: String,
     navController: NavHostController,
     homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
@@ -49,7 +48,9 @@ fun HomeScreenCardWrapper(
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
             ) {
                 for (route in homeNavigationOptions) {
                     Button(
@@ -60,12 +61,7 @@ fun HomeScreenCardWrapper(
                     }
                 }
             }
-            Card(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                content()
-            }
+            content()
             Spacer(modifier = Modifier.height(72.dp))
         }
     }

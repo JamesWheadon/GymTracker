@@ -31,7 +31,7 @@ import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.create.CreateExerciseScreen
 import com.askein.gymtracker.ui.navigation.HomeNavigationInformation
-import com.askein.gymtracker.ui.navigation.HomeScreenCardWrapper
+import com.askein.gymtracker.ui.navigation.HomeScreenWrapper
 import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
@@ -67,7 +67,7 @@ fun ExercisesScreen(
     modifier: Modifier = Modifier
 ) {
     var showCreate by remember { mutableStateOf(false) }
-    HomeScreenCardWrapper(
+    HomeScreenWrapper(
         title = stringResource(id = R.string.my_exercises),
         navController = navController,
         homeNavigationOptions = homeNavigationOptions,
@@ -109,7 +109,8 @@ fun ExercisesScreen(
     modifier: Modifier = Modifier
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         LazyColumn(
             modifier = modifier.fillMaxWidth(),

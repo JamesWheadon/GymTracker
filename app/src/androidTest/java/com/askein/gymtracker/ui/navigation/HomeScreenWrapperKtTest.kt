@@ -19,7 +19,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
-class HomeScreenCardWrapperKtTest {
+class HomeScreenWrapperKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
@@ -41,7 +41,7 @@ class HomeScreenCardWrapperKtTest {
     @Test
     fun rendersHomeScreenCardWrapper() {
         rule.setContent {
-            HomeScreenCardWrapper(
+            HomeScreenWrapper(
                 title = "Test Title",
                 navController = navController,
                 homeNavigationOptions = mapOf(
@@ -73,7 +73,7 @@ class HomeScreenCardWrapperKtTest {
         var exercises = false
 
         rule.setContent {
-            HomeScreenCardWrapper(
+            HomeScreenWrapper(
                 title = "Test Title",
                 navController = navController,
                 homeNavigationOptions = mapOf(
@@ -102,7 +102,7 @@ class HomeScreenCardWrapperKtTest {
         var floatingAction = false
 
         rule.setContent {
-            HomeScreenCardWrapper(
+            HomeScreenWrapper(
                 title = "Test Title",
                 navController = navController,
                 homeNavigationOptions = mapOf(),
