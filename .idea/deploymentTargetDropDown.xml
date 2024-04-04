@@ -8,13 +8,16 @@
       <entry key="FormFieldsKtTest">
         <State />
       </entry>
+      <entry key="HomeScreenKtTest">
+        <State />
+      </entry>
+      <entry key="WorkoutsScreenKtTest">
+        <State />
+      </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="clickingSuggestionsEntersSuggestionInToTextFieldValue()">
-        <State />
-      </entry>
-      <entry key="rendersTimerThatCountsDown()">
+      <entry key="rendersHomeScreen()">
         <State />
       </entry>
     </value>

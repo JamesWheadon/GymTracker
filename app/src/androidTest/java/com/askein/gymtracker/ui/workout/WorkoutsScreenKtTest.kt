@@ -1,31 +1,27 @@
 package com.askein.gymtracker.ui.workout
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import androidx.navigation.NavHostController
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 
 class WorkoutsScreenKtTest {
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
-    @Mock
-    private lateinit var navController: NavHostController
-
     private val lazyColumn = rule.onNode(hasContentDescription("workout column"))
-    private val createWorkoutButton = rule.onNode(hasContentDescription("Add Workout"))
     private val createWorkoutFormTitle = rule.onNode(hasText("Create Workout"))
     private val createWorkoutFormNameField = rule.onNode(hasContentDescription("Workout Name"))
     private val saveWorkoutButton = rule.onNode(hasText("Save"))
@@ -35,25 +31,19 @@ class WorkoutsScreenKtTest {
     private val firstWorkout = rule.onNode(hasText("first"))
     private val secondWorkout = rule.onNode(hasText("second"))
 
-    @Before
-    fun setUp() {
-        MockitoAnnotations.openMocks(this)
-    }
-
     @Test
     fun rendersEmptyListOfWorkouts() {
         rule.setContent {
             WorkoutsScreen(
                 workoutListUiState = WorkoutListUiState(),
+                showCreateWorkout = false,
+                dismissCreateWorkout = { },
                 createWorkout = { },
-                navController = navController,
-                workoutNavigationFunction = { },
-                homeNavigationOptions = mapOf()
+                workoutNavigationFunction = { }
             )
         }
 
         lazyColumn.assertExists()
-        createWorkoutButton.assertExists()
         assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(0))
     }
 
@@ -67,15 +57,14 @@ class WorkoutsScreenKtTest {
                         workout2
                     )
                 ),
+                showCreateWorkout = false,
+                dismissCreateWorkout = { },
                 createWorkout = { },
-                navController = navController,
-                workoutNavigationFunction = { },
-                homeNavigationOptions = mapOf()
+                workoutNavigationFunction = { }
             )
         }
 
         lazyColumn.assertExists()
-        createWorkoutButton.assertExists()
         assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(2))
         firstWorkout.assertExists()
         secondWorkout.assertExists()
@@ -91,23 +80,14 @@ class WorkoutsScreenKtTest {
                         workout2
                     )
                 ),
+                showCreateWorkout = true,
+                dismissCreateWorkout = { },
                 createWorkout = { },
-                navController = navController,
-                workoutNavigationFunction = { },
-                homeNavigationOptions = mapOf()
+                workoutNavigationFunction = { }
             )
         }
 
         lazyColumn.assertExists()
-        createWorkoutButton.assertExists()
-        createWorkoutFormTitle.assertDoesNotExist()
-        createWorkoutFormNameField.assertDoesNotExist()
-        saveWorkoutButton.assertDoesNotExist()
-
-        createWorkoutButton.performClick()
-
-        lazyColumn.assertExists()
-        createWorkoutButton.assertExists()
         createWorkoutFormTitle.assertExists()
         createWorkoutFormNameField.assertExists()
         saveWorkoutButton.assertExists()
@@ -120,24 +100,22 @@ class WorkoutsScreenKtTest {
             workout2
         )
         rule.setContent {
+            var show by remember { mutableStateOf(true) }
             WorkoutsScreen(
                 workoutListUiState = WorkoutListUiState(
                     workoutList = workoutList
                 ),
+                showCreateWorkout = show,
+                dismissCreateWorkout = { show = false },
                 createWorkout = { workout -> workoutList.add(workout) },
-                navController = navController,
-                workoutNavigationFunction = { },
-                homeNavigationOptions = mapOf()
+                workoutNavigationFunction = { }
             )
         }
-
-        createWorkoutButton.performClick()
 
         createWorkoutFormNameField.performTextInput("third")
         saveWorkoutButton.performClick()
 
         lazyColumn.assertExists()
-        createWorkoutButton.assertExists()
         createWorkoutFormTitle.assertDoesNotExist()
         createWorkoutFormNameField.assertDoesNotExist()
         saveWorkoutButton.assertDoesNotExist()
@@ -158,15 +136,14 @@ class WorkoutsScreenKtTest {
                         workout2
                     )
                 ),
+                showCreateWorkout = false,
+                dismissCreateWorkout = { },
                 createWorkout = { },
-                navController = navController,
-                workoutNavigationFunction = { id -> workoutChosen = id },
-                homeNavigationOptions = mapOf()
+                workoutNavigationFunction = { id -> workoutChosen = id }
             )
         }
 
         lazyColumn.assertExists()
-        createWorkoutButton.assertExists()
         assertThat(lazyColumn.onChildren().fetchSemanticsNodes().size, equalTo(2))
         firstWorkout.assertExists()
         secondWorkout.assertExists()

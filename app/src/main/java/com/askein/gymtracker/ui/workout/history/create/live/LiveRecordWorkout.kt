@@ -32,11 +32,11 @@ import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
+import com.askein.gymtracker.ui.home.HomeScreenRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.askein.gymtracker.ui.navigation.TopBar
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
-import com.askein.gymtracker.ui.workout.WorkoutsRoute
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsRoute
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.askein.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
@@ -82,7 +82,7 @@ fun LiveRecordWorkout(
             },
             cancelFunction = {
                 navController.popBackStack()
-                navController.navigate(WorkoutsRoute.route)
+                navController.navigate(HomeScreenRoute.route)
             },
             modifier = Modifier
                 .padding(innerPadding)

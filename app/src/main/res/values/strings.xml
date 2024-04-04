@@ -114,7 +114,7 @@
     <string name="edit">edit</string>
     <string name="delete">delete</string>
     <string name="delete_workout_confirm">Do you want to delete this workout?</string>
-    <string name="select_record_workout">Select Workout to record</string>
+    <string name="select_record_workout">Select Workout</string>
     <string name="workout_column">workout column</string>
     <string name="create_workout">Create Workout</string>
     <string name="minutes">Minutes</string>
@@ -125,4 +125,5 @@
     <string name="no">No</string>
     <string name="date">Date</string>
     <string name="decimal_separator">.</string>
+    <string name="home">Home</string>
 </resources>

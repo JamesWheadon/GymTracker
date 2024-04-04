@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.askein.gymtracker.R
+import com.askein.gymtracker.ui.home.HomeScreenRoute
 import com.askein.gymtracker.ui.user.UserPreferencesRoute
 import com.askein.gymtracker.ui.workout.WorkoutSelectionScreenRoute
 import com.askein.gymtracker.ui.workout.history.create.live.LiveRecordWorkoutRoute
@@ -47,11 +48,8 @@ fun TopBar(
             )
         },
         navigationIcon = {
-            val homeRoutes = NavigationRoutes.values()
-                .filter { it.homeRoute }
-                .map { it.baseRoute }
             Row {
-                if (navController.currentDestination != null && !homeRoutes.contains(navController.currentDestination!!.route)) {
+                if (navController.currentDestination != null && navController.currentDestination!!.route != HomeScreenRoute.route) {
                     IconButton(onClick = { navController.navigate(navController.graph.startDestinationId) }) {
                         Icon(
                             imageVector = Icons.Filled.Home,

@@ -10,24 +10,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.askein.gymtracker.ui.exercise.ExercisesRoute
-import com.askein.gymtracker.ui.exercise.ExercisesScreen
 import com.askein.gymtracker.ui.exercise.details.ExerciseDetailsRoute
 import com.askein.gymtracker.ui.exercise.details.ExerciseDetailsScreen
-import com.askein.gymtracker.ui.history.OverallHistoryRoute
-import com.askein.gymtracker.ui.history.OverallHistoryScreen
+import com.askein.gymtracker.ui.home.HomeScreen
+import com.askein.gymtracker.ui.home.HomeScreenRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.EXERCISE_DETAILS_SCREEN
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.WORKOUT_DETAILS_SCREEN
-import com.askein.gymtracker.ui.navigation.getHomeNavigationOptionsForRoute
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesRoute
 import com.askein.gymtracker.ui.user.UserPreferencesScreen
 import com.askein.gymtracker.ui.user.UserPreferencesViewModel
 import com.askein.gymtracker.ui.workout.LiveRecordChooseWorkoutsScreen
 import com.askein.gymtracker.ui.workout.WorkoutSelectionScreenRoute
-import com.askein.gymtracker.ui.workout.WorkoutsRoute
-import com.askein.gymtracker.ui.workout.WorkoutsScreen
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsRoute
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsScreen
 import com.askein.gymtracker.ui.workout.history.create.live.LiveRecordWorkout
@@ -44,38 +39,12 @@ fun GymTrackerApp(
     CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
         NavHost(
             navController = navController,
-            startDestination = ExercisesRoute.route,
+            startDestination = HomeScreenRoute.route,
         ) {
-            composable(route = WorkoutsRoute.route) {
-                WorkoutsScreen(
-                    navController = navController,
-                    workoutNavigationFunction = { id: Int ->
-                        navController.navigate(
-                            WorkoutDetailsRoute.getRouteForNavArgument(id)
-                        )
-                    },
-                    homeNavigationOptions = getHomeNavigationOptionsForRoute(
-                        homeRoute = WorkoutsRoute,
-                        navController = navController
-                    )
-                )
-            }
-            composable(route = ExercisesRoute.route) {
-                ExercisesScreen(
-                    navController = navController,
-                    exerciseNavigationFunction = { id: Int ->
-                        navController.navigate(
-                            ExerciseDetailsRoute.getRouteForNavArgument(id)
-                        )
-                    },
-                    homeNavigationOptions = getHomeNavigationOptionsForRoute(
-                        homeRoute = ExercisesRoute,
-                        navController = navController
-                    )
-                )
-            }
-            composable(route = OverallHistoryRoute.route) {
-                OverallHistoryScreen(
+            composable(
+                route = HomeScreenRoute.route
+            ) {
+                HomeScreen(
                     navController = navController,
                     exerciseNavigationFunction = { id: Int ->
                         navController.navigate(
@@ -86,11 +55,7 @@ fun GymTrackerApp(
                         navController.navigate(
                             WorkoutDetailsRoute.getRouteForNavArgument(id)
                         )
-                    },
-                    homeNavigationOptions = getHomeNavigationOptionsForRoute(
-                        homeRoute = OverallHistoryRoute,
-                        navController = navController
-                    )
+                    }
                 )
             }
             composable(

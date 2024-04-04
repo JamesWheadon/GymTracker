@@ -26,16 +26,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.ExerciseCard
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
-import com.askein.gymtracker.ui.navigation.HomeNavigationInformation
-import com.askein.gymtracker.ui.navigation.HomeScreenWrapper
-import com.askein.gymtracker.ui.navigation.NavigationRoute
-import com.askein.gymtracker.ui.navigation.NavigationRoutes
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.visualisations.Calendar
 import com.askein.gymtracker.ui.visualisations.MonthPicker
@@ -46,16 +41,10 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-object OverallHistoryRoute : NavigationRoute {
-    override val route = NavigationRoutes.OVERALL_HISTORY_SCREEN.baseRoute
-}
-
 @Composable
 fun OverallHistoryScreen(
-    navController: NavHostController,
     exerciseNavigationFunction: (Int) -> Unit,
     workoutNavigationFunction: (Int) -> Unit,
-    homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
     modifier: Modifier = Modifier,
     viewModel: OverallHistoryViewModel = viewModel(
         factory = AppViewModelProvider.Factory
@@ -65,45 +54,14 @@ fun OverallHistoryScreen(
     val workoutsOnDateUiState = viewModel.workoutsOnDateUiState.collectAsState().value
     val exercisesOnDateUiState = viewModel.exercisesOnDateUiState.collectAsState().value
     OverallHistoryScreen(
-        navController = navController,
         exerciseNavigationFunction = exerciseNavigationFunction,
         workoutNavigationFunction = workoutNavigationFunction,
-        homeNavigationOptions = homeNavigationOptions,
         datesUiState = datesUiState,
         workoutsOnDateUiState = workoutsOnDateUiState,
         exercisesOnDateUiState = exercisesOnDateUiState,
         dateSelector = { date -> viewModel.selectDate(date) },
         modifier = modifier
     )
-}
-
-@Composable
-fun OverallHistoryScreen(
-    navController: NavHostController,
-    exerciseNavigationFunction: (Int) -> Unit,
-    workoutNavigationFunction: (Int) -> Unit,
-    homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
-    datesUiState: List<LocalDate>,
-    workoutsOnDateUiState: List<WorkoutUiState>,
-    exercisesOnDateUiState: List<ExerciseUiState>,
-    dateSelector: (LocalDate) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    HomeScreenWrapper(
-        title = stringResource(id = R.string.history),
-        navController = navController,
-        homeNavigationOptions = homeNavigationOptions
-    ) {
-        OverallHistoryScreen(
-            exerciseNavigationFunction = exerciseNavigationFunction,
-            workoutNavigationFunction = workoutNavigationFunction,
-            datesUiState = datesUiState,
-            workoutsOnDateUiState = workoutsOnDateUiState,
-            exercisesOnDateUiState = exercisesOnDateUiState,
-            dateSelector = dateSelector,
-            modifier = modifier
-        )
-    }
 }
 
 @Composable
