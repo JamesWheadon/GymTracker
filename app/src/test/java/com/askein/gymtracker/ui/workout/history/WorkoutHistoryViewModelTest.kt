@@ -128,4 +128,16 @@ class WorkoutHistoryViewModelTest {
 
         verify(mockCardioExerciseHistoryRepository).insert(cardioExerciseHistoryUI.toCardioExerciseHistory())
     }
+
+    @Test
+    fun liveDeleteWorkoutHistoryToRepository() = runTest {
+        `when`(mockWorkoutHistoryRepository.insert(workoutHistory)).thenReturn(1L)
+
+        viewModel.liveSaveWorkoutHistory(workoutHistoryUiState)
+        viewModel.liveDeleteWorkoutHistory()
+
+        verify(mockWorkoutHistoryRepository).delete(1)
+        verify(mockWeightsExerciseHistoryRepository).deleteAllForWorkoutHistory(1)
+        verify(mockCardioExerciseHistoryRepository).deleteAllForWorkoutHistory(1)
+    }
 }

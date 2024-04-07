@@ -12,4 +12,6 @@ class OfflineCardioExerciseHistoryRepository(private val cardioExerciseHistoryDa
     override suspend fun delete(history: CardioExerciseHistory) = cardioExerciseHistoryDao.delete(history)
 
     override suspend fun deleteAllForExercise(exercise: Exercise) = cardioExerciseHistoryDao.deleteAllForExercise(exercise.exerciseId)
+
+    override suspend fun deleteAllForWorkoutHistory(workoutHistoryId: Int) = cardioExerciseHistoryDao.deleteAllForWorkoutHistory(workoutHistoryId)
 }

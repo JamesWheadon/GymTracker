@@ -124,4 +124,12 @@ class WorkoutHistoryViewModel(
             }
         }
     }
+
+    fun liveDeleteWorkoutHistory() {
+        viewModelScope.launch {
+            workoutHistoryRepository.delete(savedWorkoutID.value)
+            weightsExerciseHistoryRepository.deleteAllForWorkoutHistory(savedWorkoutID.value)
+            cardioExerciseHistoryRepository.deleteAllForWorkoutHistory(savedWorkoutID.value)
+        }
+    }
 }

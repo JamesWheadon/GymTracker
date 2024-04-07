@@ -6,4 +6,6 @@ interface WorkoutHistoryRepository {
     suspend fun update(workoutHistory: WorkoutHistory)
 
     suspend fun delete(workoutHistory: WorkoutHistory)
+
+    suspend fun delete(workoutHistoryId: Int)
 }

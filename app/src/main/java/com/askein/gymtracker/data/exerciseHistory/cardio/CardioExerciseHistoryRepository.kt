@@ -11,4 +11,6 @@ interface CardioExerciseHistoryRepository {
     suspend fun delete(history: CardioExerciseHistory)
 
     suspend fun deleteAllForExercise(exercise: Exercise)
+
+    suspend fun deleteAllForWorkoutHistory(workoutHistoryId: Int)
 }

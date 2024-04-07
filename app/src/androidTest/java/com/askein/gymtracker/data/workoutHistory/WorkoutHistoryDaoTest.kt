@@ -89,4 +89,19 @@ class WorkoutHistoryDaoTest {
         assertThat(saved.count, equalTo(0))
         saved.close()
     }
+
+    @Test
+    fun daoDelete_DeletesWorkoutExerciseFromDBById() = runBlocking {
+        val workoutHistory = WorkoutHistory(workoutId = 1, date = LocalDate.now())
+        val insertId = workoutHistoryDao.insert(workoutHistory)
+        val deletedWorkoutHistory = WorkoutHistory(workoutHistoryId = insertId.toInt(), workoutId = 1, date = LocalDate.now())
+        workoutHistoryDao.delete(deletedWorkoutHistory.workoutHistoryId)
+
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workout_history", 0)
+        val saved = database.query(query)
+        saved.moveToFirst()
+
+        assertThat(saved.count, equalTo(0))
+        saved.close()
+    }
 }

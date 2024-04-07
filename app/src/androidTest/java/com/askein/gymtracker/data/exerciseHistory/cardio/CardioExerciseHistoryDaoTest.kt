@@ -7,6 +7,7 @@ import com.askein.gymtracker.data.database.ExerciseWorkoutDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -41,7 +42,7 @@ class CardioExerciseHistoryDaoTest {
         val cardioExerciseHistory = createCardioExerciseHistory(1, 1)
         cardioExerciseHistoryDao.insert(cardioExerciseHistory)
 
-        val savedCardioExerciseHistory = cardioExerciseHistoryDao.get(cardioExerciseHistory.id).first()
+        val savedCardioExerciseHistory = cardioExerciseHistoryDao.getHistory(cardioExerciseHistory.id).first()
 
         assertEquals(cardioExerciseHistory, savedCardioExerciseHistory)
     }
@@ -53,7 +54,7 @@ class CardioExerciseHistoryDaoTest {
 
         cardioExerciseHistoryDao.delete(exerciseHistory)
 
-        val savedHistory = cardioExerciseHistoryDao.get(1).first()
+        val savedHistory = cardioExerciseHistoryDao.getHistory(1).first()
         assertThat(savedHistory, equalTo(null))
     }
 
@@ -65,7 +66,7 @@ class CardioExerciseHistoryDaoTest {
         val updateExerciseHistory = createCardioExerciseHistory(1, 1, 60)
         cardioExerciseHistoryDao.update(updateExerciseHistory)
 
-        val savedHistory = cardioExerciseHistoryDao.get(1).first()
+        val savedHistory = cardioExerciseHistoryDao.getHistory(1).first()
         assertThat(savedHistory.minutes, equalTo(60))
     }
 
@@ -75,17 +76,29 @@ class CardioExerciseHistoryDaoTest {
 
         cardioExerciseHistoryDao.deleteAllForExercise(1)
 
-        val firstHistory = cardioExerciseHistoryDao.get(1).first()
-        val secondHistory = cardioExerciseHistoryDao.get(2).first()
+        val firstHistory = cardioExerciseHistoryDao.getHistory(1).first()
+        val secondHistory = cardioExerciseHistoryDao.getHistory(2).first()
         assertThat(firstHistory, equalTo(null))
         assertThat(secondHistory, equalTo(null))
     }
 
-    private fun createCardioExerciseHistory(id: Int, exerciseId: Int, minutes: Int = 60) = CardioExerciseHistory(id, exerciseId, date = LocalDate.now(), minutes = minutes)
+    @Test
+    fun daoDelete_DeleteAllHistoryForWorkoutHistoryFromDB() = runBlocking {
+        addMultipleCardioHistoryToDB()
+
+        cardioExerciseHistoryDao.deleteAllForWorkoutHistory(1)
+
+        val firstHistory = cardioExerciseHistoryDao.getHistory(1).first()
+        val secondHistory = cardioExerciseHistoryDao.getHistory(2).first()
+        assertThat(firstHistory, notNullValue())
+        assertThat(secondHistory, equalTo(null))
+    }
+
+    private fun createCardioExerciseHistory(id: Int, exerciseId: Int, minutes: Int = 60, workoutHistoryId: Int? = null) = CardioExerciseHistory(id, exerciseId, date = LocalDate.now(), minutes = minutes, workoutHistoryId = workoutHistoryId)
 
     private suspend fun addMultipleCardioHistoryToDB() {
         cardioExerciseHistoryDao.insert(createCardioExerciseHistory(1, 1))
-        cardioExerciseHistoryDao.insert(createCardioExerciseHistory(2, 1))
+        cardioExerciseHistoryDao.insert(createCardioExerciseHistory(2, 1, workoutHistoryId = 1))
         cardioExerciseHistoryDao.insert(createCardioExerciseHistory(3, 2))
     }
 }

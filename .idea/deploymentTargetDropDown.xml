@@ -5,19 +5,16 @@
       <entry key="All Tests">
         <State />
       </entry>
-      <entry key="FormFieldsKtTest">
+      <entry key="LiveRecordWorkoutKtTest">
         <State />
       </entry>
-      <entry key="HomeScreenKtTest">
-        <State />
-      </entry>
-      <entry key="WorkoutsScreenKtTest">
+      <entry key="WeightsExerciseHistoryDaoTest">
         <State />
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="rendersHomeScreen()">
+      <entry key="daoDelete_DeleteAllHistoryForWorkoutHistoryFromDB()">
         <State />
       </entry>
     </value>

@@ -17,6 +17,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -26,9 +28,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.askein.gymtracker.R
+import com.askein.gymtracker.ui.ActionConfirmation
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
@@ -81,6 +85,7 @@ fun LiveRecordWorkout(
                 navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(uiState.workoutId))
             },
             cancelFunction = {
+                historyViewModel.liveDeleteWorkoutHistory()
                 navController.popBackStack()
                 navController.navigate(HomeScreenRoute.route)
             },
@@ -99,6 +104,7 @@ fun LiveRecordWorkout(
     cancelFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showDeleteWorkout by remember { mutableStateOf(false) }
     val completedExercises = rememberSaveable(saver = IntListSaver) { mutableStateListOf() }
     var currentExercise by rememberSaveable { mutableIntStateOf(-1) }
     Column(
@@ -149,17 +155,31 @@ fun LiveRecordWorkout(
                 )
             }
         }
-        if (completedExercises.size > 0 || currentExercise != -1) {
-            Button(enabled = currentExercise == -1, onClick = { finishFunction() }) {
-                Text(text = stringResource(id = R.string.finish_workout))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (completedExercises.size > 0) {
+                Button(enabled = currentExercise == -1, onClick = { finishFunction() }) {
+                    Text(text = stringResource(id = R.string.finish_workout))
+                }
             }
-        } else {
             Button(
-                onClick = { cancelFunction() },
+                onClick = { showDeleteWorkout = true },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
                 Text(text = stringResource(id = R.string.cancel))
             }
+        }
+    }
+    if (showDeleteWorkout) {
+        Dialog(onDismissRequest = { showDeleteWorkout = false }) {
+            ActionConfirmation(
+                actionTitle = stringResource(id = R.string.live_record_cancel),
+                confirmFunction = { cancelFunction() },
+                cancelFunction = { showDeleteWorkout = false }
+            )
         }
     }
 }

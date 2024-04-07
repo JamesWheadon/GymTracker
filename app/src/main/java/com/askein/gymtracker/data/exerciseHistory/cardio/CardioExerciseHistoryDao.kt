@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CardioExerciseHistoryDao {
     @Query("SELECT * FROM cardio_exercise_history WHERE id = :id")
-    fun get(id: Int): Flow<CardioExerciseHistory>
+    fun getHistory(id: Int): Flow<CardioExerciseHistory>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(cardioExerciseHistory: CardioExerciseHistory)
@@ -24,4 +24,7 @@ interface CardioExerciseHistoryDao {
 
     @Query("DELETE FROM cardio_exercise_history WHERE exerciseId = :exerciseId")
     suspend fun deleteAllForExercise(exerciseId: Int)
+
+    @Query("DELETE FROM cardio_exercise_history WHERE workoutHistoryId =:workoutHistoryId")
+    fun deleteAllForWorkoutHistory(workoutHistoryId: Int)
 }
