@@ -78,7 +78,7 @@ fun CardioExerciseHistoryDetails(
     val detailOptions = listOf(R.string.distance, R.string.time, R.string.calories)
     val yUnit = mapOf(
         detailOptions[0] to LocalUserPreferences.current.defaultDistanceUnit.shortForm,
-        detailOptions[1] to R.string.minute_unit,
+        detailOptions[1] to R.string.second_unit,
         detailOptions[2] to R.string.calories_unit
     )
     val currentDate = LocalDate.now()
