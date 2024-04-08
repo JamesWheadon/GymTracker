@@ -282,6 +282,19 @@ class LiveRecordWorkoutKtTest {
 
         startButtons[0].performClick()
 
+        repsField.performClick()
+        repsField.performTextInput("5")
+        restField.performClick()
+        restField.performTextInput("15")
+        weightField.performClick()
+        weightField.performTextInput("13.0")
+        rule.onNode(hasText("Start") and hasAnySibling(hasContentDescription("Reps")))
+            .performClick()
+
+        finishExercise.performClick()
+
+        startButtons[1].performClick()
+
         finishWorkout.assertIsNotEnabled()
     }
 

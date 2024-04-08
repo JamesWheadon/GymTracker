@@ -5,9 +5,6 @@
       <entry key="All Tests">
         <State />
       </entry>
-      <entry key="LiveRecordWorkoutKtTest">
-        <State />
-      </entry>
       <entry key="WeightsExerciseHistoryDaoTest">
         <State />
       </entry>
@@ -15,6 +12,9 @@
         <State />
       </entry>
       <entry key="daoDelete_DeleteAllHistoryForWorkoutHistoryFromDB()">
+        <State />
+      </entry>
+      <entry key="rendersLiveRecordWorkoutDisabledCompleteButtonWhenExerciseInProgress()">
         <State />
       </entry>
     </value>

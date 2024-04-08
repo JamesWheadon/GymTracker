@@ -11,8 +11,6 @@ import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiS
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import com.askein.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
@@ -55,7 +53,6 @@ class WorkoutHistoryScreenKtTest {
     private val weight = rule.onNode(hasText("Weight: 1.00 kg"))
     private val rest = rule.onNode(hasText("Rest time: 1 s"))
     private val deleteHistoryButton = rule.onNode(hasContentDescription("Delete history"))
-    private val closeButton = rule.onNode(hasContentDescription("Close"))
     private val editButton = rule.onNode(hasContentDescription("edit"))
     private val deleteButton = rule.onNode(hasContentDescription("delete"))
 
@@ -92,8 +89,7 @@ class WorkoutHistoryScreenKtTest {
                             dips,
                             bench
                         )
-                    ),
-                    onDismiss = { }
+                    )
                 )
             }
         }
@@ -101,32 +97,6 @@ class WorkoutHistoryScreenKtTest {
         curlsExerciseName.assertExists()
         dipsExerciseName.assertDoesNotExist()
         benchExerciseName.assertExists()
-        closeButton.assertExists()
-    }
-
-    @Test
-    fun clickingXCallsOnDismiss() {
-        var dismissed = false
-        rule.setContent {
-            val userPreferencesUiState = UserPreferencesUiState()
-            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-                WorkoutHistoryScreen(
-                    workoutHistoryUiState = workoutHistory,
-                    workoutUiState = WorkoutWithExercisesUiState(
-                        exercises = listOf(
-                            curls,
-                            dips,
-                            bench
-                        )
-                    ),
-                    onDismiss = { dismissed = true }
-                )
-            }
-        }
-
-        closeButton.performClick()
-
-        assertThat(dismissed, equalTo(true))
     }
 
     @Test
@@ -143,8 +113,7 @@ class WorkoutHistoryScreenKtTest {
                             dips,
                             bench
                         )
-                    ),
-                    onDismiss = { }
+                    )
                 )
             }
         }
@@ -167,8 +136,7 @@ class WorkoutHistoryScreenKtTest {
                             dips,
                             bench
                         )
-                    ),
-                    onDismiss = { }
+                    )
                 )
             }
         }

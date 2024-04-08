@@ -43,7 +43,6 @@ import com.askein.gymtracker.ui.exercise.history.UpdateExerciseHistoryScreen
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import com.askein.gymtracker.ui.noCardElevation
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
@@ -147,15 +146,13 @@ fun ExerciseHistoryDetails(
     exerciseHistory: ExerciseHistoryUiState,
     exercise: ExerciseUiState,
     deleteFunction: (ExerciseHistoryUiState) -> Unit,
-    modifier: Modifier = Modifier,
-    editEnabled: Boolean = true,
-    elevation: Boolean = true
+    modifier: Modifier = Modifier
 ) {
     var editExercise by remember { mutableStateOf(false) }
     var deleteExercise by remember { mutableStateOf(false) }
     Card(
-        elevation = if (elevation) customCardElevation() else noCardElevation(),
-        onClick = { editExercise = true && editEnabled },
+        elevation = customCardElevation(),
+        onClick = { editExercise = true },
         modifier = modifier
     ) {
         when (exerciseHistory) {
@@ -163,7 +160,7 @@ fun ExerciseHistoryDetails(
                 WeightsExerciseHistoryDetails(
                     exerciseHistory = exerciseHistory,
                     deleteFunction = { deleteExercise = true },
-                    editEnabled = editEnabled
+                    editEnabled = true
                 )
             }
 
@@ -171,7 +168,7 @@ fun ExerciseHistoryDetails(
                 CardioExerciseHistoryDetails(
                     exerciseHistory = exerciseHistory,
                     deleteFunction = { deleteExercise = true },
-                    editEnabled = editEnabled
+                    editEnabled = true
                 )
             }
         }
@@ -205,6 +202,32 @@ fun ExerciseHistoryDetails(
 }
 
 @Composable
+fun ExerciseHistoryDetails(
+    exerciseHistory: ExerciseHistoryUiState,
+    modifier: Modifier = Modifier
+) {
+    when (exerciseHistory) {
+        is WeightsExerciseHistoryUiState -> {
+            WeightsExerciseHistoryDetails(
+                exerciseHistory = exerciseHistory,
+                deleteFunction = { },
+                editEnabled = false,
+                modifier = modifier
+            )
+        }
+
+        is CardioExerciseHistoryUiState -> {
+            CardioExerciseHistoryDetails(
+                exerciseHistory = exerciseHistory,
+                deleteFunction = { },
+                editEnabled = false,
+                modifier = modifier
+            )
+        }
+    }
+}
+
+@Composable
 fun WeightsExerciseHistoryDetails(
     exerciseHistory: WeightsExerciseHistoryUiState,
     deleteFunction: () -> Unit,
@@ -218,7 +241,9 @@ fun WeightsExerciseHistoryDetails(
         convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, exerciseHistory.weight)
     }
     Row(
-        modifier = modifier.padding(8.dp).fillMaxWidth(),
+        modifier = modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -277,7 +302,9 @@ fun CardioExerciseHistoryDetails(
         )
     }
     Row(
-        modifier = modifier.padding(8.dp).fillMaxWidth(),
+        modifier = modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -304,14 +331,14 @@ fun CardioExerciseHistoryDetails(
                         stringResource(id = userPreferencesUiState.defaultDistanceUnit.shortForm)
                     )
                 )
-                if (exerciseHistory.calories != null) {
-                    Text(
-                        text = stringResource(
-                            id = R.string.exercise_calories,
-                            exerciseHistory.calories!!
-                        )
+            }
+            if (exerciseHistory.calories != null) {
+                Text(
+                    text = stringResource(
+                        id = R.string.exercise_calories,
+                        exerciseHistory.calories!!
                     )
-                }
+                )
             }
         }
         if (editEnabled) {

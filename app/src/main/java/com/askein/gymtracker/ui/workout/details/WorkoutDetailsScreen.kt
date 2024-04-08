@@ -1,28 +1,33 @@
 package com.askein.gymtracker.ui.workout.details
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,10 +46,13 @@ import com.askein.gymtracker.ui.ActionConfirmation
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.ExerciseCard
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
+import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.WORKOUT_DETAILS_SCREEN
 import com.askein.gymtracker.ui.navigation.TopBar
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
+import com.askein.gymtracker.ui.user.LocalUserPreferences
+import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import com.askein.gymtracker.ui.visualisations.Calendar
 import com.askein.gymtracker.ui.visualisations.MonthPicker
 import com.askein.gymtracker.ui.workout.WorkoutUiState
@@ -54,6 +62,8 @@ import com.askein.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiSta
 import com.askein.gymtracker.ui.workout.history.create.RecordWorkoutHistoryScreen
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 object WorkoutDetailsRoute : NavigationRoute {
     override val route =
@@ -180,7 +190,7 @@ private fun WorkoutDetailsScreen(
     modifier: Modifier = Modifier
 ) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
-    var selectedWorkoutHistoryId by remember { mutableIntStateOf(-1) }
+    var chosenDate: LocalDate? by remember { mutableStateOf(null) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -205,12 +215,41 @@ private fun WorkoutDetailsScreen(
         Button(onClick = editExercises) {
             Text(text = stringResource(id = R.string.edit_exercises))
         }
-        if (selectedWorkoutHistoryId != -1) {
-            WorkoutHistoryScreen(
-                workoutHistoryUiState = uiState.workoutHistory.first { workoutHistory -> workoutHistory.workoutHistoryId == selectedWorkoutHistoryId },
-                workoutUiState = uiState,
-                onDismiss = { selectedWorkoutHistoryId = -1 }
-            )
+        if (chosenDate != null) {
+            Box {
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(
+                            id = R.string.workouts_on,
+                            chosenDate!!.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+                        ),
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    uiState.workoutHistory.filter { it.date == chosenDate }.forEach { workoutHistory ->
+                        WorkoutHistoryScreen(
+                            workoutHistoryUiState = workoutHistory,
+                            workoutUiState = uiState,
+                        )
+                    }
+                }
+                IconButton(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset((-8).dp, (-12).dp),
+                    onClick = { chosenDate = null }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(id = R.string.close)
+                    )
+                }
+            }
         }
         MonthPicker(
             yearMonthValue = selectedMonth,
@@ -224,14 +263,8 @@ private fun WorkoutDetailsScreen(
                     history.date.year == selectedMonth.year &&
                             history.date.monthValue == selectedMonth.monthValue
                 }.map { history -> history.date.dayOfMonth },
-            dayFunction = { chosenDay ->
-                selectedWorkoutHistoryId = uiState.workoutHistory.first {
-                    it.date == LocalDate.of(
-                        selectedMonth.year,
-                        selectedMonth.monthValue,
-                        chosenDay
-                    )
-                }.workoutHistoryId
+            dayFunction = { day ->
+                chosenDate = LocalDate.of(selectedMonth.year, selectedMonth.monthValue, day)
             }
         )
         Spacer(modifier = Modifier.height(72.dp))
@@ -241,29 +274,43 @@ private fun WorkoutDetailsScreen(
 @Preview(showBackground = true)
 @Composable
 fun WorkoutDetailsScreenPreview() {
-    GymTrackerTheme(darkTheme = false) {
-        WorkoutDetailsScreen(
-            uiState = WorkoutWithExercisesUiState(
-                workoutId = 1,
-                name = "Test",
-                exercises = listOf(
-                    ExerciseUiState(0, "Curls", "Biceps", "Dumbbells"),
-                    ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars"),
-                    ExerciseUiState(
-                        2,
-                        "Testing what happens if someone decides to have a ridiculously long exercise name",
-                        "Lats",
-                        "Dumbbells"
+    val userPreferencesUiState = UserPreferencesUiState()
+    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+        GymTrackerTheme(darkTheme = false) {
+            WorkoutDetailsScreen(
+                uiState = WorkoutWithExercisesUiState(
+                    workoutId = 1,
+                    name = "Test",
+                    exercises = listOf(
+                        ExerciseUiState(0, "Curls", "Biceps", "Dumbbells"),
+                        ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars"),
+                        ExerciseUiState(
+                            2,
+                            "Testing what happens if someone decides to have a ridiculously long exercise name",
+                            "Lats",
+                            "Dumbbells"
+                        )
+                    ),
+                    workoutHistory = listOf(
+                        WorkoutHistoryWithExercisesUiState(
+                            1,
+                            1,
+                            LocalDate.now(),
+                            exercises = listOf(WeightsExerciseHistoryUiState(exerciseId = 0))
+                        ),
+                        WorkoutHistoryWithExercisesUiState(
+                            2,
+                            1,
+                            LocalDate.now(),
+                            exercises = listOf(WeightsExerciseHistoryUiState(exerciseId = 1))
+                        ),
+                        WorkoutHistoryWithExercisesUiState(2, 1, LocalDate.now().minusDays(3))
                     )
                 ),
-                workoutHistory = listOf(
-                    WorkoutHistoryWithExercisesUiState(1, 1, LocalDate.now()),
-                    WorkoutHistoryWithExercisesUiState(2, 1, LocalDate.now().minusDays(3))
-                )
-            ),
-            exerciseNavigationFunction = { },
-            editExercises = { },
-            innerPadding = PaddingValues()
-        )
+                exerciseNavigationFunction = { },
+                editExercises = { },
+                innerPadding = PaddingValues()
+            )
+        }
     }
 }

@@ -228,13 +228,16 @@ class WorkoutDetailsScreenKtTest {
 
         val dayNode = rule.onNode(hasText(dayOfMonth.toString()))
         val closeButton = rule.onNode(hasContentDescription("Close"))
+        val workoutsOnDay = rule.onNode(hasText("Workouts on", substring = true))
         dayNode.performClick()
 
         closeButton.assertExists()
+        workoutsOnDay.assertExists()
 
         closeButton.performClick()
 
         closeButton.assertDoesNotExist()
+        workoutsOnDay.assertDoesNotExist()
     }
 
     @Test
