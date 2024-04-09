@@ -26,5 +26,5 @@ interface WeightsExerciseHistoryDao {
     suspend fun deleteAllForExercise(exerciseId: Int)
 
     @Query("DELETE FROM weights_exercise_history WHERE workoutHistoryId =:workoutHistoryId")
-    fun deleteAllForWorkoutHistory(workoutHistoryId: Int)
+    suspend fun deleteAllForWorkoutHistory(workoutHistoryId: Int)
 }

@@ -12,6 +12,7 @@ import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.toExercise
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -33,6 +34,7 @@ class ExerciseDetailsViewModel(
 
     val uiState: StateFlow<ExerciseDetailsUiState> =
         exerciseWithHistoryRepository.getExerciseWithHistoryStream(exerciseId)
+            .filterNotNull()
             .map { exercise -> exercise.toExerciseDetailsUiState() }
             .stateIn(
                 scope = viewModelScope,
