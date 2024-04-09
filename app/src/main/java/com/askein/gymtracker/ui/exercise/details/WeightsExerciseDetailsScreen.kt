@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
@@ -64,7 +66,7 @@ private fun WeightsExerciseInformation(
     uiState: ExerciseDetailsUiState
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         modifier = Modifier
             .fillMaxWidth()
             .padding(innerPadding)
@@ -193,7 +195,8 @@ fun ExerciseDetail(
         )
         Text(
             text = exerciseInfo,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -259,44 +262,50 @@ fun getWeightsGraphDetails(
 @Preview(showBackground = true)
 @Composable
 fun ItemDetailsScreenPreviewNoHistory() {
-    GymTrackerTheme(darkTheme = false) {
-        WeightsExerciseDetailsScreen(
-            innerPadding = PaddingValues(),
-            uiState = ExerciseDetailsUiState(
-                exercise = ExerciseUiState(
-                    name = "Curls",
-                    muscleGroup = "Biceps",
-                    equipment = "Dumbbells"
-                ),
-                weightsHistory = listOf()
+    val userPreferencesUiState = UserPreferencesUiState()
+    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+        GymTrackerTheme(darkTheme = false) {
+            WeightsExerciseDetailsScreen(
+                innerPadding = PaddingValues(),
+                uiState = ExerciseDetailsUiState(
+                    exercise = ExerciseUiState(
+                        name = "Curls",
+                        muscleGroup = "Biceps",
+                        equipment = "Dumbbells"
+                    ),
+                    weightsHistory = listOf()
+                )
             )
-        )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ItemDetailsScreenPreviewHistory() {
-    GymTrackerTheme(darkTheme = false) {
-        WeightsExerciseDetailsScreen(
-            innerPadding = PaddingValues(),
-            uiState = ExerciseDetailsUiState(
-                exercise = ExerciseUiState(
-                    name = "Curls",
-                    muscleGroup = "Biceps",
-                    equipment = "Dumbbells"
-                ),
-                weightsHistory = listOf(
-                    WeightsExerciseHistoryUiState(
-                        id = 1,
-                        weight = 13.0,
-                        sets = 1,
-                        reps = 2,
-                        rest = 1,
-                        date = LocalDate.now().minusDays(5)
+    val userPreferencesUiState = UserPreferencesUiState()
+    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+        GymTrackerTheme(darkTheme = false) {
+            WeightsExerciseDetailsScreen(
+                innerPadding = PaddingValues(),
+                uiState = ExerciseDetailsUiState(
+                    exercise = ExerciseUiState(
+                        name = "Curls",
+                        muscleGroup = "Biceps",
+                        equipment = "Dumbbells And BenchPress"
+                    ),
+                    weightsHistory = listOf(
+                        WeightsExerciseHistoryUiState(
+                            id = 1,
+                            weight = 13.0,
+                            sets = 1,
+                            reps = 2,
+                            rest = 1,
+                            date = LocalDate.now().minusDays(5)
+                        )
                     )
                 )
             )
-        )
+        }
     }
 }

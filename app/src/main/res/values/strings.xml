@@ -107,7 +107,6 @@
     <string name="finish_exercise">Finish Exercise</string>
     <string name="rest_timer">%1$s:%2$s</string>
     <string name="stop">Stop</string>
-    <string name="record_workout">Record %1$s Workout</string>
     <string name="finish_workout">Finish Workout</string>
     <string name="completed">Completed</string>
     <string name="cardio_error">Must have a time, distance or calories entered</string>

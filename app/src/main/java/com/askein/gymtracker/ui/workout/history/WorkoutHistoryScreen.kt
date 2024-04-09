@@ -3,6 +3,7 @@ package com.askein.gymtracker.ui.workout.history
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -59,7 +60,7 @@ fun WorkoutHistoryScreen(
     Box {
         Card(
             elevation = customCardElevation(),
-            modifier = modifier
+            modifier = modifier.defaultMinSize(minHeight = 30.dp)
         ) {
             Column(
                 modifier = Modifier

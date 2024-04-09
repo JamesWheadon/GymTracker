@@ -57,7 +57,10 @@ fun LiveRecordWeightsExercise(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = uiState.name)
+            Text(
+                text = uiState.name,
+                style = MaterialTheme.typography.headlineSmall
+            )
             if (!recording) {
                 LiveRecordWeightsExerciseInfo(
                     onStart = { data ->
