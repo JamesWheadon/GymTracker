@@ -15,6 +15,7 @@ import com.askein.gymtracker.ui.workout.WorkoutScreenViewModel
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.askein.gymtracker.ui.workout.details.WorkoutExerciseCrossRefViewModel
 import com.askein.gymtracker.ui.workout.history.WorkoutHistoryViewModel
+import com.askein.gymtracker.ui.workout.history.create.live.LiveRecordWeightsExerciseViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -73,6 +74,9 @@ object AppViewModelProvider {
             OverallHistoryViewModel(
                 gymTrackerApplication().container.historyRepository
             )
+        }
+        initializer {
+            LiveRecordWeightsExerciseViewModel()
         }
     }
 }

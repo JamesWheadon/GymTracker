@@ -2,7 +2,10 @@ package com.askein.gymtracker.ui.workout.history.create.live
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -35,28 +38,21 @@ class LiveRecordWeightsExerciseKtTest {
     private val startButton = rule.onNode(hasText("Start"))
     private val cancelButton = rule.onNode(hasText("Cancel"))
 
-    @OptIn(ExperimentalTestApi::class)
     @Test
     fun rendersTimerThatCountsDown() {
-        var finished = false
         rule.setContent {
-            Timer(rest = 5) {
-                finished = true
-            }
+            Timer(timerState = 5) { }
         }
 
         timerStopButton.assertExists()
         rule.onNode(hasText("00:05")).assertExists()
-        assertThat(finished, equalTo(false))
-        rule.waitUntilAtLeastOneExists(hasText("00:00"), 7500)
-        assertThat(finished, equalTo(true))
     }
 
     @Test
     fun timerClickingStopFinishesTimer() {
         var finished = false
         rule.setContent {
-            Timer(rest = 15) {
+            Timer(timerState = 15) {
                 finished = true
             }
         }
@@ -74,7 +70,13 @@ class LiveRecordWeightsExerciseKtTest {
         rule.setContent {
             LiveRecordExerciseSetsAndTimer(
                 exerciseData = WeightsExerciseHistoryUiState(rest = 15),
-                exerciseFinished = { })
+                timerState = TimerState(),
+                timerFinishedState = false,
+                timerStart = { },
+                finishSet = { },
+                resetTimer = { },
+                exerciseFinished = { }
+            )
         }
 
         rule.onNode(hasText("Sets Completed: 0")).assertExists()
@@ -85,8 +87,14 @@ class LiveRecordWeightsExerciseKtTest {
     @Test
     fun liveRecordExerciseSetsAndTimerFinishingSetStartsTimer() {
         rule.setContent {
+            var sets by remember { mutableIntStateOf(0) }
             LiveRecordExerciseSetsAndTimer(
-                exerciseData = WeightsExerciseHistoryUiState(rest = 15),
+                exerciseData = WeightsExerciseHistoryUiState(rest = 15, sets = sets),
+                timerState = TimerState(currentTime = 15),
+                timerFinishedState = false,
+                timerStart = { },
+                finishSet = { sets += 1 },
+                resetTimer = { },
                 exerciseFinished = { }
             )
         }
@@ -105,11 +113,17 @@ class LiveRecordWeightsExerciseKtTest {
 
     @Test
     fun liveRecordExerciseSetsAndTimerReturnsCompletedSets() {
-        var completed = 0
         rule.setContent {
+            var sets by remember { mutableIntStateOf(0) }
             LiveRecordExerciseSetsAndTimer(
-                exerciseData = WeightsExerciseHistoryUiState(rest = 15),
-                exerciseFinished = { sets -> completed = sets })
+                exerciseData = WeightsExerciseHistoryUiState(rest = 15, sets = sets),
+                timerState = TimerState(),
+                timerFinishedState = false,
+                timerStart = { },
+                finishSet = { sets += 1 },
+                resetTimer = { },
+                exerciseFinished = { }
+            )
         }
 
         rule.onNode(hasText("Sets Completed: 0")).assertExists()
@@ -125,7 +139,6 @@ class LiveRecordWeightsExerciseKtTest {
 
         rule.onNode(hasText("Sets Completed: 0")).assertDoesNotExist()
         rule.onNode(hasText("Sets Completed: 3")).assertExists()
-        assertThat(completed, equalTo(3))
     }
 
     @Test

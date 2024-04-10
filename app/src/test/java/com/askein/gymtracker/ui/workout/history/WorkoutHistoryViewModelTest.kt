@@ -12,6 +12,8 @@ import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiS
 import com.askein.gymtracker.ui.exercise.history.state.toCardioExerciseHistory
 import com.askein.gymtracker.ui.exercise.history.state.toWeightsExerciseHistory
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
@@ -139,5 +141,18 @@ class WorkoutHistoryViewModelTest {
         verify(mockWorkoutHistoryRepository).delete(1)
         verify(mockWeightsExerciseHistoryRepository).deleteAllForWorkoutHistory(1)
         verify(mockCardioExerciseHistoryRepository).deleteAllForWorkoutHistory(1)
+    }
+
+    @Test
+    fun clearLiveWorkout() = runTest {
+        `when`(mockWorkoutHistoryRepository.insert(workoutHistory)).thenReturn(1L)
+
+        viewModel.liveSaveWorkoutHistory(workoutHistoryUiState)
+
+        assertThat(viewModel.savedWorkoutID.value, equalTo(1))
+
+        viewModel.clearLiveWorkout()
+
+        assertThat(viewModel.savedWorkoutID.value, equalTo(-1))
     }
 }

@@ -66,8 +66,10 @@ fun LiveRecordWorkout(
     historyViewModel: WorkoutHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = detailsViewModel.uiState.collectAsState().value
-    LaunchedEffect(uiState.workoutId != 0) {
-        historyViewModel.liveSaveWorkoutHistory(WorkoutHistoryUiState(workoutId = uiState.workoutId))
+    LaunchedEffect(Unit) {
+        if (historyViewModel.savedWorkoutID.value == -1 && uiState.workoutId != 0) {
+            historyViewModel.liveSaveWorkoutHistory(WorkoutHistoryUiState(workoutId = uiState.workoutId))
+        }
     }
     Scaffold(
         topBar = {
@@ -85,6 +87,7 @@ fun LiveRecordWorkout(
             finishFunction = {
                 navController.popBackStack()
                 navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(uiState.workoutId))
+                historyViewModel.clearLiveWorkout()
             },
             cancelFunction = {
                 historyViewModel.liveDeleteWorkoutHistory()
@@ -112,7 +115,7 @@ fun LiveRecordWorkout(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.verticalScroll(rememberScrollState()).padding(end = 72.dp)
+        modifier = modifier.verticalScroll(rememberScrollState()).padding(bottom = 72.dp)
     ) {
         uiState.exercises.forEach { exercise ->
             if (exercise.id == currentExercise) {
