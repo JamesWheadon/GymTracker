@@ -105,7 +105,7 @@ fun CardioExerciseHistoryDetails(
         detail = detail,
         detailOptions = detailOptions,
         userPreferencesUiState = LocalUserPreferences.current
-    )
+    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
     if (dataPoints.isNotEmpty()) {
         Graph(
             points = dataPoints,

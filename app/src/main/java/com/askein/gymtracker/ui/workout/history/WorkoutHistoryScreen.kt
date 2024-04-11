@@ -126,6 +126,7 @@ fun WorkoutHistoryScreen(
                 actionTitle = stringResource(id = R.string.delete_workout_confirm),
                 confirmFunction = {
                     viewModel.deleteWorkoutHistory(workoutHistoryUiState)
+                    showDeleteWorkoutHistory = false
                 },
                 cancelFunction = { showDeleteWorkoutHistory = false }
             )

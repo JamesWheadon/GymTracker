@@ -117,17 +117,22 @@ fun WeightsExerciseHistoryDetails(
         timeOptions = timeOptions,
         timeOnChange = { newTime -> time = newTime }
     )
-    Graph(
-        points = getWeightsGraphDetails(
-            uiState,
-            detail,
-            detailOptions,
-            LocalUserPreferences.current
-        ),
-        startDate = timeOptionToStartTime[time] ?: currentDate,
-        yLabel = stringResource(id = detail),
-        yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) stringResource(id = LocalUserPreferences.current.defaultWeightUnit.shortForm) else ""
-    )
+    val dataPoints = getWeightsGraphDetails(
+        uiState,
+        detail,
+        detailOptions,
+        LocalUserPreferences.current
+    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
+    if (dataPoints.isNotEmpty()) {
+        Graph(
+            points = dataPoints,
+            startDate = timeOptionToStartTime[time] ?: currentDate,
+            yLabel = stringResource(id = detail),
+            yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) stringResource(id = LocalUserPreferences.current.defaultWeightUnit.shortForm) else ""
+        )
+    } else {
+        Text(text = stringResource(id = R.string.no_data_error))
+    }
 }
 
 @Composable

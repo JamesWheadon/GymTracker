@@ -191,9 +191,8 @@ fun ExerciseHistoryDetails(
             ActionConfirmation(
                 actionTitle = stringResource(id = R.string.delete_exercise_confirm),
                 confirmFunction = {
-                    deleteFunction(
-                        exerciseHistory
-                    )
+                    deleteFunction(exerciseHistory)
+                    deleteExercise = false
                 },
                 cancelFunction = { deleteExercise = false }
             )

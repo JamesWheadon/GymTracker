@@ -66,7 +66,7 @@ fun LiveRecordWorkout(
     historyViewModel: WorkoutHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = detailsViewModel.uiState.collectAsState().value
-    LaunchedEffect(Unit) {
+    LaunchedEffect(uiState.workoutId) {
         if (historyViewModel.savedWorkoutID.value == -1 && uiState.workoutId != 0) {
             historyViewModel.liveSaveWorkoutHistory(WorkoutHistoryUiState(workoutId = uiState.workoutId))
         }
