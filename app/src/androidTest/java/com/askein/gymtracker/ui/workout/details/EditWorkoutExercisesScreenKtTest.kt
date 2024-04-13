@@ -15,8 +15,8 @@ import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.askein.gymtracker.ui.exercise.toExercise
 import kotlinx.coroutines.flow.flowOf
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -49,6 +49,7 @@ class EditWorkoutExercisesScreenKtTest {
     private val workoutExercisesTitles = rule.onNode(hasText("Workout Exercises"))
     private val availableExercisesTitles = rule.onNode(hasText("Available Exercises"))
     private val addWorkoutExercisesCloseButton = rule.onNode(hasContentDescription("Close"))
+    private val doneButton = rule.onNode(hasText("Done"))
 
     @Before
     fun setUp() {
@@ -119,7 +120,7 @@ class EditWorkoutExercisesScreenKtTest {
 
         checkBox.performClick()
         checkBox.assertIsOff()
-        MatcherAssert.assertThat(clicked, CoreMatchers.equalTo(true))
+        assertThat(clicked, equalTo(true))
     }
 
     @Test
@@ -164,6 +165,7 @@ class EditWorkoutExercisesScreenKtTest {
         workoutExercisesTitles.assertDoesNotExist()
         availableExercisesTitles.assertDoesNotExist()
         addWorkoutExercisesCloseButton.assertExists()
+        doneButton.assertExists()
     }
 
     @Test
@@ -248,8 +250,8 @@ class EditWorkoutExercisesScreenKtTest {
         curlsCheckBox.performClick()
         dipsCheckBox.performClick()
 
-        MatcherAssert.assertThat(selected, CoreMatchers.equalTo(curlsExerciseUiState.name))
-        MatcherAssert.assertThat(deselected, CoreMatchers.equalTo(dipsExerciseUiState.name))
+        assertThat(selected, equalTo(curlsExerciseUiState.name))
+        assertThat(deselected, equalTo(dipsExerciseUiState.name))
     }
 
     @Test
@@ -268,6 +270,24 @@ class EditWorkoutExercisesScreenKtTest {
 
         addWorkoutExercisesCloseButton.assertExists()
         addWorkoutExercisesCloseButton.performClick()
-        MatcherAssert.assertThat(dismissed, CoreMatchers.equalTo(true))
+        assertThat(dismissed, equalTo(true))
+    }
+
+    @Test
+    fun addWorkoutExercisesScreenClickingDoneButtonCallsOnDismiss() {
+        var dismissed = false
+
+        rule.setContent {
+            EditWorkoutExercisesScreen(
+                chosenExercises = listOf(curlsExerciseUiState),
+                remainingExercises = listOf(dipsExerciseUiState),
+                selectFunction = { },
+                deselectFunction = { },
+                onDismiss = { dismissed = true }
+            )
+        }
+
+        doneButton.performClick()
+        assertThat(dismissed, equalTo(true))
     }
 }

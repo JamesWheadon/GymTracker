@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -115,6 +116,9 @@ fun EditWorkoutExercisesScreen(
                             listTitle = R.string.available_exercises,
                             exercisesSelected = false
                         )
+                    }
+                    Button(onClick = { onDismiss() }) {
+                        Text(text = stringResource(id = R.string.done))
                     }
                 }
             }
