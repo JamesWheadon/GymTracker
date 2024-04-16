@@ -12,10 +12,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -25,10 +24,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.FormTypes
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToKilograms
+import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.DropdownBox
 import com.askein.gymtracker.ui.FormInformationField
 import com.askein.gymtracker.ui.customCardElevation
@@ -36,18 +37,16 @@ import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun LiveRecordWeightsExercise(
     uiState: ExerciseUiState,
     exerciseComplete: (WeightsExerciseHistoryUiState) -> Unit,
     exerciseCancel: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: LiveRecordWeightsExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    var recording by remember { mutableStateOf(false) }
-    val exerciseData = WeightsExerciseHistoryUiState(exerciseId = uiState.id)
+    var recording by rememberSaveable { mutableStateOf(false) }
     Card(
         elevation = customCardElevation(),
         modifier = modifier
@@ -57,24 +56,36 @@ fun LiveRecordWeightsExercise(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = uiState.name)
+            Text(
+                text = uiState.name,
+                style = MaterialTheme.typography.headlineSmall
+            )
             if (!recording) {
                 LiveRecordWeightsExerciseInfo(
                     onStart = { data ->
-                        exerciseData.rest = data.rest
-                        exerciseData.reps = data.reps
-                        exerciseData.weight = data.weight
+                        viewModel.setExerciseData(
+                            exerciseId = uiState.id,
+                            reps = data.reps,
+                            rest = data.rest,
+                            weight = data.weight
+                        )
                         recording = true
                     },
                     onCancel = { exerciseCancel() }
                 )
             } else {
+                val exerciseData = viewModel.exerciseState.collectAsState().value
+                val timerState = viewModel.timerState.collectAsState().value
+                val completedState = viewModel.completed.collectAsState().value
                 LiveRecordExerciseSetsAndTimer(
-                    exerciseData = exerciseData
-                ) { setsCompleted ->
-                    exerciseData.sets = setsCompleted
-                    exerciseComplete(exerciseData)
-                }
+                    exerciseData = exerciseData,
+                    timerState = timerState,
+                    timerFinishedState = completedState,
+                    timerStart = { rest -> viewModel.startTimer(rest) },
+                    finishSet = { viewModel.finishSet() },
+                    resetTimer = { viewModel.reset() },
+                    exerciseFinished =  { exerciseComplete(exerciseData) }
+                )
             }
         }
     }
@@ -190,28 +201,41 @@ fun LiveRecordWeightsExerciseInfo(
 @Composable
 fun LiveRecordExerciseSetsAndTimer(
     exerciseData: WeightsExerciseHistoryUiState,
-    exerciseFinished: (Int) -> Unit
+    timerState: TimerState,
+    timerFinishedState: Boolean,
+    timerStart: (Int) -> Unit,
+    finishSet: () -> Unit,
+    resetTimer: () -> Unit,
+    exerciseFinished: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        var setsComplete by rememberSaveable { mutableIntStateOf(0) }
         var resting by rememberSaveable { mutableStateOf(false) }
-        Text(text = stringResource(id = R.string.sets_completed, setsComplete))
+        Text(text = stringResource(id = R.string.sets_completed, exerciseData.sets))
         if (resting) {
-            Timer(rest = exerciseData.rest!!) {
+            LaunchedEffect(Unit) {
+                if (!timerState.timerRunning) {
+                    timerStart(exerciseData.rest!!)
+                }
+            }
+            Timer(
+                timerState = timerState.currentTime
+            ) {
                 resting = false
             }
+            resting = !timerFinishedState
         } else {
+            resetTimer()
             Button(onClick = {
-                setsComplete++
+                finishSet()
                 resting = true
             }) {
                 Text(text = stringResource(id = R.string.finish_set))
             }
         }
-        Button(onClick = { exerciseFinished(setsComplete) }) {
+        Button(onClick = { exerciseFinished() }) {
             Text(text = stringResource(id = R.string.finish_exercise))
         }
     }
@@ -219,30 +243,20 @@ fun LiveRecordExerciseSetsAndTimer(
 
 @Composable
 fun Timer(
-    rest: Int,
+    timerState: Int,
     finished: () -> Unit
 ) {
-    var time by rememberSaveable { mutableIntStateOf(rest) }
-    LaunchedEffect(Unit) {
-        while (time > 0) {
-            delay(1.seconds)
-            time--
-        }
-        finished()
-    }
     Text(
         text = stringResource(
             id = R.string.rest_timer,
-            String.format("%02d", time / 60),
-            String.format("%02d", time % 60)
+            String.format("%02d", timerState / 60),
+            String.format("%02d", timerState % 60)
         )
     )
     Button(onClick = finished) {
         Text(text = stringResource(id = R.string.stop))
     }
 }
-
-data class ExerciseData(val reps: Int = 0, val rest: Int = 0, val weight: Double = 0.0)
 
 @Preview(showBackground = true)
 @Composable
@@ -256,13 +270,16 @@ fun LiveRecordWeightsExercisePreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LiveRecordExerciseSetsAndTimerPreview() {
-    GymTrackerTheme(darkTheme = false) {
-        LiveRecordExerciseSetsAndTimer(
-            exerciseData = WeightsExerciseHistoryUiState(),
-            exerciseFinished = { }
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun LiveRecordExerciseSetsAndTimerPreview() {
+//    GymTrackerTheme(darkTheme = false) {
+//        LiveRecordExerciseSetsAndTimer(
+//            exerciseData = WeightsExerciseHistoryUiState(),
+//            timerState = 90,
+//            startTimer = { },
+//            exerciseFinished = { },
+//            viewModel = viewModel
+//        )
+//    }
+//}

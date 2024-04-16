@@ -35,7 +35,8 @@ import java.time.LocalDate
 @Composable
 fun CardioExerciseDetailsScreen(
     innerPadding: PaddingValues,
-    uiState: ExerciseDetailsUiState
+    uiState: ExerciseDetailsUiState,
+    chosenDate: LocalDate?
 ) {
     Column(
         modifier = Modifier
@@ -47,10 +48,11 @@ fun CardioExerciseDetailsScreen(
     ) {
         CardioExerciseInformation(innerPadding)
         if (uiState.cardioHistory.isNotEmpty()) {
-            CardioExerciseHistoryDetails(
-                uiState = uiState
+            CardioExerciseHistoryDetails(uiState = uiState)
+            ExerciseHistoryCalendar(
+                uiState = uiState,
+                chosenDate = chosenDate
             )
-            ExerciseHistoryCalendar(uiState = uiState)
         }
         Spacer(modifier = Modifier.height(72.dp))
     }
@@ -78,7 +80,7 @@ fun CardioExerciseHistoryDetails(
     val detailOptions = listOf(R.string.distance, R.string.time, R.string.calories)
     val yUnit = mapOf(
         detailOptions[0] to LocalUserPreferences.current.defaultDistanceUnit.shortForm,
-        detailOptions[1] to R.string.minute_unit,
+        detailOptions[1] to R.string.second_unit,
         detailOptions[2] to R.string.calories_unit
     )
     val currentDate = LocalDate.now()
@@ -105,7 +107,7 @@ fun CardioExerciseHistoryDetails(
         detail = detail,
         detailOptions = detailOptions,
         userPreferencesUiState = LocalUserPreferences.current
-    )
+    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
     if (dataPoints.isNotEmpty()) {
         Graph(
             points = dataPoints,
@@ -266,7 +268,8 @@ fun ItemDetailsScreenPreviewNoCardioHistory() {
                     equipment = "Dumbbells"
                 ),
                 cardioHistory = listOf()
-            )
+            ),
+            chosenDate = null
         )
     }
 }
@@ -289,7 +292,8 @@ fun ItemDetailsScreenPreviewCardioHistory() {
                         calories = 450
                     )
                 )
-            )
+            ),
+            chosenDate = null
         )
     }
 }

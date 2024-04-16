@@ -246,34 +246,43 @@ fun YearMonthOptions(
                     }
 
                 }
-                for (monthRow in 1..10 step 3) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        for (monthColumn in 0..2) {
-                            val yearMonthOption = YearMonth.of(year, monthRow + monthColumn)
-                            val currentlySelected = yearMonthValue == yearMonthOption
-                            Button(
-                                onClick = {
-                                    yearMonthValueOnChange(yearMonthOption)
-                                    closeFunction()
-                                },
-                                enabled = !currentlySelected
-                                        && currentTime >= yearMonthOption,
-                                colors = ButtonDefaults.buttonColors(
-                                    disabledContainerColor = if (currentlySelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background,
-                                    containerColor = MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.onSurface,
-                                    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(
-                                        0.5F
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    for (monthRow in 1..3) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            for (monthColumn in 0 until 12 step 3) {
+                                val yearMonthOption = YearMonth.of(year, monthRow + monthColumn)
+                                val currentlySelected = yearMonthValue == yearMonthOption
+                                Button(
+                                    onClick = {
+                                        yearMonthValueOnChange(yearMonthOption)
+                                        closeFunction()
+                                    },
+                                    enabled = !currentlySelected
+                                            && currentTime >= yearMonthOption,
+                                    colors = ButtonDefaults.buttonColors(
+                                        disabledContainerColor = if (currentlySelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background,
+                                        containerColor = MaterialTheme.colorScheme.background,
+                                        contentColor = MaterialTheme.colorScheme.onSurface,
+                                        disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(
+                                            0.5F
+                                        )
+                                    ),
+                                ) {
+                                    Text(
+                                        text = yearMonthOption.month.getDisplayName(
+                                            TextStyle.SHORT,
+                                            LocalConfiguration.current.locales[0]
+                                        )
                                     )
-                                ),
-                            ) {
-                                Text(
-                                    text = yearMonthOption.month.getDisplayName(TextStyle.SHORT, LocalConfiguration.current.locales[0])
-                                )
+                                }
                             }
                         }
                     }

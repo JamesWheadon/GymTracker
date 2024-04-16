@@ -101,7 +101,8 @@ class ExerciseDetailsCalendarKtTest {
     fun rendersExerciseHistoryCalendarWithOneActiveDay() {
         rule.setContent {
             ExerciseHistoryCalendar(
-                uiState = exercise
+                uiState = exercise,
+                chosenDate = null
             )
         }
 
@@ -127,7 +128,8 @@ class ExerciseDetailsCalendarKtTest {
     fun clickingDropDownArrowOpensOptionsToChangeMonth() {
         rule.setContent {
             ExerciseHistoryCalendar(
-                uiState = exercise
+                uiState = exercise,
+                chosenDate = null
             )
         }
 
@@ -153,7 +155,8 @@ class ExerciseDetailsCalendarKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 ExerciseHistoryCalendar(
-                    uiState = exercise
+                    uiState = exercise,
+                    chosenDate = null
                 )
             }
         }
@@ -178,7 +181,8 @@ class ExerciseDetailsCalendarKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 ExerciseHistoryCalendar(
-                    uiState = exercise
+                    uiState = exercise,
+                    chosenDate = null
                 )
             }
         }
@@ -195,6 +199,37 @@ class ExerciseDetailsCalendarKtTest {
         deleteButton.performClick()
 
         rule.onNode(hasText("Do you want to delete this exercise?")).assertExists()
+    }
+
+    @Test
+    fun rendersExerciseHistoryCalendarWithChosenDateSelected() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                ExerciseHistoryCalendar(
+                    uiState = exercise,
+                    chosenDate = LocalDate.now()
+                )
+            }
+        }
+
+        date.assertExists()
+        month.assertExists()
+        chooseMonthButton.assertExists()
+
+        for (day in DayOfWeek.values().map { it.getDisplayName(TextStyle.SHORT, Locale.ENGLISH) }) {
+            rule.onNode(hasText(day)).assertExists()
+        }
+
+        for (dayValue in 1..currentMonth.month.length(currentMonth.isLeapYear)) {
+            val dayNode = rule.onNode(hasText(dayValue.toString()))
+            dayNode.assertExists()
+            if (dayValue == LocalDate.now().dayOfMonth) {
+                dayNode.assertIsEnabled()
+            } else {
+                dayNode.assertIsNotEnabled()
+            }
+        }
     }
 
     @Test

@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import com.askein.gymtracker.R
 import com.askein.gymtracker.getResourceString
@@ -208,15 +209,18 @@ class CreateExerciseScreenKtTest {
                 buttonText = createResourceId,
                 savedExerciseNames = listOf(savedExercise.name),
                 savedMuscleGroups = listOf(),
-                exercise = savedExercise,
+                exercise = exercise,
                 onDismiss = { },
                 createFunction = { }
             )
         }
 
+        nameField.performTextClearance()
+        nameField.performTextInput(savedExercise.name)
+
         nameField.assertTextContains(savedExercise.name)
-        equipmentField.assertTextContains(savedExercise.equipment)
-        muscleField.assertTextContains(savedExercise.muscleGroup)
+        equipmentField.assertTextContains(exercise.equipment)
+        muscleField.assertTextContains(exercise.muscleGroup)
         nameError.assertExists()
     }
 
@@ -231,15 +235,18 @@ class CreateExerciseScreenKtTest {
                 buttonText = createResourceId,
                 savedExerciseNames = listOf(savedExercise.name),
                 savedMuscleGroups = listOf(),
-                exercise = savedExercise,
+                exercise = exercise,
                 onDismiss = { dismissed = true },
                 createFunction = { newExercise -> created = newExercise }
             )
         }
 
+        nameField.performTextClearance()
+        nameField.performTextInput(savedExercise.name)
+
         nameField.assertTextContains(savedExercise.name)
-        equipmentField.assertTextContains(savedExercise.equipment)
-        muscleField.assertTextContains(savedExercise.muscleGroup)
+        equipmentField.assertTextContains(exercise.equipment)
+        muscleField.assertTextContains(exercise.muscleGroup)
         nameError.assertExists()
 
         createButton.performClick()

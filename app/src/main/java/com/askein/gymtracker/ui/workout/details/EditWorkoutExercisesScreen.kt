@@ -1,12 +1,10 @@
 package com.askein.gymtracker.ui.workout.details
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -14,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -26,13 +25,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.AppViewModelProvider
@@ -85,16 +84,13 @@ fun EditWorkoutExercisesScreen(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.4f))
+    Dialog(
+        onDismissRequest = onDismiss
     ) {
-        Box(
-            modifier = modifier.fillMaxSize(0.8F)
-        ) {
-            Card {
+        Box {
+            Card(
+                modifier = modifier
+            ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -120,6 +116,9 @@ fun EditWorkoutExercisesScreen(
                             listTitle = R.string.available_exercises,
                             exercisesSelected = false
                         )
+                    }
+                    Button(onClick = { onDismiss() }) {
+                        Text(text = stringResource(id = R.string.done))
                     }
                 }
             }

@@ -28,6 +28,7 @@
     <string name="time">Time</string>
     <string name="calories">Calories</string>
     <string name="minute_unit">min</string>
+    <string name="second_unit">s</string>
     <string name="calories_unit">kcal</string>
     <string name="best_distance">%1$.2f %2$s</string>
     <string name="display_hours">%1$d:%2$s:%3$s</string>
@@ -37,6 +38,7 @@
     <string name="no_data_error">No data for range</string>
     <string name="best_exercise_icon">best exercise icon</string>
     <string name="exercises_on">Exercises on %1$s</string>
+    <string name="workouts_on">Workouts on %1$s</string>
     <string name="close">Close</string>
     <string name="delete_exercise_confirm">Do you want to delete this exercise?</string>
     <string name="sets">Sets</string>
@@ -105,7 +107,6 @@
     <string name="finish_exercise">Finish Exercise</string>
     <string name="rest_timer">%1$s:%2$s</string>
     <string name="stop">Stop</string>
-    <string name="record_workout">Record %1$s Workout</string>
     <string name="finish_workout">Finish Workout</string>
     <string name="completed">Completed</string>
     <string name="cardio_error">Must have a time, distance or calories entered</string>
@@ -114,7 +115,7 @@
     <string name="edit">edit</string>
     <string name="delete">delete</string>
     <string name="delete_workout_confirm">Do you want to delete this workout?</string>
-    <string name="select_record_workout">Select Workout to record</string>
+    <string name="select_record_workout">Select Workout</string>
     <string name="workout_column">workout column</string>
     <string name="create_workout">Create Workout</string>
     <string name="minutes">Minutes</string>
@@ -125,4 +126,7 @@
     <string name="no">No</string>
     <string name="date">Date</string>
     <string name="decimal_separator">.</string>
+    <string name="home">Home</string>
+    <string name="live_record_cancel">Do you want to cancel this workout? All data will be deleted</string>
+    <string name="done">Done</string>
 </resources>

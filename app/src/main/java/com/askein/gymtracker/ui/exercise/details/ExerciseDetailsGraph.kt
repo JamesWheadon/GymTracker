@@ -331,7 +331,7 @@ private fun DrawScope.drawDataPoints(
 ): List<Pair<Float, Float>> {
     val xWidth = currentDate - startDate.toEpochDay()
     val dataPoints =
-        points.filter { point -> !point.first.isBefore(startDate) }.map { point ->
+        points.map { point ->
             Pair(
                 X_OFFSET + FIRST_POINT + (canvasWidth - X_OFFSET - 2 * FIRST_POINT) * (point.first.toEpochDay() - startDate.toEpochDay()) / xWidth,
                 ((size.height - Y_OFFSET - FIRST_POINT) - ((point.second - yMin) / yGradient * yAxisSpace)).toFloat()

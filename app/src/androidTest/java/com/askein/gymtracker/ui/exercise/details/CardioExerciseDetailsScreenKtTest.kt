@@ -105,8 +105,9 @@ class CardioExerciseDetailsScreenKtTest {
     fun rendersExerciseDetailsWithNoHistory() {
         rule.setContent {
             CardioExerciseDetailsScreen(
+                innerPadding = PaddingValues(0.dp),
                 uiState = exerciseNoHistory,
-                innerPadding = PaddingValues(0.dp)
+                chosenDate = null
             )
         }
 
@@ -120,8 +121,9 @@ class CardioExerciseDetailsScreenKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 CardioExerciseDetailsScreen(
+                    innerPadding = PaddingValues(0.dp),
                     uiState = exerciseSecondsBest,
-                    innerPadding = PaddingValues(0.dp)
+                    chosenDate = null
                 )
             }
         }
@@ -139,8 +141,9 @@ class CardioExerciseDetailsScreenKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 CardioExerciseDetailsScreen(
+                    innerPadding = PaddingValues(0.dp),
                     uiState = exerciseMinutesBest,
-                    innerPadding = PaddingValues(0.dp)
+                    chosenDate = null
                 )
             }
         }
@@ -158,8 +161,9 @@ class CardioExerciseDetailsScreenKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 CardioExerciseDetailsScreen(
+                    innerPadding = PaddingValues(0.dp),
                     uiState = exerciseHoursBest,
-                    innerPadding = PaddingValues(0.dp)
+                    chosenDate = null
                 )
             }
         }
@@ -180,8 +184,9 @@ class CardioExerciseDetailsScreenKtTest {
             )
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 CardioExerciseDetailsScreen(
+                    innerPadding = PaddingValues(0.dp),
                     uiState = exerciseHoursBest,
-                    innerPadding = PaddingValues(0.dp)
+                    chosenDate = null
                 )
             }
         }

@@ -39,7 +39,7 @@ class UserPreferencesViewModelTest {
     fun updateDefaultDistanceUnitInRepository() = runTest {
         val viewModel = UserPreferencesViewModel(repository)
 
-        viewModel.updateDefaultDistanceUnit(DistanceUnits.MILES)
+        viewModel.updateDefaultDistanceUnit(DistanceUnits.MILES.shortForm)
 
         verify(repository).saveDefaultDistanceUnit(DistanceUnits.MILES.shortForm)
     }
@@ -48,7 +48,7 @@ class UserPreferencesViewModelTest {
     fun updateDefaultWeightUnitInRepository() = runTest {
         val viewModel = UserPreferencesViewModel(repository)
 
-        viewModel.updateDefaultWeightUnit(WeightUnits.POUNDS)
+        viewModel.updateDefaultWeightUnit(WeightUnits.POUNDS.shortForm)
 
         verify(repository).saveDefaultWeightUnit(WeightUnits.POUNDS.shortForm)
     }

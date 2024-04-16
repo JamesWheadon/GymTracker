@@ -6,54 +6,34 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.create.CreateExerciseScreen
-import com.askein.gymtracker.ui.navigation.HomeNavigationInformation
-import com.askein.gymtracker.ui.navigation.HomeScreenCardWrapper
-import com.askein.gymtracker.ui.navigation.NavigationRoute
-import com.askein.gymtracker.ui.navigation.NavigationRoutes
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
-
-object ExercisesRoute : NavigationRoute {
-    override val route = NavigationRoutes.EXERCISES_SCREEN.baseRoute
-}
+import java.time.LocalDate
 
 @Composable
 fun ExercisesScreen(
-    navController: NavHostController,
-    exerciseNavigationFunction: (Int) -> Unit,
-    homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
+    showCreateExercise: Boolean,
+    dismissCreateExercise: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExercisesScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val exerciseListUiState by viewModel.exerciseListUiState.collectAsState()
     ExercisesScreen(
         exerciseListUiState = exerciseListUiState,
-        navController = navController,
+        showCreateExercise = showCreateExercise,
+        dismissCreateExercise = dismissCreateExercise,
         exerciseNavigationFunction = exerciseNavigationFunction,
-        homeNavigationOptions = homeNavigationOptions,
         modifier = modifier
     )
 }
@@ -61,42 +41,22 @@ fun ExercisesScreen(
 @Composable
 fun ExercisesScreen(
     exerciseListUiState: ExerciseListUiState,
-    navController: NavHostController,
-    exerciseNavigationFunction: (Int) -> Unit,
-    homeNavigationOptions: Map<HomeNavigationInformation, Boolean>,
+    showCreateExercise: Boolean,
+    dismissCreateExercise: () -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showCreate by remember { mutableStateOf(false) }
-    HomeScreenCardWrapper(
-        title = stringResource(id = R.string.my_exercises),
-        navController = navController,
-        homeNavigationOptions = homeNavigationOptions,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showCreate = true },
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    tint = Color.Black,
-                    contentDescription = stringResource(id = R.string.add_exercise)
-                )
-            }
-        }
-    ) {
-        ExercisesScreen(
-            exerciseListUiState = exerciseListUiState,
-            exerciseNavigationFunction = exerciseNavigationFunction,
-            modifier = modifier
-        )
-    }
-    if (showCreate) {
+    ExercisesScreen(
+        exerciseListUiState = exerciseListUiState,
+        exerciseNavigationFunction = exerciseNavigationFunction,
+        modifier = modifier
+    )
+    if (showCreateExercise) {
         Dialog(
-            onDismissRequest = { showCreate = false }
+            onDismissRequest = dismissCreateExercise
         ) {
             CreateExerciseScreen(
-                onDismiss = { showCreate = false }
+                onDismiss = dismissCreateExercise
             )
         }
     }
@@ -105,11 +65,12 @@ fun ExercisesScreen(
 @Composable
 fun ExercisesScreen(
     exerciseListUiState: ExerciseListUiState,
-    exerciseNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         LazyColumn(
             modifier = modifier.fillMaxWidth(),
@@ -142,7 +103,7 @@ fun ExerciseScreenPreview() {
                     ),
                 )
             ),
-            exerciseNavigationFunction = { }
+            exerciseNavigationFunction = { _, _ -> (Unit) }
         )
     }
 }
@@ -164,9 +125,7 @@ fun ExerciseScreenCardPreview() {
                     ),
                 )
             ),
-            exerciseNavigationFunction = { },
-            navController = rememberNavController(),
-            homeNavigationOptions = mapOf()
+            exerciseNavigationFunction = { _, _ -> (Unit) }
         )
     }
 }

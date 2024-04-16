@@ -3,8 +3,6 @@ package com.askein.gymtracker.ui.user
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.askein.gymtracker.data.user.UserPreferencesRepository
-import com.askein.gymtracker.enums.DistanceUnits
-import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.getDistanceUnitFromShortForm
 import com.askein.gymtracker.enums.getWeightUnitFromShortForm
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,15 +42,15 @@ class UserPreferencesViewModel(
         initialValue = UserPreferencesUiState()
     )
 
-    fun updateDefaultDistanceUnit(distanceUnit: DistanceUnits) {
+    fun updateDefaultDistanceUnit(distanceUnit: Int) {
         viewModelScope.launch {
-            userPreferencesRepository.saveDefaultDistanceUnit(distanceUnit.shortForm)
+            userPreferencesRepository.saveDefaultDistanceUnit(distanceUnit)
         }
     }
 
-    fun updateDefaultWeightUnit(weightUnit: WeightUnits) {
+    fun updateDefaultWeightUnit(weightUnit: Int) {
         viewModelScope.launch {
-            userPreferencesRepository.saveDefaultWeightUnit(weightUnit.shortForm)
+            userPreferencesRepository.saveDefaultWeightUnit(weightUnit)
         }
     }
 

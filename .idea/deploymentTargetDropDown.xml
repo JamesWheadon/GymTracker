@@ -2,16 +2,13 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="FormFieldsKtTest">
+      <entry key="All Tests">
         <State />
       </entry>
-      <entry key="Tests in 'com.example.gymtracker'">
+      <entry key="EditWorkoutExercisesScreenKtTest">
         <State />
       </entry>
       <entry key="app">
-        <State />
-      </entry>
-      <entry key="resourceTest()">
         <State />
       </entry>
     </value>

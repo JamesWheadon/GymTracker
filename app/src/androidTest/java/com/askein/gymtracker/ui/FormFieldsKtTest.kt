@@ -63,6 +63,80 @@ class FormFieldsKtTest {
     }
 
     @Test
+    fun shouldOnlyAllowIntegersForIntegerForm() {
+        var enteredText = ""
+        rule.setContent {
+            var localEnteredText by remember { mutableStateOf("") }
+            FormInformationField(
+                label = R.string.close,
+                value = localEnteredText,
+                onChange = {
+                    enteredText = it
+                    localEnteredText = it
+                },
+                formType = FormTypes.INTEGER
+            )
+        }
+
+        val textField = rule.onNode(hasContentDescription(getResourceString(R.string.close)))
+        textField.performTextInput("1")
+        textField.performTextInput("a")
+        textField.performTextInput("-")
+        assertThat(enteredText, equalTo("1"))
+    }
+
+    @Test
+    fun shouldOnlyAllowIntegersAndNegativeAtStartForIntegerForm() {
+        var enteredText = ""
+        rule.setContent {
+            var localEnteredText by remember { mutableStateOf("") }
+            FormInformationField(
+                label = R.string.close,
+                value = localEnteredText,
+                onChange = {
+                    enteredText = it
+                    localEnteredText = it
+                },
+                formType = FormTypes.INTEGER
+            )
+        }
+
+        val textField = rule.onNode(hasContentDescription(getResourceString(R.string.close)))
+        textField.performTextInput("-")
+        textField.performTextInput("1")
+        textField.performTextInput("a")
+        textField.performTextInput("-")
+        assertThat(enteredText, equalTo("-1"))
+    }
+
+    @Test
+    fun shouldOnlyAllowValidDecimalsAndNegativeAtStartForDecimalForm() {
+        var enteredText = ""
+        rule.setContent {
+            var localEnteredText by remember { mutableStateOf("") }
+            FormInformationField(
+                label = R.string.close,
+                value = localEnteredText,
+                onChange = {
+                    enteredText = it
+                    localEnteredText = it
+                },
+                formType = FormTypes.DOUBLE
+            )
+        }
+
+        val textField = rule.onNode(hasContentDescription(getResourceString(R.string.close)))
+        textField.performTextInput("-")
+        textField.performTextInput("1")
+        textField.performTextInput("a")
+        textField.performTextInput("-")
+        textField.performTextInput(",")
+        textField.performTextInput("b")
+        textField.performTextInput("8")
+        assertThat(enteredText, equalTo("-1.8"))
+    }
+
+    @Test
     fun shouldNotGiveSuggestionsForTextLessThanTwoCharacters() {
         var enteredText = TextFieldValue(text = "")
         rule.setContent {
@@ -266,7 +340,11 @@ class FormFieldsKtTest {
     fun shouldRenderDropdownWithSelectedChosenIfProvided() {
         rule.setContent {
             DropdownBox(
-                options = listOf(R.string.miles_display_name, R.string.kilometers_display_name, R.string.meters_display_name),
+                options = listOf(
+                    R.string.miles_display_name,
+                    R.string.kilometers_display_name,
+                    R.string.meters_display_name
+                ),
                 onChange = { },
                 selected = R.string.meters_display_name
             )

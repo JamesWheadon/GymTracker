@@ -15,6 +15,7 @@ import com.askein.gymtracker.ui.workout.WorkoutScreenViewModel
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.askein.gymtracker.ui.workout.details.WorkoutExerciseCrossRefViewModel
 import com.askein.gymtracker.ui.workout.history.WorkoutHistoryViewModel
+import com.askein.gymtracker.ui.workout.history.create.live.LiveRecordWeightsExerciseViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -54,25 +55,28 @@ object AppViewModelProvider {
         }
         initializer {
             WorkoutExerciseCrossRefViewModel(
-                gymTrackerApplication().container.workoutExerciseCrossRefRepository
+                workoutExerciseCrossRefRepository = gymTrackerApplication().container.workoutExerciseCrossRefRepository
             )
         }
         initializer {
             WorkoutHistoryViewModel(
-                gymTrackerApplication().container.workoutHistoryRepository,
-                gymTrackerApplication().container.weightsExerciseHistoryRepository,
-                gymTrackerApplication().container.cardioExerciseHistoryRepository
+                workoutHistoryRepository = gymTrackerApplication().container.workoutHistoryRepository,
+                weightsExerciseHistoryRepository = gymTrackerApplication().container.weightsExerciseHistoryRepository,
+                cardioExerciseHistoryRepository = gymTrackerApplication().container.cardioExerciseHistoryRepository
             )
         }
         initializer {
             UserPreferencesViewModel(
-                gymTrackerApplication().container.userPreferencesRepository
+                userPreferencesRepository = gymTrackerApplication().container.userPreferencesRepository
             )
         }
         initializer {
             OverallHistoryViewModel(
-                gymTrackerApplication().container.historyRepository
+                historyRepository = gymTrackerApplication().container.historyRepository
             )
+        }
+        initializer {
+            LiveRecordWeightsExerciseViewModel()
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.askein.gymtracker.converters
+package com.askein.gymtracker.util
 
 import androidx.room.TypeConverter
 import java.time.LocalDate

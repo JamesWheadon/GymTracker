@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
@@ -40,12 +42,12 @@ import java.time.LocalDate
 @Composable
 fun WeightsExerciseDetailsScreen(
     innerPadding: PaddingValues,
-    uiState: ExerciseDetailsUiState
+    uiState: ExerciseDetailsUiState,
+    chosenDate: LocalDate?
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxSize()
             .padding(vertical = 16.dp, horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -53,7 +55,10 @@ fun WeightsExerciseDetailsScreen(
         WeightsExerciseInformation(innerPadding, uiState)
         if (uiState.weightsHistory.isNotEmpty()) {
             WeightsExerciseHistoryDetails(uiState = uiState)
-            ExerciseHistoryCalendar(uiState = uiState)
+            ExerciseHistoryCalendar(
+                uiState = uiState,
+                chosenDate = chosenDate
+            )
         }
         Spacer(modifier = Modifier.height(72.dp))
     }
@@ -65,7 +70,7 @@ private fun WeightsExerciseInformation(
     uiState: ExerciseDetailsUiState
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         modifier = Modifier
             .fillMaxWidth()
             .padding(innerPadding)
@@ -116,17 +121,22 @@ fun WeightsExerciseHistoryDetails(
         timeOptions = timeOptions,
         timeOnChange = { newTime -> time = newTime }
     )
-    Graph(
-        points = getWeightsGraphDetails(
-            uiState,
-            detail,
-            detailOptions,
-            LocalUserPreferences.current
-        ),
-        startDate = timeOptionToStartTime[time] ?: currentDate,
-        yLabel = stringResource(id = detail),
-        yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) stringResource(id = LocalUserPreferences.current.defaultWeightUnit.shortForm) else ""
-    )
+    val dataPoints = getWeightsGraphDetails(
+        uiState,
+        detail,
+        detailOptions,
+        LocalUserPreferences.current
+    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
+    if (dataPoints.isNotEmpty()) {
+        Graph(
+            points = dataPoints,
+            startDate = timeOptionToStartTime[time] ?: currentDate,
+            yLabel = stringResource(id = detail),
+            yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) stringResource(id = LocalUserPreferences.current.defaultWeightUnit.shortForm) else ""
+        )
+    } else {
+        Text(text = stringResource(id = R.string.no_data_error))
+    }
 }
 
 @Composable
@@ -194,7 +204,8 @@ fun ExerciseDetail(
         )
         Text(
             text = exerciseInfo,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -260,44 +271,52 @@ fun getWeightsGraphDetails(
 @Preview(showBackground = true)
 @Composable
 fun ItemDetailsScreenPreviewNoHistory() {
-    GymTrackerTheme(darkTheme = false) {
-        WeightsExerciseDetailsScreen(
-            innerPadding = PaddingValues(),
-            uiState = ExerciseDetailsUiState(
-                exercise = ExerciseUiState(
-                    name = "Curls",
-                    muscleGroup = "Biceps",
-                    equipment = "Dumbbells"
+    val userPreferencesUiState = UserPreferencesUiState()
+    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+        GymTrackerTheme(darkTheme = false) {
+            WeightsExerciseDetailsScreen(
+                innerPadding = PaddingValues(),
+                uiState = ExerciseDetailsUiState(
+                    exercise = ExerciseUiState(
+                        name = "Curls",
+                        muscleGroup = "Biceps",
+                        equipment = "Dumbbells"
+                    ),
+                    weightsHistory = listOf()
                 ),
-                weightsHistory = listOf()
+                chosenDate = null
             )
-        )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ItemDetailsScreenPreviewHistory() {
-    GymTrackerTheme(darkTheme = false) {
-        WeightsExerciseDetailsScreen(
-            innerPadding = PaddingValues(),
-            uiState = ExerciseDetailsUiState(
-                exercise = ExerciseUiState(
-                    name = "Curls",
-                    muscleGroup = "Biceps",
-                    equipment = "Dumbbells"
-                ),
-                weightsHistory = listOf(
-                    WeightsExerciseHistoryUiState(
-                        id = 1,
-                        weight = 13.0,
-                        sets = 1,
-                        reps = 2,
-                        rest = 1,
-                        date = LocalDate.now().minusDays(5)
+    val userPreferencesUiState = UserPreferencesUiState()
+    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+        GymTrackerTheme(darkTheme = false) {
+            WeightsExerciseDetailsScreen(
+                innerPadding = PaddingValues(),
+                uiState = ExerciseDetailsUiState(
+                    exercise = ExerciseUiState(
+                        name = "Curls",
+                        muscleGroup = "Biceps",
+                        equipment = "Dumbbells And BenchPress"
+                    ),
+                    weightsHistory = listOf(
+                        WeightsExerciseHistoryUiState(
+                            id = 1,
+                            weight = 13.0,
+                            sets = 1,
+                            reps = 2,
+                            rest = 1,
+                            date = LocalDate.now().minusDays(5)
+                        )
                     )
-                )
+                ),
+                chosenDate = null
             )
-        )
+        }
     }
 }

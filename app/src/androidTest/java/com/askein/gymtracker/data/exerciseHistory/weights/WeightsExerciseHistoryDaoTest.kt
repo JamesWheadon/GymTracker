@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.askein.gymtracker.data.database.ExerciseWorkoutDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
@@ -87,11 +88,23 @@ class WeightsExerciseHistoryDaoTest {
         assertThat(secondHistory, equalTo(null))
     }
 
-    private fun createExerciseHistory(id: Int, exerciseId: Int, time: LocalDate = LocalDate.now(), weight: Double = 10.0) = WeightsExerciseHistory(id, exerciseId, weight, 10, 10, time)
+    @Test
+    fun daoDelete_DeleteAllHistoryForWorkoutHistoryFromDB() = runBlocking {
+        addMultipleHistoryToDB()
+
+        weightsExerciseHistoryDao.deleteAllForWorkoutHistory(1)
+
+        val firstHistory = weightsExerciseHistoryDao.getHistory(1).first()
+        val secondHistory = weightsExerciseHistoryDao.getHistory(2).first()
+        assertThat(firstHistory, CoreMatchers.notNullValue())
+        assertThat(secondHistory, equalTo(null))
+    }
+
+    private fun createExerciseHistory(id: Int, exerciseId: Int, time: LocalDate = LocalDate.now(), weight: Double = 10.0, workoutHistoryId: Int? = null) = WeightsExerciseHistory(id, exerciseId, weight, 10, 10, time, workoutHistoryId = workoutHistoryId)
 
     private suspend fun addMultipleHistoryToDB() {
         weightsExerciseHistoryDao.insert(createExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID, LocalDate.now().minusDays(8)))
-        weightsExerciseHistoryDao.insert(createExerciseHistory(SECOND_HISTORY_ID, FIRST_EXERCISE_ID))
+        weightsExerciseHistoryDao.insert(createExerciseHistory(SECOND_HISTORY_ID, FIRST_EXERCISE_ID, workoutHistoryId = 1))
         weightsExerciseHistoryDao.insert(createExerciseHistory(THIRD_HISTORY_ID, SECOND_EXERCISE_ID))
     }
 }

@@ -6,4 +6,6 @@ class OfflineWorkoutHistoryRepository(private val workoutHistoryDao: WorkoutHist
     override suspend fun update(workoutHistory: WorkoutHistory) = workoutHistoryDao.update(workoutHistory)
 
     override suspend fun delete(workoutHistory: WorkoutHistory) = workoutHistoryDao.delete(workoutHistory)
+
+    override suspend fun delete(workoutHistoryId: Int) = workoutHistoryDao.delete(workoutHistoryId)
 }

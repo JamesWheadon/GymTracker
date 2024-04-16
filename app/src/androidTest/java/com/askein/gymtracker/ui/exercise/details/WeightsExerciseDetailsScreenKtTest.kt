@@ -84,8 +84,9 @@ class WeightsExerciseDetailsScreenKtTest {
     fun rendersExerciseDetailsWithNoHistory() {
         rule.setContent {
             WeightsExerciseDetailsScreen(
+                innerPadding = PaddingValues(0.dp),
                 uiState = exerciseNoHistory,
-                innerPadding = PaddingValues(0.dp)
+                chosenDate = null
             )
         }
 
@@ -103,8 +104,9 @@ class WeightsExerciseDetailsScreenKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 WeightsExerciseDetailsScreen(
+                    innerPadding = PaddingValues(0.dp),
                     uiState = exercise,
-                    innerPadding = PaddingValues(0.dp)
+                    chosenDate = null
                 )
             }
         }
@@ -128,8 +130,9 @@ class WeightsExerciseDetailsScreenKtTest {
             )
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 WeightsExerciseDetailsScreen(
+                    innerPadding = PaddingValues(0.dp),
                     uiState = exercise,
-                    innerPadding = PaddingValues(0.dp)
+                    chosenDate = null
                 )
             }
         }

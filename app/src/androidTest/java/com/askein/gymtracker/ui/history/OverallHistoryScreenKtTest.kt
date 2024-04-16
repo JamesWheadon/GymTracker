@@ -30,9 +30,14 @@ class OverallHistoryScreenKtTest {
     private val armsWorkout = WorkoutUiState(workoutId = 1, name = "Arms")
     private val legsWorkout = WorkoutUiState(workoutId = 2, name = "Legs")
     private val treadmillExercise = ExerciseUiState(id = 3, name = "Treadmill")
-    private val benchExercise = ExerciseUiState(id = 4, name = "Bench", muscleGroup = "Chest", equipment = "Bench")
+    private val benchExercise =
+        ExerciseUiState(id = 4, name = "Bench", muscleGroup = "Chest", equipment = "Bench")
 
-    private val date = rule.onNode(hasText(LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))))
+    private val date = rule.onNode(
+        hasText(
+            LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+        )
+    )
     private val workouts = rule.onNode(hasText("Workouts"))
     private val exercises = rule.onNode(hasText("Exercises"))
     private val armsWorkoutName = rule.onNode(hasText("Arms"))
@@ -40,7 +45,16 @@ class OverallHistoryScreenKtTest {
     private val treadmillExerciseName = rule.onNode(hasText("Treadmill"))
     private val benchExerciseName = rule.onNode(hasText("Bench"))
     private val closeButton = rule.onNode(hasContentDescription("Close"))
-    private val month = rule.onNode(hasText("${LocalDate.now().month.getDisplayName(TextStyle.FULL_STANDALONE, Locale.ENGLISH)} ${LocalDate.now().year}"))
+    private val month = rule.onNode(
+        hasText(
+            "${
+                LocalDate.now().month.getDisplayName(
+                    TextStyle.FULL_STANDALONE,
+                    Locale.ENGLISH
+                )
+            } ${LocalDate.now().year}"
+        )
+    )
     private val dayButton = rule.onNode(hasText(LocalDate.now().dayOfMonth.toString()))
 
     @Test
@@ -48,8 +62,8 @@ class OverallHistoryScreenKtTest {
         rule.setContent {
             HistoryOnDay(
                 date = LocalDate.now(),
-                workoutNavigationFunction = { },
-                exerciseNavigationFunction = { },
+                workoutNavigationFunction = { _, _ -> (Unit) },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 workoutsOnDateUiState = listOf(armsWorkout, legsWorkout),
                 exercisesOnDateUiState = listOf(treadmillExercise, benchExercise),
                 onDismiss = { }
@@ -69,12 +83,16 @@ class OverallHistoryScreenKtTest {
     @Test
     fun historyOnDayClickingWorkoutCallsWorkoutNavigationFunction() {
         var selected = 0
+        var selectedDate: LocalDate? = null
 
         rule.setContent {
             HistoryOnDay(
                 date = LocalDate.now(),
-                workoutNavigationFunction = { id -> selected = id },
-                exerciseNavigationFunction = { },
+                workoutNavigationFunction = { id, date ->
+                    selected = id
+                    selectedDate = date
+                },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 workoutsOnDateUiState = listOf(armsWorkout, legsWorkout),
                 exercisesOnDateUiState = listOf(treadmillExercise, benchExercise),
                 onDismiss = { }
@@ -84,17 +102,22 @@ class OverallHistoryScreenKtTest {
         armsWorkoutName.performClick()
 
         assertThat(selected, equalTo(1))
+        assertThat(selectedDate, equalTo(LocalDate.now()))
     }
 
     @Test
     fun historyOnDayClickingExerciseCallsExerciseNavigationFunction() {
         var selected = 0
+        var selectedDate: LocalDate? = null
 
         rule.setContent {
             HistoryOnDay(
                 date = LocalDate.now(),
-                workoutNavigationFunction = { },
-                exerciseNavigationFunction = { id -> selected = id },
+                workoutNavigationFunction = { _, _ -> (Unit) },
+                exerciseNavigationFunction = { id, date ->
+                    selected = id
+                    selectedDate = date
+                },
                 workoutsOnDateUiState = listOf(armsWorkout, legsWorkout),
                 exercisesOnDateUiState = listOf(treadmillExercise, benchExercise),
                 onDismiss = { }
@@ -104,6 +127,7 @@ class OverallHistoryScreenKtTest {
         treadmillExerciseName.performClick()
 
         assertThat(selected, equalTo(3))
+        assertThat(selectedDate, equalTo(LocalDate.now()))
     }
 
     @Test
@@ -113,8 +137,8 @@ class OverallHistoryScreenKtTest {
         rule.setContent {
             HistoryOnDay(
                 date = LocalDate.now(),
-                workoutNavigationFunction = { },
-                exerciseNavigationFunction = { },
+                workoutNavigationFunction = { _, _ -> (Unit) },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 workoutsOnDateUiState = listOf(armsWorkout, legsWorkout),
                 exercisesOnDateUiState = listOf(treadmillExercise, benchExercise),
                 onDismiss = { dismissed = true }
@@ -132,8 +156,8 @@ class OverallHistoryScreenKtTest {
             var workouts: List<WorkoutUiState> by remember { mutableStateOf(listOf()) }
             var exercises: List<ExerciseUiState> by remember { mutableStateOf(listOf()) }
             OverallHistoryScreen(
-                workoutNavigationFunction = { },
-                exerciseNavigationFunction = { },
+                workoutNavigationFunction = { _, _ -> (Unit) },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 datesUiState = listOf(LocalDate.now()),
                 workoutsOnDateUiState = workouts,
                 exercisesOnDateUiState = exercises,
@@ -147,7 +171,7 @@ class OverallHistoryScreenKtTest {
         month.assertExists()
         dayButton.assertExists()
         dayButton.assertIsEnabled()
-        for (day in 1.. LocalDate.now().month.length(LocalDate.now().isLeapYear)) {
+        for (day in 1..LocalDate.now().month.length(LocalDate.now().isLeapYear)) {
             rule.onNode(hasText("$day")).assertExists()
         }
     }
@@ -158,8 +182,8 @@ class OverallHistoryScreenKtTest {
             var workouts: List<WorkoutUiState> by remember { mutableStateOf(listOf()) }
             var exercises: List<ExerciseUiState> by remember { mutableStateOf(listOf()) }
             OverallHistoryScreen(
-                workoutNavigationFunction = { },
-                exerciseNavigationFunction = { },
+                workoutNavigationFunction = { _, _ -> (Unit) },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 datesUiState = listOf(LocalDate.now()),
                 workoutsOnDateUiState = workouts,
                 exercisesOnDateUiState = exercises,

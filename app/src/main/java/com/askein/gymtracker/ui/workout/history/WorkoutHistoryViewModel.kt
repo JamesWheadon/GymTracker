@@ -22,7 +22,7 @@ class WorkoutHistoryViewModel(
 ) : ViewModel() {
 
     private val _savedWorkoutID = MutableStateFlow(-1)
-    private val savedWorkoutID: StateFlow<Int> = _savedWorkoutID.asStateFlow()
+    val savedWorkoutID: StateFlow<Int> = _savedWorkoutID.asStateFlow()
 
     fun saveWorkoutHistory(
         workoutHistory: WorkoutHistoryWithExercisesUiState,
@@ -122,6 +122,20 @@ class WorkoutHistoryViewModel(
                     }
                 }
             }
+        }
+    }
+
+    fun liveDeleteWorkoutHistory() {
+        viewModelScope.launch {
+            weightsExerciseHistoryRepository.deleteAllForWorkoutHistory(savedWorkoutID.value)
+            cardioExerciseHistoryRepository.deleteAllForWorkoutHistory(savedWorkoutID.value)
+            workoutHistoryRepository.delete(savedWorkoutID.value)
+        }
+    }
+
+    fun clearLiveWorkout() {
+        viewModelScope.launch {
+            _savedWorkoutID.emit(-1)
         }
     }
 }

@@ -3,6 +3,7 @@ package com.askein.gymtracker.ui.exercise
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,72 +25,72 @@ import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
+import java.time.LocalDate
 
 @Composable
 fun ExerciseCard(
     exercise: ExerciseUiState,
-    navigationFunction: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    navigationFunction: (Int, LocalDate?) -> Unit,
+    modifier: Modifier = Modifier,
+    chosenDate: LocalDate? = null
 ) {
-    if (exercise.equipment == "") {
-        CardioExerciseCard(
-            exercise = exercise,
-            navigationFunction = navigationFunction,
+    Button(
+        shape = RectangleShape,
+        onClick = { navigationFunction(exercise.id, chosenDate) },
+        contentPadding = PaddingValues(12.dp)
+    ) {
+        Card(
             modifier = modifier
-        )
-    } else {
-        WeightsExerciseCard(
-            exercise = exercise,
-            navigationFunction = navigationFunction,
-            modifier = modifier
-        )
+                .fillMaxWidth()
+                .padding(0.dp),
+            elevation = customCardElevation()
+        ) {
+            if (exercise.equipment == "") {
+                CardioExerciseCard(
+                    exercise = exercise
+                )
+            } else {
+                WeightsExerciseCard(
+                    exercise = exercise
+                )
+            }
+        }
     }
 }
 
 @Composable
 fun WeightsExerciseCard(
     exercise: ExerciseUiState,
-    navigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Button(
-        shape = RectangleShape,
-        onClick = { navigationFunction(exercise.id) }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     ) {
-        Card(
-            modifier = modifier,
-            elevation = customCardElevation()
+        Text(
+            text = exercise.name,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.fillMaxWidth(0.55f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = exercise.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.fillMaxWidth(0.55f),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ExerciseDetail(
-                        exerciseInfo = exercise.muscleGroup,
-                        iconId = R.drawable.info_48px,
-                        iconDescription = R.string.muscle_icon
-                    )
-                    ExerciseDetail(
-                        exerciseInfo = exercise.equipment,
-                        iconId = R.drawable.exercise_filled_48px,
-                        iconDescription = R.string.equipment_icon
-                    )
-                }
-            }
+            ExerciseDetail(
+                exerciseInfo = exercise.muscleGroup,
+                iconId = R.drawable.info_48px,
+                iconDescription = R.string.muscle_icon
+            )
+            ExerciseDetail(
+                exerciseInfo = exercise.equipment,
+                iconId = R.drawable.exercise_filled_48px,
+                iconDescription = R.string.equipment_icon
+            )
         }
     }
 }
@@ -97,39 +98,28 @@ fun WeightsExerciseCard(
 @Composable
 fun CardioExerciseCard(
     exercise: ExerciseUiState,
-    navigationFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Button(
-        shape = RectangleShape,
-        onClick = { navigationFunction(exercise.id) }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     ) {
-        Card(
-            modifier = modifier,
-            elevation = customCardElevation()
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = exercise.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.fillMaxWidth(0.55f),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                ExerciseDetail(
-                    exerciseInfo = stringResource(id = R.string.cardio),
-                    iconId = R.drawable.cardio_48dp,
-                    iconDescription = R.string.cardio_icon,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
+        Text(
+            text = exercise.name,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.fillMaxWidth(0.55f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        ExerciseDetail(
+            exerciseInfo = stringResource(id = R.string.cardio),
+            iconId = R.drawable.cardio_48dp,
+            iconDescription = R.string.cardio_icon,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -164,9 +154,9 @@ fun ExerciseDetail(
 @Composable
 fun CardioExerciseCardPreview() {
     GymTrackerTheme(darkTheme = false) {
-        CardioExerciseCard(
+        ExerciseCard(
             exercise = ExerciseUiState(0, "Curls"),
-            navigationFunction = { }
+            navigationFunction = { _, _ -> (Unit) }
         )
     }
 }
@@ -175,9 +165,9 @@ fun CardioExerciseCardPreview() {
 @Composable
 fun WeightsExerciseCardPreview() {
     GymTrackerTheme(darkTheme = false) {
-        WeightsExerciseCard(
+        ExerciseCard(
             exercise = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells"),
-            navigationFunction = { }
+            navigationFunction = { _, _ -> (Unit) }
         )
     }
 }

@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.askein.gymtracker.converters.LocalDateConverter
 import com.askein.gymtracker.data.exercise.Exercise
 import com.askein.gymtracker.data.exercise.ExerciseDao
 import com.askein.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistory
@@ -21,6 +20,7 @@ import com.askein.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRe
 import com.askein.gymtracker.data.workoutHistory.WorkoutHistory
 import com.askein.gymtracker.data.workoutHistory.WorkoutHistoryDao
 import com.askein.gymtracker.data.workoutWithExercises.WorkoutWithExercisesDao
+import com.askein.gymtracker.util.LocalDateConverter
 
 @Database(
     entities = [

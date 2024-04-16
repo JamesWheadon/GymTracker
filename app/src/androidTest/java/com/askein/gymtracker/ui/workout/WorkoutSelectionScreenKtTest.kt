@@ -26,7 +26,7 @@ class WorkoutSelectionScreenKtTest {
     private val workout1 = WorkoutUiState(1, "first")
     private val workout2 = WorkoutUiState(2, "second")
 
-    private val screenTitle = rule.onNode(hasText("Select Workout to record"))
+    private val screenTitle = rule.onNode(hasText("Select Workout"))
     private val lazyColumn = rule.onNode(hasScrollAction())
     private val firstWorkout = rule.onNode(hasText("first"))
     private val secondWorkout = rule.onNode(hasText("second"))
@@ -41,7 +41,7 @@ class WorkoutSelectionScreenKtTest {
         rule.setContent {
             LiveRecordChooseWorkoutsScreen(
                 workoutListUiState = WorkoutListUiState(),
-                workoutNavigationFunction = { },
+                workoutNavigationFunction = { _, _ -> (Unit) },
             )
         }
 
@@ -59,7 +59,7 @@ class WorkoutSelectionScreenKtTest {
                         workout2
                     )
                 ),
-                workoutNavigationFunction = { },
+                workoutNavigationFunction = { _, _ -> (Unit) },
             )
         }
 
@@ -80,7 +80,7 @@ class WorkoutSelectionScreenKtTest {
                         workout2
                     )
                 ),
-                workoutNavigationFunction = { id -> workoutChosen = id },
+                workoutNavigationFunction = { id, _ -> workoutChosen = id },
             )
         }
 
@@ -99,7 +99,7 @@ class WorkoutSelectionScreenKtTest {
         rule.setContent {
             LiveRecordChooseWorkoutsScreen(
                 navController = navController,
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { _, _ -> (Unit) }
             )
         }
 

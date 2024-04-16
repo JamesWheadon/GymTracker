@@ -131,11 +131,10 @@ fun ExerciseInformationForm(
                 )
                 if (exercise == ExerciseUiState()) {
                     Row(
-                        horizontalArrangement = Arrangement.SpaceAround,
+                        horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 48.dp)
                     ) {
                         Text(
                             text = stringResource(id = R.string.cardio),
@@ -148,7 +147,7 @@ fun ExerciseInformationForm(
                             onCheckedChange = { option -> optionState = option },
                             modifier = Modifier.semantics {
                                 contentDescription = toggleContentDescription
-                            }
+                            }.padding(horizontal = 8.dp)
                         )
                         Text(
                             text = stringResource(id = R.string.weights),

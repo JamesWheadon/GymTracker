@@ -23,4 +23,7 @@ class FakeWeightsExerciseHistoryRepository : WeightsExerciseHistoryRepository {
 
     override suspend fun deleteAllForExercise(exercise: Exercise) {
     }
+
+    override suspend fun deleteAllForWorkoutHistory(workoutHistoryId: Int) {
+    }
 }

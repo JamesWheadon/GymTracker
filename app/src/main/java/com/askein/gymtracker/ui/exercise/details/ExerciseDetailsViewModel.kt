@@ -12,6 +12,7 @@ import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.toExercise
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ class ExerciseDetailsViewModel(
 ) : ViewModel() {
 
     private val exerciseId: Int = checkNotNull(savedStateHandle["exerciseId"])
+    val chosenDate: String = checkNotNull(savedStateHandle["chosenDate"])
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
@@ -33,6 +35,7 @@ class ExerciseDetailsViewModel(
 
     val uiState: StateFlow<ExerciseDetailsUiState> =
         exerciseWithHistoryRepository.getExerciseWithHistoryStream(exerciseId)
+            .filterNotNull()
             .map { exercise -> exercise.toExerciseDetailsUiState() }
             .stateIn(
                 scope = viewModelScope,

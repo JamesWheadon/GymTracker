@@ -220,7 +220,7 @@ class LiveRecordWorkoutKtTest {
         completedText.assertCountEquals(0)
 
         startButtons[0].performClick()
-        rule.onNode(hasText("Cancel")).performClick()
+        rule.onAllNodesWithText("Cancel")[0].performClick()
 
         rule.onAllNodesWithText("Start").assertCountEquals(3)
         rule.onAllNodesWithText("Completed").assertCountEquals(0)
@@ -282,6 +282,42 @@ class LiveRecordWorkoutKtTest {
 
         startButtons[0].performClick()
 
+        repsField.performClick()
+        repsField.performTextInput("5")
+        restField.performClick()
+        restField.performTextInput("15")
+        weightField.performClick()
+        weightField.performTextInput("13.0")
+        rule.onNode(hasText("Start") and hasAnySibling(hasContentDescription("Reps")))
+            .performClick()
+
+        finishExercise.performClick()
+
+        startButtons[1].performClick()
+
         finishWorkout.assertIsNotEnabled()
+    }
+
+    @Test
+    fun rendersLiveRecordWorkoutClickingCancelCallsCancelFunction() {
+        var cancelled = false
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                LiveRecordWorkout(
+                    uiState = workoutWithExercises,
+                    saveFunction = { },
+                    finishFunction = { },
+                    cancelFunction = { cancelled = true }
+                )
+            }
+        }
+
+        cancel.performClick()
+
+        rule.onNode(hasText("Do you want to cancel this workout? All data will be deleted"))
+        rule.onNode(hasText("Yes")).performClick()
+
+        assertThat(cancelled, equalTo(true))
     }
 }

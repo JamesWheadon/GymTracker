@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -17,6 +19,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -26,17 +30,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.askein.gymtracker.R
+import com.askein.gymtracker.ui.ActionConfirmation
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
+import com.askein.gymtracker.ui.home.HomeScreenRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.askein.gymtracker.ui.navigation.TopBar
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
-import com.askein.gymtracker.ui.workout.WorkoutsRoute
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsRoute
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.askein.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
@@ -47,7 +53,7 @@ import java.time.LocalDate
 
 object LiveRecordWorkoutRoute : NavigationRoute {
     override val route =
-        "${LIVE_RECORD_WORKOUT_SCREEN.baseRoute}/{${LIVE_RECORD_WORKOUT_SCREEN.navigationArgument}}"
+        "${LIVE_RECORD_WORKOUT_SCREEN.baseRoute}/{${LIVE_RECORD_WORKOUT_SCREEN.idArgument}}"
 
     fun getRouteForNavArgument(navArgument: Int): String =
         "${LIVE_RECORD_WORKOUT_SCREEN.baseRoute}/${navArgument}"
@@ -60,13 +66,15 @@ fun LiveRecordWorkout(
     historyViewModel: WorkoutHistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = detailsViewModel.uiState.collectAsState().value
-    LaunchedEffect(uiState.workoutId != 0) {
-        historyViewModel.liveSaveWorkoutHistory(WorkoutHistoryUiState(workoutId = uiState.workoutId))
+    LaunchedEffect(uiState.workoutId) {
+        if (historyViewModel.savedWorkoutID.value == -1 && uiState.workoutId != 0) {
+            historyViewModel.liveSaveWorkoutHistory(WorkoutHistoryUiState(workoutId = uiState.workoutId))
+        }
     }
     Scaffold(
         topBar = {
             TopBar(
-                text = stringResource(id = R.string.record_workout, uiState.name),
+                text = uiState.name,
                 navController = navController
             )
         }
@@ -78,11 +86,13 @@ fun LiveRecordWorkout(
             },
             finishFunction = {
                 navController.popBackStack()
-                navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(uiState.workoutId))
+                navController.navigate(WorkoutDetailsRoute.getRouteForNavArguments(uiState.workoutId, null))
+                historyViewModel.clearLiveWorkout()
             },
             cancelFunction = {
+                historyViewModel.liveDeleteWorkoutHistory()
                 navController.popBackStack()
-                navController.navigate(WorkoutsRoute.route)
+                navController.navigate(HomeScreenRoute.route)
             },
             modifier = Modifier
                 .padding(innerPadding)
@@ -99,12 +109,13 @@ fun LiveRecordWorkout(
     cancelFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showDeleteWorkout by remember { mutableStateOf(false) }
     val completedExercises = rememberSaveable(saver = IntListSaver) { mutableStateListOf() }
     var currentExercise by rememberSaveable { mutableIntStateOf(-1) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
+        modifier = modifier.verticalScroll(rememberScrollState()).padding(bottom = 72.dp)
     ) {
         uiState.exercises.forEach { exercise ->
             if (exercise.id == currentExercise) {
@@ -149,17 +160,31 @@ fun LiveRecordWorkout(
                 )
             }
         }
-        if (completedExercises.size > 0 || currentExercise != -1) {
-            Button(enabled = currentExercise == -1, onClick = { finishFunction() }) {
-                Text(text = stringResource(id = R.string.finish_workout))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (completedExercises.size > 0) {
+                Button(enabled = currentExercise == -1, onClick = { finishFunction() }) {
+                    Text(text = stringResource(id = R.string.finish_workout))
+                }
             }
-        } else {
             Button(
-                onClick = { cancelFunction() },
+                onClick = { showDeleteWorkout = true },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
                 Text(text = stringResource(id = R.string.cancel))
             }
+        }
+    }
+    if (showDeleteWorkout) {
+        Dialog(onDismissRequest = { showDeleteWorkout = false }) {
+            ActionConfirmation(
+                actionTitle = stringResource(id = R.string.live_record_cancel),
+                confirmFunction = { cancelFunction() },
+                cancelFunction = { showDeleteWorkout = false }
+            )
         }
     }
 }
