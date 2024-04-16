@@ -36,6 +36,7 @@ import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes
 import com.askein.gymtracker.ui.navigation.TopBar
 import com.askein.gymtracker.ui.workout.WorkoutsScreen
+import java.time.LocalDate
 
 object HomeScreenRoute : NavigationRoute {
     override val route = NavigationRoutes.HOME_SCREEN.baseRoute
@@ -44,8 +45,8 @@ object HomeScreenRoute : NavigationRoute {
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    exerciseNavigationFunction: (Int) -> Unit,
-    workoutNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showCreateWorkout by remember { mutableStateOf(false) }
@@ -156,8 +157,8 @@ private fun getFloatingActionButton(
 
 fun getContent(
     selected: Int,
-    exerciseNavigationFunction: (Int) -> Unit,
-    workoutNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     showCreateWorkout: Boolean,
     dismissCreateWorkout: () -> Unit,
     showCreateExercise: Boolean,

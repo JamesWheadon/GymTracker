@@ -35,10 +35,11 @@ import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.workout.create.CreateWorkoutForm
 import com.askein.gymtracker.ui.workout.details.EditWorkoutExercisesScreen
+import java.time.LocalDate
 
 @Composable
 fun WorkoutsScreen(
-    workoutNavigationFunction: (Int) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     showCreateWorkout: Boolean,
     dismissCreateWorkout: () -> Unit,
     modifier: Modifier = Modifier,
@@ -61,7 +62,7 @@ fun WorkoutsScreen(
     showCreateWorkout: Boolean,
     dismissCreateWorkout: () -> Unit,
     createWorkout: (WorkoutUiState) -> Unit,
-    workoutNavigationFunction: (Int) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showWorkoutExercises by remember { mutableStateOf(false) }
@@ -101,7 +102,7 @@ fun WorkoutsScreen(
 @Composable
 private fun WorkoutsScreen(
     workoutListUiState: WorkoutListUiState,
-    workoutNavigationFunction: (Int) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -128,12 +129,13 @@ private fun WorkoutsScreen(
 @Composable
 fun WorkoutCard(
     workout: WorkoutUiState,
-    navigationFunction: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    navigationFunction: (Int, LocalDate?) -> Unit,
+    modifier: Modifier = Modifier,
+    chosenDate: LocalDate? = null
 ) {
     Button(
         shape = RectangleShape,
-        onClick = { navigationFunction(workout.workoutId) },
+        onClick = { navigationFunction(workout.workoutId, chosenDate) },
         contentPadding = PaddingValues(12.dp)
     ) {
         Card(
@@ -171,7 +173,7 @@ fun WorkoutsScreenPreview() {
                     WorkoutUiState(2, "Back")
                 )
             ),
-            workoutNavigationFunction = { }
+            workoutNavigationFunction = { _, _ -> (Unit) }
         )
     }
 }

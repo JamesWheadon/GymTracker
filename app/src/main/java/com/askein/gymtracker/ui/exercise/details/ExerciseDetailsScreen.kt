@@ -33,14 +33,16 @@ import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.EXERCISE_DETAILS_SCREEN
 import com.askein.gymtracker.ui.navigation.TopBar
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
+import com.askein.gymtracker.util.convertLocalDateToString
+import com.askein.gymtracker.util.convertStringToLocalDate
 import java.time.LocalDate
 
 object ExerciseDetailsRoute : NavigationRoute {
     override val route =
-        "${EXERCISE_DETAILS_SCREEN.baseRoute}/{${EXERCISE_DETAILS_SCREEN.navigationArgument}}"
+        "${EXERCISE_DETAILS_SCREEN.baseRoute}/{${EXERCISE_DETAILS_SCREEN.idArgument}}/{${EXERCISE_DETAILS_SCREEN.dateArgument}}"
 
-    fun getRouteForNavArgument(navArgument: Int): String =
-        "${EXERCISE_DETAILS_SCREEN.baseRoute}/${navArgument}"
+    fun getRouteForNavArguments(navArgument: Int, chosenDate: LocalDate?): String =
+        "${EXERCISE_DETAILS_SCREEN.baseRoute}/${navArgument}/${convertLocalDateToString(chosenDate)}"
 }
 
 @Composable
@@ -52,11 +54,13 @@ fun ExerciseDetailsScreen(
     )
 ) {
     val uiState = viewModel.uiState.collectAsState().value
+    val chosenDate = convertStringToLocalDate(viewModel.chosenDate)
     ExerciseDetailsScreen(
         uiState = uiState,
         navController = navController,
         updateFunction = { exercise -> viewModel.updateExercise(exercise) },
         deleteFunction = { exercise -> viewModel.deleteExercise(exercise) },
+        chosenDate = chosenDate,
         modifier = modifier
     )
 }
@@ -67,6 +71,7 @@ fun ExerciseDetailsScreen(
     navController: NavHostController,
     updateFunction: (ExerciseUiState) -> Unit,
     deleteFunction: (ExerciseUiState) -> Unit,
+    chosenDate: LocalDate?,
     modifier: Modifier = Modifier
 ) {
     var showRecord by remember { mutableStateOf(false) }
@@ -97,9 +102,17 @@ fun ExerciseDetailsScreen(
         }
     ) { innerPadding ->
         if (uiState.exercise.equipment != "") {
-            WeightsExerciseDetailsScreen(innerPadding, uiState)
+            WeightsExerciseDetailsScreen(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                chosenDate = chosenDate
+            )
         } else {
-            CardioExerciseDetailsScreen(innerPadding, uiState)
+            CardioExerciseDetailsScreen(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                chosenDate = chosenDate
+            )
         }
     }
     if (showRecord) {
@@ -162,7 +175,8 @@ fun ExerciseDetailsScreenPreview() {
                         date = LocalDate.now().minusDays(5)
                     )
                 )
-            )
+            ),
+            chosenDate = null
         )
     }
 }

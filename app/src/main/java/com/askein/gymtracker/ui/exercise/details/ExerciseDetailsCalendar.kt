@@ -56,10 +56,12 @@ import java.time.format.FormatStyle
 @Composable
 fun ExerciseHistoryCalendar(
     uiState: ExerciseDetailsUiState,
+    chosenDate: LocalDate?,
     modifier: Modifier = Modifier
 ) {
-    var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
-    var showDay: Int? by remember { mutableStateOf(null) }
+    val currentMonth = if (chosenDate == null) YearMonth.now() else YearMonth.of(chosenDate.year, chosenDate.month)
+    var selectedMonth by remember { mutableStateOf(currentMonth) }
+    var showDay: Int? by remember { mutableStateOf(chosenDate?.dayOfMonth) }
     val activeDays = listOf(uiState.weightsHistory, uiState.cardioHistory).flatten()
         .filter { history -> history.date.month == selectedMonth.month && history.date.year == selectedMonth.year }
         .map { history -> history.date.dayOfMonth }

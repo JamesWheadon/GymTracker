@@ -53,7 +53,7 @@ import java.time.LocalDate
 
 object LiveRecordWorkoutRoute : NavigationRoute {
     override val route =
-        "${LIVE_RECORD_WORKOUT_SCREEN.baseRoute}/{${LIVE_RECORD_WORKOUT_SCREEN.navigationArgument}}"
+        "${LIVE_RECORD_WORKOUT_SCREEN.baseRoute}/{${LIVE_RECORD_WORKOUT_SCREEN.idArgument}}"
 
     fun getRouteForNavArgument(navArgument: Int): String =
         "${LIVE_RECORD_WORKOUT_SCREEN.baseRoute}/${navArgument}"
@@ -86,7 +86,7 @@ fun LiveRecordWorkout(
             },
             finishFunction = {
                 navController.popBackStack()
-                navController.navigate(WorkoutDetailsRoute.getRouteForNavArgument(uiState.workoutId))
+                navController.navigate(WorkoutDetailsRoute.getRouteForNavArguments(uiState.workoutId, null))
                 historyViewModel.clearLiveWorkout()
             },
             cancelFunction = {

@@ -27,6 +27,7 @@ class ExerciseDetailsViewModel(
 ) : ViewModel() {
 
     private val exerciseId: Int = checkNotNull(savedStateHandle["exerciseId"])
+    val chosenDate: String = checkNotNull(savedStateHandle["chosenDate"])
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L

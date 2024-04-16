@@ -59,7 +59,8 @@ class ExerciseDetailsScreenKtTest {
                 uiState = exercise,
                 navController = navController,
                 updateFunction = { },
-                deleteFunction = { }
+                deleteFunction = { },
+                chosenDate = null
             )
         }
 
@@ -76,7 +77,8 @@ class ExerciseDetailsScreenKtTest {
                     uiState = exercise,
                     navController = navController,
                     updateFunction = { },
-                    deleteFunction = { }
+                    deleteFunction = { },
+                    chosenDate = null
                 )
             }
         }
@@ -95,7 +97,8 @@ class ExerciseDetailsScreenKtTest {
                 uiState = exercise,
                 navController = navController,
                 updateFunction = { },
-                deleteFunction = { }
+                deleteFunction = { },
+                chosenDate = null
             )
         }
 
@@ -114,7 +117,8 @@ class ExerciseDetailsScreenKtTest {
                 uiState = exercise,
                 navController = navController,
                 updateFunction = { },
-                deleteFunction = { }
+                deleteFunction = { },
+                chosenDate = null
             )
         }
 
@@ -135,7 +139,8 @@ class ExerciseDetailsScreenKtTest {
                 uiState = exercise,
                 navController = navController,
                 updateFunction = { updateCalled = true },
-                deleteFunction = { deleteCalled = true }
+                deleteFunction = { deleteCalled = true },
+                chosenDate = null
             )
         }
 

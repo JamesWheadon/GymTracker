@@ -41,7 +41,7 @@ class WorkoutSelectionScreenKtTest {
         rule.setContent {
             LiveRecordChooseWorkoutsScreen(
                 workoutListUiState = WorkoutListUiState(),
-                workoutNavigationFunction = { },
+                workoutNavigationFunction = { _, _ -> (Unit) },
             )
         }
 
@@ -59,7 +59,7 @@ class WorkoutSelectionScreenKtTest {
                         workout2
                     )
                 ),
-                workoutNavigationFunction = { },
+                workoutNavigationFunction = { _, _ -> (Unit) },
             )
         }
 
@@ -80,7 +80,7 @@ class WorkoutSelectionScreenKtTest {
                         workout2
                     )
                 ),
-                workoutNavigationFunction = { id -> workoutChosen = id },
+                workoutNavigationFunction = { id, _ -> workoutChosen = id },
             )
         }
 
@@ -99,7 +99,7 @@ class WorkoutSelectionScreenKtTest {
         rule.setContent {
             LiveRecordChooseWorkoutsScreen(
                 navController = navController,
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { _, _ -> (Unit) }
             )
         }
 

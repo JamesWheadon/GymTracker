@@ -55,24 +55,24 @@ object AppViewModelProvider {
         }
         initializer {
             WorkoutExerciseCrossRefViewModel(
-                gymTrackerApplication().container.workoutExerciseCrossRefRepository
+                workoutExerciseCrossRefRepository = gymTrackerApplication().container.workoutExerciseCrossRefRepository
             )
         }
         initializer {
             WorkoutHistoryViewModel(
-                gymTrackerApplication().container.workoutHistoryRepository,
-                gymTrackerApplication().container.weightsExerciseHistoryRepository,
-                gymTrackerApplication().container.cardioExerciseHistoryRepository
+                workoutHistoryRepository = gymTrackerApplication().container.workoutHistoryRepository,
+                weightsExerciseHistoryRepository = gymTrackerApplication().container.weightsExerciseHistoryRepository,
+                cardioExerciseHistoryRepository = gymTrackerApplication().container.cardioExerciseHistoryRepository
             )
         }
         initializer {
             UserPreferencesViewModel(
-                gymTrackerApplication().container.userPreferencesRepository
+                userPreferencesRepository = gymTrackerApplication().container.userPreferencesRepository
             )
         }
         initializer {
             OverallHistoryViewModel(
-                gymTrackerApplication().container.historyRepository
+                historyRepository = gymTrackerApplication().container.historyRepository
             )
         }
         initializer {

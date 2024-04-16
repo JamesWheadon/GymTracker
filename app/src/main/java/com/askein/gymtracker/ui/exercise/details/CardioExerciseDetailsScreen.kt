@@ -35,7 +35,8 @@ import java.time.LocalDate
 @Composable
 fun CardioExerciseDetailsScreen(
     innerPadding: PaddingValues,
-    uiState: ExerciseDetailsUiState
+    uiState: ExerciseDetailsUiState,
+    chosenDate: LocalDate?
 ) {
     Column(
         modifier = Modifier
@@ -47,10 +48,11 @@ fun CardioExerciseDetailsScreen(
     ) {
         CardioExerciseInformation(innerPadding)
         if (uiState.cardioHistory.isNotEmpty()) {
-            CardioExerciseHistoryDetails(
-                uiState = uiState
+            CardioExerciseHistoryDetails(uiState = uiState)
+            ExerciseHistoryCalendar(
+                uiState = uiState,
+                chosenDate = chosenDate
             )
-            ExerciseHistoryCalendar(uiState = uiState)
         }
         Spacer(modifier = Modifier.height(72.dp))
     }
@@ -266,7 +268,8 @@ fun ItemDetailsScreenPreviewNoCardioHistory() {
                     equipment = "Dumbbells"
                 ),
                 cardioHistory = listOf()
-            )
+            ),
+            chosenDate = null
         )
     }
 }
@@ -289,7 +292,8 @@ fun ItemDetailsScreenPreviewCardioHistory() {
                         calories = 450
                     )
                 )
-            )
+            ),
+            chosenDate = null
         )
     }
 }

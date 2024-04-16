@@ -38,8 +38,8 @@ class HomeScreenKtTest {
         rule.setContent {
             HomeScreen(
                 navController = navController,
-                exerciseNavigationFunction = { },
-                workoutNavigationFunction = { }
+                exerciseNavigationFunction = { _, _ -> (Unit) },
+                workoutNavigationFunction = { _, _ -> (Unit) }
             )
         }
 
@@ -58,8 +58,8 @@ class HomeScreenKtTest {
         rule.setContent {
             HomeScreen(
                 navController = navController,
-                exerciseNavigationFunction = { },
-                workoutNavigationFunction = { }
+                exerciseNavigationFunction = { _, _ -> (Unit) },
+                workoutNavigationFunction = { _, _ -> (Unit) }
             )
         }
 
@@ -80,8 +80,8 @@ class HomeScreenKtTest {
         rule.setContent {
             HomeScreen(
                 navController = navController,
-                exerciseNavigationFunction = { },
-                workoutNavigationFunction = { }
+                exerciseNavigationFunction = { _, _ -> (Unit) },
+                workoutNavigationFunction = { _, _ -> (Unit) }
             )
         }
 

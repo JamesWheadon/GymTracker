@@ -27,6 +27,7 @@ import com.askein.gymtracker.ui.workout.details.WorkoutDetailsRoute
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsScreen
 import com.askein.gymtracker.ui.workout.history.create.live.LiveRecordWorkout
 import com.askein.gymtracker.ui.workout.history.create.live.LiveRecordWorkoutRoute
+import java.time.LocalDate
 
 @Composable
 fun GymTrackerApp(
@@ -46,23 +47,28 @@ fun GymTrackerApp(
             ) {
                 HomeScreen(
                     navController = navController,
-                    exerciseNavigationFunction = { id: Int ->
+                    exerciseNavigationFunction = { id: Int, date: LocalDate? ->
                         navController.navigate(
-                            ExerciseDetailsRoute.getRouteForNavArgument(id)
+                            ExerciseDetailsRoute.getRouteForNavArguments(id, date)
                         )
                     },
-                    workoutNavigationFunction = { id: Int ->
+                    workoutNavigationFunction = { id: Int, date: LocalDate? ->
                         navController.navigate(
-                            WorkoutDetailsRoute.getRouteForNavArgument(id)
+                            WorkoutDetailsRoute.getRouteForNavArguments(id, date)
                         )
                     }
                 )
             }
             composable(
                 route = ExerciseDetailsRoute.route,
-                arguments = listOf(navArgument(EXERCISE_DETAILS_SCREEN.navigationArgument) {
-                    type = NavType.IntType
-                })
+                arguments = listOf(
+                    navArgument(EXERCISE_DETAILS_SCREEN.idArgument) {
+                        type = NavType.IntType
+                    },
+                    navArgument(EXERCISE_DETAILS_SCREEN.dateArgument) {
+                        type = NavType.StringType
+                    }
+                )
             ) {
                 ExerciseDetailsScreen(
                     navController = navController
@@ -70,15 +76,20 @@ fun GymTrackerApp(
             }
             composable(
                 route = WorkoutDetailsRoute.route,
-                arguments = listOf(navArgument(WORKOUT_DETAILS_SCREEN.navigationArgument) {
-                    type = NavType.IntType
-                })
+                arguments = listOf(
+                    navArgument(WORKOUT_DETAILS_SCREEN.idArgument) {
+                        type = NavType.IntType
+                    },
+                    navArgument(WORKOUT_DETAILS_SCREEN.dateArgument) {
+                        type = NavType.StringType
+                    }
+                )
             ) {
                 WorkoutDetailsScreen(
                     navController = navController,
-                    exerciseNavigationFunction = { id: Int ->
+                    exerciseNavigationFunction = { id: Int, date: LocalDate? ->
                         navController.navigate(
-                            ExerciseDetailsRoute.getRouteForNavArgument(id)
+                            ExerciseDetailsRoute.getRouteForNavArguments(id, date)
                         )
                     },
                 )
@@ -86,7 +97,7 @@ fun GymTrackerApp(
             composable(route = WorkoutSelectionScreenRoute.route) {
                 LiveRecordChooseWorkoutsScreen(
                     navController = navController,
-                    workoutNavigationFunction = { id: Int ->
+                    workoutNavigationFunction = { id: Int, _: LocalDate? ->
                         navController.navigate(
                             LiveRecordWorkoutRoute.getRouteForNavArgument(id)
                         )
@@ -95,7 +106,7 @@ fun GymTrackerApp(
             }
             composable(
                 route = LiveRecordWorkoutRoute.route,
-                arguments = listOf(navArgument(LIVE_RECORD_WORKOUT_SCREEN.navigationArgument) {
+                arguments = listOf(navArgument(LIVE_RECORD_WORKOUT_SCREEN.idArgument) {
                     type = NavType.IntType
                 })
             ) {

@@ -24,6 +24,7 @@ import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.WORKOUT_SELECTION_SCREEN
 import com.askein.gymtracker.ui.navigation.TopBar
+import java.time.LocalDate
 
 object WorkoutSelectionScreenRoute : NavigationRoute {
     override val route = WORKOUT_SELECTION_SCREEN.baseRoute
@@ -32,7 +33,7 @@ object WorkoutSelectionScreenRoute : NavigationRoute {
 @Composable
 fun LiveRecordChooseWorkoutsScreen(
     navController: NavHostController,
-    workoutNavigationFunction: (Int) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     viewModel: WorkoutScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val workoutListUiState by viewModel.workoutListUiState.collectAsState()
@@ -55,7 +56,7 @@ fun LiveRecordChooseWorkoutsScreen(
 @Composable
 fun LiveRecordChooseWorkoutsScreen(
     workoutListUiState: WorkoutListUiState,
-    workoutNavigationFunction: (Int) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(

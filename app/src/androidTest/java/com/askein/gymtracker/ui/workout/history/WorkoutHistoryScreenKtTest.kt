@@ -63,7 +63,9 @@ class WorkoutHistoryScreenKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 WorkoutHistoryExerciseCard(
                     exercise = curls,
-                    exerciseHistory = curlsHistory
+                    exerciseHistory = curlsHistory,
+                    exerciseNavigationFunction = { _, _ -> (Unit) },
+                    chosenDate = LocalDate.now()
                 )
             }
         }
@@ -89,7 +91,9 @@ class WorkoutHistoryScreenKtTest {
                             dips,
                             bench
                         )
-                    )
+                    ),
+                    exerciseNavigationFunction = { _, _ -> (Unit) },
+                    chosenDate = LocalDate.now()
                 )
             }
         }
@@ -113,7 +117,9 @@ class WorkoutHistoryScreenKtTest {
                             dips,
                             bench
                         )
-                    )
+                    ),
+                    exerciseNavigationFunction = { _, _ -> (Unit) },
+                    chosenDate = LocalDate.now()
                 )
             }
         }
@@ -136,7 +142,9 @@ class WorkoutHistoryScreenKtTest {
                             dips,
                             bench
                         )
-                    )
+                    ),
+                    exerciseNavigationFunction = { _, _ -> (Unit) },
+                    chosenDate = LocalDate.now()
                 )
             }
         }

@@ -25,16 +25,18 @@ import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
+import java.time.LocalDate
 
 @Composable
 fun ExerciseCard(
     exercise: ExerciseUiState,
-    navigationFunction: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    navigationFunction: (Int, LocalDate?) -> Unit,
+    modifier: Modifier = Modifier,
+    chosenDate: LocalDate? = null
 ) {
     Button(
         shape = RectangleShape,
-        onClick = { navigationFunction(exercise.id) },
+        onClick = { navigationFunction(exercise.id, chosenDate) },
         contentPadding = PaddingValues(12.dp)
     ) {
         Card(
@@ -154,7 +156,7 @@ fun CardioExerciseCardPreview() {
     GymTrackerTheme(darkTheme = false) {
         ExerciseCard(
             exercise = ExerciseUiState(0, "Curls"),
-            navigationFunction = { }
+            navigationFunction = { _, _ -> (Unit) }
         )
     }
 }
@@ -165,7 +167,7 @@ fun WeightsExerciseCardPreview() {
     GymTrackerTheme(darkTheme = false) {
         ExerciseCard(
             exercise = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells"),
-            navigationFunction = { }
+            navigationFunction = { _, _ -> (Unit) }
         )
     }
 }

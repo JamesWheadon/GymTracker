@@ -39,7 +39,7 @@ class WorkoutsScreenKtTest {
                 showCreateWorkout = false,
                 dismissCreateWorkout = { },
                 createWorkout = { },
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { _, _ -> (Unit) }
             )
         }
 
@@ -60,7 +60,7 @@ class WorkoutsScreenKtTest {
                 showCreateWorkout = false,
                 dismissCreateWorkout = { },
                 createWorkout = { },
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { _, _ -> (Unit) }
             )
         }
 
@@ -83,7 +83,7 @@ class WorkoutsScreenKtTest {
                 showCreateWorkout = true,
                 dismissCreateWorkout = { },
                 createWorkout = { },
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { _, _ -> (Unit) }
             )
         }
 
@@ -108,7 +108,7 @@ class WorkoutsScreenKtTest {
                 showCreateWorkout = show,
                 dismissCreateWorkout = { show = false },
                 createWorkout = { workout -> workoutList.add(workout) },
-                workoutNavigationFunction = { }
+                workoutNavigationFunction = { _, _ -> (Unit) }
             )
         }
 
@@ -139,7 +139,7 @@ class WorkoutsScreenKtTest {
                 showCreateWorkout = false,
                 dismissCreateWorkout = { },
                 createWorkout = { },
-                workoutNavigationFunction = { id -> workoutChosen = id }
+                workoutNavigationFunction = { id, _ -> workoutChosen = id }
             )
         }
 

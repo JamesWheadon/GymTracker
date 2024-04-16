@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
@@ -41,8 +42,18 @@ class WorkoutDetailsScreenKtTest {
     private val dipsExerciseUiState = ExerciseUiState(1, "Dips", "Triceps", "Dumbbells And Bars")
     private val curlsWeightsExerciseHistoryUiState = WeightsExerciseHistoryUiState(0, 0)
     private val dipsWeightsExerciseHistoryUiState = WeightsExerciseHistoryUiState(1, 1)
-    private val firstWorkoutHistory = WorkoutHistoryWithExercisesUiState(0, 1, LocalDate.now(), listOf(curlsWeightsExerciseHistoryUiState, dipsWeightsExerciseHistoryUiState))
-    private val secondWorkoutHistory = WorkoutHistoryWithExercisesUiState(1, 1, LocalDate.now().minusDays(1), listOf(curlsWeightsExerciseHistoryUiState, dipsWeightsExerciseHistoryUiState))
+    private val firstWorkoutHistory = WorkoutHistoryWithExercisesUiState(
+        0,
+        1,
+        LocalDate.now(),
+        listOf(curlsWeightsExerciseHistoryUiState, dipsWeightsExerciseHistoryUiState)
+    )
+    private val secondWorkoutHistory = WorkoutHistoryWithExercisesUiState(
+        1,
+        1,
+        LocalDate.now().minusDays(1),
+        listOf(curlsWeightsExerciseHistoryUiState, dipsWeightsExerciseHistoryUiState)
+    )
     private val workoutWithExercises = WorkoutWithExercisesUiState(
         workoutId = 1,
         name = "Test Workout",
@@ -74,9 +85,10 @@ class WorkoutDetailsScreenKtTest {
             WorkoutDetailsScreen(
                 uiState = workoutNoExercises,
                 navController = navController,
-                exerciseNavigationFunction = { },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
+                deleteWorkoutFunction = { },
+                chosenDate = null
             )
         }
 
@@ -89,9 +101,10 @@ class WorkoutDetailsScreenKtTest {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
                 navController = navController,
-                exerciseNavigationFunction = { },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
+                deleteWorkoutFunction = { },
+                chosenDate = null
             )
         }
 
@@ -108,9 +121,10 @@ class WorkoutDetailsScreenKtTest {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
                 navController = navController,
-                exerciseNavigationFunction = { id -> calledExerciseId = id },
+                exerciseNavigationFunction = { id, _ -> calledExerciseId = id },
                 updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
+                deleteWorkoutFunction = { },
+                chosenDate = null
             )
         }
 
@@ -129,9 +143,10 @@ class WorkoutDetailsScreenKtTest {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
                 navController = navController,
-                exerciseNavigationFunction = { },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
+                deleteWorkoutFunction = { },
+                chosenDate = null
             )
         }
 
@@ -146,9 +161,10 @@ class WorkoutDetailsScreenKtTest {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
                 navController = navController,
-                exerciseNavigationFunction = { },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
+                deleteWorkoutFunction = { },
+                chosenDate = null
             )
         }
 
@@ -163,9 +179,10 @@ class WorkoutDetailsScreenKtTest {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
                 navController = navController,
-                exerciseNavigationFunction = { },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
+                deleteWorkoutFunction = { },
+                chosenDate = null
             )
         }
 
@@ -179,7 +196,7 @@ class WorkoutDetailsScreenKtTest {
                 } ${LocalDate.now().year}"
             )
         ).assertExists()
-        for (i in 1 ..LocalDate.now().month.length(LocalDate.now().isLeapYear)) {
+        for (i in 1..LocalDate.now().month.length(LocalDate.now().isLeapYear)) {
             rule.onNode(hasText(i.toString())).assertExists()
         }
     }
@@ -192,13 +209,14 @@ class WorkoutDetailsScreenKtTest {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
                 navController = navController,
-                exerciseNavigationFunction = { },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
+                deleteWorkoutFunction = { },
+                chosenDate = null
             )
         }
 
-        for (i in 1 ..LocalDate.now().month.length(LocalDate.now().isLeapYear)) {
+        for (i in 1..LocalDate.now().month.length(LocalDate.now().isLeapYear)) {
             val dayNode = rule.onNode(hasText(i.toString()))
             dayNode.assertExists()
             if (i == dayOfMonth || (i + 1) == dayOfMonth) {
@@ -219,9 +237,10 @@ class WorkoutDetailsScreenKtTest {
                 WorkoutDetailsScreen(
                     uiState = workoutWithExercises,
                     navController = navController,
-                    exerciseNavigationFunction = { },
+                    exerciseNavigationFunction = { _, _ -> (Unit) },
                     updateWorkoutFunction = { },
-                    deleteWorkoutFunction = { }
+                    deleteWorkoutFunction = { },
+                    chosenDate = null
                 )
             }
         }
@@ -246,9 +265,10 @@ class WorkoutDetailsScreenKtTest {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
                 navController = navController,
-                exerciseNavigationFunction = { },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
+                deleteWorkoutFunction = { },
+                chosenDate = null
             )
         }
 
@@ -261,14 +281,66 @@ class WorkoutDetailsScreenKtTest {
             WorkoutDetailsScreen(
                 uiState = workoutWithExercises,
                 navController = navController,
-                exerciseNavigationFunction = { },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 updateWorkoutFunction = { },
-                deleteWorkoutFunction = { }
+                deleteWorkoutFunction = { },
+                chosenDate = null
             )
         }
 
         editExercisesButton.performClick()
 
         rule.onNode(hasText("Workout Exercises"))
+    }
+
+    @Test
+    fun rendersWorkoutHistoryDetailsWithChosenDate() {
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WorkoutDetailsScreen(
+                    uiState = workoutWithExercises,
+                    navController = navController,
+                    exerciseNavigationFunction = { _, _ -> (Unit) },
+                    updateWorkoutFunction = { },
+                    deleteWorkoutFunction = { },
+                    chosenDate = LocalDate.now()
+                )
+            }
+        }
+
+        val closeButton = rule.onNode(hasContentDescription("Close"))
+        val workoutsOnDay = rule.onNode(hasText("Workouts on", substring = true))
+
+        closeButton.assertExists()
+        workoutsOnDay.assertExists()
+    }
+
+    @Test
+    fun rendersWorkoutHistoryDetailsWithChosenDateClickingExerciseCallsExerciseNavFunction() {
+        var exerciseId: Int? = null
+        var exerciseDate: LocalDate? = null
+
+        rule.setContent {
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                WorkoutDetailsScreen(
+                    uiState = workoutWithExercises,
+                    navController = navController,
+                    exerciseNavigationFunction = { id, date ->
+                        exerciseId = id
+                        exerciseDate = date
+                    },
+                    updateWorkoutFunction = { },
+                    deleteWorkoutFunction = { },
+                    chosenDate = LocalDate.now()
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("Curls")[1].performClick()
+
+        assertThat(exerciseId, equalTo(0))
+        assertThat(exerciseDate, equalTo(LocalDate.now()))
     }
 }

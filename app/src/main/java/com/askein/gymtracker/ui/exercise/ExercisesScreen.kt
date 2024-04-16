@@ -18,10 +18,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.create.CreateExerciseScreen
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
+import java.time.LocalDate
 
 @Composable
 fun ExercisesScreen(
-    exerciseNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
     showCreateExercise: Boolean,
     dismissCreateExercise: () -> Unit,
     modifier: Modifier = Modifier,
@@ -42,7 +43,7 @@ fun ExercisesScreen(
     exerciseListUiState: ExerciseListUiState,
     showCreateExercise: Boolean,
     dismissCreateExercise: () -> Unit,
-    exerciseNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ExercisesScreen(
@@ -64,7 +65,7 @@ fun ExercisesScreen(
 @Composable
 fun ExercisesScreen(
     exerciseListUiState: ExerciseListUiState,
-    exerciseNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -102,7 +103,7 @@ fun ExerciseScreenPreview() {
                     ),
                 )
             ),
-            exerciseNavigationFunction = { }
+            exerciseNavigationFunction = { _, _ -> (Unit) }
         )
     }
 }
@@ -124,7 +125,7 @@ fun ExerciseScreenCardPreview() {
                     ),
                 )
             ),
-            exerciseNavigationFunction = { }
+            exerciseNavigationFunction = { _, _ -> (Unit) }
         )
     }
 }

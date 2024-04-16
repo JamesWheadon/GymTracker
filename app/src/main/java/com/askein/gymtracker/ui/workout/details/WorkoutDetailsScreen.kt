@@ -60,6 +60,8 @@ import com.askein.gymtracker.ui.workout.create.CreateWorkoutForm
 import com.askein.gymtracker.ui.workout.history.WorkoutHistoryScreen
 import com.askein.gymtracker.ui.workout.history.WorkoutHistoryWithExercisesUiState
 import com.askein.gymtracker.ui.workout.history.create.RecordWorkoutHistoryScreen
+import com.askein.gymtracker.util.convertLocalDateToString
+import com.askein.gymtracker.util.convertStringToLocalDate
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -67,28 +69,30 @@ import java.time.format.FormatStyle
 
 object WorkoutDetailsRoute : NavigationRoute {
     override val route =
-        "${WORKOUT_DETAILS_SCREEN.baseRoute}/{${WORKOUT_DETAILS_SCREEN.navigationArgument}}"
+        "${WORKOUT_DETAILS_SCREEN.baseRoute}/{${WORKOUT_DETAILS_SCREEN.idArgument}}/{${WORKOUT_DETAILS_SCREEN.dateArgument}}"
 
-    fun getRouteForNavArgument(navArgument: Int): String =
-        "${WORKOUT_DETAILS_SCREEN.baseRoute}/${navArgument}"
+    fun getRouteForNavArguments(idArgument: Int, dateArgument: LocalDate?): String =
+        "${WORKOUT_DETAILS_SCREEN.baseRoute}/${idArgument}/${convertLocalDateToString(dateArgument)}"
 }
 
 @Composable
 fun WorkoutDetailsScreen(
     navController: NavHostController,
-    exerciseNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WorkoutDetailsViewModel = viewModel(
         factory = AppViewModelProvider.Factory
     )
 ) {
     val uiState = viewModel.uiState.collectAsState().value
+    val chosenDate = convertStringToLocalDate(viewModel.chosenDate)
     WorkoutDetailsScreen(
         uiState = uiState,
         navController = navController,
         exerciseNavigationFunction = exerciseNavigationFunction,
         updateWorkoutFunction = { workout -> viewModel.updateWorkout(workout) },
         deleteWorkoutFunction = { workout -> viewModel.deleteWorkout(workout) },
+        chosenDate = chosenDate,
         modifier = modifier,
     )
 }
@@ -97,9 +101,10 @@ fun WorkoutDetailsScreen(
 fun WorkoutDetailsScreen(
     uiState: WorkoutWithExercisesUiState,
     navController: NavHostController,
-    exerciseNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
     updateWorkoutFunction: (WorkoutUiState) -> Unit,
     deleteWorkoutFunction: (WorkoutUiState) -> Unit,
+    chosenDate: LocalDate?,
     modifier: Modifier = Modifier
 ) {
     var showEditExercises by remember { mutableStateOf(false) }
@@ -135,6 +140,7 @@ fun WorkoutDetailsScreen(
             exerciseNavigationFunction = exerciseNavigationFunction,
             editExercises = { showEditExercises = true },
             innerPadding = innerPadding,
+            chosenDate = chosenDate,
             modifier = modifier
         )
     }
@@ -184,13 +190,15 @@ fun WorkoutDetailsScreen(
 @Composable
 private fun WorkoutDetailsScreen(
     uiState: WorkoutWithExercisesUiState,
-    exerciseNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
     editExercises: () -> Unit,
     innerPadding: PaddingValues,
+    chosenDate: LocalDate?,
     modifier: Modifier = Modifier
 ) {
-    var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
-    var chosenDate: LocalDate? by remember { mutableStateOf(null) }
+    val currentMonth = if (chosenDate == null) YearMonth.now() else YearMonth.of(chosenDate.year, chosenDate.month)
+    var selectedMonth by remember { mutableStateOf(currentMonth) }
+    var showDate: LocalDate? by remember { mutableStateOf(chosenDate) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -215,7 +223,7 @@ private fun WorkoutDetailsScreen(
         Button(onClick = editExercises) {
             Text(text = stringResource(id = R.string.edit_exercises))
         }
-        if (chosenDate != null) {
+        if (showDate != null) {
             Box {
                 Column(
                     modifier = modifier
@@ -227,14 +235,16 @@ private fun WorkoutDetailsScreen(
                     Text(
                         text = stringResource(
                             id = R.string.workouts_on,
-                            chosenDate!!.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+                            showDate!!.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
                         ),
                         style = MaterialTheme.typography.headlineMedium
                     )
-                    uiState.workoutHistory.filter { it.date == chosenDate }.forEach { workoutHistory ->
+                    uiState.workoutHistory.filter { it.date == showDate }.forEach { workoutHistory ->
                         WorkoutHistoryScreen(
                             workoutHistoryUiState = workoutHistory,
                             workoutUiState = uiState,
+                            chosenDate = showDate!!,
+                            exerciseNavigationFunction = exerciseNavigationFunction
                         )
                     }
                 }
@@ -242,7 +252,7 @@ private fun WorkoutDetailsScreen(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .offset((-8).dp, (-12).dp),
-                    onClick = { chosenDate = null }
+                    onClick = { showDate = null }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
@@ -264,7 +274,7 @@ private fun WorkoutDetailsScreen(
                             history.date.monthValue == selectedMonth.monthValue
                 }.map { history -> history.date.dayOfMonth },
             dayFunction = { day ->
-                chosenDate = LocalDate.of(selectedMonth.year, selectedMonth.monthValue, day)
+                showDate = LocalDate.of(selectedMonth.year, selectedMonth.monthValue, day)
             }
         )
         Spacer(modifier = Modifier.height(72.dp))
@@ -307,8 +317,9 @@ fun WorkoutDetailsScreenPreview() {
                         WorkoutHistoryWithExercisesUiState(2, 1, LocalDate.now().minusDays(3))
                     )
                 ),
-                exerciseNavigationFunction = { },
+                exerciseNavigationFunction = { _, _ -> (Unit) },
                 editExercises = { },
+                chosenDate = null,
                 innerPadding = PaddingValues()
             )
         }

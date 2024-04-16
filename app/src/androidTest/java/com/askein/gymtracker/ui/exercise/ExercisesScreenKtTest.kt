@@ -27,7 +27,7 @@ class ExercisesScreenKtTest {
         rule.setContent {
             ExercisesScreen(
                 exerciseListUiState = ExerciseListUiState(),
-                exerciseNavigationFunction = {}
+                exerciseNavigationFunction = { _, _ -> (Unit) }
             )
         }
 
@@ -45,7 +45,7 @@ class ExercisesScreenKtTest {
                         exercise2
                     )
                 ),
-                exerciseNavigationFunction = {},
+                exerciseNavigationFunction = { _, _ -> (Unit) },
             )
         }
 
@@ -59,7 +59,7 @@ class ExercisesScreenKtTest {
         var navigateId = 0
         rule.setContent {
             ExercisesScreen(
-                exerciseNavigationFunction = { navigateId = it },
+                exerciseNavigationFunction = { id, _ -> navigateId = id },
                 exerciseListUiState = ExerciseListUiState(
                     exerciseList = listOf(
                         exercise1

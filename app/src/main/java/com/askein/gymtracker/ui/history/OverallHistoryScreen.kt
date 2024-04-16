@@ -43,8 +43,8 @@ import java.time.format.FormatStyle
 
 @Composable
 fun OverallHistoryScreen(
-    exerciseNavigationFunction: (Int) -> Unit,
-    workoutNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OverallHistoryViewModel = viewModel(
         factory = AppViewModelProvider.Factory
@@ -66,8 +66,8 @@ fun OverallHistoryScreen(
 
 @Composable
 fun OverallHistoryScreen(
-    exerciseNavigationFunction: (Int) -> Unit,
-    workoutNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     datesUiState: List<LocalDate>,
     workoutsOnDateUiState: List<WorkoutUiState>,
     exercisesOnDateUiState: List<ExerciseUiState>,
@@ -115,8 +115,8 @@ fun OverallHistoryScreen(
 @Composable
 fun HistoryOnDay(
     date: LocalDate,
-    exerciseNavigationFunction: (Int) -> Unit,
-    workoutNavigationFunction: (Int) -> Unit,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
+    workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     workoutsOnDateUiState: List<WorkoutUiState>,
     exercisesOnDateUiState: List<ExerciseUiState>,
     onDismiss: () -> Unit,
@@ -150,7 +150,8 @@ fun HistoryOnDay(
                         workoutsOnDateUiState.forEach { workout ->
                             WorkoutCard(
                                 workout = workout,
-                                navigationFunction = workoutNavigationFunction
+                                navigationFunction = workoutNavigationFunction,
+                                chosenDate = date
                             )
                         }
                     }
@@ -167,7 +168,8 @@ fun HistoryOnDay(
                         exercisesOnDateUiState.forEach { exercise ->
                             ExerciseCard(
                                 exercise = exercise,
-                                navigationFunction = exerciseNavigationFunction
+                                navigationFunction = exerciseNavigationFunction,
+                                chosenDate = date
                             )
                         }
                     }
@@ -193,8 +195,8 @@ fun HistoryOnDay(
 fun OverallHistoryScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         OverallHistoryScreen(
-            workoutNavigationFunction = { },
-            exerciseNavigationFunction = { },
+            workoutNavigationFunction = { _, _ -> (Unit) },
+            exerciseNavigationFunction = { _, _ -> (Unit) },
             datesUiState = listOf(LocalDate.now(), LocalDate.now().minusDays(2)),
             workoutsOnDateUiState = listOf(WorkoutUiState(name = "Arms"), WorkoutUiState(name = "Legs")),
             exercisesOnDateUiState = listOf(ExerciseUiState(name = "Treadmill"), ExerciseUiState(name = "Bench", muscleGroup = "Chest", equipment = "Bench")),
@@ -209,8 +211,8 @@ fun HistoryOnDayPreview() {
     GymTrackerTheme(darkTheme = false) {
         HistoryOnDay(
             date = LocalDate.now(),
-            workoutNavigationFunction = { },
-            exerciseNavigationFunction = { },
+            workoutNavigationFunction = { _, _ -> (Unit) },
+            exerciseNavigationFunction = { _, _ -> (Unit) },
             workoutsOnDateUiState = listOf(WorkoutUiState(name = "Arms"), WorkoutUiState(name = "Legs")),
             exercisesOnDateUiState = listOf(ExerciseUiState(name = "Treadmill"), ExerciseUiState(name = "Bench", muscleGroup = "Chest", equipment = "Bench")),
             onDismiss = { }

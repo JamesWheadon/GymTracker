@@ -9,6 +9,7 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDate
 
 class ExerciseScreenKtTest {
 
@@ -57,7 +58,7 @@ class ExerciseScreenKtTest {
         rule.setContent {
             ExerciseCard(
                 exercise = weightsExercise,
-                navigationFunction = {}
+                navigationFunction = { _, _ -> (Unit) }
             )
         }
 
@@ -73,7 +74,7 @@ class ExerciseScreenKtTest {
         rule.setContent {
             ExerciseCard(
                 exercise = cardioExercise,
-                navigationFunction = {}
+                navigationFunction = { _, _ -> (Unit) }
             )
         }
 
@@ -84,32 +85,86 @@ class ExerciseScreenKtTest {
     @Test
     fun clickingWeightsExerciseCardCallsNavigationFunction() {
         var clickedId = -1
+        var chosenDate = LocalDate.now()
 
         rule.setContent {
             ExerciseCard(
                 exercise = weightsExercise,
-                navigationFunction = { id -> clickedId = id }
+                navigationFunction = { id, date ->
+                    clickedId = id
+                    chosenDate = date
+                }
             )
         }
 
         weightsName.performClick()
 
         assertThat(clickedId, equalTo(0))
+        assertThat(chosenDate, equalTo(null))
     }
 
     @Test
     fun clickingCardioExerciseCardCallsNavigationFunction() {
         var clickedId = -1
+        var chosenDate = LocalDate.now()
 
         rule.setContent {
             ExerciseCard(
                 exercise = cardioExercise,
-                navigationFunction = { id -> clickedId = id }
+                navigationFunction = { id, date ->
+                    clickedId = id
+                    chosenDate = date
+                }
             )
         }
 
         cardioName.performClick()
 
         assertThat(clickedId, equalTo(0))
+        assertThat(chosenDate, equalTo(null))
+    }
+
+    @Test
+    fun clickingWeightsExerciseCardCallsNavigationFunctionWithDate() {
+        var clickedId = -1
+        var chosenDate: LocalDate? = null
+
+        rule.setContent {
+            ExerciseCard(
+                exercise = weightsExercise,
+                navigationFunction = { id, date ->
+                    clickedId = id
+                    chosenDate = date
+                },
+                chosenDate = LocalDate.now()
+            )
+        }
+
+        weightsName.performClick()
+
+        assertThat(clickedId, equalTo(0))
+        assertThat(chosenDate, equalTo(LocalDate.now()))
+    }
+
+    @Test
+    fun clickingCardioExerciseCardCallsNavigationFunctionWithDate() {
+        var clickedId = -1
+        var chosenDate: LocalDate? = null
+
+        rule.setContent {
+            ExerciseCard(
+                exercise = cardioExercise,
+                navigationFunction = { id, date ->
+                    clickedId = id
+                    chosenDate = date
+                },
+                chosenDate = LocalDate.now()
+            )
+        }
+
+        cardioName.performClick()
+
+        assertThat(clickedId, equalTo(0))
+        assertThat(chosenDate, equalTo(LocalDate.now()))
     }
 }

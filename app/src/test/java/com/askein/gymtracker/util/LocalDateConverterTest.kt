@@ -1,4 +1,4 @@
-package com.askein.gymtracker.converters
+package com.askein.gymtracker.util
 
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
