@@ -85,7 +85,7 @@ fun WorkoutDetailsScreen(
     )
 ) {
     val uiState = viewModel.uiState.collectAsState().value
-    val chosenDate = convertStringToLocalDate(viewModel.chosenDate)
+    val chosenDate = convertStringToLocalDate(viewModel.chosenDate!!)
     WorkoutDetailsScreen(
         uiState = uiState,
         navController = navController,
