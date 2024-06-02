@@ -23,15 +23,16 @@ class ExerciseDaoTest {
     private lateinit var exerciseWorkoutDatabase: ExerciseWorkoutDatabase
 
     private val newExerciseName = "Press"
-    private val exercise1 = Exercise(1, "Curls", "Biceps", "Dumbbells")
-    private val exercise2 = Exercise(2, "Dips", "Triceps", "Dumbbells")
+    private val exercise1 = Exercise(1, ExerciseType.WEIGHTS, "Curls", "Biceps", "Dumbbells")
+    private val exercise2 = Exercise(2, ExerciseType.WEIGHTS, "Dips", "Triceps", "Dumbbells")
 
     @Before
     fun createDb() {
         val context: Context = ApplicationProvider.getApplicationContext()
-        exerciseWorkoutDatabase = Room.inMemoryDatabaseBuilder(context, ExerciseWorkoutDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        exerciseWorkoutDatabase =
+            Room.inMemoryDatabaseBuilder(context, ExerciseWorkoutDatabase::class.java)
+                .allowMainThreadQueries()
+                .build()
         exerciseDao = exerciseWorkoutDatabase.exerciseDao()
     }
 

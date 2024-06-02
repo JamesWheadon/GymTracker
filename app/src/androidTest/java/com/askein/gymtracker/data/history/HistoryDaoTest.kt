@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.askein.gymtracker.data.database.ExerciseWorkoutDatabase
 import com.askein.gymtracker.data.exercise.Exercise
 import com.askein.gymtracker.data.exercise.ExerciseDao
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistory
 import com.askein.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryDao
 import com.askein.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
@@ -147,10 +148,10 @@ class HistoryDaoTest {
 
     @Test
     fun daoGetExercisesForDate_getsExercisesFromDB() = runBlocking {
-        exerciseDao.insert(Exercise(name = "Treadmill", muscleGroup = "", equipment = ""))
-        exerciseDao.insert(Exercise(name = "Row", muscleGroup = "", equipment = ""))
-        exerciseDao.insert(Exercise(name = "Curls", muscleGroup = "", equipment = ""))
-        exerciseDao.insert(Exercise(name = "Bench", muscleGroup = "", equipment = ""))
+        exerciseDao.insert(Exercise(exerciseType = ExerciseType.CARDIO, name = "Treadmill", muscleGroup = "", equipment = ""))
+        exerciseDao.insert(Exercise(exerciseType = ExerciseType.WEIGHTS, name = "Row", muscleGroup = "", equipment = ""))
+        exerciseDao.insert(Exercise(exerciseType = ExerciseType.WEIGHTS, name = "Curls", muscleGroup = "", equipment = ""))
+        exerciseDao.insert(Exercise(exerciseType = ExerciseType.WEIGHTS, name = "Bench", muscleGroup = "", equipment = ""))
         cardioExerciseHistoryDao.insert(createCardioHistory(LocalDate.now(), null, 1))
         cardioExerciseHistoryDao.insert(createCardioHistory(LocalDate.now(), 1, 2))
         cardioExerciseHistoryDao.insert(createCardioHistory(LocalDate.now().minusDays(2), null, 1))
