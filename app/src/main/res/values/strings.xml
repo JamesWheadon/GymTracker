@@ -14,6 +14,7 @@
     <string name="create">Create</string>
     <string name="cardio">Cardio</string>
     <string name="weights">Weights</string>
+    <string name="calisthenics">Calisthenics</string>
     <string name="cardio_icon">cardio icon</string>
     <string name="exercise_type_toggle">exercise type toggle</string>
     <string name="exercise_name">Exercise Name</string>

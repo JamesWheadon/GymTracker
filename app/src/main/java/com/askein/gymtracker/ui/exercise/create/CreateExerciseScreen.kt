@@ -4,10 +4,11 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -16,7 +17,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,15 +27,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.enums.FormTypes
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.FormInformationField
@@ -107,8 +105,9 @@ fun ExerciseInformationForm(
     var nameState by remember { mutableStateOf(exercise.name) }
     var equipmentState by remember { mutableStateOf(exercise.equipment) }
     var muscleState by remember { mutableStateOf(TextFieldValue(text = exercise.muscleGroup)) }
-    var optionState by remember { mutableStateOf(exercise == ExerciseUiState() || exercise.equipment != "") }
-    val nameError = nameState != exercise.name && savedExerciseNames.map(String::lowercase).contains(nameState.lowercase())
+    var exerciseType by remember { mutableStateOf(exercise.type) }
+    val nameError = nameState != exercise.name && savedExerciseNames.map(String::lowercase)
+        .contains(nameState.lowercase())
     Box {
         Card(
             modifier = modifier
@@ -130,64 +129,61 @@ fun ExerciseInformationForm(
                         .padding(vertical = 16.dp, horizontal = 16.dp)
                 )
                 if (exercise == ExerciseUiState()) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.cardio),
-                            fontWeight = if (optionState) null else FontWeight.Bold
+                    ExerciseTypeSelection(
+                        exerciseType = exerciseType,
+                        exerciseTypeOnChange = { selected -> exerciseType = selected }
+                    )
+                }
+                when (exerciseType) {
+                    ExerciseType.WEIGHTS -> {
+                        WeightsExerciseForm(
+                            nameState = nameState,
+                            nameError = nameError,
+                            nameStateOnChange = { name ->
+                                nameState = name
+                            },
+                            equipmentState = equipmentState,
+                            equipmentStateOnChange = { equipment ->
+                                equipmentState = equipment
+                            },
+                            muscleState = muscleState,
+                            muscleStateOnChange = { muscle ->
+                                muscleState = muscle
+                            },
+                            savedMuscleGroups = savedMuscleGroups
                         )
-                        val toggleContentDescription =
-                            stringResource(id = R.string.exercise_type_toggle)
-                        Switch(
-                            checked = optionState,
-                            onCheckedChange = { option -> optionState = option },
-                            modifier = Modifier.semantics {
-                                contentDescription = toggleContentDescription
-                            }.padding(horizontal = 8.dp)
+                    }
+                    ExerciseType.CARDIO -> {
+                        CardioExerciseForm(
+                            nameState = nameState,
+                            nameError = nameError,
+                            nameStateOnChange = { name ->
+                                nameState = name
+                            }
                         )
-                        Text(
-                            text = stringResource(id = R.string.weights),
-                            fontWeight = if (optionState) FontWeight.Bold else null
+                    }
+                    else -> {
+                        CalisthenicsExerciseForm(
+                            nameState = nameState,
+                            nameError = nameError,
+                            nameStateOnChange = { name ->
+                                nameState = name
+                            },
+                            muscleState = muscleState,
+                            muscleStateOnChange = { muscle ->
+                                muscleState = muscle
+                            },
+                            savedMuscleGroups = savedMuscleGroups
                         )
                     }
                 }
-                if (optionState) {
-                    WeightsExerciseInformationForm(
-                        nameState = nameState,
-                        nameError = nameError,
-                        nameStateOnChange = { name ->
-                            nameState = name
-                        },
-                        equipmentState = equipmentState,
-                        equipmentStateOnChange = { equipment ->
-                            equipmentState = equipment
-                        },
-                        muscleState = muscleState,
-                        muscleStateOnChange = { muscle ->
-                            muscleState = muscle
-                        },
-                        savedMuscleGroups = savedMuscleGroups
-                    )
-                } else {
-                    CardioExerciseInformationForm(
-                        nameState = nameState,
-                        nameError = nameError,
-                        nameStateOnChange = { name ->
-                            nameState = name
-                        }
-                    )
-                }
                 SaveExerciseFormButton(
                     exerciseId = exerciseId,
+                    exerciseType = exerciseType,
                     exerciseName = nameState,
                     exerciseEquipment = equipmentState,
                     exerciseMuscleGroup = muscleState.text,
-                    exerciseToggle = optionState,
-                    errors = nameError,
+                    nameTaken = nameError,
                     buttonText = buttonText,
                     saveFunction = createFunction,
                     closeForm = onDismiss
@@ -209,7 +205,42 @@ fun ExerciseInformationForm(
 }
 
 @Composable
-private fun WeightsExerciseInformationForm(
+private fun ExerciseTypeSelection(
+    exerciseType: ExerciseType,
+    exerciseTypeOnChange: (ExerciseType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.width(IntrinsicSize.Min)
+    ) {
+        Button(
+            onClick = { exerciseTypeOnChange(ExerciseType.WEIGHTS) },
+            enabled = exerciseType != ExerciseType.WEIGHTS,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(id = R.string.weights))
+        }
+        Button(
+            onClick = { exerciseTypeOnChange(ExerciseType.CARDIO) },
+            enabled = exerciseType != ExerciseType.CARDIO,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(id = R.string.cardio))
+        }
+        Button(
+            onClick = { exerciseTypeOnChange(ExerciseType.CALISTHENICS) },
+            enabled = exerciseType != ExerciseType.CALISTHENICS,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(id = R.string.calisthenics))
+        }
+    }
+}
+
+@Composable
+private fun WeightsExerciseForm(
     nameState: String,
     nameStateOnChange: (String) -> Unit,
     nameError: Boolean,
@@ -249,7 +280,7 @@ private fun WeightsExerciseInformationForm(
 }
 
 @Composable
-private fun CardioExerciseInformationForm(
+private fun CardioExerciseForm(
     nameState: String,
     nameStateOnChange: (String) -> Unit,
     nameError: Boolean
@@ -272,23 +303,55 @@ private fun CardioExerciseInformationForm(
 }
 
 @Composable
+private fun CalisthenicsExerciseForm(
+    nameState: String,
+    nameStateOnChange: (String) -> Unit,
+    nameError: Boolean,
+    muscleState: TextFieldValue,
+    muscleStateOnChange: (TextFieldValue) -> Unit,
+    savedMuscleGroups: List<String>
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        FormInformationField(
+            label = R.string.exercise_name,
+            value = nameState,
+            onChange = nameStateOnChange,
+            formType = FormTypes.STRING,
+            error = nameError,
+            errorMessage = R.string.exercise_name_taken
+        )
+        FormInformationFieldWithSuggestions(
+            label = R.string.muscle_group,
+            value = muscleState,
+            onChange = muscleStateOnChange,
+            suggestions = savedMuscleGroups
+        )
+    }
+}
+
+@Composable
 private fun SaveExerciseFormButton(
     exerciseId: Int,
+    exerciseType: ExerciseType,
     exerciseName: String,
     exerciseEquipment: String,
     exerciseMuscleGroup: String,
-    exerciseToggle: Boolean,
-    errors: Boolean,
+    nameTaken: Boolean,
     @StringRes buttonText: Int,
     saveFunction: (ExerciseUiState) -> Unit,
     closeForm: () -> Unit
 ) {
-    val enabled =
-        (!exerciseToggle && exerciseName != "") || (exerciseName != "" && exerciseEquipment != "" && exerciseMuscleGroup != "" && !errors)
+    val enabled = exerciseName != "" && !nameTaken
     Button(onClick = {
         saveFunction(
             ExerciseUiState(
                 id = exerciseId,
+                type = exerciseType,
                 name = exerciseName,
                 muscleGroup = exerciseMuscleGroup,
                 equipment = exerciseEquipment
