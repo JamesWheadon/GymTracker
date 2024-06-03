@@ -60,6 +60,7 @@
     <string name="delete_exercise">Delete %1$s Exercise?</string>
     <string name="muscle_icon">muscle icon</string>
     <string name="equipment_icon">equipment icon</string>
+    <string name="calisthenics_icon">calisthenics icon</string>
     <string name="max_weight">Max Weight</string>
     <string name="max_reps">Max Reps</string>
     <string name="max_sets">Max Sets</string>
