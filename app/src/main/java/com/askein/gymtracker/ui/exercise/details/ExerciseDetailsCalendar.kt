@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.enums.DistanceUnits
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToDistanceUnit
@@ -59,14 +60,15 @@ fun ExerciseHistoryCalendar(
     chosenDate: LocalDate?,
     modifier: Modifier = Modifier
 ) {
-    val currentMonth = if (chosenDate == null) YearMonth.now() else YearMonth.of(chosenDate.year, chosenDate.month)
+    val currentMonth =
+        if (chosenDate == null) YearMonth.now() else YearMonth.of(chosenDate.year, chosenDate.month)
     var selectedMonth by remember { mutableStateOf(currentMonth) }
     var showDay: Int? by remember { mutableStateOf(chosenDate?.dayOfMonth) }
     val activeDays = listOf(uiState.weightsHistory, uiState.cardioHistory).flatten()
         .filter { history -> history.date.month == selectedMonth.month && history.date.year == selectedMonth.year }
         .map { history -> history.date.dayOfMonth }
     val exerciseHistory =
-        if (uiState.exercise.equipment == "") uiState.cardioHistory else uiState.weightsHistory
+        if (uiState.exercise.type == ExerciseType.CARDIO) uiState.cardioHistory else uiState.weightsHistory
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier

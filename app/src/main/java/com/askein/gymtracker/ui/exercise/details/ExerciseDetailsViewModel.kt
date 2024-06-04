@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.askein.gymtracker.data.exercise.ExerciseRepository
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
 import com.askein.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.askein.gymtracker.data.exerciseWithHistory.ExerciseWithHistoryRepository
@@ -52,10 +53,10 @@ class ExerciseDetailsViewModel(
     fun deleteExercise(exerciseUiState: ExerciseUiState) {
         val exercise = exerciseUiState.toExercise()
         viewModelScope.launch {
-            if (exercise.equipment != "") {
-                weightsExerciseHistoryRepository.deleteAllForExercise(exercise)
-            } else {
+            if (exercise.exerciseType == ExerciseType.CARDIO) {
                 cardioExerciseHistoryRepository.deleteAllForExercise(exercise)
+            } else {
+                weightsExerciseHistoryRepository.deleteAllForExercise(exercise)
             }
             workoutExerciseCrossRefRepository.deleteAllCrossRefForExercise(exercise)
             exerciseRepository.deleteExercise(exercise)

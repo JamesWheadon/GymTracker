@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.ExerciseDetail
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
@@ -193,29 +194,58 @@ fun AddRemoveExerciseCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            if (exercise.equipment != "") {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+            if (exercise.type == ExerciseType.WEIGHTS) {
+                if (exercise.muscleGroup != "" || exercise.equipment != "") {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (exercise.muscleGroup != "") {
+                            ExerciseDetail(
+                                exerciseInfo = exercise.muscleGroup,
+                                iconId = R.drawable.info_48px,
+                                iconDescription = R.string.muscle_icon
+                            )
+                        }
+                        if (exercise.equipment != "") {
+                            ExerciseDetail(
+                                exerciseInfo = exercise.equipment,
+                                iconId = R.drawable.exercise_filled_48px,
+                                iconDescription = R.string.equipment_icon
+                            )
+                        }
+                    }
+                } else {
                     ExerciseDetail(
-                        exerciseInfo = exercise.muscleGroup,
-                        iconId = R.drawable.info_48px,
-                        iconDescription = R.string.muscle_icon
-                    )
-                    ExerciseDetail(
-                        exerciseInfo = exercise.equipment,
+                        exerciseInfo = stringResource(id = R.string.weights),
                         iconId = R.drawable.exercise_filled_48px,
-                        iconDescription = R.string.equipment_icon
+                        iconDescription = R.string.equipment_icon,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
-            } else {
+            } else if (exercise.type == ExerciseType.CARDIO) {
                 ExerciseDetail(
                     exerciseInfo = stringResource(id = R.string.cardio),
                     iconId = R.drawable.cardio_48dp,
                     iconDescription = R.string.cardio_icon,
                     modifier = Modifier.fillMaxWidth()
                 )
+            } else if (exercise.type == ExerciseType.CALISTHENICS) {
+                if (exercise.muscleGroup != "") {
+                    ExerciseDetail(
+                        exerciseInfo = exercise.muscleGroup,
+                        iconId = R.drawable.info_48px,
+                        iconDescription = R.string.muscle_icon,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    ExerciseDetail(
+                        exerciseInfo = stringResource(id = R.string.calisthenics),
+                        iconId = R.drawable.info_48px,
+                        iconDescription = R.string.calisthenics_icon,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }

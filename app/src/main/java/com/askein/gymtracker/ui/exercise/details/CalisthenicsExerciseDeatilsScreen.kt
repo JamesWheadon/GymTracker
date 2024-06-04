@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -21,20 +20,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
-import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToWeightUnit
-import com.askein.gymtracker.ui.exercise.ExerciseUiState
-import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
-import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import java.time.LocalDate
 
 @Composable
-fun WeightsExerciseDetailsScreen(
+fun CalisthenicsExerciseDetailsScreen(
     innerPadding: PaddingValues,
     uiState: ExerciseDetailsUiState,
     chosenDate: LocalDate?
@@ -46,9 +39,9 @@ fun WeightsExerciseDetailsScreen(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        WeightsExerciseInformation(innerPadding, uiState)
+        CalisthenicsExerciseInformation(innerPadding, uiState)
         if (uiState.weightsHistory.isNotEmpty()) {
-            WeightsExerciseHistoryDetails(uiState = uiState)
+            CalisthenicsExerciseHistoryDetails(uiState = uiState)
             ExerciseHistoryCalendar(
                 uiState = uiState,
                 chosenDate = chosenDate
@@ -59,43 +52,24 @@ fun WeightsExerciseDetailsScreen(
 }
 
 @Composable
-private fun WeightsExerciseInformation(
+private fun CalisthenicsExerciseInformation(
     innerPadding: PaddingValues,
     uiState: ExerciseDetailsUiState
 ) {
-    if (uiState.exercise.muscleGroup != "" || uiState.exercise.equipment != "") {
-        Row(
-            verticalAlignment = Alignment.Top,
+    if (uiState.exercise.muscleGroup != "") {
+        ExerciseDetail(
+            exerciseInfo = uiState.exercise.muscleGroup,
+            iconId = R.drawable.info_48px,
+            iconDescription = R.string.muscle_icon,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
-        ) {
-            if (uiState.exercise.muscleGroup != "") {
-                ExerciseDetail(
-                    exerciseInfo = uiState.exercise.muscleGroup,
-                    iconId = R.drawable.info_48px,
-                    iconDescription = R.string.muscle_icon,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
-            }
-            if (uiState.exercise.equipment != "") {
-                ExerciseDetail(
-                    exerciseInfo = uiState.exercise.equipment,
-                    iconId = R.drawable.exercise_filled_48px,
-                    iconDescription = R.string.equipment_icon,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
-            }
-        }
+        )
     } else {
         ExerciseDetail(
-            exerciseInfo = stringResource(id = R.string.weights),
-            iconId = R.drawable.cardio_48dp,
-            iconDescription = R.string.equipment_icon,
+            exerciseInfo = stringResource(id = R.string.calisthenics),
+            iconId = R.drawable.info_48px,
+            iconDescription = R.string.calisthenics_icon,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
@@ -104,13 +78,13 @@ private fun WeightsExerciseInformation(
 }
 
 @Composable
-fun WeightsExerciseHistoryDetails(
+fun CalisthenicsExerciseHistoryDetails(
     uiState: ExerciseDetailsUiState
 ) {
     val timeOptions =
         listOf(R.string.seven_days, R.string.thirty_days, R.string.past_year, R.string.all_time)
     val detailOptions =
-        listOf(R.string.max_weight, R.string.max_reps, R.string.max_sets, R.string.total_weight)
+        listOf(R.string.max_reps, R.string.max_sets, R.string.total_reps)
     val currentDate = LocalDate.now()
     val timeOptionToStartTime = mapOf<Int, LocalDate>(
         Pair(timeOptions[0], currentDate.minusDays(7)),
@@ -123,25 +97,24 @@ fun WeightsExerciseHistoryDetails(
     )
     var detail by remember { mutableIntStateOf(detailOptions[0]) }
     var time by remember { mutableIntStateOf(timeOptions[0]) }
-    WeightsExerciseDetailsBestAndRecent(uiState)
+    CalisthenicsExerciseDetailsBestAndRecent(uiState)
     GraphOptions(
         detailOptions = detailOptions,
         detailOnChange = { newDetail -> detail = newDetail },
         timeOptions = timeOptions,
         timeOnChange = { newTime -> time = newTime }
     )
-    val dataPoints = getWeightsGraphDetails(
+    val dataPoints = getCalisthenicsGraphDetails(
         uiState,
         detail,
-        detailOptions,
-        LocalUserPreferences.current
+        detailOptions
     ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
     if (dataPoints.isNotEmpty()) {
         Graph(
             points = dataPoints,
             startDate = timeOptionToStartTime[time] ?: currentDate,
             yLabel = stringResource(id = detail),
-            yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) stringResource(id = LocalUserPreferences.current.defaultWeightUnit.shortForm) else ""
+            yUnit = ""
         )
     } else {
         Text(text = stringResource(id = R.string.no_data_error))
@@ -149,7 +122,7 @@ fun WeightsExerciseHistoryDetails(
 }
 
 @Composable
-private fun WeightsExerciseDetailsBestAndRecent(
+private fun CalisthenicsExerciseDetailsBestAndRecent(
     uiState: ExerciseDetailsUiState
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
@@ -193,112 +166,37 @@ private fun WeightsExerciseDetailsBestAndRecent(
     }
 }
 
-fun getWeightsGraphDetails(
+fun getCalisthenicsGraphDetails(
     uiState: ExerciseDetailsUiState,
     detail: Int,
-    detailOptions: List<Int>,
-    userPreferencesUiState: UserPreferencesUiState
+    detailOptions: List<Int>
 ) = uiState.weightsHistory.map { history ->
     when (detail) {
         detailOptions[0] -> {
-            if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
-                Pair(
-                    history.date,
-                    history.weight
-                )
-            } else {
-                Pair(
-                    history.date,
-                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, history.weight)
-                )
-            }
-        }
-
-        detailOptions[1] -> {
             Pair(
                 history.date,
                 history.reps.toDouble()
             )
         }
 
-        detailOptions[2] -> {
+        detailOptions[1] -> {
             Pair(
                 history.date,
                 history.sets.toDouble()
             )
         }
 
-        detailOptions[3] -> {
+        detailOptions[2] -> {
             Pair(
                 history.date,
-                history.weight * history.reps * history.sets
+                history.sets.toDouble() * history.reps.toDouble()
             )
         }
 
         else -> {
-            if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
-                Pair(
-                    history.date,
-                    history.weight
-                )
-            } else {
-                Pair(
-                    history.date,
-                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, history.weight)
-                )
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ItemDetailsScreenPreviewNoHistory() {
-    val userPreferencesUiState = UserPreferencesUiState()
-    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-        GymTrackerTheme(darkTheme = false) {
-            WeightsExerciseDetailsScreen(
-                innerPadding = PaddingValues(),
-                uiState = ExerciseDetailsUiState(
-                    exercise = ExerciseUiState(
-                        name = "Curls",
-                        muscleGroup = "Biceps",
-                        equipment = "Dumbbells"
-                    ),
-                    weightsHistory = listOf()
-                ),
-                chosenDate = null
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ItemDetailsScreenPreviewHistory() {
-    val userPreferencesUiState = UserPreferencesUiState()
-    CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-        GymTrackerTheme(darkTheme = false) {
-            WeightsExerciseDetailsScreen(
-                innerPadding = PaddingValues(),
-                uiState = ExerciseDetailsUiState(
-                    exercise = ExerciseUiState(
-                        name = "Curls",
-                        muscleGroup = "Biceps",
-                        equipment = "Dumbbells And BenchPress"
-                    ),
-                    weightsHistory = listOf(
-                        WeightsExerciseHistoryUiState(
-                            id = 1,
-                            weight = 13.0,
-                            sets = 1,
-                            reps = 2,
-                            rest = 1,
-                            date = LocalDate.now().minusDays(5)
-                        )
-                    )
-                ),
-                chosenDate = null
+            Pair(
+                history.date,
+                history.reps.toDouble()
             )
         }
     }

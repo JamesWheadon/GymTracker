@@ -48,7 +48,8 @@ fun RecordWeightsExerciseHistoryCard(
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    savedHistory: WeightsExerciseHistoryUiState = WeightsExerciseHistoryUiState()
+    savedHistory: WeightsExerciseHistoryUiState = WeightsExerciseHistoryUiState(),
+    recordWeight: Boolean = true
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
     var setsState by remember { mutableStateOf(if (savedHistory == WeightsExerciseHistoryUiState()) "" else savedHistory.sets.toString()) }
@@ -108,37 +109,39 @@ fun RecordWeightsExerciseHistoryCard(
                         .padding(0.dp)
                 )
             }
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.Top,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 0.dp)
-            ) {
-                FormInformationField(
-                    label = R.string.weight,
-                    value = weightState,
-                    onChange = { entry ->
-                        weightState = entry
-                    },
-                    formType = FormTypes.DOUBLE,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(0.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                val unitsContentDescription = stringResource(id = R.string.units)
-                DropdownBox(
-                    options = WeightUnits.values().associateWith { unit -> unit.shortForm },
-                    onChange = { value ->
-                        unitState = value
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(0.dp)
-                        .semantics { contentDescription = unitsContentDescription },
-                    selected = unitState
-                )
+            if (recordWeight) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.Top,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 0.dp)
+                ) {
+                    FormInformationField(
+                        label = R.string.weight,
+                        value = weightState,
+                        onChange = { entry ->
+                            weightState = entry
+                        },
+                        formType = FormTypes.DOUBLE,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(0.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    val unitsContentDescription = stringResource(id = R.string.units)
+                    DropdownBox(
+                        options = WeightUnits.values().associateWith { unit -> unit.shortForm },
+                        onChange = { value ->
+                            unitState = value
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(0.dp)
+                            .semantics { contentDescription = unitsContentDescription },
+                        selected = unitState
+                    )
+                }
             }
             SaveWeightsExerciseHistoryButton(
                 setsState = setsState,

@@ -34,6 +34,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.ActionConfirmation
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
@@ -119,32 +120,50 @@ fun LiveRecordWorkout(
     ) {
         uiState.exercises.forEach { exercise ->
             if (exercise.id == currentExercise) {
-                if (exercise.equipment != "") {
-                    LiveRecordWeightsExercise(
-                        uiState = exercise,
-                        exerciseComplete = { exerciseHistory ->
-                            saveFunction(exerciseHistory)
-                            completedExercises.add(exerciseHistory.exerciseId)
-                            currentExercise = -1
-                        },
-                        exerciseCancel = {
-                            currentExercise = -1
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                } else {
-                    LiveRecordCardioExercise(
-                        uiState = exercise,
-                        exerciseComplete = { exerciseHistory ->
-                            saveFunction(exerciseHistory)
-                            completedExercises.add(exerciseHistory.exerciseId)
-                            currentExercise = -1
-                        },
-                        exerciseCancel = {
-                            currentExercise = -1
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                when (exercise.type) {
+                    ExerciseType.WEIGHTS -> {
+                        LiveRecordWeightsExercise(
+                            uiState = exercise,
+                            exerciseComplete = { exerciseHistory ->
+                                saveFunction(exerciseHistory)
+                                completedExercises.add(exerciseHistory.exerciseId)
+                                currentExercise = -1
+                            },
+                            exerciseCancel = {
+                                currentExercise = -1
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    ExerciseType.CARDIO -> {
+                        LiveRecordCardioExercise(
+                            uiState = exercise,
+                            exerciseComplete = { exerciseHistory ->
+                                saveFunction(exerciseHistory)
+                                completedExercises.add(exerciseHistory.exerciseId)
+                                currentExercise = -1
+                            },
+                            exerciseCancel = {
+                                currentExercise = -1
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    ExerciseType.CALISTHENICS -> {
+                        LiveRecordWeightsExercise(
+                            uiState = exercise,
+                            exerciseComplete = { exerciseHistory ->
+                                saveFunction(exerciseHistory)
+                                completedExercises.add(exerciseHistory.exerciseId)
+                                currentExercise = -1
+                            },
+                            exerciseCancel = {
+                                currentExercise = -1
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            recordWeight = false
+                        )
+                    }
                 }
             } else if (completedExercises.contains(exercise.id)) {
                 LiveRecordWorkoutExerciseCard(

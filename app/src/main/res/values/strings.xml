@@ -65,6 +65,7 @@
     <string name="max_reps">Max Reps</string>
     <string name="max_sets">Max Sets</string>
     <string name="total_weight">Total Weight</string>
+    <string name="total_reps">Total Reps</string>
     <string name="recent_exercise_icon">recent exercise icon</string>
     <string name="units">units</string>
     <string name="new_workout">New %1$s Workout</string>

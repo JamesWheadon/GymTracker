@@ -42,7 +42,8 @@ fun RecordWeightsExerciseCard(
     exerciseHistory: WeightsExerciseHistoryUiState?,
     selectExerciseFunction: () -> Unit,
     deselectExerciseFunction: () -> Unit,
-    errorStateChange: (Int, Boolean) -> Unit
+    errorStateChange: (Int, Boolean) -> Unit,
+    recordWeight: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(exerciseHistory != null) }
     Card {
@@ -129,51 +130,53 @@ fun RecordWeightsExerciseCard(
                             .padding(0.dp)
                     )
                 }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.Top,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 0.dp)
-                ) {
-                    FormInformationField(
-                        label = R.string.weight,
-                        value = weightState,
-                        onChange = { weight ->
-                            weightState = weight
-                            if (weightState != "" && weightState.toDoubleOrNull() != null) {
-                                exerciseHistory.weight = convertToKilograms(
-                                    unitState,
-                                    weightState.toDouble()
-                                )
-                            }
-                        },
-                        formType = FormTypes.DOUBLE,
-                        error = weightError,
-                        errorMessage = R.string.number_error,
+                if (recordWeight) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.Top,
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(0.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    val unitsContentDescription = stringResource(id = R.string.units)
-                    DropdownBox(
-                        options = WeightUnits.values().associateWith { it.shortForm },
-                        onChange = { value ->
-                            unitState = value
-                            if (weightState != "") {
-                                exerciseHistory.weight = convertToKilograms(
-                                    unitState,
-                                    weightState.toDouble()
-                                )
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(0.dp)
-                            .semantics { contentDescription = unitsContentDescription },
-                        selected = unitState
-                    )
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 0.dp)
+                    ) {
+                        FormInformationField(
+                            label = R.string.weight,
+                            value = weightState,
+                            onChange = { weight ->
+                                weightState = weight
+                                if (weightState != "" && weightState.toDoubleOrNull() != null) {
+                                    exerciseHistory.weight = convertToKilograms(
+                                        unitState,
+                                        weightState.toDouble()
+                                    )
+                                }
+                            },
+                            formType = FormTypes.DOUBLE,
+                            error = weightError,
+                            errorMessage = R.string.number_error,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(0.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        val unitsContentDescription = stringResource(id = R.string.units)
+                        DropdownBox(
+                            options = WeightUnits.values().associateWith { it.shortForm },
+                            onChange = { value ->
+                                unitState = value
+                                if (weightState != "") {
+                                    exerciseHistory.weight = convertToKilograms(
+                                        unitState,
+                                        weightState.toDouble()
+                                    )
+                                }
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(0.dp)
+                                .semantics { contentDescription = unitsContentDescription },
+                            selected = unitState
+                        )
+                    }
                 }
                 errorStateChange(exercise.id, setsError || repsError || weightError)
             } else {

@@ -162,7 +162,7 @@ fun ExerciseInformationForm(
                             }
                         )
                     }
-                    else -> {
+                    ExerciseType.CALISTHENICS -> {
                         CalisthenicsExerciseForm(
                             nameState = nameState,
                             nameError = nameError,

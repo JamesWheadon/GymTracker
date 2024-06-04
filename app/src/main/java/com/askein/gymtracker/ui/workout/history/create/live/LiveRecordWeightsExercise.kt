@@ -44,6 +44,7 @@ fun LiveRecordWeightsExercise(
     exerciseComplete: (WeightsExerciseHistoryUiState) -> Unit,
     exerciseCancel: () -> Unit,
     modifier: Modifier = Modifier,
+    recordWeight: Boolean = true,
     viewModel: LiveRecordWeightsExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     var recording by rememberSaveable { mutableStateOf(false) }
@@ -71,7 +72,8 @@ fun LiveRecordWeightsExercise(
                         )
                         recording = true
                     },
-                    onCancel = { exerciseCancel() }
+                    onCancel = { exerciseCancel() },
+                    recordWeight = recordWeight
                 )
             } else {
                 val exerciseData = viewModel.exerciseState.collectAsState().value
@@ -94,7 +96,8 @@ fun LiveRecordWeightsExercise(
 @Composable
 fun LiveRecordWeightsExerciseInfo(
     onStart: (ExerciseData) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    recordWeight: Boolean
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
     var repsState by rememberSaveable { mutableStateOf("") }
@@ -132,36 +135,38 @@ fun LiveRecordWeightsExerciseInfo(
                     .padding(0.dp)
             )
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 0.dp)
-        ) {
-            FormInformationField(
-                label = R.string.weight,
-                value = weightState,
-                onChange = { entry ->
-                    weightState = entry
-                },
-                formType = FormTypes.DOUBLE,
+        if (recordWeight) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.Top,
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(0.dp)
-            )
-            val unitsContentDescription = stringResource(id = R.string.units)
-            DropdownBox(
-                options = WeightUnits.values().associateWith { it.shortForm },
-                onChange = { value ->
-                    unitState = value
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(0.dp)
-                    .semantics { contentDescription = unitsContentDescription },
-                selected = unitState
-            )
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 0.dp)
+            ) {
+                FormInformationField(
+                    label = R.string.weight,
+                    value = weightState,
+                    onChange = { entry ->
+                        weightState = entry
+                    },
+                    formType = FormTypes.DOUBLE,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(0.dp)
+                )
+                val unitsContentDescription = stringResource(id = R.string.units)
+                DropdownBox(
+                    options = WeightUnits.values().associateWith { it.shortForm },
+                    onChange = { value ->
+                        unitState = value
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(0.dp)
+                        .semantics { contentDescription = unitsContentDescription },
+                    selected = unitState
+                )
+            }
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
