@@ -105,55 +105,59 @@ fun RecordWorkoutHistoryScreen(
     ) {
         Text(text = titleText)
         uiState.exercises.forEach { exercise ->
-            if (exercise.type == ExerciseType.WEIGHTS) {
-                RecordWeightsExerciseCard(
-                    exercise = exercise,
-                    exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState,
-                    selectExerciseFunction = {
-                        exerciseHistories.add(
-                            WeightsExerciseHistoryUiState(
-                                exerciseId = exercise.id
+            when (exercise.type) {
+                ExerciseType.WEIGHTS -> {
+                    RecordWeightsExerciseCard(
+                        exercise = exercise,
+                        exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState,
+                        selectExerciseFunction = {
+                            exerciseHistories.add(
+                                WeightsExerciseHistoryUiState(
+                                    exerciseId = exercise.id
+                                )
                             )
-                        )
-                    },
-                    deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
-                    errorStateChange = { exerciseId, exerciseError ->
-                        exerciseErrors[exerciseId] = exerciseError
-                    },
-                )
-            } else if (exercise.type == ExerciseType.CARDIO) {
-                RecordCardioExerciseCard(
-                    exercise = exercise,
-                    exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? CardioExerciseHistoryUiState,
-                    selectExerciseFunction = {
-                        exerciseHistories.add(
-                            CardioExerciseHistoryUiState(
-                                exerciseId = exercise.id
+                        },
+                        deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
+                        errorStateChange = { exerciseId, exerciseError ->
+                            exerciseErrors[exerciseId] = exerciseError
+                        },
+                    )
+                }
+                ExerciseType.CARDIO -> {
+                    RecordCardioExerciseCard(
+                        exercise = exercise,
+                        exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? CardioExerciseHistoryUiState,
+                        selectExerciseFunction = {
+                            exerciseHistories.add(
+                                CardioExerciseHistoryUiState(
+                                    exerciseId = exercise.id
+                                )
                             )
-                        )
-                    },
-                    deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
-                    errorStateChange = { exerciseId, exerciseError ->
-                        exerciseErrors[exerciseId] = exerciseError
-                    }
-                )
-            } else if (exercise.type == ExerciseType.CALISTHENICS) {
-                RecordWeightsExerciseCard(
-                    exercise = exercise,
-                    exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState,
-                    selectExerciseFunction = {
-                        exerciseHistories.add(
-                            WeightsExerciseHistoryUiState(
-                                exerciseId = exercise.id
+                        },
+                        deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
+                        errorStateChange = { exerciseId, exerciseError ->
+                            exerciseErrors[exerciseId] = exerciseError
+                        }
+                    )
+                }
+                ExerciseType.CALISTHENICS -> {
+                    RecordWeightsExerciseCard(
+                        exercise = exercise,
+                        exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState,
+                        selectExerciseFunction = {
+                            exerciseHistories.add(
+                                WeightsExerciseHistoryUiState(
+                                    exerciseId = exercise.id
+                                )
                             )
-                        )
-                    },
-                    deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
-                    errorStateChange = { exerciseId, exerciseError ->
-                        exerciseErrors[exerciseId] = exerciseError
-                    },
-                    recordWeight = false
-                )
+                        },
+                        deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
+                        errorStateChange = { exerciseId, exerciseError ->
+                            exerciseErrors[exerciseId] = exerciseError
+                        },
+                        recordWeight = false
+                    )
+                }
             }
         }
         Button(

@@ -94,7 +94,7 @@ private fun WeightsExerciseInformation(
     } else {
         ExerciseDetail(
             exerciseInfo = stringResource(id = R.string.weights),
-            iconId = R.drawable.cardio_48dp,
+            iconId = R.drawable.exercise_filled_48px,
             iconDescription = R.string.equipment_icon,
             modifier = Modifier
                 .fillMaxWidth()
