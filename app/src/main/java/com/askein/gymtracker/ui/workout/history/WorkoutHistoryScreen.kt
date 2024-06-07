@@ -147,7 +147,8 @@ fun WorkoutHistoryExerciseCard(
             style = MaterialTheme.typography.headlineSmall
         )
         ExerciseHistoryDetails(
-            exerciseHistory = exerciseHistory
+            exerciseHistory = exerciseHistory,
+            exerciseType = exercise.type
         )
     }
 }

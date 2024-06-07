@@ -125,6 +125,7 @@
     <string name="seconds">Seconds</string>
     <string name="seconds_error">Value must be between 0 and 59</string>
     <string name="weights_exercise_reps">%1$.2f %2$s for %3$s reps</string>
+    <string name="calisthenics_exercise_reps">%1$s reps</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="date">Date</string>

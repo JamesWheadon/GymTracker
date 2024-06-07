@@ -9,6 +9,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 class LiveRecordWeightsExerciseViewModel : ViewModel() {
 
@@ -33,11 +35,11 @@ class LiveRecordWeightsExerciseViewModel : ViewModel() {
     }
 
     fun startTimer(rest: Int) {
-        timerState.tryEmit(timerState.value.copy(currentTime = rest, timerRunning = true))
         timerJob = viewModelScope.launch {
+            timerState.tryEmit(timerState.value.copy(currentTime = rest, timerRunning = true, endTime = Instant.now().plusSeconds(rest.toLong() + 1).truncatedTo(ChronoUnit.SECONDS)))
             while (timerState.value.currentTime > 0) {
                 withContext(Dispatchers.Main) {
-                    timerState.tryEmit(timerState.value.copy(currentTime = timerState.value.currentTime - 1))
+                    timerState.tryEmit(timerState.value.copy(currentTime = ChronoUnit.SECONDS.between(Instant.now(), timerState.value.endTime).toInt()))
                 }
                 delay(1000)
             }

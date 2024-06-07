@@ -148,6 +148,7 @@ fun RecordWeightsExerciseHistoryCard(
                 repsState = repsState,
                 weightState = weightState,
                 unitState = unitState,
+                recordWeight = recordWeight,
                 exerciseId = exerciseId,
                 savedHistory = savedHistory,
                 saveFunction = saveFunction,
@@ -163,13 +164,18 @@ private fun SaveWeightsExerciseHistoryButton(
     repsState: String,
     weightState: String,
     unitState: WeightUnits,
+    recordWeight: Boolean,
     exerciseId: Int,
     savedHistory: WeightsExerciseHistoryUiState,
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     onDismiss: () -> Unit
 ) {
-    if (setsState != "" && repsState != "" && weightState != "") {
-        val weight = weightState.toDouble()
+    if (setsState != "" && repsState != "" && (weightState != "" || !recordWeight)) {
+        val weight = if (recordWeight) {
+            weightState.toDouble()
+        } else {
+            0.0
+        }
         val history = if (savedHistory == WeightsExerciseHistoryUiState()) {
             WeightsExerciseHistory(
                 exerciseId = exerciseId,

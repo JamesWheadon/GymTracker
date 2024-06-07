@@ -86,7 +86,7 @@ fun LiveRecordWeightsExercise(
                     timerStart = { rest -> viewModel.startTimer(rest) },
                     finishSet = { viewModel.finishSet() },
                     resetTimer = { viewModel.reset() },
-                    exerciseFinished =  { exerciseComplete(exerciseData) }
+                    exerciseFinished = { exerciseComplete(exerciseData) }
                 )
             }
         }
@@ -178,13 +178,15 @@ fun LiveRecordWeightsExerciseInfo(
                     ExerciseData(
                         reps = repsState.toInt(),
                         rest = restState.toInt(),
-                        weight = if (unitState == WeightUnits.KILOGRAMS) {
+                        weight = if (recordWeight && unitState == WeightUnits.KILOGRAMS) {
                             weightState.toDouble()
-                        } else {
+                        } else if (recordWeight) {
                             convertToKilograms(
                                 unitState,
                                 weightState.toDouble()
                             )
+                        } else {
+                            0.0
                         }
                     )
                 )

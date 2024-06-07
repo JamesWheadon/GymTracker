@@ -22,8 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
-import com.askein.gymtracker.enums.convertToWeightUnit
-import com.askein.gymtracker.ui.user.LocalUserPreferences
 import java.time.LocalDate
 
 @Composable
@@ -125,12 +123,7 @@ fun CalisthenicsExerciseHistoryDetails(
 private fun CalisthenicsExerciseDetailsBestAndRecent(
     uiState: ExerciseDetailsUiState
 ) {
-    val userPreferencesUiState = LocalUserPreferences.current
-    val best = if (userPreferencesUiState.displayHighestWeight) {
-        uiState.weightsHistory.maxBy { history -> history.weight }
-    } else {
-        uiState.weightsHistory.maxBy { history -> history.weight * history.reps }
-    }
+    val best = uiState.weightsHistory.maxBy { history -> history.reps }
     val recent = uiState.weightsHistory.maxBy { history -> history.date.toEpochDay() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -139,9 +132,7 @@ private fun CalisthenicsExerciseDetailsBestAndRecent(
     ) {
         ExerciseDetail(
             exerciseInfo = stringResource(
-                id = R.string.weights_exercise_reps,
-                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, best.weight),
-                stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
+                id = R.string.calisthenics_exercise_reps,
                 best.reps
             ),
             iconId = R.drawable.trophy_48dp,
@@ -152,9 +143,7 @@ private fun CalisthenicsExerciseDetailsBestAndRecent(
         )
         ExerciseDetail(
             exerciseInfo = stringResource(
-                id = R.string.weights_exercise_reps,
-                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, recent.weight),
-                stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
+                id = R.string.calisthenics_exercise_reps,
                 recent.reps
             ),
             iconId = R.drawable.history_48px,

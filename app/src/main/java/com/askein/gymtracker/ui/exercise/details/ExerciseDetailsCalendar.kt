@@ -159,18 +159,26 @@ fun ExerciseHistoryDetails(
         onClick = { editExercise = true },
         modifier = modifier
     ) {
-        when (exerciseHistory) {
-            is WeightsExerciseHistoryUiState -> {
+        when (exercise.type) {
+            ExerciseType.WEIGHTS -> {
                 WeightsExerciseHistoryDetails(
-                    exerciseHistory = exerciseHistory,
+                    exerciseHistory = exerciseHistory as WeightsExerciseHistoryUiState,
                     deleteFunction = { deleteExercise = true },
                     editEnabled = true
                 )
             }
 
-            is CardioExerciseHistoryUiState -> {
+            ExerciseType.CARDIO -> {
                 CardioExerciseHistoryDetails(
-                    exerciseHistory = exerciseHistory,
+                    exerciseHistory = exerciseHistory as CardioExerciseHistoryUiState,
+                    deleteFunction = { deleteExercise = true },
+                    editEnabled = true
+                )
+            }
+
+            ExerciseType.CALISTHENICS -> {
+                CalisthenicsExerciseHistoryDetails(
+                    exerciseHistory = exerciseHistory as WeightsExerciseHistoryUiState,
                     deleteFunction = { deleteExercise = true },
                     editEnabled = true
                 )
@@ -207,21 +215,29 @@ fun ExerciseHistoryDetails(
 @Composable
 fun ExerciseHistoryDetails(
     exerciseHistory: ExerciseHistoryUiState,
+    exerciseType: ExerciseType,
     modifier: Modifier = Modifier
 ) {
-    when (exerciseHistory) {
-        is WeightsExerciseHistoryUiState -> {
+    when (exerciseType) {
+        ExerciseType.WEIGHTS -> {
             WeightsExerciseHistoryDetails(
-                exerciseHistory = exerciseHistory,
+                exerciseHistory = exerciseHistory as WeightsExerciseHistoryUiState,
                 deleteFunction = { },
                 editEnabled = false,
                 modifier = modifier
             )
         }
-
-        is CardioExerciseHistoryUiState -> {
+        ExerciseType.CARDIO -> {
             CardioExerciseHistoryDetails(
-                exerciseHistory = exerciseHistory,
+                exerciseHistory = exerciseHistory as CardioExerciseHistoryUiState,
+                deleteFunction = { },
+                editEnabled = false,
+                modifier = modifier
+            )
+        }
+        ExerciseType.CALISTHENICS -> {
+            CalisthenicsExerciseHistoryDetails(
+                exerciseHistory = exerciseHistory as WeightsExerciseHistoryUiState,
                 deleteFunction = { },
                 editEnabled = false,
                 modifier = modifier
@@ -342,6 +358,40 @@ fun CardioExerciseHistoryDetails(
                         exerciseHistory.calories!!
                     )
                 )
+            }
+        }
+        if (editEnabled) {
+            IconButton(onClick = deleteFunction) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    tint = Color.Red,
+                    contentDescription = stringResource(id = R.string.delete_history)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CalisthenicsExerciseHistoryDetails(
+    exerciseHistory: WeightsExerciseHistoryUiState,
+    deleteFunction: () -> Unit,
+    modifier: Modifier = Modifier,
+    editEnabled: Boolean
+) {
+    Row(
+        modifier = modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1F)
+        ) {
+            Text(text = stringResource(id = R.string.display_sets, exerciseHistory.sets))
+            Text(text = stringResource(id = R.string.display_reps, exerciseHistory.reps))
+            if (exerciseHistory.rest != null) {
+                Text(text = stringResource(id = R.string.display_rest, exerciseHistory.rest!!))
             }
         }
         if (editEnabled) {
