@@ -1,5 +1,6 @@
 package com.askein.gymtracker.ui
 
+import android.icu.text.DateFormat
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,9 +27,11 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -49,7 +55,11 @@ import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.DistanceUnits
 import com.askein.gymtracker.enums.FormTypes
 import com.askein.gymtracker.enums.WeightUnits
+import com.askein.gymtracker.ui.exercise.details.toDate
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Composable
 fun FormInformationField(
@@ -459,10 +469,83 @@ fun ActionConfirmation(
 }
 
 @Composable
+fun DatePickerDialog(
+    date: LocalDate,
+    onDateChange: (LocalDate) -> Unit
+) {
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    val customFormatter = DateFormat.getDateInstance(DateFormat.SHORT, LocalConfiguration.current.locales[0])
+
+    Box(contentAlignment = Alignment.Center) {
+        Button(onClick = { showDatePicker = true }) {
+            Text(text = customFormatter.format(date.toDate()))
+        }
+    }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            date = date,
+            onDateChange = onDateChange,
+            onDismiss = { showDatePicker = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerDialog(
+    date: LocalDate,
+    onDateChange: (LocalDate) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = date.toEpochMillis(),
+        selectableDates = object : SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+            return utcTimeMillis < LocalDate.now().plusDays(1).toEpochMillis()
+        }
+    })
+
+    val selectedDate = datePickerState.selectedDateMillis?.let {
+        Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+    } ?: LocalDate.now()
+
+    DatePickerDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            Button(onClick = {
+                onDateChange(selectedDate)
+                onDismiss()
+            }
+
+            ) {
+                Text(text = stringResource(id = R.string.confirm))
+            }
+        },
+        dismissButton = {
+            Button(onClick = {
+                onDismiss()
+            }) {
+                Text(text = stringResource(id = R.string.close))
+            }
+        }
+    ) {
+        DatePicker(
+            state = datePickerState
+        )
+    }
+}
+
+@Composable
 fun customCardElevation(): CardElevation {
     return CardDefaults.cardElevation(
         defaultElevation = 16.dp
     )
+}
+
+fun LocalDate.toEpochMillis(): Long {
+    return this.toEpochDay() * 86400000L
 }
 
 @Preview(showBackground = true)

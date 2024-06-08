@@ -29,6 +29,7 @@ import com.askein.gymtracker.enums.FormTypes
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToKilograms
 import com.askein.gymtracker.enums.convertToWeightUnit
+import com.askein.gymtracker.ui.DatePickerDialog
 import com.askein.gymtracker.ui.DropdownBox
 import com.askein.gymtracker.ui.FormInformationField
 import com.askein.gymtracker.ui.customCardElevation
@@ -62,6 +63,7 @@ fun RecordWeightsExerciseHistoryCard(
             )
         )
     }
+    var date by remember { mutableStateOf(savedHistory.date) }
     var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit) }
     Card(
         modifier = modifier
@@ -143,11 +145,18 @@ fun RecordWeightsExerciseHistoryCard(
                     )
                 }
             }
+            if (savedHistory.workoutHistoryId == null) {
+                DatePickerDialog(
+                    date = date,
+                    onDateChange = { newDate -> date = newDate }
+                )
+            }
             SaveWeightsExerciseHistoryButton(
                 setsState = setsState,
                 repsState = repsState,
                 weightState = weightState,
                 unitState = unitState,
+                dateState = date,
                 recordWeight = recordWeight,
                 exerciseId = exerciseId,
                 savedHistory = savedHistory,
@@ -164,6 +173,7 @@ private fun SaveWeightsExerciseHistoryButton(
     repsState: String,
     weightState: String,
     unitState: WeightUnits,
+    dateState: LocalDate,
     recordWeight: Boolean,
     exerciseId: Int,
     savedHistory: WeightsExerciseHistoryUiState,
@@ -182,26 +192,29 @@ private fun SaveWeightsExerciseHistoryButton(
                 weight = convertToKilograms(unitState, weight),
                 sets = setsState.toInt(),
                 reps = repsState.toInt(),
-                date = LocalDate.now()
+                date = dateState
             )
         } else {
-            savedHistory.sets = setsState.toInt()
-            savedHistory.reps = repsState.toInt()
-            savedHistory.weight = convertToKilograms(unitState, weight)
-            savedHistory.toWeightsExerciseHistory(exerciseId)
+            val tempHistory = savedHistory.copy(
+                sets = setsState.toInt(),
+                reps = repsState.toInt(),
+                weight = convertToKilograms(unitState, weight),
+                date = dateState
+            )
+            tempHistory.toWeightsExerciseHistory(exerciseId)
         }
         Button(onClick = {
             saveFunction(history.toWeightsExerciseHistoryUiState())
             onDismiss()
         }) {
-            Text("Save")
+            Text(text = stringResource(id = R.string.save))
         }
     } else {
         Button(
             onClick = { },
             enabled = false
         ) {
-            Text("Save")
+            Text(text = stringResource(id = R.string.save))
         }
     }
 }
