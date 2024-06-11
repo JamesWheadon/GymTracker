@@ -75,7 +75,9 @@ class LiveRecordWeightsExerciseKtTest {
                 timerStart = { },
                 finishSet = { },
                 resetTimer = { },
-                exerciseFinished = { }
+                exerciseFinished = { },
+                setUnitState = { unit -> viewModel.setUnitState(unit) },
+                unitState = unitState
             )
         }
 
@@ -95,7 +97,9 @@ class LiveRecordWeightsExerciseKtTest {
                 timerStart = { },
                 finishSet = { sets += 1 },
                 resetTimer = { },
-                exerciseFinished = { }
+                exerciseFinished = { },
+                setUnitState = { unit -> viewModel.setUnitState(unit) },
+                unitState = unitState
             )
         }
 
@@ -122,7 +126,9 @@ class LiveRecordWeightsExerciseKtTest {
                 timerStart = { },
                 finishSet = { sets += 1 },
                 resetTimer = { },
-                exerciseFinished = { }
+                exerciseFinished = { },
+                setUnitState = { unit -> viewModel.setUnitState(unit) },
+                unitState = unitState
             )
         }
 

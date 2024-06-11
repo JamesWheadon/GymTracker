@@ -227,6 +227,7 @@ fun ExerciseHistoryDetails(
                 modifier = modifier
             )
         }
+
         ExerciseType.CARDIO -> {
             CardioExerciseHistoryDetails(
                 exerciseHistory = exerciseHistory as CardioExerciseHistoryUiState,
@@ -235,6 +236,7 @@ fun ExerciseHistoryDetails(
                 modifier = modifier
             )
         }
+
         ExerciseType.CALISTHENICS -> {
             CalisthenicsExerciseHistoryDetails(
                 exerciseHistory = exerciseHistory as WeightsExerciseHistoryUiState,
@@ -254,10 +256,15 @@ fun WeightsExerciseHistoryDetails(
     editEnabled: Boolean
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
-    val weight = if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
+    val weights = if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
         exerciseHistory.weight
     } else {
-        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, exerciseHistory.weight)
+        exerciseHistory.weight.map {
+            convertToWeightUnit(
+                userPreferencesUiState.defaultWeightUnit,
+                it
+            )
+        }
     }
     Row(
         modifier = modifier
@@ -268,15 +275,17 @@ fun WeightsExerciseHistoryDetails(
         Column(
             modifier = Modifier.weight(1F)
         ) {
-            Text(text = stringResource(id = R.string.display_sets, exerciseHistory.sets))
-            Text(text = stringResource(id = R.string.display_reps, exerciseHistory.reps))
-            Text(
-                text = stringResource(
-                    id = R.string.display_weight,
-                    weight,
-                    stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
+            for (i in 0 until exerciseHistory.sets) {
+                Text(
+                    text = stringResource(
+                        id = R.string.display_set_weight_info,
+                        i + 1,
+                        exerciseHistory.reps[i],
+                        weights[i],
+                        stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
+                    )
                 )
-            )
+            }
             if (exerciseHistory.rest != null) {
                 Text(text = stringResource(id = R.string.display_rest, exerciseHistory.rest!!))
             }
@@ -388,8 +397,15 @@ fun CalisthenicsExerciseHistoryDetails(
         Column(
             modifier = Modifier.weight(1F)
         ) {
-            Text(text = stringResource(id = R.string.display_sets, exerciseHistory.sets))
-            Text(text = stringResource(id = R.string.display_reps, exerciseHistory.reps))
+            for (i in 0 until exerciseHistory.sets) {
+                Text(
+                    text = stringResource(
+                        id = R.string.display_set_info,
+                        i + 1,
+                        exerciseHistory.reps[i]
+                    )
+                )
+            }
             if (exerciseHistory.rest != null) {
                 Text(text = stringResource(id = R.string.display_rest, exerciseHistory.rest!!))
             }
@@ -415,9 +431,9 @@ fun WeightsHistoryDetailsPreview() {
             WeightsExerciseHistoryDetails(
                 exerciseHistory = WeightsExerciseHistoryUiState(
                     id = 1,
-                    weight = 13.0,
+                    weight = listOf(13.0),
                     sets = 1,
-                    reps = 2,
+                    reps = listOf(2),
                     rest = 1,
                     date = LocalDate.now().minusDays(5)
 

@@ -20,6 +20,7 @@ import com.askein.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRe
 import com.askein.gymtracker.data.workoutHistory.WorkoutHistory
 import com.askein.gymtracker.data.workoutHistory.WorkoutHistoryDao
 import com.askein.gymtracker.data.workoutWithExercises.WorkoutWithExercisesDao
+import com.askein.gymtracker.util.ListConverter
 import com.askein.gymtracker.util.LocalDateConverter
 
 @Database(
@@ -31,10 +32,9 @@ import com.askein.gymtracker.util.LocalDateConverter
         WorkoutExerciseCrossRef::class,
         WorkoutHistory::class
     ],
-    version = 4,
-    exportSchema = false
+    version = 5
 )
-@TypeConverters(LocalDateConverter::class)
+@TypeConverters(LocalDateConverter::class, ListConverter::class)
 abstract class ExerciseWorkoutDatabase : RoomDatabase() {
     abstract fun exerciseDao(): ExerciseDao
     abstract fun weightsExerciseHistoryDao(): WeightsExerciseHistoryDao

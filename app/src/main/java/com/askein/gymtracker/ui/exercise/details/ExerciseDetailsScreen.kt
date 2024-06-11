@@ -179,9 +179,9 @@ fun ExerciseDetailsScreenPreview() {
                 weightsHistory = listOf(
                     WeightsExerciseHistoryUiState(
                         id = 1,
-                        weight = 13.0,
+                        weight = listOf(13.0),
                         sets = 1,
-                        reps = 2,
+                        reps = listOf(2),
                         rest = 1,
                         date = LocalDate.now().minusDays(5)
                     )

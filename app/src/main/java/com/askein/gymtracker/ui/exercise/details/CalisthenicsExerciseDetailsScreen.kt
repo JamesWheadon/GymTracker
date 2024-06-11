@@ -123,7 +123,7 @@ fun CalisthenicsExerciseHistoryDetails(
 private fun CalisthenicsExerciseDetailsBestAndRecent(
     uiState: ExerciseDetailsUiState
 ) {
-    val best = uiState.weightsHistory.maxBy { history -> history.reps }
+    val best = uiState.weightsHistory.maxBy { history -> history.reps.max() }
     val recent = uiState.weightsHistory.maxBy { history -> history.date.toEpochDay() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -133,7 +133,7 @@ private fun CalisthenicsExerciseDetailsBestAndRecent(
         ExerciseDetail(
             exerciseInfo = stringResource(
                 id = R.string.calisthenics_exercise_reps,
-                best.reps
+                best.reps.max()
             ),
             iconId = R.drawable.trophy_48dp,
             iconDescription = R.string.best_exercise_icon,
@@ -144,7 +144,7 @@ private fun CalisthenicsExerciseDetailsBestAndRecent(
         ExerciseDetail(
             exerciseInfo = stringResource(
                 id = R.string.calisthenics_exercise_reps,
-                recent.reps
+                recent.reps.last()
             ),
             iconId = R.drawable.history_48px,
             iconDescription = R.string.recent_exercise_icon,
@@ -164,7 +164,7 @@ fun getCalisthenicsGraphDetails(
         detailOptions[0] -> {
             Pair(
                 history.date,
-                history.reps.toDouble()
+                history.reps.max().toDouble()
             )
         }
 
@@ -178,14 +178,14 @@ fun getCalisthenicsGraphDetails(
         detailOptions[2] -> {
             Pair(
                 history.date,
-                history.sets.toDouble() * history.reps.toDouble()
+                history.reps.sum().toDouble()
             )
         }
 
         else -> {
             Pair(
                 history.date,
-                history.reps.toDouble()
+                history.reps.max().toDouble()
             )
         }
     }

@@ -2,6 +2,7 @@ package com.askein.gymtracker.ui.workout.history.create.live
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,17 +18,26 @@ class LiveRecordWeightsExerciseViewModel : ViewModel() {
     val exerciseState = MutableStateFlow(WeightsExerciseHistoryUiState())
     val timerState = MutableStateFlow(TimerState())
     val completed = MutableStateFlow(false)
+    val unitState = MutableStateFlow(WeightUnits.KILOGRAMS)
     private var timerJob: Job? = null
 
-    fun setExerciseData(exerciseId: Int, reps: Int, rest: Int, weight: Double) {
+    fun setExerciseData(exerciseId: Int, rest: Int) {
         exerciseState.tryEmit(
             WeightsExerciseHistoryUiState(
                 exerciseId = exerciseId,
-                reps = reps,
                 rest = rest,
-                weight = weight
             )
         )
+    }
+
+    fun setUnitState(units: WeightUnits) {
+        unitState.tryEmit(units)
+    }
+
+    fun addSetInfo(reps: Int, weight: Double) {
+        val oldState = exerciseState.value
+        val newState = oldState.copy(reps = oldState.reps + reps, weight = oldState.weight + weight)
+        exerciseState.tryEmit(newState)
     }
 
     fun finishSet() {

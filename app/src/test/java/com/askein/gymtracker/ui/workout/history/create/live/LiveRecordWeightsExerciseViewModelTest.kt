@@ -20,7 +20,7 @@ class LiveRecordWeightsExerciseViewModelTest {
 
         assertThat(viewModel.exerciseState.value, equalTo(WeightsExerciseHistoryUiState()))
 
-        viewModel.setExerciseData(1, 10, 15, 10.0)
+        viewModel.setExerciseData(1, 15)
 
         assertThat(viewModel.exerciseState.value.exerciseId, equalTo(1))
         assertThat(viewModel.exerciseState.value.reps, equalTo(10))

@@ -154,9 +154,11 @@ private fun WeightsExerciseDetailsBestAndRecent(
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
     val best = if (userPreferencesUiState.displayHighestWeight) {
-        uiState.weightsHistory.maxBy { history -> history.weight }
+        uiState.weightsHistory.map { history -> history.weight.zip(history.reps) }.flatten()
+            .maxWith(compareBy({ it.first }, { it.second }))
     } else {
-        uiState.weightsHistory.maxBy { history -> history.weight * history.reps }
+        uiState.weightsHistory.map { history -> history.weight.zip(history.reps) }.flatten()
+            .maxBy { it.first * it.second }
     }
     val recent = uiState.weightsHistory.maxBy { history -> history.date.toEpochDay() }
     Row(
@@ -167,9 +169,9 @@ private fun WeightsExerciseDetailsBestAndRecent(
         ExerciseDetail(
             exerciseInfo = stringResource(
                 id = R.string.weights_exercise_reps,
-                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, best.weight),
+                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, best.first),
                 stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
-                best.reps
+                best.second
             ),
             iconId = R.drawable.trophy_48dp,
             iconDescription = R.string.best_exercise_icon,
@@ -180,9 +182,9 @@ private fun WeightsExerciseDetailsBestAndRecent(
         ExerciseDetail(
             exerciseInfo = stringResource(
                 id = R.string.weights_exercise_reps,
-                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, recent.weight),
+                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, recent.weight.last()),
                 stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
-                recent.reps
+                recent.reps.last()
             ),
             iconId = R.drawable.history_48px,
             iconDescription = R.string.recent_exercise_icon,
@@ -204,12 +206,14 @@ fun getWeightsGraphDetails(
             if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
                 Pair(
                     history.date,
-                    history.weight
+                    history.weight.max()
                 )
             } else {
                 Pair(
                     history.date,
-                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, history.weight)
+                    history.weight.maxOf {
+                        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, it)
+                    }
                 )
             }
         }
@@ -217,7 +221,7 @@ fun getWeightsGraphDetails(
         detailOptions[1] -> {
             Pair(
                 history.date,
-                history.reps.toDouble()
+                history.reps.max().toDouble()
             )
         }
 
@@ -231,7 +235,7 @@ fun getWeightsGraphDetails(
         detailOptions[3] -> {
             Pair(
                 history.date,
-                history.weight * history.reps * history.sets
+                history.weight.zip(history.reps).sumOf { it.first * it.second }
             )
         }
 
@@ -239,12 +243,14 @@ fun getWeightsGraphDetails(
             if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
                 Pair(
                     history.date,
-                    history.weight
+                    history.weight.max()
                 )
             } else {
                 Pair(
                     history.date,
-                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, history.weight)
+                    history.weight.maxOf {
+                        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, it)
+                    }
                 )
             }
         }
@@ -290,9 +296,9 @@ fun ItemDetailsScreenPreviewHistory() {
                     weightsHistory = listOf(
                         WeightsExerciseHistoryUiState(
                             id = 1,
-                            weight = 13.0,
+                            weight = listOf(13.0, 12.5),
                             sets = 1,
-                            reps = 2,
+                            reps = listOf(2, 4),
                             rest = 1,
                             date = LocalDate.now().minusDays(5)
                         )
