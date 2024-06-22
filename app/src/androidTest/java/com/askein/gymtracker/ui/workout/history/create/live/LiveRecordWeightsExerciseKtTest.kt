@@ -41,7 +41,10 @@ class LiveRecordWeightsExerciseKtTest {
     @Test
     fun rendersTimerThatCountsDown() {
         rule.setContent {
-            Timer(timerState = 5) { }
+            Timer(
+                timerState = 5,
+                buttonEnabled = false
+            ) { }
         }
 
         timerStopButton.assertExists()
@@ -52,7 +55,10 @@ class LiveRecordWeightsExerciseKtTest {
     fun timerClickingStopFinishesTimer() {
         var finished = false
         rule.setContent {
-            Timer(timerState = 15) {
+            Timer(
+                timerState = 15,
+                buttonEnabled = false
+            ) {
                 finished = true
             }
         }
@@ -76,8 +82,10 @@ class LiveRecordWeightsExerciseKtTest {
                 finishSet = { },
                 resetTimer = { },
                 exerciseFinished = { },
-                setUnitState = { unit -> viewModel.setUnitState(unit) },
-                unitState = unitState
+                setUnitState = { },
+                addSetInfo = {_, _ -> },
+                recordWeight = false,
+                unitState = WeightUnits.KILOGRAMS
             )
         }
 
@@ -98,8 +106,10 @@ class LiveRecordWeightsExerciseKtTest {
                 finishSet = { sets += 1 },
                 resetTimer = { },
                 exerciseFinished = { },
-                setUnitState = { unit -> viewModel.setUnitState(unit) },
-                unitState = unitState
+                setUnitState = { },
+                addSetInfo = {_, _ -> },
+                recordWeight = false,
+                unitState = WeightUnits.KILOGRAMS
             )
         }
 
@@ -127,8 +137,10 @@ class LiveRecordWeightsExerciseKtTest {
                 finishSet = { sets += 1 },
                 resetTimer = { },
                 exerciseFinished = { },
-                setUnitState = { unit -> viewModel.setUnitState(unit) },
-                unitState = unitState
+                setUnitState = { },
+                addSetInfo = {_, _ -> },
+                recordWeight = false,
+                unitState = WeightUnits.KILOGRAMS
             )
         }
 
@@ -186,7 +198,7 @@ class LiveRecordWeightsExerciseKtTest {
 
     @Test
     fun liveRecordExerciseInfoClickingStartPopulatesExerciseData() {
-        var exerciseData: ExerciseData? = null
+        var exerciseData: Int? = null
         rule.setContent {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
@@ -205,9 +217,7 @@ class LiveRecordWeightsExerciseKtTest {
         weightField.performTextInput("13.0")
         startButton.performClick()
 
-        assertThat(exerciseData!!.reps, equalTo(5))
-        assertThat(exerciseData!!.rest, equalTo(15))
-        assertThat(exerciseData!!.weight, equalTo(13.0))
+        assertThat(exerciseData, equalTo(15))
     }
 
     @Test

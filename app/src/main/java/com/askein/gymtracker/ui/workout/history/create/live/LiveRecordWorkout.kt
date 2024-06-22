@@ -44,6 +44,7 @@ import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.askein.gymtracker.ui.navigation.TopBar
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
+import com.askein.gymtracker.ui.workout.details.EditWorkoutExercisesScreen
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsRoute
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.askein.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
@@ -110,6 +111,7 @@ fun LiveRecordWorkout(
     cancelFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showEditExercises by remember { mutableStateOf(false) }
     var showDeleteWorkout by remember { mutableStateOf(false) }
     val completedExercises = rememberSaveable(saver = IntListSaver) { mutableStateListOf() }
     var currentExercise by rememberSaveable { mutableIntStateOf(-1) }
@@ -179,6 +181,11 @@ fun LiveRecordWorkout(
                 )
             }
         }
+        Button(
+            onClick = { showEditExercises = true }
+        ) {
+            Text(text = stringResource(id = R.string.edit_exercises))
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround,
@@ -205,6 +212,12 @@ fun LiveRecordWorkout(
                 cancelFunction = { showDeleteWorkout = false }
             )
         }
+    }
+    if (showEditExercises) {
+        EditWorkoutExercisesScreen(
+            uiState = uiState,
+            onDismiss = { showEditExercises = false }
+        )
     }
 }
 

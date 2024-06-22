@@ -38,7 +38,7 @@ class WorkoutExerciseCrossRefDaoTest {
 
     @Test
     fun daoInsert_InsertsWorkoutExerciseIntoDB() = runBlocking {
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
         val saved = exercise.query(query)
@@ -55,8 +55,8 @@ class WorkoutExerciseCrossRefDaoTest {
 
     @Test
     fun daoDelete_DeletesWorkoutExerciseFromDB() = runBlocking {
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
-        workoutExerciseCrossRefDao.delete(WorkoutExerciseCrossRef(1, 1))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
+        workoutExerciseCrossRefDao.delete(WorkoutExerciseCrossRef(1, 1, 1))
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
         val saved = exercise.query(query)
@@ -67,8 +67,8 @@ class WorkoutExerciseCrossRefDaoTest {
 
     @Test
     fun daoDelete_DeletesAllWorkoutExerciseFromDBForWorkout() = runBlocking {
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 2))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 2, 1))
         workoutExerciseCrossRefDao.deleteAllCrossRefForWorkout(1)
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
@@ -80,8 +80,8 @@ class WorkoutExerciseCrossRefDaoTest {
 
     @Test
     fun daoDelete_DeletesAllWorkoutExerciseFromDBForExercise() = runBlocking {
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(2, 1))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(2, 1, 1))
         workoutExerciseCrossRefDao.deleteAllCrossRefForExercise(1)
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)

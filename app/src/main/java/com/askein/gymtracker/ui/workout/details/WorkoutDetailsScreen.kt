@@ -146,8 +146,7 @@ fun WorkoutDetailsScreen(
     }
     if (showEditExercises) {
         EditWorkoutExercisesScreen(
-            workout = uiState.toWorkoutUiState(),
-            existingExercises = uiState.exercises,
+            uiState = uiState,
             onDismiss = { showEditExercises = false }
         )
     }

@@ -227,7 +227,7 @@ class RecordWeightsExerciseCardKtTest {
                 RecordWeightsExerciseCard(
                     exercise = curlsExercise,
                     exerciseHistory = WeightsExerciseHistoryUiState(
-                        weight = 10.0
+                        weight = listOf(10.0)
                     ),
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },

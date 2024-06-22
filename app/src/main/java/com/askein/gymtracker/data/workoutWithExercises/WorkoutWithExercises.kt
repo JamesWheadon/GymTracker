@@ -21,5 +21,11 @@ data class WorkoutWithExercises(
         entityColumn = "workoutId",
         entity = WorkoutHistory::class
     )
-    val workoutHistory: List<WorkoutHistoryWithExerciseHistory>
+    val workoutHistory: List<WorkoutHistoryWithExerciseHistory>,
+    @Relation(
+        parentColumn = "workoutId",
+        entityColumn = "workoutId",
+        entity = WorkoutExerciseCrossRef::class
+    )
+    val exerciseOrder: List<WorkoutExerciseCrossRef>
 )

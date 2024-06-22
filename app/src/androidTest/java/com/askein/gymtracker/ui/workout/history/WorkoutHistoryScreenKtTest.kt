@@ -28,9 +28,9 @@ class WorkoutHistoryScreenKtTest {
         exerciseId = 1,
         date = LocalDate.now(),
         workoutHistoryId = 1,
-        weight = 1.0,
+        weight = listOf(1.0),
         sets = 1,
-        reps = 1,
+        reps = listOf(1),
         rest = 1
     )
     private val benchHistory = WeightsExerciseHistoryUiState(
@@ -38,9 +38,9 @@ class WorkoutHistoryScreenKtTest {
         exerciseId = 3,
         date = LocalDate.now(),
         workoutHistoryId = 1,
-        weight = 1.0,
+        weight = listOf(1.0),
         sets = 1,
-        reps = 1,
+        reps = listOf(1),
         rest = 1
     )
     private val workoutHistory = WorkoutHistoryWithExercisesUiState(1, 1, LocalDate.now(), listOf(curlsHistory, benchHistory))

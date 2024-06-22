@@ -73,9 +73,9 @@ class ExerciseDetailsCalendarKtTest {
         id = 1,
         exerciseId = 1,
         date = LocalDate.now(),
-        weight = 13.0,
+        weight = listOf(13.0),
         sets = 1,
-        reps = 2,
+        reps = listOf(2),
         rest = 1
     )
     private val cardioExerciseHistory = CardioExerciseHistoryUiState(

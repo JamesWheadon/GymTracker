@@ -40,9 +40,9 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         exerciseId = 0,
         date = LocalDate.now(),
         workoutHistoryId = null,
-        weight = 1.0,
+        weight = listOf(1.0),
         sets = 1,
-        reps = 1
+        reps = listOf(1)
     )
 
     @Test
@@ -239,7 +239,7 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                     saveFunction = {},
                     onDismiss = {},
                     savedHistory = WeightsExerciseHistoryUiState(
-                        weight = 10.0
+                        weight = listOf(10.0)
                     )
                 )
             }

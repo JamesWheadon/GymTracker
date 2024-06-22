@@ -182,9 +182,9 @@ class HistoryDaoTest {
         exerciseId: Int
     ): WeightsExerciseHistory = WeightsExerciseHistory(
         exerciseId = exerciseId,
-        weight = 0.0,
+        weight = listOf(0.0),
         sets = 0,
-        reps = 0,
+        reps = listOf(0),
         date = date,
         workoutHistoryId = workoutHistoryId
     )

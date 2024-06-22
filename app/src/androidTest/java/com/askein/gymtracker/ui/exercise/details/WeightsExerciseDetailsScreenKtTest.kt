@@ -41,25 +41,25 @@ class WeightsExerciseDetailsScreenKtTest {
         weightsHistory = listOf(
             WeightsExerciseHistoryUiState(
                 id = 1,
-                weight = 13.0,
+                weight = listOf(13.0),
                 sets = 1,
-                reps = 2,
+                reps = listOf(2),
                 rest = 1,
                 date = LocalDate.now().minusDays(5)
             ),
             WeightsExerciseHistoryUiState(
                 id = 1,
-                weight = 12.0,
+                weight = listOf(12.0),
                 sets = 1,
-                reps = 5,
+                reps = listOf(5),
                 rest = 1,
                 date = LocalDate.now().minusDays(3)
             ),
             WeightsExerciseHistoryUiState(
                 id = 1,
-                weight = 10.0,
+                weight = listOf(10.0),
                 sets = 1,
-                reps = 5,
+                reps = listOf(5),
                 rest = 1,
                 date = LocalDate.now()
             )

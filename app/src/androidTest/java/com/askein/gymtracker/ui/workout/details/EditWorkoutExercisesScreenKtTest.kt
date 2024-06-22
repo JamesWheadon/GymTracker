@@ -69,7 +69,8 @@ class EditWorkoutExercisesScreenKtTest {
             AddRemoveExerciseCard(
                 exercise = curlsExerciseUiState,
                 checked = true,
-                clickFunction = { }
+                clickFunction = { },
+                onPositioned = { }
             )
         }
 
@@ -87,7 +88,8 @@ class EditWorkoutExercisesScreenKtTest {
             AddRemoveExerciseCard(
                 exercise = curlsExerciseUiState,
                 checked = false,
-                clickFunction = { }
+                clickFunction = { },
+                onPositioned = { }
             )
         }
 
@@ -107,7 +109,8 @@ class EditWorkoutExercisesScreenKtTest {
             AddRemoveExerciseCard(
                 exercise = curlsExerciseUiState,
                 checked = false,
-                clickFunction = { clicked = true }
+                clickFunction = { clicked = true },
+                onPositioned = { }
             )
         }
 
@@ -130,7 +133,9 @@ class EditWorkoutExercisesScreenKtTest {
                 exercises = listOf(curlsExerciseUiState, dipsExerciseUiState),
                 clickFunction = { },
                 listTitle = R.string.workout_exercises,
-                exercisesSelected = true
+                exercisesSelected = true,
+                hoverPosition = 0,
+                onPositioned = { }
             )
         }
 

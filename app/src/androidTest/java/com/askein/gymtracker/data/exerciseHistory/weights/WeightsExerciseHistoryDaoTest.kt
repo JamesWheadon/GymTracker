@@ -100,7 +100,7 @@ class WeightsExerciseHistoryDaoTest {
         assertThat(secondHistory, equalTo(null))
     }
 
-    private fun createExerciseHistory(id: Int, exerciseId: Int, time: LocalDate = LocalDate.now(), weight: Double = 10.0, workoutHistoryId: Int? = null) = WeightsExerciseHistory(id, exerciseId, weight, 10, 10, time, workoutHistoryId = workoutHistoryId)
+    private fun createExerciseHistory(id: Int, exerciseId: Int, time: LocalDate = LocalDate.now(), weight: Double = 10.0, workoutHistoryId: Int? = null) = WeightsExerciseHistory(id, exerciseId, listOf(weight), 10, listOf(10), time, workoutHistoryId = workoutHistoryId)
 
     private suspend fun addMultipleHistoryToDB() {
         weightsExerciseHistoryDao.insert(createExerciseHistory(FIRST_HISTORY_ID, FIRST_EXERCISE_ID, LocalDate.now().minusDays(8)))

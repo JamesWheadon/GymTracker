@@ -14,12 +14,19 @@ data class WorkoutWithExercisesUiState(
     val workoutHistory: List<WorkoutHistoryWithExercisesUiState> = listOf()
 )
 
-fun WorkoutWithExercises.toWorkoutWithExercisesUiState(): WorkoutWithExercisesUiState = WorkoutWithExercisesUiState(
-    workoutId = workout.workoutId,
-    name = workout.name,
-    exercises = exercises.map { exercise -> exercise.toExerciseUiState() },
-    workoutHistory = workoutHistory.map { workoutHistory -> workoutHistory.toWorkoutHistoryWithExercisesUiState() }
-)
+fun WorkoutWithExercises.toWorkoutWithExercisesUiState(): WorkoutWithExercisesUiState =
+    WorkoutWithExercisesUiState(
+        workoutId = workout.workoutId,
+        name = workout.name,
+        exercises = exercises
+            .map { exercise -> exercise.toExerciseUiState() }
+            .sortedBy { exercise ->
+                exerciseOrder.first { crossRef -> crossRef.exerciseId == exercise.id }.order
+            },
+        workoutHistory = workoutHistory.map { workoutHistory ->
+            workoutHistory.toWorkoutHistoryWithExercisesUiState()
+        }
+    )
 
 fun WorkoutWithExercisesUiState.toWorkoutUiState(): WorkoutUiState = WorkoutUiState(
     workoutId = workoutId,

@@ -32,7 +32,7 @@ import com.askein.gymtracker.util.LocalDateConverter
         WorkoutExerciseCrossRef::class,
         WorkoutHistory::class
     ],
-    version = 5
+    version = 6
 )
 @TypeConverters(LocalDateConverter::class, ListConverter::class)
 abstract class ExerciseWorkoutDatabase : RoomDatabase() {

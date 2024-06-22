@@ -29,9 +29,9 @@ class RecordExerciseHistoryScreenKtTest {
         exerciseId = 0,
         date = LocalDate.now(),
         workoutHistoryId = 1,
-        weight = 1.0,
+        weight = listOf(1.0),
         sets = 1,
-        reps = 1
+        reps = listOf(1)
     )
     private val cardioHistory = CardioExerciseHistoryUiState(
         id = 0,
