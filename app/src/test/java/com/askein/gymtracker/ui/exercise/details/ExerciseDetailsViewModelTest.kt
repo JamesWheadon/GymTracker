@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.askein.gymtracker.data.exercise.Exercise
 import com.askein.gymtracker.data.exercise.ExerciseRepository
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
 import com.askein.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.askein.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
@@ -24,8 +25,20 @@ import org.mockito.kotlin.verifyNoInteractions
 
 class ExerciseDetailsViewModelTest {
 
-    private val weightsExercise = Exercise(1, "Curls", "Biceps", "Dumbbells")
-    private val cardioExercise = Exercise(2, "Running", "", "")
+    private val weightsExercise = Exercise(
+        exerciseId = 1,
+        exerciseType = ExerciseType.WEIGHTS,
+        name = "Curls",
+        muscleGroup = "Biceps",
+        equipment = "Dumbbells"
+    )
+    private val cardioExercise = Exercise(
+        exerciseId = 2,
+        exerciseType = ExerciseType.CARDIO,
+        name = "Running",
+        muscleGroup = "",
+        equipment = ""
+    )
 
     private val mockExerciseRepository: ExerciseRepository = mock()
     private val mockWeightsExerciseHistoryRepository: WeightsExerciseHistoryRepository = mock()
@@ -35,7 +48,7 @@ class ExerciseDetailsViewModelTest {
     private val fakeWeightsHistoryRepository = FakeWeightsExerciseHistoryRepository()
     private val fakeCardioHistoryRepository = FakeCardioExerciseHistoryRepository()
     private val fakeExerciseWithHistoryRepository = FakeExerciseWithHistoryRepository()
-    private val savedState = SavedStateHandle(mapOf("exerciseId" to 1))
+    private val savedState = SavedStateHandle(mapOf("exerciseId" to 1, "chosenDate" to "20240101"))
     private lateinit var viewModel: ExerciseDetailsViewModel
 
     @get:Rule

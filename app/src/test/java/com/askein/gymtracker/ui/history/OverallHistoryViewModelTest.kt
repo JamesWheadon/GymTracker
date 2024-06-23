@@ -2,6 +2,7 @@ package com.askein.gymtracker.ui.history
 
 import app.cash.turbine.test
 import com.askein.gymtracker.data.exercise.Exercise
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.data.history.HistoryRepository
 import com.askein.gymtracker.data.workout.Workout
 import com.askein.gymtracker.fake.FakeHistoryRepository
@@ -68,6 +69,7 @@ class OverallHistoryViewModelTest {
                 listOf(
                     Exercise(
                         name = "Curls",
+                        exerciseType = ExerciseType.WEIGHTS,
                         muscleGroup = "",
                         equipment = ""
                     )
@@ -83,7 +85,7 @@ class OverallHistoryViewModelTest {
     @Test
     fun updateSelectedDateGetsWorkoutAndExercisesForDate() = runBlocking {
         `when`(mockRepository.getExercisesForDate(LocalDate.now().toEpochDay())).thenReturn(
-            flowOf(listOf(Exercise(name = "", muscleGroup = "", equipment = "")))
+            flowOf(listOf(Exercise(name = "", exerciseType = ExerciseType.WEIGHTS, muscleGroup = "", equipment = "")))
         )
         `when`(mockRepository.getWorkoutsForDate(LocalDate.now().toEpochDay())).thenReturn(
             flowOf(listOf(Workout(name = "")))

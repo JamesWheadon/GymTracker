@@ -1,7 +1,9 @@
 package com.askein.gymtracker.fake
 
 import com.askein.gymtracker.data.exercise.Exercise
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.data.workout.Workout
+import com.askein.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRef
 import com.askein.gymtracker.data.workoutWithExercises.WorkoutWithExercises
 import com.askein.gymtracker.data.workoutWithExercises.WorkoutWithExercisesRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,12 +19,14 @@ class FakeWorkoutWithExercisesRepository : WorkoutWithExercisesRepository {
         exercises = listOf(
             Exercise(
                 exerciseId = 1,
+                exerciseType = ExerciseType.WEIGHTS,
                 name = "testName",
                 muscleGroup = "muscleGroup",
                 equipment = "equipment"
             )
         ),
-        workoutHistory = listOf()
+        workoutHistory = listOf(),
+        exerciseOrder = listOf(WorkoutExerciseCrossRef(1, 1, 0))
     )
 
     override fun getWorkoutWithExercisesStream(workoutId: Int): Flow<WorkoutWithExercises> = flowOf(workoutWithExercises)

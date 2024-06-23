@@ -1,6 +1,7 @@
 package com.askein.gymtracker.fake
 
 import com.askein.gymtracker.data.exercise.Exercise
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.data.exerciseWithHistory.ExerciseWithHistory
 import com.askein.gymtracker.data.exerciseWithHistory.ExerciseWithHistoryRepository
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,7 @@ class FakeExerciseWithHistoryRepository: ExerciseWithHistoryRepository {
     val exerciseWithHistory = ExerciseWithHistory(
         exercise = Exercise(
             exerciseId = 1,
+            exerciseType = ExerciseType.CARDIO,
             name = "Test",
             equipment = "",
             muscleGroup = ""

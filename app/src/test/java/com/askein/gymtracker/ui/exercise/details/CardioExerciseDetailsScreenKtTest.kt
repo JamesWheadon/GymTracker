@@ -1,5 +1,6 @@
 package com.askein.gymtracker.ui.exercise.details
 
+import com.askein.gymtracker.enums.DistanceUnits
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
@@ -49,6 +50,19 @@ class CardioExerciseDetailsScreenKtTest {
     }
 
     @Test
+    fun getGraphDetailsForFirstOptionNonKilometersUnit() {
+        val result = getCardioGraphDetails(
+            exercise,
+            4,
+            options,
+            UserPreferencesUiState(defaultDistanceUnit = DistanceUnits.MILES)
+        )
+
+        assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(3.11, 2.49)))
+    }
+
+    @Test
     fun getGraphDetailsForSecondOption() {
         val result = getCardioGraphDetails(exercise, 2, options, UserPreferencesUiState())
 
@@ -70,5 +84,18 @@ class CardioExerciseDetailsScreenKtTest {
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
         assertThat(result.map { it.second }, equalTo(listOf(5.0, 4.0)))
+    }
+
+    @Test
+    fun getGraphDetailsForOtherOptionNonKilometersUnit() {
+        val result = getCardioGraphDetails(
+            exercise,
+            4,
+            options,
+            UserPreferencesUiState(defaultDistanceUnit = DistanceUnits.MILES)
+        )
+
+        assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(3.11, 2.49)))
     }
 }

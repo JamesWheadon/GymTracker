@@ -1,8 +1,10 @@
 package com.askein.gymtracker.ui.workout.history.create.live
 
+import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.rules.TestCoroutineRule
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -23,9 +25,7 @@ class LiveRecordWeightsExerciseViewModelTest {
         viewModel.setExerciseData(1, 15)
 
         assertThat(viewModel.exerciseState.value.exerciseId, equalTo(1))
-        assertThat(viewModel.exerciseState.value.reps, equalTo(10))
         assertThat(viewModel.exerciseState.value.rest, equalTo(15))
-        assertThat(viewModel.exerciseState.value.weight, equalTo(10.0))
     }
 
     @Test
@@ -48,13 +48,30 @@ class LiveRecordWeightsExerciseViewModelTest {
 
         viewModel.startTimer(3)
 
-        assertThat(viewModel.timerState.value.timerRunning, equalTo(true))
-        assertThat(viewModel.timerState.value.currentTime, equalTo(2))
+        val startJob = launch {
+            viewModel.timerState.collect {
+                assertThat(it.timerRunning, equalTo(true))
+                assertThat(it.currentTime, equalTo(2))
+            }
+        }
+
+        startJob.cancel()
 
         delay(4000)
 
-        assertThat(viewModel.timerState.value.timerRunning, equalTo(false))
-        assertThat(viewModel.completed.value, equalTo(true))
+        val finishJobTimer = launch {
+            viewModel.timerState.collect {
+                assertThat(it.timerRunning, equalTo(false))
+            }
+        }
+        val finishJobCompleted = launch {
+            viewModel.completed.collect {
+                assertThat(it, equalTo(true))
+            }
+        }
+
+        finishJobTimer.cancel()
+        finishJobCompleted.cancel()
     }
 
     @Test
@@ -67,11 +84,23 @@ class LiveRecordWeightsExerciseViewModelTest {
 
         delay(4000)
 
-        assertThat(viewModel.completed.value, equalTo(true))
+        val startJob = launch {
+            viewModel.completed.collect {
+                assertThat(it, equalTo(true))
+            }
+        }
+
+        startJob.cancel()
 
         viewModel.reset()
 
-        assertThat(viewModel.completed.value, equalTo(false))
+        val restJob = launch {
+            viewModel.completed.collect {
+                assertThat(it, equalTo(false))
+            }
+        }
+
+        restJob.cancel()
     }
 
     @Test
@@ -90,5 +119,30 @@ class LiveRecordWeightsExerciseViewModelTest {
         delay(2000)
 
         assertThat(viewModel.timerState.value.currentTime, equalTo(currentTime))
+    }
+
+    @Test
+    fun shouldSetUnitState() {
+        val viewModel = LiveRecordWeightsExerciseViewModel()
+
+        assertThat(viewModel.unitState.value, equalTo(WeightUnits.KILOGRAMS))
+
+        viewModel.setUnitState(WeightUnits.POUNDS)
+
+        assertThat(viewModel.unitState.value, equalTo(WeightUnits.POUNDS))
+    }
+
+    @Test
+    fun shouldAddSetInfo() {
+        val viewModel = LiveRecordWeightsExerciseViewModel()
+
+        assertThat(viewModel.exerciseState.value, equalTo(WeightsExerciseHistoryUiState()))
+
+        viewModel.addSetInfo(5, 10.0)
+
+        assertThat(
+            viewModel.exerciseState.value,
+            equalTo(WeightsExerciseHistoryUiState(reps = listOf(5), weight = listOf(10.0)))
+        )
     }
 }

@@ -2,6 +2,7 @@ package com.askein.gymtracker.fake
 
 import com.askein.gymtracker.data.exercise.Exercise
 import com.askein.gymtracker.data.exercise.ExerciseRepository
+import com.askein.gymtracker.data.exercise.ExerciseType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -9,6 +10,7 @@ class FakeExerciseRepository : ExerciseRepository {
 
     val exercise = Exercise(
         exerciseId = 1,
+        exerciseType = ExerciseType.WEIGHTS,
         name = "testName",
         muscleGroup = "muscleGroup",
         equipment = "equipment"
