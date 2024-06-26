@@ -276,9 +276,14 @@ fun WeightsExerciseHistoryDetails(
             modifier = Modifier.weight(1F)
         ) {
             for (i in 0 until exerciseHistory.sets) {
+                val stringResource = if (exerciseHistory.reps[i] == 1) {
+                    R.string.display_set_weight_info_singular
+                } else {
+                    R.string.display_set_weight_info
+                }
                 Text(
                     text = stringResource(
-                        id = R.string.display_set_weight_info,
+                        id = stringResource,
                         i + 1,
                         exerciseHistory.reps[i],
                         weights[i],

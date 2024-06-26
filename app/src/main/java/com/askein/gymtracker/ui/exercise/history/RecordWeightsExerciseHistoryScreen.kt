@@ -211,7 +211,7 @@ private fun SaveWeightsExerciseHistoryButton(
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     onDismiss: () -> Unit
 ) {
-    if (setsState != "" && !repsState.contains("") && (!weightsState.contains("") || !recordWeight)) {
+    if (setsState != "" && setsState != "0" && !repsState.contains("") && !repsState.contains("0") && (!weightsState.contains("") || !recordWeight)) {
         val weight = if (recordWeight) {
             weightsState.map { convertToKilograms(unitState, it.toDouble()) }
                 .subList(0, setsState.toInt())

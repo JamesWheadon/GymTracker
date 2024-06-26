@@ -91,5 +91,6 @@ class WorkoutWithExercisesDaoTest {
         assertThat(savedWorkout.workoutHistory.size, equalTo(1))
         assertThat(savedWorkout.workoutHistory[0].weightsExercises.size, equalTo(1))
         assertThat(savedWorkout.workoutHistory[0].cardioExercises.size, equalTo(1))
+        assertThat(savedWorkout.exerciseOrder.sortedBy { it.order }, equalTo(listOf(weightsCrossRef, cardioCrossRef)))
     }
 }

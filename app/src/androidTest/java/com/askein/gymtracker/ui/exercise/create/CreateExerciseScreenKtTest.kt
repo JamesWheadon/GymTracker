@@ -10,7 +10,7 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import com.askein.gymtracker.R
 import com.askein.gymtracker.data.exercise.ExerciseType
-import com.askein.gymtracker.getResourceString
+import com.askein.gymtracker.helper.getResourceString
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat

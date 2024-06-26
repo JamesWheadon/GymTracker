@@ -6,19 +6,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.hasAnySibling
-import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import com.askein.gymtracker.enums.WeightUnits
+import com.askein.gymtracker.helper.hasRole
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.ui.user.LocalUserPreferences
@@ -39,8 +38,7 @@ class RecordWeightsExerciseCardKtTest {
     private val integerErrorText = "Must be a positive number"
     private val decimalErrorText = "Must be a number"
     private val curlsExerciseTitle = rule.onNode(hasText("Curls"))
-    private val curlsCheckbox =
-        rule.onNode(hasClickAction() and hasSetTextAction().not() and hasAnySibling(hasText("Curls")))
+    private val curlsCheckbox = rule.onNode(hasRole(Role.Checkbox))
     private val setsField = rule.onNode(hasContentDescription("Sets"))
     private val repsField = rule.onNode(hasContentDescription("Reps"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
@@ -99,8 +97,6 @@ class RecordWeightsExerciseCardKtTest {
 
         curlsExerciseTitle.assertExists()
         setsField.assertExists()
-        repsField.assertExists()
-        weightField.assertExists()
         unitField.assertExists()
         assertThat(selected, equalTo(true))
         assertThat(deselected, equalTo(false))
@@ -131,11 +127,8 @@ class RecordWeightsExerciseCardKtTest {
             }
         }
         curlsCheckbox.performClick()
-        weightField.performTextClearance()
 
         setsField.assertTextContains(integerErrorText)
-        repsField.assertTextContains(integerErrorText)
-        weightField.assertTextContains(decimalErrorText)
         assertThat(error, equalTo(true))
         assertThat(id, equalTo(1))
     }
@@ -227,6 +220,8 @@ class RecordWeightsExerciseCardKtTest {
                 RecordWeightsExerciseCard(
                     exercise = curlsExercise,
                     exerciseHistory = WeightsExerciseHistoryUiState(
+                        sets = 1,
+                        reps = listOf(1),
                         weight = listOf(10.0)
                     ),
                     selectExerciseFunction = { },

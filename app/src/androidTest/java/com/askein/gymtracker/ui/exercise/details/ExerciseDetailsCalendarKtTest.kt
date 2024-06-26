@@ -58,10 +58,8 @@ class ExerciseDetailsCalendarKtTest {
             }"
         )
     )
-    private val sets = rule.onNode(hasText("Sets: 1"))
-    private val reps = rule.onNode(hasText("Reps: 2"))
-    private val weight = rule.onNode(hasText("Weight: 13.00 kg"))
-    private val poundsWeight = rule.onNode(hasText("Weight: 28.66 lb"))
+    private val set1Kilograms = rule.onNode(hasText("Set 1: 2 Reps of 13.00 kg"))
+    private val set1Pounds = rule.onNode(hasText("Set 1: 2 Reps of 28.66 lb"))
     private val rest = rule.onNode(hasText("Rest time: 1 s"))
     private val time = rule.onNode(hasText("Time: 10:00"))
     private val distance = rule.onNode(hasText("Distance: 100.00 km"))
@@ -164,13 +162,11 @@ class ExerciseDetailsCalendarKtTest {
         rule.onNode(hasText(LocalDate.now().dayOfMonth.toString())).performClick()
 
         date.assertExists()
-        sets.assertExists()
-        reps.assertExists()
-        weight.assertExists()
+        set1Kilograms.assertExists()
         rest.assertExists()
         deleteButton.assertExists()
 
-        sets.performClick()
+        set1Kilograms.performClick()
 
         rule.onNode(hasText("Update Curls Workout")).assertExists()
     }
@@ -190,9 +186,7 @@ class ExerciseDetailsCalendarKtTest {
         rule.onNode(hasText(LocalDate.now().dayOfMonth.toString())).performClick()
 
         date.assertExists()
-        sets.assertExists()
-        reps.assertExists()
-        weight.assertExists()
+        set1Kilograms.assertExists()
         rest.assertExists()
         deleteButton.assertExists()
 
@@ -247,9 +241,7 @@ class ExerciseDetailsCalendarKtTest {
             }
         }
 
-        sets.assertExists()
-        reps.assertExists()
-        weight.assertExists()
+        set1Kilograms.assertExists()
         rest.assertExists()
         deleteButton.assertExists()
 
@@ -271,9 +263,7 @@ class ExerciseDetailsCalendarKtTest {
             }
         }
 
-        sets.assertExists()
-        reps.assertExists()
-        weight.assertExists()
+        set1Kilograms.assertExists()
         rest.assertExists()
         deleteButton.assertDoesNotExist()
     }
@@ -293,9 +283,7 @@ class ExerciseDetailsCalendarKtTest {
             }
         }
 
-        sets.assertExists()
-        reps.assertExists()
-        poundsWeight.assertExists()
+        set1Pounds.assertExists()
         rest.assertExists()
         deleteButton.assertDoesNotExist()
     }

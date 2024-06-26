@@ -10,7 +10,7 @@ import androidx.compose.ui.test.performClick
 import com.askein.gymtracker.R
 import com.askein.gymtracker.data.exercise.ExerciseRepository
 import com.askein.gymtracker.data.workoutExerciseCrossRef.WorkoutExerciseCrossRefRepository
-import com.askein.gymtracker.getResourceString
+import com.askein.gymtracker.helper.getResourceString
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.askein.gymtracker.ui.exercise.toExercise
@@ -34,6 +34,7 @@ class EditWorkoutExercisesScreenKtTest {
 
     @Mock
     private lateinit var exerciseRepository: ExerciseRepository
+
     @Mock
     private lateinit var workoutExerciseCrossRefRepository: WorkoutExerciseCrossRefRepository
 
@@ -55,12 +56,31 @@ class EditWorkoutExercisesScreenKtTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        `when`(exerciseRepository.getAllExercisesStream()).thenReturn(flowOf(listOf(curlsExerciseUiState.toExercise())))
-        `when`(exerciseRepository.getAllMuscleGroupsStream()).thenReturn(flowOf(listOf(curlsExerciseUiState.muscleGroup)))
-        `when`(exerciseRepository.getAllExerciseNames()).thenReturn(flowOf(listOf(curlsExerciseUiState.name)))
+        `when`(exerciseRepository.getAllExercisesStream()).thenReturn(
+            flowOf(
+                listOf(
+                    curlsExerciseUiState.toExercise()
+                )
+            )
+        )
+        `when`(exerciseRepository.getAllMuscleGroupsStream()).thenReturn(
+            flowOf(
+                listOf(
+                    curlsExerciseUiState.muscleGroup
+                )
+            )
+        )
+        `when`(exerciseRepository.getAllExerciseNames()).thenReturn(
+            flowOf(
+                listOf(
+                    curlsExerciseUiState.name
+                )
+            )
+        )
 
         exerciseViewModel = ExercisesScreenViewModel(exerciseRepository)
-        workoutExerciseCrossRefViewModel = WorkoutExerciseCrossRefViewModel(workoutExerciseCrossRefRepository)
+        workoutExerciseCrossRefViewModel =
+            WorkoutExerciseCrossRefViewModel(workoutExerciseCrossRefRepository)
     }
 
     @Test
@@ -69,8 +89,12 @@ class EditWorkoutExercisesScreenKtTest {
             AddRemoveExerciseCard(
                 exercise = curlsExerciseUiState,
                 checked = true,
+                yOffset = 0f,
                 clickFunction = { },
-                onPositioned = { }
+                onPositioned = { },
+                onDragStart = { _, _ -> },
+                dragOffsetOnChange = { },
+                onDragFinished = { }
             )
         }
 
@@ -88,8 +112,12 @@ class EditWorkoutExercisesScreenKtTest {
             AddRemoveExerciseCard(
                 exercise = curlsExerciseUiState,
                 checked = false,
+                yOffset = 0f,
                 clickFunction = { },
-                onPositioned = { }
+                onPositioned = { },
+                onDragStart = { _, _ -> },
+                dragOffsetOnChange = { },
+                onDragFinished = { }
             )
         }
 
@@ -109,8 +137,12 @@ class EditWorkoutExercisesScreenKtTest {
             AddRemoveExerciseCard(
                 exercise = curlsExerciseUiState,
                 checked = false,
+                yOffset = 0f,
                 clickFunction = { clicked = true },
-                onPositioned = { }
+                onPositioned = { },
+                onDragStart = { _, _ -> },
+                dragOffsetOnChange = { },
+                onDragFinished = { }
             )
         }
 
@@ -133,9 +165,7 @@ class EditWorkoutExercisesScreenKtTest {
                 exercises = listOf(curlsExerciseUiState, dipsExerciseUiState),
                 clickFunction = { },
                 listTitle = R.string.workout_exercises,
-                exercisesSelected = true,
-                hoverPosition = 0,
-                onPositioned = { }
+                exercisesSelected = true
             )
         }
 
@@ -163,7 +193,9 @@ class EditWorkoutExercisesScreenKtTest {
                 remainingExercises = listOf(),
                 selectFunction = { },
                 deselectFunction = { },
-                onDismiss = {  }
+                saveOrder = { },
+                saveNewExercise = { },
+                onDismiss = { }
             )
         }
 
@@ -181,7 +213,9 @@ class EditWorkoutExercisesScreenKtTest {
                 remainingExercises = listOf(curlsExerciseUiState),
                 selectFunction = { },
                 deselectFunction = { },
-                onDismiss = {  }
+                saveOrder = { },
+                saveNewExercise = { },
+                onDismiss = { }
             )
         }
 
@@ -199,7 +233,9 @@ class EditWorkoutExercisesScreenKtTest {
                 remainingExercises = listOf(),
                 selectFunction = { },
                 deselectFunction = { },
-                onDismiss = {  }
+                saveOrder = { },
+                saveNewExercise = { },
+                onDismiss = { }
             )
         }
 
@@ -217,7 +253,9 @@ class EditWorkoutExercisesScreenKtTest {
                 remainingExercises = listOf(dipsExerciseUiState),
                 selectFunction = { },
                 deselectFunction = { },
-                onDismiss = {  }
+                saveOrder = { },
+                saveNewExercise = { },
+                onDismiss = { }
             )
         }
 
@@ -239,7 +277,9 @@ class EditWorkoutExercisesScreenKtTest {
                 remainingExercises = listOf(dipsExerciseUiState),
                 selectFunction = { exerciseUiState -> deselected = exerciseUiState.name },
                 deselectFunction = { exerciseUiState -> selected = exerciseUiState.name },
-                onDismiss = {  }
+                saveOrder = { },
+                saveNewExercise = { },
+                onDismiss = { }
             )
         }
 
@@ -254,6 +294,7 @@ class EditWorkoutExercisesScreenKtTest {
 
         curlsCheckBox.performClick()
         dipsCheckBox.performClick()
+        doneButton.performClick()
 
         assertThat(selected, equalTo(curlsExerciseUiState.name))
         assertThat(deselected, equalTo(dipsExerciseUiState.name))
@@ -269,6 +310,8 @@ class EditWorkoutExercisesScreenKtTest {
                 remainingExercises = listOf(dipsExerciseUiState),
                 selectFunction = { },
                 deselectFunction = { },
+                saveOrder = { },
+                saveNewExercise = { },
                 onDismiss = { dismissed = true }
             )
         }
@@ -288,6 +331,8 @@ class EditWorkoutExercisesScreenKtTest {
                 remainingExercises = listOf(dipsExerciseUiState),
                 selectFunction = { },
                 deselectFunction = { },
+                saveOrder = { },
+                saveNewExercise = { },
                 onDismiss = { dismissed = true }
             )
         }

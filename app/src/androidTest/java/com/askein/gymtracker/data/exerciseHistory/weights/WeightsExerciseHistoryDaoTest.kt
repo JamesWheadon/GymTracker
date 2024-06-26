@@ -73,7 +73,7 @@ class WeightsExerciseHistoryDaoTest {
         weightsExerciseHistoryDao.update(updateExerciseHistory)
 
         val savedHistory = weightsExerciseHistoryDao.getHistory(FIRST_HISTORY_ID).first()
-        assertThat(savedHistory.weight, equalTo(NEW_WEIGHT))
+        assertThat(savedHistory.weight, equalTo(listOf(NEW_WEIGHT)))
     }
 
     @Test

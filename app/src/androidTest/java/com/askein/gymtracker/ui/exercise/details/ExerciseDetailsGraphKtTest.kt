@@ -8,7 +8,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onParent
 import com.askein.gymtracker.R
-import com.askein.gymtracker.getResourceString
+import com.askein.gymtracker.helper.getResourceString
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
