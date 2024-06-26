@@ -3,8 +3,11 @@ package com.askein.gymtracker.ui.workout.history.create
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -13,8 +16,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +29,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.AppViewModelProvider
+import com.askein.gymtracker.ui.DatePickerDialog
 import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
@@ -98,61 +106,97 @@ fun RecordWorkoutHistoryScreen(
     } else {
         workoutHistory.toWorkoutHistoryUiState()
     }
+    var date by remember { mutableStateOf(workoutHistory.date) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(text = titleText)
-        uiState.exercises.forEach { exercise ->
-            if (exercise.equipment != "") {
-                RecordWeightsExerciseCard(
-                    exercise = exercise,
-                    exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState,
-                    selectExerciseFunction = {
-                        exerciseHistories.add(
-                            WeightsExerciseHistoryUiState(
-                                exerciseId = exercise.id
-                            )
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(weight = 1f, fill = false)
+        ) {
+            items(uiState.exercises) { exercise ->
+                when (exercise.type) {
+                    ExerciseType.WEIGHTS -> {
+                        RecordWeightsExerciseCard(
+                            exercise = exercise,
+                            exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState,
+                            selectExerciseFunction = {
+                                exerciseHistories.add(
+                                    WeightsExerciseHistoryUiState(
+                                        exerciseId = exercise.id
+                                    )
+                                )
+                            },
+                            deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
+                            errorStateChange = { exerciseId, exerciseError ->
+                                exerciseErrors[exerciseId] = exerciseError
+                            },
                         )
-                    },
-                    deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
-                    errorStateChange = { exerciseId, exerciseError ->
-                        exerciseErrors[exerciseId] = exerciseError
-                    },
-                )
-            } else {
-                RecordCardioExerciseCard(
-                    exercise = exercise,
-                    selectExerciseFunction = {
-                        exerciseHistories.add(
-                            CardioExerciseHistoryUiState(
-                                exerciseId = exercise.id
-                            )
+                    }
+
+                    ExerciseType.CARDIO -> {
+                        RecordCardioExerciseCard(
+                            exercise = exercise,
+                            exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? CardioExerciseHistoryUiState,
+                            selectExerciseFunction = {
+                                exerciseHistories.add(
+                                    CardioExerciseHistoryUiState(
+                                        exerciseId = exercise.id
+                                    )
+                                )
+                            },
+                            deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
+                            errorStateChange = { exerciseId, exerciseError ->
+                                exerciseErrors[exerciseId] = exerciseError
+                            }
                         )
-                    },
-                    deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
-                    errorStateChange = { exerciseId, exerciseError ->
-                        exerciseErrors[exerciseId] = exerciseError
-                    },
-                    exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? CardioExerciseHistoryUiState
-                )
+                    }
+
+                    ExerciseType.CALISTHENICS -> {
+                        RecordWeightsExerciseCard(
+                            exercise = exercise,
+                            exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState,
+                            selectExerciseFunction = {
+                                exerciseHistories.add(
+                                    WeightsExerciseHistoryUiState(
+                                        exerciseId = exercise.id
+                                    )
+                                )
+                            },
+                            deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
+                            errorStateChange = { exerciseId, exerciseError ->
+                                exerciseErrors[exerciseId] = exerciseError
+                            },
+                            recordWeight = false
+                        )
+                    }
+                }
             }
         }
+        DatePickerDialog(
+            date = date,
+            onDateChange = { newDate -> date = newDate }
+        )
         Button(
             onClick = {
                 if (exerciseHistories.size > 0) {
+                    exerciseHistories.map { exercise -> exercise.date = date }
                     workoutSaveFunction(
                         WorkoutHistoryWithExercisesUiState(
                             workoutId = workoutHistoryUiState.workoutId,
                             workoutHistoryId = workoutHistoryUiState.workoutHistoryId,
-                            date = workoutHistoryUiState.date,
+                            date = date,
                             exercises = exerciseHistories
                         )
                     )
                 }
                 onDismiss()
             },
-            enabled = !exerciseErrors.values.reduce { acc, error -> acc || error }
+            enabled = !(exerciseErrors.values.reduceOrNull { acc, error -> acc || error } ?: true)
         ) {
             Text(text = stringResource(id = R.string.save))
         }

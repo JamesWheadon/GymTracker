@@ -34,6 +34,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.ActionConfirmation
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
@@ -43,6 +44,7 @@ import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.LIVE_RECORD_WORKOUT_SCREEN
 import com.askein.gymtracker.ui.navigation.TopBar
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
+import com.askein.gymtracker.ui.workout.details.EditWorkoutExercisesScreen
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsRoute
 import com.askein.gymtracker.ui.workout.details.WorkoutDetailsViewModel
 import com.askein.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
@@ -109,6 +111,7 @@ fun LiveRecordWorkout(
     cancelFunction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showEditExercises by remember { mutableStateOf(false) }
     var showDeleteWorkout by remember { mutableStateOf(false) }
     val completedExercises = rememberSaveable(saver = IntListSaver) { mutableStateListOf() }
     var currentExercise by rememberSaveable { mutableIntStateOf(-1) }
@@ -119,32 +122,50 @@ fun LiveRecordWorkout(
     ) {
         uiState.exercises.forEach { exercise ->
             if (exercise.id == currentExercise) {
-                if (exercise.equipment != "") {
-                    LiveRecordWeightsExercise(
-                        uiState = exercise,
-                        exerciseComplete = { exerciseHistory ->
-                            saveFunction(exerciseHistory)
-                            completedExercises.add(exerciseHistory.exerciseId)
-                            currentExercise = -1
-                        },
-                        exerciseCancel = {
-                            currentExercise = -1
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                } else {
-                    LiveRecordCardioExercise(
-                        uiState = exercise,
-                        exerciseComplete = { exerciseHistory ->
-                            saveFunction(exerciseHistory)
-                            completedExercises.add(exerciseHistory.exerciseId)
-                            currentExercise = -1
-                        },
-                        exerciseCancel = {
-                            currentExercise = -1
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                when (exercise.type) {
+                    ExerciseType.WEIGHTS -> {
+                        LiveRecordWeightsExercise(
+                            uiState = exercise,
+                            exerciseComplete = { exerciseHistory ->
+                                saveFunction(exerciseHistory)
+                                completedExercises.add(exerciseHistory.exerciseId)
+                                currentExercise = -1
+                            },
+                            exerciseCancel = {
+                                currentExercise = -1
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    ExerciseType.CARDIO -> {
+                        LiveRecordCardioExercise(
+                            uiState = exercise,
+                            exerciseComplete = { exerciseHistory ->
+                                saveFunction(exerciseHistory)
+                                completedExercises.add(exerciseHistory.exerciseId)
+                                currentExercise = -1
+                            },
+                            exerciseCancel = {
+                                currentExercise = -1
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    ExerciseType.CALISTHENICS -> {
+                        LiveRecordWeightsExercise(
+                            uiState = exercise,
+                            exerciseComplete = { exerciseHistory ->
+                                saveFunction(exerciseHistory)
+                                completedExercises.add(exerciseHistory.exerciseId)
+                                currentExercise = -1
+                            },
+                            exerciseCancel = {
+                                currentExercise = -1
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            recordWeight = false
+                        )
+                    }
                 }
             } else if (completedExercises.contains(exercise.id)) {
                 LiveRecordWorkoutExerciseCard(
@@ -159,6 +180,11 @@ fun LiveRecordWorkout(
                     startFunction = { currentExercise = exercise.id }
                 )
             }
+        }
+        Button(
+            onClick = { showEditExercises = true }
+        ) {
+            Text(text = stringResource(id = R.string.edit_exercises))
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -186,6 +212,12 @@ fun LiveRecordWorkout(
                 cancelFunction = { showDeleteWorkout = false }
             )
         }
+    }
+    if (showEditExercises) {
+        EditWorkoutExercisesScreen(
+            uiState = uiState,
+            onDismiss = { showEditExercises = false }
+        )
     }
 }
 

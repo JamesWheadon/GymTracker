@@ -10,7 +10,9 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
@@ -33,15 +35,17 @@ class LiveRecordWeightsExerciseKtTest {
     private val repsField = rule.onNode(hasContentDescription("Reps"))
     private val restField = rule.onNode(hasContentDescription("Rest"))
     private val weightField = rule.onNode(hasContentDescription("Weight"))
-    private val weightKilogramsChosen = rule.onNode(hasText("kg"))
-    private val weightPoundsChosen = rule.onNode(hasText("lb"))
     private val startButton = rule.onNode(hasText("Start"))
+    private val saveButton = rule.onNode(hasText("Save"))
     private val cancelButton = rule.onNode(hasText("Cancel"))
 
     @Test
     fun rendersTimerThatCountsDown() {
         rule.setContent {
-            Timer(timerState = 5) { }
+            Timer(
+                timerState = 5,
+                buttonEnabled = false
+            ) { }
         }
 
         timerStopButton.assertExists()
@@ -52,7 +56,10 @@ class LiveRecordWeightsExerciseKtTest {
     fun timerClickingStopFinishesTimer() {
         var finished = false
         rule.setContent {
-            Timer(timerState = 15) {
+            Timer(
+                timerState = 15,
+                buttonEnabled = true
+            ) {
                 finished = true
             }
         }
@@ -75,7 +82,11 @@ class LiveRecordWeightsExerciseKtTest {
                 timerStart = { },
                 finishSet = { },
                 resetTimer = { },
-                exerciseFinished = { }
+                exerciseFinished = { },
+                setUnitState = { },
+                addSetInfo = {_, _ -> },
+                recordWeight = false,
+                unitState = WeightUnits.KILOGRAMS
             )
         }
 
@@ -95,7 +106,11 @@ class LiveRecordWeightsExerciseKtTest {
                 timerStart = { },
                 finishSet = { sets += 1 },
                 resetTimer = { },
-                exerciseFinished = { }
+                exerciseFinished = { },
+                setUnitState = { },
+                addSetInfo = {_, _ -> },
+                recordWeight = false,
+                unitState = WeightUnits.KILOGRAMS
             )
         }
 
@@ -122,7 +137,11 @@ class LiveRecordWeightsExerciseKtTest {
                 timerStart = { },
                 finishSet = { sets += 1 },
                 resetTimer = { },
-                exerciseFinished = { }
+                exerciseFinished = { },
+                setUnitState = { },
+                addSetInfo = {_, _ -> },
+                recordWeight = false,
+                unitState = WeightUnits.KILOGRAMS
             )
         }
 
@@ -131,10 +150,14 @@ class LiveRecordWeightsExerciseKtTest {
         finishExerciseButton.assertExists()
 
         finishSetButton.performClick()
+        repsField.performTextInput("1")
+        saveButton.performClick()
         timerStopButton.performClick()
         finishSetButton.performClick()
+        saveButton.performClick()
         timerStopButton.performClick()
         finishSetButton.performClick()
+        saveButton.performClick()
         finishExerciseButton.performClick()
 
         rule.onNode(hasText("Sets Completed: 0")).assertDoesNotExist()
@@ -153,9 +176,7 @@ class LiveRecordWeightsExerciseKtTest {
             }
         }
 
-        repsField.assertExists()
         restField.assertExists()
-        weightField.assertExists()
         startButton.assertExists()
         cancelButton.assertExists()
     }
@@ -180,28 +201,22 @@ class LiveRecordWeightsExerciseKtTest {
 
     @Test
     fun liveRecordExerciseInfoClickingStartPopulatesExerciseData() {
-        var exerciseData: ExerciseData? = null
+        var restTime: Int? = null
         rule.setContent {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 LiveRecordWeightsExerciseInfo(
-                    onStart = { data -> exerciseData = data },
+                    onStart = { data -> restTime = data },
                     onCancel = { }
                 )
             }
         }
 
-        repsField.performClick()
-        repsField.performTextInput("5")
-        restField.performClick()
+        restField.performTextClearance()
         restField.performTextInput("15")
-        weightField.performClick()
-        weightField.performTextInput("13.0")
         startButton.performClick()
 
-        assertThat(exerciseData!!.reps, equalTo(5))
-        assertThat(exerciseData!!.rest, equalTo(15))
-        assertThat(exerciseData!!.weight, equalTo(13.0))
+        assertThat(restTime, equalTo(15))
     }
 
     @Test
@@ -211,7 +226,7 @@ class LiveRecordWeightsExerciseKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 LiveRecordWeightsExercise(
-                    uiState = ExerciseUiState(name = "Curls"),
+                    uiState = ExerciseUiState(name = "Curls", type = ExerciseType.WEIGHTS),
                     exerciseComplete = { history -> exerciseHistory = history },
                     exerciseCancel = { }
                 )
@@ -220,60 +235,29 @@ class LiveRecordWeightsExerciseKtTest {
 
         rule.onNode(hasText("Curls")).assertExists()
 
-        repsField.performClick()
-        repsField.performTextInput("5")
         restField.performClick()
         restField.performTextInput("15")
-        weightField.performClick()
-        weightField.performTextInput("13.0")
         startButton.performClick()
 
         finishSetButton.performClick()
+        repsField.performTextClearance()
+        repsField.performTextInput("5")
+        weightField.performTextClearance()
+        weightField.performTextInput("13.0")
+        saveButton.performClick()
         timerStopButton.performClick()
         finishSetButton.performClick()
+        saveButton.performClick()
         timerStopButton.performClick()
         finishSetButton.performClick()
+        saveButton.performClick()
 
         finishExerciseButton.performClick()
 
         assertThat(exerciseHistory, notNullValue())
         assertThat(exerciseHistory!!.sets, equalTo(3))
-        assertThat(exerciseHistory!!.reps, equalTo(5))
+        assertThat(exerciseHistory!!.reps, equalTo(listOf(5, 5, 5)))
         assertThat(exerciseHistory!!.rest, equalTo(15))
-        assertThat(exerciseHistory!!.weight, equalTo(13.0))
-    }
-
-    @Test
-    fun rendersLiveRecordExerciseInfoWithKilogramsChosen() {
-        rule.setContent {
-            val userPreferencesUiState = UserPreferencesUiState(
-                defaultWeightUnit = WeightUnits.KILOGRAMS
-            )
-            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-                LiveRecordWeightsExerciseInfo(
-                    onStart = { },
-                    onCancel = {}
-                )
-            }
-        }
-
-        weightKilogramsChosen.assertExists()
-    }
-
-    @Test
-    fun rendersLiveRecordExerciseInfoWithPoundsChosen() {
-        rule.setContent {
-            val userPreferencesUiState = UserPreferencesUiState(
-                defaultWeightUnit = WeightUnits.POUNDS
-            )
-            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-                LiveRecordWeightsExerciseInfo(
-                    onStart = { },
-                    onCancel = {}
-                )
-            }
-        }
-
-        weightPoundsChosen.assertExists()
+        assertThat(exerciseHistory!!.weight, equalTo(listOf(13.0, 13.0, 13.0)))
     }
 }

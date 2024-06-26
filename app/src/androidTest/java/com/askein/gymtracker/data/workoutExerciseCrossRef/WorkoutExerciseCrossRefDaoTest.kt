@@ -38,7 +38,7 @@ class WorkoutExerciseCrossRefDaoTest {
 
     @Test
     fun daoInsert_InsertsWorkoutExerciseIntoDB() = runBlocking {
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
         val saved = exercise.query(query)
@@ -55,8 +55,8 @@ class WorkoutExerciseCrossRefDaoTest {
 
     @Test
     fun daoDelete_DeletesWorkoutExerciseFromDB() = runBlocking {
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
-        workoutExerciseCrossRefDao.delete(WorkoutExerciseCrossRef(1, 1))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
+        workoutExerciseCrossRefDao.delete(WorkoutExerciseCrossRef(1, 1, 1))
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
         val saved = exercise.query(query)
@@ -66,9 +66,40 @@ class WorkoutExerciseCrossRefDaoTest {
     }
 
     @Test
+    fun daoUpdateList_UpdatesWorkoutExerciseOrderingInDB() = runBlocking {
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 2, 1))
+
+        workoutExerciseCrossRefDao.updateList(
+            listOf(
+                WorkoutExerciseCrossRef(1, 1, 1),
+                WorkoutExerciseCrossRef(1, 2, 0)
+            )
+        )
+
+        var query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises WHERE workoutId = 1 AND exerciseId = 1", 0)
+        var saved = exercise.query(query)
+        saved.moveToFirst()
+        var orderIndex = saved.getColumnIndex("order")
+
+        assertThat(saved.count, equalTo(1))
+        assertThat(saved.getInt(orderIndex), equalTo(1))
+        saved.close()
+
+        query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises WHERE workoutId = 1 AND exerciseId = 2", 0)
+        saved = exercise.query(query)
+        saved.moveToFirst()
+        orderIndex = saved.getColumnIndex("order")
+
+        assertThat(saved.count, equalTo(1))
+        assertThat(saved.getInt(orderIndex), equalTo(0))
+        saved.close()
+    }
+
+    @Test
     fun daoDelete_DeletesAllWorkoutExerciseFromDBForWorkout() = runBlocking {
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 2))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 2, 1))
         workoutExerciseCrossRefDao.deleteAllCrossRefForWorkout(1)
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
@@ -80,8 +111,8 @@ class WorkoutExerciseCrossRefDaoTest {
 
     @Test
     fun daoDelete_DeletesAllWorkoutExerciseFromDBForExercise() = runBlocking {
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1))
-        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(2, 1))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
+        workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(2, 1, 1))
         workoutExerciseCrossRefDao.deleteAllCrossRefForExercise(1)
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)

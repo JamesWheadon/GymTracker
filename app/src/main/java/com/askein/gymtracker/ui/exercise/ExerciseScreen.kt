@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
@@ -45,14 +46,22 @@ fun ExerciseCard(
                 .padding(0.dp),
             elevation = customCardElevation()
         ) {
-            if (exercise.equipment == "") {
-                CardioExerciseCard(
-                    exercise = exercise
-                )
-            } else {
-                WeightsExerciseCard(
-                    exercise = exercise
-                )
+            when (exercise.type) {
+                ExerciseType.WEIGHTS -> {
+                    WeightsExerciseCard(
+                        exercise = exercise
+                    )
+                }
+                ExerciseType.CARDIO -> {
+                    CardioExerciseCard(
+                        exercise = exercise
+                    )
+                }
+                ExerciseType.CALISTHENICS -> {
+                    CalisthenicsExerciseCard(
+                        exercise = exercise
+                    )
+                }
             }
         }
     }
@@ -77,19 +86,32 @@ fun WeightsExerciseCard(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        if (exercise.muscleGroup != "" || exercise.equipment != "") {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (exercise.muscleGroup != "") {
+                    ExerciseDetail(
+                        exerciseInfo = exercise.muscleGroup,
+                        iconId = R.drawable.info_48px,
+                        iconDescription = R.string.muscle_icon
+                    )
+                }
+                if (exercise.equipment != "") {
+                    ExerciseDetail(
+                        exerciseInfo = exercise.equipment,
+                        iconId = R.drawable.exercise_filled_48px,
+                        iconDescription = R.string.equipment_icon
+                    )
+                }
+            }
+        } else {
             ExerciseDetail(
-                exerciseInfo = exercise.muscleGroup,
-                iconId = R.drawable.info_48px,
-                iconDescription = R.string.muscle_icon
-            )
-            ExerciseDetail(
-                exerciseInfo = exercise.equipment,
+                exerciseInfo = stringResource(id = R.string.weights),
                 iconId = R.drawable.exercise_filled_48px,
-                iconDescription = R.string.equipment_icon
+                iconDescription = R.string.equipment_icon,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
@@ -120,6 +142,43 @@ fun CardioExerciseCard(
             iconDescription = R.string.cardio_icon,
             modifier = Modifier.fillMaxWidth()
         )
+    }
+}
+
+@Composable
+fun CalisthenicsExerciseCard(
+    exercise: ExerciseUiState,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = exercise.name,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.fillMaxWidth(0.55f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        if (exercise.muscleGroup != "") {
+            ExerciseDetail(
+                exerciseInfo = exercise.muscleGroup,
+                iconId = R.drawable.info_48px,
+                iconDescription = R.string.muscle_icon,
+                modifier = Modifier.fillMaxWidth()
+            )
+        } else {
+            ExerciseDetail(
+                exerciseInfo = stringResource(id = R.string.calisthenics),
+                iconId = R.drawable.info_48px,
+                iconDescription = R.string.calisthenics_icon,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 

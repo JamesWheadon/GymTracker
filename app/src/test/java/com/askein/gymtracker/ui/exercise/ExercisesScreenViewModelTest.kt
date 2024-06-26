@@ -3,6 +3,7 @@ package com.askein.gymtracker.ui.exercise
 import app.cash.turbine.test
 import com.askein.gymtracker.data.exercise.Exercise
 import com.askein.gymtracker.data.exercise.ExerciseRepository
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.fake.FakeExerciseRepository
 import com.askein.gymtracker.rules.TestCoroutineRule
 import kotlinx.coroutines.test.runTest
@@ -18,8 +19,20 @@ class ExercisesScreenViewModelTest {
     private val repository: ExerciseRepository = mock()
     private val fakeRepository = FakeExerciseRepository()
 
-    private val exercise1 = Exercise(1, "Curls", "Biceps", "Dumbbells")
-    private val exercise2 = Exercise(2, "Dips", "Triceps", "Dumbbells")
+    private val exercise1 = Exercise(
+        exerciseId = 1,
+        exerciseType = ExerciseType.WEIGHTS,
+        name = "Curls",
+        muscleGroup = "Biceps",
+        equipment = "Dumbbells"
+    )
+    private val exercise2 = Exercise(
+        exerciseId = 2,
+        exerciseType = ExerciseType.WEIGHTS,
+        name = "Dips",
+        muscleGroup = "Triceps",
+        equipment = "Dumbbells"
+    )
 
     @get:Rule
     val coroutineTestRule = TestCoroutineRule()

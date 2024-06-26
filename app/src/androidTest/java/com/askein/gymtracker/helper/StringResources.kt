@@ -1,4 +1,4 @@
-package com.askein.gymtracker
+package com.askein.gymtracker.helper
 
 import androidx.test.platform.app.InstrumentationRegistry
 

@@ -9,9 +9,9 @@ data class WeightsExerciseHistory(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val exerciseId: Int,
-    val weight: Double,
+    val weight: List<Double>,
     val sets: Int,
-    val reps: Int,
+    val reps: List<Int>,
     val date: LocalDate,
     val rest: Int? = null,
     var workoutHistoryId: Int? = null

@@ -24,39 +24,91 @@ import java.time.LocalDate
 
 class WorkoutHistoryViewModelTest {
 
-    private val workoutHistory = WorkoutHistory(workoutHistoryId = 1, workoutId = 1, date = LocalDate.now())
+    private val workoutHistory =
+        WorkoutHistory(workoutHistoryId = 1, workoutId = 1, date = LocalDate.now())
     private val workoutHistoryUiState = WorkoutHistoryUiState(workoutHistoryId = 1, workoutId = 1)
-    private val weightsExerciseHistoryUI = WeightsExerciseHistoryUiState(id = 1, exerciseId = 1, workoutHistoryId = 1)
-    private val cardioExerciseHistoryUI = CardioExerciseHistoryUiState(id = 1, exerciseId = 2, workoutHistoryId = 1)
-    private val newWeightsExerciseHistoryUI = WeightsExerciseHistoryUiState(exerciseId = 3)
+    private val weightsExerciseHistoryUI =
+        WeightsExerciseHistoryUiState(
+            id = 1,
+            exerciseId = 1,
+            workoutHistoryId = 1,
+            reps = listOf(0),
+            weight = listOf(0.0)
+        )
+    private val cardioExerciseHistoryUI =
+        CardioExerciseHistoryUiState(id = 1, exerciseId = 2, workoutHistoryId = 1)
+    private val newWeightsExerciseHistoryUI =
+        WeightsExerciseHistoryUiState(exerciseId = 3, reps = listOf(0), weight = listOf(0.0))
     private val newCardioExerciseHistoryUI = CardioExerciseHistoryUiState(exerciseId = 4)
-    private val oldWeightsExerciseHistoryUI = WeightsExerciseHistoryUiState(id = 3, exerciseId = 5, workoutHistoryId = 1)
-    private val oldCardioExerciseHistoryUI = CardioExerciseHistoryUiState(id = 3, exerciseId = 6, workoutHistoryId = 1)
-    private val savedWeightsExerciseHistory =
-        WeightsExerciseHistory(1, 1, 0.0, 0, 0, LocalDate.now(), null, 1)
+    private val oldWeightsExerciseHistoryUI =
+        WeightsExerciseHistoryUiState(
+            id = 3,
+            exerciseId = 5,
+            workoutHistoryId = 1,
+            reps = listOf(0),
+            weight = listOf(0.0)
+        )
+    private val oldCardioExerciseHistoryUI =
+        CardioExerciseHistoryUiState(id = 3, exerciseId = 6, workoutHistoryId = 1)
+    private val savedWeightsExerciseHistory = WeightsExerciseHistory(
+        id = 1,
+        exerciseId = 1,
+        weight = listOf(0.0),
+        sets = 0,
+        reps = listOf(0),
+        date = LocalDate.now(),
+        rest = null,
+        workoutHistoryId = 1
+    )
     private val savedCardioExerciseHistory =
-        CardioExerciseHistory(1, 2, LocalDate.now(), workoutHistoryId = 1)
-    private val newSavedWeightsExerciseHistory =
-        WeightsExerciseHistory(0, 3, 0.0, 0, 0, LocalDate.now(), null, 1)
+        CardioExerciseHistory(id = 1, exerciseId = 2, date = LocalDate.now(), workoutHistoryId = 1)
+    private val newSavedWeightsExerciseHistory = WeightsExerciseHistory(
+        id = 0,
+        exerciseId = 3,
+        weight = listOf(0.0),
+        sets = 0,
+        reps = listOf(0),
+        date = LocalDate.now(),
+        rest = null,
+        workoutHistoryId = 1
+    )
     private val newSavedCardioExerciseHistory =
-        CardioExerciseHistory(0, 4, LocalDate.now(), workoutHistoryId = 1)
-    private val oldSavedWeightsExerciseHistory =
-        WeightsExerciseHistory(3, 5, 0.0, 0, 0, LocalDate.now(), null, 1)
+        CardioExerciseHistory(id = 0, exerciseId = 4, date = LocalDate.now(), workoutHistoryId = 1)
+    private val oldSavedWeightsExerciseHistory = WeightsExerciseHistory(
+        id = 3,
+        exerciseId = 5,
+        weight = listOf(0.0),
+        sets = 0,
+        reps = listOf(0),
+        date = LocalDate.now(),
+        rest = null,
+        workoutHistoryId = 1
+    )
     private val oldSavedCardioExerciseHistory =
-        CardioExerciseHistory(3, 6, LocalDate.now(), workoutHistoryId = 1)
+        CardioExerciseHistory(id = 3, exerciseId = 6, date = LocalDate.now(), workoutHistoryId = 1)
 
     private val workoutHistoryWithExercises = WorkoutHistoryWithExercisesUiState(
         workoutHistoryId = workoutHistory.workoutHistoryId,
         workoutId = workoutHistory.workoutId,
         date = workoutHistory.date,
-        exercises = listOf(weightsExerciseHistoryUI, cardioExerciseHistoryUI, newWeightsExerciseHistoryUI, newCardioExerciseHistoryUI)
+        exercises = listOf(
+            weightsExerciseHistoryUI,
+            cardioExerciseHistoryUI,
+            newWeightsExerciseHistoryUI,
+            newCardioExerciseHistoryUI
+        )
     )
 
     private val existingWorkoutHistory = WorkoutHistoryWithExercisesUiState(
         workoutHistoryId = workoutHistory.workoutHistoryId,
         workoutId = workoutHistory.workoutId,
         date = workoutHistory.date,
-        exercises = listOf(weightsExerciseHistoryUI, cardioExerciseHistoryUI, oldWeightsExerciseHistoryUI, oldCardioExerciseHistoryUI)
+        exercises = listOf(
+            weightsExerciseHistoryUI,
+            cardioExerciseHistoryUI,
+            oldWeightsExerciseHistoryUI,
+            oldCardioExerciseHistoryUI
+        )
     )
 
     private val mockWorkoutHistoryRepository: WorkoutHistoryRepository = Mockito.mock()
@@ -78,7 +130,10 @@ class WorkoutHistoryViewModelTest {
     fun saveWorkoutToRepository() = runTest {
         `when`(mockWorkoutHistoryRepository.insert(workoutHistory)).thenReturn(1L)
 
-        viewModel.saveWorkoutHistory(workoutHistoryWithExercises, WorkoutHistoryWithExercisesUiState(), true)
+        viewModel.saveWorkoutHistory(
+            workoutHistoryWithExercises,
+            WorkoutHistoryWithExercisesUiState(),
+        )
 
         verify(mockWorkoutHistoryRepository).insert(workoutHistory)
         verify(mockWeightsExerciseHistoryRepository).insert(savedWeightsExerciseHistory)

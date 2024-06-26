@@ -27,7 +27,14 @@ class RecordWeightsExerciseHistoryViewModelTest {
 
     @Test
     fun saveWeightsHistoryToRepository() = runTest {
-        val history = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
+        val history = WeightsExerciseHistory(
+            id = 1,
+            exerciseId = 1,
+            weight = listOf(1.0),
+            sets = 1,
+            reps = listOf(1),
+            date = LocalDate.now()
+        )
 
         viewModel.saveHistory(history.toWeightsExerciseHistoryUiState())
 
@@ -45,7 +52,14 @@ class RecordWeightsExerciseHistoryViewModelTest {
 
     @Test
     fun updateWeightsHistoryInRepository() = runTest {
-        val history = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
+        val history = WeightsExerciseHistory(
+            id = 1,
+            exerciseId = 1,
+            weight = listOf(1.0),
+            sets = 1,
+            reps = listOf(1),
+            date = LocalDate.now()
+        )
 
         viewModel.updateHistory(history.toWeightsExerciseHistoryUiState())
 
@@ -63,7 +77,14 @@ class RecordWeightsExerciseHistoryViewModelTest {
 
     @Test
     fun deleteWeightsHistoryInRepository() = runTest {
-        val history = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now())
+        val history = WeightsExerciseHistory(
+            id = 1,
+            exerciseId = 1,
+            weight = listOf(1.0),
+            sets = 1,
+            reps = listOf(1),
+            date = LocalDate.now()
+        )
 
         viewModel.deleteHistory(history.toWeightsExerciseHistoryUiState())
 

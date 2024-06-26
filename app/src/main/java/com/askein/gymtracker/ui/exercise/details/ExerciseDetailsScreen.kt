@@ -23,6 +23,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.ActionConfirmation
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
@@ -101,18 +102,28 @@ fun ExerciseDetailsScreen(
             }
         }
     ) { innerPadding ->
-        if (uiState.exercise.equipment != "") {
-            WeightsExerciseDetailsScreen(
-                innerPadding = innerPadding,
-                uiState = uiState,
-                chosenDate = chosenDate
-            )
-        } else {
-            CardioExerciseDetailsScreen(
-                innerPadding = innerPadding,
-                uiState = uiState,
-                chosenDate = chosenDate
-            )
+        when (uiState.exercise.type) {
+            ExerciseType.WEIGHTS -> {
+                WeightsExerciseDetailsScreen(
+                    innerPadding = innerPadding,
+                    uiState = uiState,
+                    chosenDate = chosenDate
+                )
+            }
+            ExerciseType.CARDIO -> {
+                CardioExerciseDetailsScreen(
+                    innerPadding = innerPadding,
+                    uiState = uiState,
+                    chosenDate = chosenDate
+                )
+            }
+            ExerciseType.CALISTHENICS -> {
+                CalisthenicsExerciseDetailsScreen(
+                    innerPadding = innerPadding,
+                    uiState = uiState,
+                    chosenDate = chosenDate
+                )
+            }
         }
     }
     if (showRecord) {
@@ -168,9 +179,9 @@ fun ExerciseDetailsScreenPreview() {
                 weightsHistory = listOf(
                     WeightsExerciseHistoryUiState(
                         id = 1,
-                        weight = 13.0,
+                        weight = listOf(13.0),
                         sets = 1,
-                        reps = 2,
+                        reps = listOf(2),
                         rest = 1,
                         date = LocalDate.now().minusDays(5)
                     )

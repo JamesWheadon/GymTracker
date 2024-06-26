@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.askein.gymtracker.data.database.ExerciseWorkoutDatabase
 import com.askein.gymtracker.data.exercise.Exercise
 import com.askein.gymtracker.data.exercise.ExerciseDao
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistory
 import com.askein.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryDao
 import com.askein.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
@@ -41,11 +42,13 @@ class WorkoutWithExercisesDaoTest {
     private lateinit var exerciseWorkoutDatabase: ExerciseWorkoutDatabase
 
     private val workout = Workout(1, "test workout")
-    private val exercise = Exercise(1, "test exercise", "muscle", "kit")
-    private val weightsExerciseHistory = WeightsExerciseHistory(1, 1, 1.0, 1, 1, LocalDate.now(), 1, 1)
-    private val cardioExerciseHistory = CardioExerciseHistory(1, 1, LocalDate.now(), 1, 1, 1, 1.0, 1)
+    private val weightsExercise = Exercise(1, ExerciseType.WEIGHTS,"test exercise", "muscle", "kit")
+    private val cardioExercise = Exercise(2, ExerciseType.CARDIO, "Treadmill", "", "")
+    private val weightsExerciseHistory = WeightsExerciseHistory(1, 1, listOf(1.0), 1, listOf(1), LocalDate.now(), 1, 1)
+    private val cardioExerciseHistory = CardioExerciseHistory(1, 2, LocalDate.now(), 1, 1, 1, 1.0, 1)
     private val workoutHistory = WorkoutHistory(1, 1, LocalDate.now())
-    private val crossRef = WorkoutExerciseCrossRef(1, 1)
+    private val weightsCrossRef = WorkoutExerciseCrossRef(1, 1, 0)
+    private val cardioCrossRef = WorkoutExerciseCrossRef(1, 2, 1)
 
     @Before
     fun createDb() {
@@ -71,18 +74,23 @@ class WorkoutWithExercisesDaoTest {
     @Test
     fun daoSelectByWorkoutId_retrievesWorkoutFromDB() = runBlocking {
         workoutDao.insert(workout)
-        exerciseDao.insert(exercise)
+        exerciseDao.insert(weightsExercise)
+        exerciseDao.insert(cardioExercise)
         weightsExerciseHistoryDao.insert(weightsExerciseHistory)
         cardioExerciseHistoryDao.insert(cardioExerciseHistory)
         workoutHistoryDao.insert(workoutHistory)
-        workoutExerciseCrossRefDao.insert(crossRef)
+        workoutExerciseCrossRefDao.insert(cardioCrossRef)
+        workoutExerciseCrossRefDao.insert(weightsCrossRef)
 
         val savedWorkout = workoutWithExercisesDao.getWorkoutWithExercises(workout.workoutId).first()
 
         assertThat(savedWorkout.workout, equalTo(workout))
-        assertThat(savedWorkout.exercises.size, equalTo(1))
+        assertThat(savedWorkout.exercises.size, equalTo(2))
+        assertThat(savedWorkout.exercises.contains(weightsExercise), equalTo(true))
+        assertThat(savedWorkout.exercises.contains(cardioExercise), equalTo(true))
         assertThat(savedWorkout.workoutHistory.size, equalTo(1))
         assertThat(savedWorkout.workoutHistory[0].weightsExercises.size, equalTo(1))
         assertThat(savedWorkout.workoutHistory[0].cardioExercises.size, equalTo(1))
+        assertThat(savedWorkout.exerciseOrder.sortedBy { it.order }, equalTo(listOf(weightsCrossRef, cardioCrossRef)))
     }
 }

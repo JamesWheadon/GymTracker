@@ -28,9 +28,9 @@ class WorkoutHistoryScreenKtTest {
         exerciseId = 1,
         date = LocalDate.now(),
         workoutHistoryId = 1,
-        weight = 1.0,
+        weight = listOf(1.0),
         sets = 1,
-        reps = 1,
+        reps = listOf(1),
         rest = 1
     )
     private val benchHistory = WeightsExerciseHistoryUiState(
@@ -38,9 +38,9 @@ class WorkoutHistoryScreenKtTest {
         exerciseId = 3,
         date = LocalDate.now(),
         workoutHistoryId = 1,
-        weight = 1.0,
+        weight = listOf(1.0),
         sets = 1,
-        reps = 1,
+        reps = listOf(1),
         rest = 1
     )
     private val workoutHistory = WorkoutHistoryWithExercisesUiState(1, 1, LocalDate.now(), listOf(curlsHistory, benchHistory))
@@ -48,9 +48,7 @@ class WorkoutHistoryScreenKtTest {
     private val curlsExerciseName = rule.onNode(hasText("Curls"))
     private val dipsExerciseName = rule.onNode(hasText("Dips"))
     private val benchExerciseName = rule.onNode(hasText("Bench"))
-    private val sets = rule.onNode(hasText("Sets: 1"))
-    private val reps = rule.onNode(hasText("Reps: 1"))
-    private val weight = rule.onNode(hasText("Weight: 1.00 kg"))
+    private val setInfo = rule.onNode(hasText("Set 1: 1 Rep of 1.00 kg"))
     private val rest = rule.onNode(hasText("Rest time: 1 s"))
     private val deleteHistoryButton = rule.onNode(hasContentDescription("Delete history"))
     private val editButton = rule.onNode(hasContentDescription("edit"))
@@ -71,9 +69,7 @@ class WorkoutHistoryScreenKtTest {
         }
 
         curlsExerciseName.assertExists()
-        sets.assertExists()
-        reps.assertExists()
-        weight.assertExists()
+        setInfo.assertExists()
         rest.assertExists()
         deleteHistoryButton.assertDoesNotExist()
     }

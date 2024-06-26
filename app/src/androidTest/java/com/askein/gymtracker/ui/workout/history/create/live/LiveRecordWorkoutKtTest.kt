@@ -5,14 +5,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
@@ -26,13 +27,28 @@ class LiveRecordWorkoutKtTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
-    private val curlsExercise =
-        ExerciseUiState(id = 0, name = "Curls", equipment = "Dumbbells", muscleGroup = "Biceps")
-    private val dipsExercise =
-        ExerciseUiState(id = 1, name = "Dips", equipment = "Bars", muscleGroup = "Triceps")
-    private val pressExercise =
-        ExerciseUiState(id = 2, name = "Press", equipment = "Bench", muscleGroup = "Pecs")
-    private val cardioExercise = ExerciseUiState(name = "Treadmill")
+    private val curlsExercise = ExerciseUiState(
+            id = 0,
+            name = "Curls",
+            equipment = "Dumbbells",
+            muscleGroup = "Biceps",
+            type = ExerciseType.WEIGHTS
+        )
+    private val dipsExercise = ExerciseUiState(
+            id = 1,
+            name = "Dips",
+            equipment = "Bars",
+            muscleGroup = "Triceps",
+            type = ExerciseType.WEIGHTS
+        )
+    private val pressExercise = ExerciseUiState(
+            id = 2,
+            name = "Press",
+            equipment = "Bench",
+            muscleGroup = "Pecs",
+            type = ExerciseType.WEIGHTS
+        )
+    private val cardioExercise = ExerciseUiState(name = "Treadmill", type = ExerciseType.CARDIO)
     private val workoutWithExercises =
         WorkoutWithExercisesUiState(exercises = listOf(curlsExercise, dipsExercise, pressExercise))
     private val weightsWorkout = WorkoutWithExercisesUiState(exercises = listOf(curlsExercise))
@@ -49,6 +65,8 @@ class LiveRecordWorkoutKtTest {
     private val distanceField = rule.onNode(hasContentDescription("Distance"))
     private val finishExercise = rule.onNode(hasText("Finish Exercise"))
     private val finishWorkout = rule.onNode(hasText("Finish Workout"))
+    private val finishSet = rule.onNode(hasText("Finish Set"))
+    private val save = rule.onNode(hasText("Save"))
     private val cancel = rule.onNode(hasText("Cancel"))
 
     @Test
@@ -149,15 +167,17 @@ class LiveRecordWorkoutKtTest {
         completedText.assertCountEquals(0)
 
         startButtons[0].performClick()
+        restField.performClick()
+        restField.performTextInput("15")
+
+        rule.onNode(hasText("Start") and isEnabled()).performClick()
+
+        finishSet.performClick()
 
         repsField.performClick()
         repsField.performTextInput("5")
-        restField.performClick()
-        restField.performTextInput("15")
         weightField.performClick()
         weightField.performTextInput("13.0")
-        rule.onNode(hasText("Start") and hasAnySibling(hasContentDescription("Reps")))
-            .performClick()
 
         finishExercise.performClick()
 
@@ -182,15 +202,18 @@ class LiveRecordWorkoutKtTest {
         }
 
         startButtons[0].performClick()
+        restField.performClick()
+        restField.performTextInput("15")
+
+        rule.onNode(hasText("Start") and isEnabled()).performClick()
+
+        finishSet.performClick()
 
         repsField.performClick()
         repsField.performTextInput("5")
-        restField.performClick()
-        restField.performTextInput("15")
         weightField.performClick()
         weightField.performTextInput("13.0")
-        rule.onNode(hasText("Start") and hasAnySibling(hasContentDescription("Reps")))
-            .performClick()
+        save.performClick()
 
         finishExercise.performClick()
 
@@ -241,7 +264,7 @@ class LiveRecordWorkoutKtTest {
         }
 
         startButtons[0].performClick()
-        repsField.assertExists()
+        restField.assertExists()
         distanceField.assertDoesNotExist()
     }
 
@@ -282,14 +305,9 @@ class LiveRecordWorkoutKtTest {
 
         startButtons[0].performClick()
 
-        repsField.performClick()
-        repsField.performTextInput("5")
         restField.performClick()
         restField.performTextInput("15")
-        weightField.performClick()
-        weightField.performTextInput("13.0")
-        rule.onNode(hasText("Start") and hasAnySibling(hasContentDescription("Reps")))
-            .performClick()
+        rule.onNode(hasText("Start") and isEnabled()).performClick()
 
         finishExercise.performClick()
 

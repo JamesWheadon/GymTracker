@@ -17,7 +17,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.TextFieldValue
 import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.FormTypes
-import com.askein.gymtracker.getResourceString
+import com.askein.gymtracker.helper.getResourceString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule

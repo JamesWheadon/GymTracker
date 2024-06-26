@@ -9,7 +9,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import com.askein.gymtracker.R
-import com.askein.gymtracker.getResourceString
+import com.askein.gymtracker.data.exercise.ExerciseType
+import com.askein.gymtracker.helper.getResourceString
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -25,9 +26,9 @@ class CreateExerciseScreenKtTest {
     private val createResourceId = R.string.create
 
     private val createButton = rule.onNode(hasText(getResourceString(createResourceId)))
-    private val typeToggle = rule.onNode(hasContentDescription(getResourceString(R.string.exercise_type_toggle)))
     private val weightsType = rule.onNode(hasText("Weights"))
     private val cardioType = rule.onNode(hasText("Cardio"))
+    private val calisthenicsType = rule.onNode(hasText("Calisthenics"))
     private val nameField = rule.onNode(hasContentDescription("Exercise Name"))
     private val equipmentField = rule.onNode(hasContentDescription("Equipment"))
     private val muscleField = rule.onNode(hasContentDescription("Muscle Group"))
@@ -52,9 +53,9 @@ class CreateExerciseScreenKtTest {
         }
 
         createButton.assertExists()
-        typeToggle.assertExists()
         weightsType.assertExists()
         cardioType.assertExists()
+        calisthenicsType.assertExists()
         nameField.assertExists()
         equipmentField.assertExists()
         muscleField.assertExists()
@@ -107,7 +108,7 @@ class CreateExerciseScreenKtTest {
     }
 
     @Test
-    fun doesNotSaveAndDismissWithEmptyEquipment() {
+    fun savesAndDismissesWithEmptyEquipment() {
         var created: ExerciseUiState? = null
         var dismissed = false
         rule.setContent {
@@ -127,12 +128,14 @@ class CreateExerciseScreenKtTest {
 
         createButton.performClick()
 
-        assertThat(created, equalTo(null))
-        assertThat(dismissed, equalTo(false))
+        assertThat(created?.name, equalTo(exercise.name))
+        assertThat(created?.muscleGroup, equalTo(exercise.muscleGroup))
+        assertThat(created?.equipment, equalTo(""))
+        assertThat(dismissed, equalTo(true))
     }
 
     @Test
-    fun doesNotSaveAndDismissWithEmptyMuscleGroup() {
+    fun savesAndDismissesWithEmptyMuscleGroup() {
         var created: ExerciseUiState? = null
         var dismissed = false
         rule.setContent {
@@ -152,8 +155,10 @@ class CreateExerciseScreenKtTest {
 
         createButton.performClick()
 
-        assertThat(created, equalTo(null))
-        assertThat(dismissed, equalTo(false))
+        assertThat(created?.name, equalTo(exercise.name))
+        assertThat(created?.muscleGroup, equalTo(""))
+        assertThat(created?.equipment, equalTo(exercise.equipment))
+        assertThat(dismissed, equalTo(true))
     }
 
     @Test
@@ -195,7 +200,6 @@ class CreateExerciseScreenKtTest {
             )
         }
 
-        typeToggle.assertDoesNotExist()
         nameField.assertTextContains(exercise.name)
         equipmentField.assertTextContains(exercise.equipment)
         muscleField.assertTextContains(exercise.muscleGroup)
@@ -255,7 +259,7 @@ class CreateExerciseScreenKtTest {
     }
 
     @Test
-    fun typeToggleChangesAvailableInformationFields() {
+    fun selectingCardioExerciseChangesAvailableInformationFields() {
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = createTitleResourceId,
@@ -273,7 +277,7 @@ class CreateExerciseScreenKtTest {
         muscleField.assertExists()
         createButton.assertExists()
 
-        typeToggle.performClick()
+        cardioType.performClick()
 
         nameField.assertExists()
         equipmentField.assertDoesNotExist()
@@ -282,7 +286,7 @@ class CreateExerciseScreenKtTest {
     }
 
     @Test
-    fun createCardioExerciseWithJustNameField() {
+    fun createCardioExerciseWithNameField() {
         var created: ExerciseUiState? = null
         var dismissed = false
 
@@ -298,7 +302,7 @@ class CreateExerciseScreenKtTest {
             )
         }
 
-        typeToggle.performClick()
+        cardioType.performClick()
         nameField.performTextInput("Cardio")
         createButton.performClick()
 
@@ -325,7 +329,7 @@ class CreateExerciseScreenKtTest {
             )
         }
 
-        typeToggle.performClick()
+        cardioType.performClick()
         createButton.performClick()
 
         assertThat(dismissed, equalTo(false))
@@ -334,21 +338,135 @@ class CreateExerciseScreenKtTest {
 
     @Test
     fun updateCardioExerciseWithNameField() {
+        var created: ExerciseUiState? = null
         rule.setContent {
             ExerciseInformationForm(
                 formTitle = createTitleResourceId,
                 buttonText = createResourceId,
                 savedExerciseNames = listOf(),
                 savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(name = "Cardio"),
+                exercise = ExerciseUiState(type = ExerciseType.CARDIO, name = "Cardio"),
+                onDismiss = { },
+                createFunction = { newExercise -> created = newExercise }
+            )
+        }
+
+        equipmentField.assertDoesNotExist()
+        muscleField.assertDoesNotExist()
+        nameField.assertTextContains("Cardio")
+
+        nameField.performTextClearance()
+        nameField.performTextInput("Treadmill")
+        createButton.performClick()
+
+        assertThat(created?.name, equalTo("Treadmill"))
+    }
+
+    @Test
+    fun selectingCalisthenicsExerciseChangesAvailableInformationFields() {
+        rule.setContent {
+            ExerciseInformationForm(
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
                 onDismiss = { },
                 createFunction = { }
             )
         }
 
-        typeToggle.assertDoesNotExist()
+        nameField.assertExists()
+        equipmentField.assertExists()
+        muscleField.assertExists()
+        createButton.assertExists()
+
+        calisthenicsType.performClick()
+
+        nameField.assertExists()
         equipmentField.assertDoesNotExist()
-        muscleField.assertDoesNotExist()
-        nameField.assertTextContains("Cardio")
+        muscleField.assertExists()
+        createButton.assertExists()
+    }
+
+    @Test
+    fun createCalisthenicsExerciseWithNameAndMuscleField() {
+        var created: ExerciseUiState? = null
+        var dismissed = false
+
+        rule.setContent {
+            ExerciseInformationForm(
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { dismissed = true },
+                createFunction = { newExercise -> created = newExercise }
+            )
+        }
+
+        calisthenicsType.performClick()
+        nameField.performTextInput("Calisthenics")
+        muscleField.performTextInput("Triceps")
+        createButton.performClick()
+
+        assertThat(dismissed, equalTo(true))
+        assertThat(created!!.name, equalTo("Calisthenics"))
+        assertThat(created!!.equipment, equalTo(""))
+        assertThat(created!!.muscleGroup, equalTo("Triceps"))
+    }
+
+    @Test
+    fun doesNotCreateCalisthenicsExerciseWithEmptyNameField() {
+        var created: ExerciseUiState? = null
+        var dismissed = false
+
+        rule.setContent {
+            ExerciseInformationForm(
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(),
+                onDismiss = { dismissed = true },
+                createFunction = { newExercise -> created = newExercise }
+            )
+        }
+
+        calisthenicsType.performClick()
+        createButton.performClick()
+
+        assertThat(dismissed, equalTo(false))
+        assertThat(created, equalTo(null))
+    }
+
+    @Test
+    fun updateCalisthenicsExerciseWithNameAndMuscleField() {
+        var created: ExerciseUiState? = null
+        rule.setContent {
+            ExerciseInformationForm(
+                formTitle = createTitleResourceId,
+                buttonText = createResourceId,
+                savedExerciseNames = listOf(),
+                savedMuscleGroups = listOf(),
+                exercise = ExerciseUiState(type = ExerciseType.CALISTHENICS, name = "Calisthenics", muscleGroup = "Biceps"),
+                onDismiss = { },
+                createFunction = { newExercise -> created = newExercise }
+            )
+        }
+
+        equipmentField.assertDoesNotExist()
+        muscleField.assertTextContains("Biceps")
+        nameField.assertTextContains("Calisthenics")
+
+        muscleField.performTextClearance()
+        muscleField.performTextInput("Triceps")
+        nameField.performTextClearance()
+        nameField.performTextInput("Seated Dips")
+        createButton.performClick()
+
+        assertThat(created?.name, equalTo("Seated Dips"))
+        assertThat(created?.muscleGroup, equalTo("Triceps"))
     }
 }

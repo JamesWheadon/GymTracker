@@ -67,7 +67,7 @@ class RecordWorkoutHistoryScreenKtTest {
         treadmillExerciseTitle.assertExists()
         closeButton.assertExists()
         saveButton.assertExists()
-        rule.onAllNodes(hasClickAction()).assertCountEquals(5)
+        rule.onAllNodes(hasClickAction()).assertCountEquals(6)
     }
 
     @Test
@@ -87,8 +87,8 @@ class RecordWorkoutHistoryScreenKtTest {
         curlsCheckbox.performClick()
 
         setsField.assertExists()
-        repsField.assertExists()
-        weightField.assertExists()
+        repsField.assertDoesNotExist()
+        weightField.assertDoesNotExist()
 
         saveButton.assertIsNotEnabled()
     }

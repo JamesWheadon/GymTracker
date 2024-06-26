@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.enums.DistanceUnits
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToDistanceUnit
@@ -59,14 +60,15 @@ fun ExerciseHistoryCalendar(
     chosenDate: LocalDate?,
     modifier: Modifier = Modifier
 ) {
-    val currentMonth = if (chosenDate == null) YearMonth.now() else YearMonth.of(chosenDate.year, chosenDate.month)
+    val currentMonth =
+        if (chosenDate == null) YearMonth.now() else YearMonth.of(chosenDate.year, chosenDate.month)
     var selectedMonth by remember { mutableStateOf(currentMonth) }
     var showDay: Int? by remember { mutableStateOf(chosenDate?.dayOfMonth) }
     val activeDays = listOf(uiState.weightsHistory, uiState.cardioHistory).flatten()
         .filter { history -> history.date.month == selectedMonth.month && history.date.year == selectedMonth.year }
         .map { history -> history.date.dayOfMonth }
     val exerciseHistory =
-        if (uiState.exercise.equipment == "") uiState.cardioHistory else uiState.weightsHistory
+        if (uiState.exercise.type == ExerciseType.CARDIO) uiState.cardioHistory else uiState.weightsHistory
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
@@ -157,18 +159,26 @@ fun ExerciseHistoryDetails(
         onClick = { editExercise = true },
         modifier = modifier
     ) {
-        when (exerciseHistory) {
-            is WeightsExerciseHistoryUiState -> {
+        when (exercise.type) {
+            ExerciseType.WEIGHTS -> {
                 WeightsExerciseHistoryDetails(
-                    exerciseHistory = exerciseHistory,
+                    exerciseHistory = exerciseHistory as WeightsExerciseHistoryUiState,
                     deleteFunction = { deleteExercise = true },
                     editEnabled = true
                 )
             }
 
-            is CardioExerciseHistoryUiState -> {
+            ExerciseType.CARDIO -> {
                 CardioExerciseHistoryDetails(
-                    exerciseHistory = exerciseHistory,
+                    exerciseHistory = exerciseHistory as CardioExerciseHistoryUiState,
+                    deleteFunction = { deleteExercise = true },
+                    editEnabled = true
+                )
+            }
+
+            ExerciseType.CALISTHENICS -> {
+                CalisthenicsExerciseHistoryDetails(
+                    exerciseHistory = exerciseHistory as WeightsExerciseHistoryUiState,
                     deleteFunction = { deleteExercise = true },
                     editEnabled = true
                 )
@@ -205,21 +215,31 @@ fun ExerciseHistoryDetails(
 @Composable
 fun ExerciseHistoryDetails(
     exerciseHistory: ExerciseHistoryUiState,
+    exerciseType: ExerciseType,
     modifier: Modifier = Modifier
 ) {
-    when (exerciseHistory) {
-        is WeightsExerciseHistoryUiState -> {
+    when (exerciseType) {
+        ExerciseType.WEIGHTS -> {
             WeightsExerciseHistoryDetails(
-                exerciseHistory = exerciseHistory,
+                exerciseHistory = exerciseHistory as WeightsExerciseHistoryUiState,
                 deleteFunction = { },
                 editEnabled = false,
                 modifier = modifier
             )
         }
 
-        is CardioExerciseHistoryUiState -> {
+        ExerciseType.CARDIO -> {
             CardioExerciseHistoryDetails(
-                exerciseHistory = exerciseHistory,
+                exerciseHistory = exerciseHistory as CardioExerciseHistoryUiState,
+                deleteFunction = { },
+                editEnabled = false,
+                modifier = modifier
+            )
+        }
+
+        ExerciseType.CALISTHENICS -> {
+            CalisthenicsExerciseHistoryDetails(
+                exerciseHistory = exerciseHistory as WeightsExerciseHistoryUiState,
                 deleteFunction = { },
                 editEnabled = false,
                 modifier = modifier
@@ -236,10 +256,15 @@ fun WeightsExerciseHistoryDetails(
     editEnabled: Boolean
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
-    val weight = if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
+    val weights = if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
         exerciseHistory.weight
     } else {
-        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, exerciseHistory.weight)
+        exerciseHistory.weight.map {
+            convertToWeightUnit(
+                userPreferencesUiState.defaultWeightUnit,
+                it
+            )
+        }
     }
     Row(
         modifier = modifier
@@ -250,15 +275,22 @@ fun WeightsExerciseHistoryDetails(
         Column(
             modifier = Modifier.weight(1F)
         ) {
-            Text(text = stringResource(id = R.string.display_sets, exerciseHistory.sets))
-            Text(text = stringResource(id = R.string.display_reps, exerciseHistory.reps))
-            Text(
-                text = stringResource(
-                    id = R.string.display_weight,
-                    weight,
-                    stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
+            for (i in 0 until exerciseHistory.sets) {
+                val stringResource = if (exerciseHistory.reps[i] == 1) {
+                    R.string.display_set_weight_info_singular
+                } else {
+                    R.string.display_set_weight_info
+                }
+                Text(
+                    text = stringResource(
+                        id = stringResource,
+                        i + 1,
+                        exerciseHistory.reps[i],
+                        weights[i],
+                        stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
+                    )
                 )
-            )
+            }
             if (exerciseHistory.rest != null) {
                 Text(text = stringResource(id = R.string.display_rest, exerciseHistory.rest!!))
             }
@@ -354,6 +386,47 @@ fun CardioExerciseHistoryDetails(
     }
 }
 
+@Composable
+fun CalisthenicsExerciseHistoryDetails(
+    exerciseHistory: WeightsExerciseHistoryUiState,
+    deleteFunction: () -> Unit,
+    modifier: Modifier = Modifier,
+    editEnabled: Boolean
+) {
+    Row(
+        modifier = modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1F)
+        ) {
+            for (i in 0 until exerciseHistory.sets) {
+                Text(
+                    text = stringResource(
+                        id = R.string.display_set_info,
+                        i + 1,
+                        exerciseHistory.reps[i]
+                    )
+                )
+            }
+            if (exerciseHistory.rest != null) {
+                Text(text = stringResource(id = R.string.display_rest, exerciseHistory.rest!!))
+            }
+        }
+        if (editEnabled) {
+            IconButton(onClick = deleteFunction) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    tint = Color.Red,
+                    contentDescription = stringResource(id = R.string.delete_history)
+                )
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun WeightsHistoryDetailsPreview() {
@@ -363,9 +436,9 @@ fun WeightsHistoryDetailsPreview() {
             WeightsExerciseHistoryDetails(
                 exerciseHistory = WeightsExerciseHistoryUiState(
                     id = 1,
-                    weight = 13.0,
+                    weight = listOf(13.0),
                     sets = 1,
-                    reps = 2,
+                    reps = listOf(2),
                     rest = 1,
                     date = LocalDate.now().minusDays(5)
 

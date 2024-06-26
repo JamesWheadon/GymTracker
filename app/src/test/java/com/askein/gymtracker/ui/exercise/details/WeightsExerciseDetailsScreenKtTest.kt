@@ -1,5 +1,6 @@
 package com.askein.gymtracker.ui.exercise.details
 
+import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
@@ -22,17 +23,17 @@ class WeightsExerciseDetailsScreenKtTest {
         weightsHistory = listOf(
             WeightsExerciseHistoryUiState(
                 id = 1,
-                weight = 13.0,
+                weight = listOf(13.0),
                 sets = 1,
-                reps = 2,
+                reps = listOf(2),
                 rest = 1,
                 date = firstDate
             ),
             WeightsExerciseHistoryUiState(
                 id = 1,
-                weight = 12.0,
+                weight = listOf(12.0, 12.0),
                 sets = 2,
-                reps = 3,
+                reps = listOf(3, 3),
                 rest = 1,
                 date = secondDate
             )
@@ -45,6 +46,19 @@ class WeightsExerciseDetailsScreenKtTest {
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
+    }
+
+    @Test
+    fun getGraphDetailsForFirstOptionNonKilogramsUnit() {
+        val result = getWeightsGraphDetails(
+            exercise,
+            5,
+            options,
+            UserPreferencesUiState(defaultWeightUnit = WeightUnits.POUNDS)
+        )
+
+        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(28.66, 26.46)))
     }
 
     @Test
@@ -77,5 +91,18 @@ class WeightsExerciseDetailsScreenKtTest {
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
+    }
+
+    @Test
+    fun getGraphDetailsForOtherOptionNonKilogramsUnit() {
+        val result = getWeightsGraphDetails(
+            exercise,
+            5,
+            options,
+            UserPreferencesUiState(defaultWeightUnit = WeightUnits.POUNDS)
+        )
+
+        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(28.66, 26.46)))
     }
 }

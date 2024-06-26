@@ -20,9 +20,4 @@ fun ExerciseWithHistory.toExerciseDetailsUiState(): ExerciseDetailsUiState = Exe
     cardioHistory = cardioHistory.map { it.toCardioExerciseHistoryUiState() }
 )
 
-fun ExerciseDetailsUiState.toExerciseUiState(): ExerciseUiState = ExerciseUiState(
-    id = exercise.id,
-    name = exercise.name,
-    muscleGroup = exercise.muscleGroup,
-    equipment = exercise.equipment
-)
+fun ExerciseDetailsUiState.toExerciseUiState(): ExerciseUiState = exercise

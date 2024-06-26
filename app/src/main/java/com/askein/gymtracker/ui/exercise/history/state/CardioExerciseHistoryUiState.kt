@@ -6,7 +6,7 @@ import java.time.LocalDate
 data class CardioExerciseHistoryUiState(
     override val id: Int = 0,
     override val exerciseId: Int = 0,
-    override val date: LocalDate = LocalDate.now(),
+    override var date: LocalDate = LocalDate.now(),
     override var workoutHistoryId: Int? = null,
     var minutes: Int? = null,
     var seconds: Int? = null,

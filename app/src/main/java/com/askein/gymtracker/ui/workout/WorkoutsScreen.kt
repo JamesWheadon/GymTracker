@@ -34,7 +34,6 @@ import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.workout.create.CreateWorkoutForm
-import com.askein.gymtracker.ui.workout.details.EditWorkoutExercisesScreen
 import java.time.LocalDate
 
 @Composable
@@ -65,8 +64,7 @@ fun WorkoutsScreen(
     workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showWorkoutExercises by remember { mutableStateOf(false) }
-    var newWorkoutName by remember { mutableStateOf("") }
+    var newWorkoutName: String? by remember { mutableStateOf(null) }
     WorkoutsScreen(
         workoutListUiState = workoutListUiState,
         workoutNavigationFunction = workoutNavigationFunction,
@@ -79,7 +77,6 @@ fun WorkoutsScreen(
             CreateWorkoutForm(
                 saveFunction = { workout ->
                     createWorkout(workout)
-                    showWorkoutExercises = true
                     newWorkoutName = workout.name
                 },
                 onDismiss = dismissCreateWorkout,
@@ -87,14 +84,11 @@ fun WorkoutsScreen(
             )
         }
     }
-    if (showWorkoutExercises) {
+    if (newWorkoutName != null) {
         val newWorkout = workoutListUiState.workoutList.firstOrNull { it.name == newWorkoutName }
         if (newWorkout != null) {
-            EditWorkoutExercisesScreen(
-                workout = newWorkout,
-                existingExercises = listOf(),
-                onDismiss = { showWorkoutExercises = false }
-            )
+            workoutNavigationFunction(newWorkout.workoutId, null)
+            newWorkoutName = null
         }
     }
 }

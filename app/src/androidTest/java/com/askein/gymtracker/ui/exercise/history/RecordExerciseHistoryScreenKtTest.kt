@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
@@ -22,16 +23,26 @@ class RecordExerciseHistoryScreenKtTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
-    private val weightsExercise = ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")
-    private val cardioExercise = ExerciseUiState(0, "Cardio")
+    private val weightsExercise = ExerciseUiState(
+        id = 0,
+        type = ExerciseType.WEIGHTS,
+        name = "Curls",
+        muscleGroup = "Biceps",
+        equipment = "Dumbbells"
+    )
+    private val cardioExercise = ExerciseUiState(
+        id = 0,
+        type = ExerciseType.CARDIO,
+        name = "Cardio"
+    )
     private val weightsHistory = WeightsExerciseHistoryUiState(
         id = 0,
         exerciseId = 0,
         date = LocalDate.now(),
         workoutHistoryId = 1,
-        weight = 1.0,
+        weight = listOf(1.0),
         sets = 1,
-        reps = 1
+        reps = listOf(1)
     )
     private val cardioHistory = CardioExerciseHistoryUiState(
         id = 0,

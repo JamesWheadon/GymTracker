@@ -1,6 +1,5 @@
 package com.askein.gymtracker.ui.exercise.details
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,11 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -24,9 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
@@ -69,27 +63,42 @@ private fun WeightsExerciseInformation(
     innerPadding: PaddingValues,
     uiState: ExerciseDetailsUiState
 ) {
-    Row(
-        verticalAlignment = Alignment.Top,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(innerPadding)
-    ) {
-        ExerciseDetail(
-            exerciseInfo = uiState.exercise.muscleGroup,
-            iconId = R.drawable.info_48px,
-            iconDescription = R.string.muscle_icon,
+    if (uiState.exercise.muscleGroup != "" || uiState.exercise.equipment != "") {
+        Row(
+            verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-        )
+                .padding(innerPadding)
+        ) {
+            if (uiState.exercise.muscleGroup != "") {
+                ExerciseDetail(
+                    exerciseInfo = uiState.exercise.muscleGroup,
+                    iconId = R.drawable.info_48px,
+                    iconDescription = R.string.muscle_icon,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
+            if (uiState.exercise.equipment != "") {
+                ExerciseDetail(
+                    exerciseInfo = uiState.exercise.equipment,
+                    iconId = R.drawable.exercise_filled_48px,
+                    iconDescription = R.string.equipment_icon,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
+        }
+    } else {
         ExerciseDetail(
-            exerciseInfo = uiState.exercise.equipment,
+            exerciseInfo = stringResource(id = R.string.weights),
             iconId = R.drawable.exercise_filled_48px,
             iconDescription = R.string.equipment_icon,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .padding(innerPadding)
         )
     }
 }
@@ -145,9 +154,11 @@ private fun WeightsExerciseDetailsBestAndRecent(
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
     val best = if (userPreferencesUiState.displayHighestWeight) {
-        uiState.weightsHistory.maxBy { history -> history.weight }
+        uiState.weightsHistory.map { history -> history.weight.zip(history.reps) }.flatten()
+            .maxWith(compareBy({ it.first }, { it.second }))
     } else {
-        uiState.weightsHistory.maxBy { history -> history.weight * history.reps }
+        uiState.weightsHistory.map { history -> history.weight.zip(history.reps) }.flatten()
+            .maxBy { it.first * it.second }
     }
     val recent = uiState.weightsHistory.maxBy { history -> history.date.toEpochDay() }
     Row(
@@ -158,9 +169,9 @@ private fun WeightsExerciseDetailsBestAndRecent(
         ExerciseDetail(
             exerciseInfo = stringResource(
                 id = R.string.weights_exercise_reps,
-                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, best.weight),
+                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, best.first),
                 stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
-                best.reps
+                best.second
             ),
             iconId = R.drawable.trophy_48dp,
             iconDescription = R.string.best_exercise_icon,
@@ -171,41 +182,15 @@ private fun WeightsExerciseDetailsBestAndRecent(
         ExerciseDetail(
             exerciseInfo = stringResource(
                 id = R.string.weights_exercise_reps,
-                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, recent.weight),
+                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, recent.weight.last()),
                 stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
-                recent.reps
+                recent.reps.last()
             ),
             iconId = R.drawable.history_48px,
             iconDescription = R.string.recent_exercise_icon,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-        )
-    }
-}
-
-@Composable
-fun ExerciseDetail(
-    exerciseInfo: String,
-    iconId: Int,
-    @StringRes iconDescription: Int,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top,
-        modifier = modifier
-    ) {
-        Icon(
-            painter = painterResource(id = iconId),
-            contentDescription = stringResource(id = iconDescription),
-            tint = MaterialTheme.colorScheme.tertiary,
-            modifier = Modifier.size(20.dp)
-        )
-        Text(
-            text = exerciseInfo,
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
         )
     }
 }
@@ -221,12 +206,14 @@ fun getWeightsGraphDetails(
             if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
                 Pair(
                     history.date,
-                    history.weight
+                    history.weight.max()
                 )
             } else {
                 Pair(
                     history.date,
-                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, history.weight)
+                    history.weight.maxOf {
+                        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, it)
+                    }
                 )
             }
         }
@@ -234,7 +221,7 @@ fun getWeightsGraphDetails(
         detailOptions[1] -> {
             Pair(
                 history.date,
-                history.reps.toDouble()
+                history.reps.max().toDouble()
             )
         }
 
@@ -248,7 +235,7 @@ fun getWeightsGraphDetails(
         detailOptions[3] -> {
             Pair(
                 history.date,
-                history.weight * history.reps * history.sets
+                history.weight.zip(history.reps).sumOf { it.first * it.second }
             )
         }
 
@@ -256,12 +243,14 @@ fun getWeightsGraphDetails(
             if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
                 Pair(
                     history.date,
-                    history.weight
+                    history.weight.max()
                 )
             } else {
                 Pair(
                     history.date,
-                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, history.weight)
+                    history.weight.maxOf {
+                        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, it)
+                    }
                 )
             }
         }
@@ -307,9 +296,9 @@ fun ItemDetailsScreenPreviewHistory() {
                     weightsHistory = listOf(
                         WeightsExerciseHistoryUiState(
                             id = 1,
-                            weight = 13.0,
+                            weight = listOf(13.0, 12.5),
                             sets = 1,
-                            reps = 2,
+                            reps = listOf(2, 4),
                             rest = 1,
                             date = LocalDate.now().minusDays(5)
                         )

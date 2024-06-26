@@ -7,6 +7,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
@@ -40,9 +41,9 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         exerciseId = 0,
         date = LocalDate.now(),
         workoutHistoryId = null,
-        weight = 1.0,
+        weight = listOf(1.0),
         sets = 1,
-        reps = 1
+        reps = listOf(1)
     )
 
     @Test
@@ -61,8 +62,6 @@ class RecordWeightsExerciseHistoryScreenKtTest {
 
         cardTitle.assertExists()
         setsField.assertExists()
-        repsField.assertExists()
-        weightField.assertExists()
         unitsField.assertExists()
         createButton.assertExists()
     }
@@ -82,9 +81,6 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 )
             }
         }
-
-        repsField.performTextInput(history.reps.toString())
-        weightField.performTextInput(history.weight.toString())
 
         createButton.performClick()
 
@@ -108,8 +104,8 @@ class RecordWeightsExerciseHistoryScreenKtTest {
             }
         }
 
+        setsField.performTextClearance()
         setsField.performTextInput(history.sets.toString())
-        weightField.performTextInput(history.weight.toString())
 
         createButton.performClick()
 
@@ -133,8 +129,11 @@ class RecordWeightsExerciseHistoryScreenKtTest {
             }
         }
 
+        setsField.performTextClearance()
         setsField.performTextInput(history.sets.toString())
+        repsField.performTextClearance()
         repsField.performTextInput(history.reps.toString())
+        weightField.performTextClearance()
 
         createButton.performClick()
 
@@ -158,9 +157,12 @@ class RecordWeightsExerciseHistoryScreenKtTest {
             }
         }
 
+        setsField.performTextClearance()
         setsField.performTextInput(history.sets.toString())
-        repsField.performTextInput(history.reps.toString())
-        weightField.performTextInput(history.weight.toString())
+        repsField.performTextClearance()
+        repsField.performTextInput(history.reps.first().toString())
+        weightField.performTextClearance()
+        weightField.performTextInput(history.weight.first().toString())
 
         createButton.performClick()
 
@@ -184,8 +186,8 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         }
 
         setsField.assertTextContains(history.sets.toString())
-        repsField.assertTextContains(history.reps.toString())
-        weightField.assertTextContains(history.weight.toString())
+        repsField.assertTextContains(history.reps.first().toString())
+        weightField.assertTextContains(history.weight.first().toString())
     }
 
     @Test
@@ -239,7 +241,9 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                     saveFunction = {},
                     onDismiss = {},
                     savedHistory = WeightsExerciseHistoryUiState(
-                        weight = 10.0
+                        sets = 1,
+                        reps = listOf(2),
+                        weight = listOf(10.0)
                     )
                 )
             }

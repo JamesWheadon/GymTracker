@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
+import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
@@ -69,26 +70,41 @@ fun RecordExerciseHistoryScreen(
 ) {
     val title = history.let { if (it == null) R.string.new_workout else R.string.update_workout }
     Box {
-        if (exercise.equipment != "") {
-            val savedHistory = history?: WeightsExerciseHistoryUiState()
-            RecordWeightsExerciseHistoryCard(
-                exerciseId = exercise.id,
-                cardTitle = stringResource(id = title, exercise.name),
-                saveFunction = saveFunction,
-                onDismiss = onDismiss,
-                modifier = modifier,
-                savedHistory = savedHistory as WeightsExerciseHistoryUiState
-            )
-        } else {
-            val savedHistory = history?: CardioExerciseHistoryUiState()
-            RecordCardioExerciseHistoryCard(
-                exerciseId = exercise.id,
-                cardTitle = stringResource(id = title, exercise.name),
-                saveFunction = saveFunction,
-                onDismiss = onDismiss,
-                modifier = modifier,
-                savedHistory = savedHistory as CardioExerciseHistoryUiState
-            )
+        when (exercise.type) {
+            ExerciseType.WEIGHTS -> {
+                val savedHistory = history?: WeightsExerciseHistoryUiState()
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = stringResource(id = title, exercise.name),
+                    saveFunction = saveFunction,
+                    onDismiss = onDismiss,
+                    modifier = modifier,
+                    savedHistory = savedHistory as WeightsExerciseHistoryUiState
+                )
+            }
+            ExerciseType.CARDIO -> {
+                val savedHistory = history?: CardioExerciseHistoryUiState()
+                RecordCardioExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = stringResource(id = title, exercise.name),
+                    saveFunction = saveFunction,
+                    onDismiss = onDismiss,
+                    modifier = modifier,
+                    savedHistory = savedHistory as CardioExerciseHistoryUiState
+                )
+            }
+            ExerciseType.CALISTHENICS -> {
+                val savedHistory = history?: WeightsExerciseHistoryUiState()
+                RecordWeightsExerciseHistoryCard(
+                    exerciseId = exercise.id,
+                    cardTitle = stringResource(id = title, exercise.name),
+                    saveFunction = saveFunction,
+                    onDismiss = onDismiss,
+                    modifier = modifier,
+                    savedHistory = savedHistory as WeightsExerciseHistoryUiState,
+                    recordWeight = false
+                )
+            }
         }
         IconButton(
             modifier = Modifier
