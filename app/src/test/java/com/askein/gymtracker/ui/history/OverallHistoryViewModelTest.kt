@@ -7,8 +7,8 @@ import com.askein.gymtracker.data.history.HistoryRepository
 import com.askein.gymtracker.data.workout.Workout
 import com.askein.gymtracker.fake.FakeHistoryRepository
 import com.askein.gymtracker.rules.TestCoroutineRule
-import com.askein.gymtracker.ui.exercise.ExerciseUiState
-import com.askein.gymtracker.ui.workout.WorkoutUiState
+import com.askein.gymtracker.ui.exercise.toExerciseUiState
+import com.askein.gymtracker.ui.workout.toWorkoutUiState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -27,6 +27,16 @@ class OverallHistoryViewModelTest {
     private val fakeRepository = FakeHistoryRepository()
     private val mockRepository: HistoryRepository = mock()
 
+    private val workouts = listOf(Workout(name = "Arms"))
+    private val exercises = listOf(
+        Exercise(
+            name = "Curls",
+            exerciseType = ExerciseType.WEIGHTS,
+            muscleGroup = "",
+            equipment = ""
+        )
+    )
+
     @get:Rule
     val coroutineTestRule = TestCoroutineRule()
 
@@ -44,63 +54,23 @@ class OverallHistoryViewModelTest {
     }
 
     @Test
-    fun getWorkoutForDateFromRepository() = runTest {
-        val viewModel = OverallHistoryViewModel(fakeRepository)
-
-        viewModel.workoutsOnDateUiState.test {
-            assertThat(awaitItem().size, equalTo(0))
-
-            fakeRepository.emitAllWorkouts(listOf(Workout(name = "Arms")))
-
-            val item = awaitItem()
-            assertThat(item[0].javaClass, equalTo(WorkoutUiState::class.java))
-            assertThat(item[0].name, equalTo("Arms"))
-        }
-    }
-
-    @Test
-    fun getExerciseForDateFromRepository() = runTest {
-        val viewModel = OverallHistoryViewModel(fakeRepository)
-
-        viewModel.exercisesOnDateUiState.test {
-            assertThat(awaitItem().size, equalTo(0))
-
-            fakeRepository.emitAllExercises(
-                listOf(
-                    Exercise(
-                        name = "Curls",
-                        exerciseType = ExerciseType.WEIGHTS,
-                        muscleGroup = "",
-                        equipment = ""
-                    )
-                )
-            )
-
-            val item = awaitItem()
-            assertThat(item[0].javaClass, equalTo(ExerciseUiState::class.java))
-            assertThat(item[0].name, equalTo("Curls"))
-        }
-    }
-
-    @Test
     fun updateSelectedDateGetsWorkoutAndExercisesForDate() = runBlocking {
-        `when`(mockRepository.getExercisesForDate(LocalDate.now().toEpochDay())).thenReturn(
-            flowOf(listOf(Exercise(name = "", exerciseType = ExerciseType.WEIGHTS, muscleGroup = "", equipment = "")))
-        )
         `when`(mockRepository.getWorkoutsForDate(LocalDate.now().toEpochDay())).thenReturn(
-            flowOf(listOf(Workout(name = "")))
+            flowOf(workouts)
+        )
+        `when`(mockRepository.getExercisesForDate(LocalDate.now().toEpochDay())).thenReturn(
+            flowOf(exercises)
         )
 
         val viewModel = OverallHistoryViewModel(mockRepository)
 
         viewModel.selectDate(LocalDate.now())
 
-        val workouts = viewModel.workoutsOnDateUiState.first()
-        val exercises = viewModel.exercisesOnDateUiState.first()
+        val history = viewModel.historyUiState.first()
 
         verify(mockRepository).getExercisesForDate(LocalDate.now().toEpochDay())
         verify(mockRepository).getWorkoutsForDate(LocalDate.now().toEpochDay())
-        assertThat(workouts.size, equalTo(1))
-        assertThat(exercises.size, equalTo(1))
+        assertThat(history.workouts, equalTo(workouts.map { it.toWorkoutUiState() }))
+        assertThat(history.exercises, equalTo(exercises.map { it.toExerciseUiState() }))
     }
 }
