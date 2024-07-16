@@ -29,6 +29,7 @@ import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.FormTypes
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToKilograms
+import com.askein.gymtracker.enums.convertToWeightUnit
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.DropdownBox
 import com.askein.gymtracker.ui.FormInformationField
@@ -172,11 +173,13 @@ fun LiveRecordExerciseSetsAndTimer(
                     timerStart(exerciseData.rest!!)
                 }
             }
-            Timer(
-                timerState = timerState.currentTime,
-                buttonEnabled = !showSetInfoForm
-            ) {
-                resting = false
+            if (timerState.currentTime >= 0) {
+                Timer(
+                    timerState = timerState.currentTime,
+                    buttonEnabled = !showSetInfoForm
+                ) {
+                    resting = false
+                }
             }
             resting = !timerFinishedState || showSetInfoForm
             if (showSetInfoForm) {
@@ -221,7 +224,7 @@ fun AddSetRepsAndWeight(
     }
     var weightsState by rememberSaveable {
         mutableStateOf(
-            (exerciseData.weight.lastOrNull() ?: 0.0).toString()
+            convertToWeightUnit(unitState, (exerciseData.weight.lastOrNull() ?: 0.0)).toString()
         )
     }
     Column(
