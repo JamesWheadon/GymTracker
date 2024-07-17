@@ -61,9 +61,9 @@ class OverallHistoryViewModel(
         initialValue = HistoryUiState()
     )
 
-    fun selectDate(date: LocalDate) {
+    fun selectDate(date: LocalDate?) {
         viewModelScope.launch {
-            selectedDate.emit(date.toEpochDay())
+            selectedDate.emit(date?.toEpochDay())
         }
     }
 }

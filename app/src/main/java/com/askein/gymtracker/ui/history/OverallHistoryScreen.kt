@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
@@ -68,26 +70,27 @@ fun OverallHistoryScreen(
     workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     datesUiState: List<LocalDate>,
     historyUiState: HistoryUiState,
-    dateSelector: (LocalDate) -> Unit,
+    dateSelector: (LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
-    var showHistory by remember { mutableStateOf(false) }
     val activeDays =
         datesUiState.filter { date -> date.month == selectedMonth.month && date.year == selectedMonth.year }
             .map { date -> date.dayOfMonth }
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier.padding(vertical = 16.dp, horizontal = 16.dp)
+        modifier = modifier
+            .padding(vertical = 16.dp, horizontal = 16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        if (showHistory) {
+        if (historyUiState.date != null) {
             HistoryOnDay(
-                date = historyUiState.date!!,
+                date = historyUiState.date,
                 exerciseNavigationFunction = exerciseNavigationFunction,
                 workoutNavigationFunction = workoutNavigationFunction,
                 workoutsOnDateUiState = historyUiState.workouts,
                 exercisesOnDateUiState = historyUiState.exercises,
-                onDismiss = { showHistory = false }
+                onDismiss = { dateSelector(null) }
             )
         }
         MonthPicker(
@@ -101,7 +104,6 @@ fun OverallHistoryScreen(
             dayFunction = { chosenDay ->
                 val chosenDate = LocalDate.of(selectedMonth.year, selectedMonth.month, chosenDay)
                 dateSelector(chosenDate)
-                showHistory = true
             }
         )
     }
