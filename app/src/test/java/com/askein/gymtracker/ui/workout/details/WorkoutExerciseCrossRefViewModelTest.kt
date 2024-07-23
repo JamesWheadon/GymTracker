@@ -42,24 +42,6 @@ class WorkoutExerciseCrossRefViewModelTest {
     val coroutineTestRule = TestCoroutineRule()
 
     @Test
-    fun insertWorkoutExerciseCrossRefInToRepository() = runTest {
-        viewModel = WorkoutExerciseCrossRefViewModel(mockRepository)
-
-        viewModel.saveExerciseToWorkout(exercise = exerciseUiState, workout = workoutUiState)
-
-        verify(mockRepository).saveExerciseToWorkout(exercise, workout)
-    }
-
-    @Test
-    fun deleteWorkoutExerciseCrossRefFromRepository() = runTest {
-        viewModel = WorkoutExerciseCrossRefViewModel(mockRepository)
-
-        viewModel.deleteExerciseFromWorkout(exercise = exerciseUiState, workout = workoutUiState)
-
-        verify(mockRepository).deleteExerciseFromWorkout(exercise, workout)
-    }
-
-    @Test
     fun saveExercisesForWorkoutSavesExercisesToWorkout() = runTest {
         viewModel = WorkoutExerciseCrossRefViewModel(mockRepository)
 

@@ -1,7 +1,7 @@
 package com.askein.gymtracker.ui.workout.details
 
-import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,11 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
@@ -39,6 +41,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -57,7 +60,8 @@ import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.ExercisesScreenViewModel
 import com.askein.gymtracker.ui.exercise.create.ExerciseInformationForm
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
-import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 @Composable
 fun EditWorkoutExercisesScreen(
@@ -71,46 +75,18 @@ fun EditWorkoutExercisesScreen(
         factory = AppViewModelProvider.Factory
     )
 ) {
-    var newExerciseName: String? by remember { mutableStateOf(null) }
-    val chosenExercises = uiState.exercises
     val allExercises = exercisesViewModel.exerciseListUiState.collectAsState().value.exerciseList
-    val remainingExercises = allExercises.filter { exercise ->
-        !chosenExercises.contains(exercise)
-    }
-    if (newExerciseName != null) {
-        val newExercise = allExercises.firstOrNull { exercise -> exercise.name == newExerciseName }
-        if (newExercise != null) {
-            workoutExerciseCrossRefViewModel.saveExerciseToWorkout(
-                newExercise,
-                uiState.toWorkoutUiState()
-            )
-            newExerciseName = null
-        }
-    }
     EditWorkoutExercisesScreen(
-        chosenExercises = chosenExercises,
-        remainingExercises = remainingExercises,
-        selectFunction = { exercise ->
-            workoutExerciseCrossRefViewModel.saveExerciseToWorkout(
-                exercise,
-                uiState.toWorkoutUiState()
-            )
-        },
-        deselectFunction = { exercise ->
-            workoutExerciseCrossRefViewModel.deleteExerciseFromWorkout(
-                exercise,
-                uiState.toWorkoutUiState()
-            )
-        },
-        saveOrder = { exercises ->
-            workoutExerciseCrossRefViewModel.updateExerciseOrderForWorkout(
+        chosenExercises = uiState.exercises,
+        allExercises = allExercises,
+        saveWorkoutExercises = { exercises ->
+            workoutExerciseCrossRefViewModel.saveExercisesForWorkout(
                 exercises,
-                uiState.toWorkoutUiState()
+                uiState
             )
         },
         saveNewExercise = { exercise ->
             exercisesViewModel.saveExercise(exercise)
-            newExerciseName = exercise.name
         },
         onDismiss = onDismiss,
         modifier = modifier
@@ -120,38 +96,79 @@ fun EditWorkoutExercisesScreen(
 @Composable
 fun EditWorkoutExercisesScreen(
     chosenExercises: List<ExerciseUiState>,
-    remainingExercises: List<ExerciseUiState>,
-    selectFunction: (ExerciseUiState) -> Unit,
-    deselectFunction: (ExerciseUiState) -> Unit,
-    saveOrder: (List<ExerciseUiState>) -> Unit,
+    allExercises: List<ExerciseUiState>,
+    saveWorkoutExercises: (List<ExerciseUiState>) -> Unit,
     saveNewExercise: (ExerciseUiState) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var dragPosition by remember { mutableStateOf(Offset(0f, 0f)) }
+    val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+
+    var dragYOffset by remember { mutableFloatStateOf(0f) }
+    var dragStartYOffset by remember { mutableFloatStateOf(0f) }
+    var dragStartScrollState by remember { mutableFloatStateOf(0f) }
     var dragIndex: Int? by remember { mutableStateOf(null) }
     var draggedCardHeight by remember { mutableIntStateOf(0) }
     var currentDraggedExercise: ExerciseUiState? by remember { mutableStateOf(null) }
     var showCreateExercise by remember { mutableStateOf(false) }
-    val selectedPositions = remember { mutableStateListOf<Offset>() }
+    val cardYOffsets = remember { mutableStateMapOf<String, Float>() }
     val draggableExercises = remember { chosenExercises.toMutableStateList() }
-    val unDraggableExercises = remember { remainingExercises.toMutableStateList() }
-    val onDragStart = { exercise: ExerciseUiState, cardHeight: Int ->
+    var newExerciseName: String? by remember { mutableStateOf(null) }
+    var columnTop by remember { mutableFloatStateOf(0f) }
+    var columnBottom by remember { mutableFloatStateOf(0f) }
+    val unDraggableExercises =
+        allExercises.filter { exercise -> !draggableExercises.contains(exercise) }
+            .sortedBy { exercise -> exercise.name }
+
+    if (newExerciseName != null) {
+        val newExercise = unDraggableExercises.firstOrNull { it.name == newExerciseName }
+        if (newExercise != null) {
+            draggableExercises.add(newExercise)
+            newExerciseName = null
+        }
+    }
+
+    val onDragStart = { exercise: ExerciseUiState, cardHeight: Int, startYOffset: Float ->
         currentDraggedExercise = exercise
         draggedCardHeight = cardHeight
-        dragPosition = selectedPositions[draggableExercises.indexOf(exercise)]
+        dragYOffset = cardYOffsets[exercise.name] ?: 0f
+        dragStartYOffset = (cardYOffsets[exercise.name] ?: 0f) + startYOffset
+        dragStartScrollState = scrollState.value.toFloat()
     }
-    val dragOffsetOnChange = { offset: Offset ->
-        dragPosition += offset
-        dragIndex = selectedPositions.indexOf(selectedPositions.minBy {
-            dragPosition.minus(it).getDistance()
-        })
+    val dragOffsetOnChange = { yOffset: Float ->
+        dragYOffset += yOffset
+        dragIndex = draggableExercises.indexOfFirst { exercise ->
+            exercise.name == cardYOffsets
+                .minBy { card -> abs(dragYOffset.minus(card.value) - draggedCardHeight / 2) }
+                .key
+        }
     }
     val onDragFinished = onDragFinished@{
         if (currentDraggedExercise == null) return@onDragFinished
         draggableExercises.remove(currentDraggedExercise)
         draggableExercises.add(dragIndex!!, currentDraggedExercise!!)
         currentDraggedExercise = null
+    }
+
+    LaunchedEffect(dragYOffset) {
+        if (!scrollState.isScrollInProgress) {
+            val scrollBoundary = 150f
+            val topScrollBound = abs(columnTop) + scrollBoundary
+            val bottomScrollBound = columnBottom - scrollBoundary - (scrollState.maxValue - scrollState.value) - draggedCardHeight
+            val scrollAmount = if (dragYOffset < topScrollBound) {
+                maxOf(-scrollBoundary, -scrollState.value.toFloat())
+            } else if (dragYOffset > bottomScrollBound) {
+                minOf(scrollBoundary, (scrollState.maxValue - scrollState.value).toFloat())
+            } else {
+                0f
+            }
+            if (scrollAmount != 0f) {
+                coroutineScope.launch {
+                    scrollState.animateScrollBy(scrollAmount)
+                }
+            }
+        }
     }
 
     Dialog(
@@ -169,54 +186,63 @@ fun EditWorkoutExercisesScreen(
                             horizontal = 0.dp,
                             vertical = 40.dp
                         )
-                        .verticalScroll(rememberScrollState())
                 ) {
-                    if (draggableExercises.isNotEmpty()) {
-                        ExercisesList(
-                            exercises = draggableExercises,
-                            clickFunction = { exercise ->
-                                draggableExercises.remove(exercise)
-                                unDraggableExercises.add(exercise)
-                                unDraggableExercises.sortBy { it.name }
-                            },
-                            listTitle = R.string.workout_exercises,
-                            exercisesSelected = true,
-                            dragIndex = dragIndex,
-                            draggedCardHeight = draggedCardHeight,
-                            currentDraggedExercise = currentDraggedExercise,
-                            onDragStart = onDragStart,
-                            onPositioned = { offset ->
-                                if (!selectedPositions.contains(offset)) selectedPositions.add(
-                                    offset
-                                )
-                            },
-                            dragOffsetOnChange = dragOffsetOnChange,
-                            onDragFinished = onDragFinished
-                        )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(0.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(
+                                horizontal = 0.dp,
+                                vertical = 0.dp
+                            )
+                            .verticalScroll(scrollState)
+                            .onGloballyPositioned { location ->
+                                columnTop = location.positionInWindow().y
+                                columnBottom = location.positionInWindow().y + location.size.height
+                            }
+                    ) {
+                        if (draggableExercises.isNotEmpty()) {
+                            ExercisesList(
+                                exercises = draggableExercises,
+                                clickFunction = { exercise ->
+                                    draggableExercises.remove(exercise)
+                                },
+                                listTitle = R.string.workout_exercises,
+                                exercisesSelected = true,
+                                dragIndex = dragIndex,
+                                draggedCardHeight = draggedCardHeight,
+                                currentDraggedExercise = currentDraggedExercise,
+                                onDragStart = onDragStart,
+                                onPositioned = { exercise, offset ->
+                                    cardYOffsets[exercise.name] = offset.y
+                                },
+                                draggedCardYOffset = dragYOffset - dragStartYOffset + (scrollState.value.toFloat() - dragStartScrollState),
+                                dragOffsetOnChange = dragOffsetOnChange,
+                                onDragFinished = onDragFinished
+                            )
+                        }
+                        if (unDraggableExercises.isNotEmpty()) {
+                            ExercisesList(
+                                exercises = unDraggableExercises,
+                                clickFunction = { exercise ->
+                                    draggableExercises.add(exercise)
+                                },
+                                listTitle = R.string.available_exercises
+                            )
+                        }
                     }
-                    if (unDraggableExercises.isNotEmpty()) {
-                        ExercisesList(
-                            exercises = unDraggableExercises,
-                            clickFunction = { exercise ->
-                                draggableExercises.add(exercise)
-                                unDraggableExercises.remove(exercise)
-                            },
-                            listTitle = R.string.available_exercises
-                        )
-                    }
-                    Button(onClick = { showCreateExercise = true }) {
+                    Button(
+                        onClick = { showCreateExercise = true }
+                    ) {
                         Text(text = stringResource(id = R.string.create_exercise_title))
                     }
-                    Button(onClick = {
-                        updateWorkoutExercises(
-                            startingExercises = chosenExercises,
-                            finalExercises = draggableExercises,
-                            selectFunction = selectFunction,
-                            deselectFunction = deselectFunction,
-                            saveOrder = saveOrder
-                        )
-                        onDismiss()
-                    }) {
+                    Button(
+                        onClick = {
+                            saveWorkoutExercises(draggableExercises)
+                            onDismiss()
+                        }
+                    ) {
                         Text(text = stringResource(id = R.string.done))
                     }
                 }
@@ -242,26 +268,13 @@ fun EditWorkoutExercisesScreen(
                 formTitle = R.string.create_exercise_title,
                 buttonText = R.string.create,
                 onDismiss = { showCreateExercise = false },
-                createFunction = saveNewExercise
+                createFunction = { newExercise ->
+                    newExerciseName = newExercise.name
+                    saveNewExercise(newExercise)
+                }
             )
         }
     }
-}
-
-fun updateWorkoutExercises(
-    startingExercises: List<ExerciseUiState>,
-    finalExercises: List<ExerciseUiState>,
-    selectFunction: (ExerciseUiState) -> Unit,
-    deselectFunction: (ExerciseUiState) -> Unit,
-    saveOrder: (List<ExerciseUiState>) -> Unit
-) {
-    finalExercises.filter { exercise -> !startingExercises.contains(exercise) }.forEach { exercise ->
-        selectFunction(exercise)
-    }
-    startingExercises.filter { exercise -> !finalExercises.contains(exercise) }.forEach { exercise ->
-        deselectFunction(exercise)
-    }
-    saveOrder(finalExercises)
 }
 
 @Composable
@@ -273,9 +286,10 @@ fun ExercisesList(
     dragIndex: Int? = null,
     draggedCardHeight: Int = 0,
     currentDraggedExercise: ExerciseUiState? = null,
-    onDragStart: (ExerciseUiState, Int) -> Unit = { _, _ -> },
-    onPositioned: (Offset) -> Unit = { },
-    dragOffsetOnChange: (Offset) -> Unit = { },
+    onDragStart: (ExerciseUiState, Int, Float) -> Unit = { _, _, _ -> },
+    onPositioned: (ExerciseUiState, Offset) -> Unit = { _, _ -> },
+    draggedCardYOffset: Float = 0f,
+    dragOffsetOnChange: (Float) -> Unit = { },
     onDragFinished: () -> Unit = { }
 ) {
     Text(
@@ -284,27 +298,29 @@ fun ExercisesList(
     )
     val startIndex = exercises.indexOf(currentDraggedExercise)
     exercises.forEachIndexed { index, exercise ->
-        val yOffset = if (startIndex == -1 || dragIndex == null) {
-            0
+        val exerciseYOffset = if (startIndex == -1 || dragIndex == null) {
+            0f
         } else if (index == startIndex) {
-            null
+            draggedCardYOffset
         } else if (dragIndex < startIndex && index in dragIndex until startIndex) {
-            draggedCardHeight
+            draggedCardHeight.toFloat()
         } else if (dragIndex > startIndex && index in (startIndex + 1)..dragIndex) {
-            -draggedCardHeight
+            -draggedCardHeight.toFloat()
         } else {
-            0
+            0f
         }
-        AddRemoveExerciseCard(
-            exercise = exercise,
-            checked = exercisesSelected,
-            yOffset = yOffset?.toFloat(),
-            clickFunction = clickFunction,
-            onPositioned = onPositioned,
-            onDragStart = onDragStart,
-            dragOffsetOnChange = dragOffsetOnChange,
-            onDragFinished = onDragFinished,
-        )
+        key(exercise.name) {
+            AddRemoveExerciseCard(
+                exercise = exercise,
+                checked = exercisesSelected,
+                clickFunction = clickFunction,
+                onPositioned = onPositioned,
+                yOffset = exerciseYOffset,
+                onDragStart = onDragStart,
+                dragOffsetOnChange = dragOffsetOnChange,
+                onDragFinished = onDragFinished,
+            )
+        }
     }
 }
 
@@ -312,48 +328,37 @@ fun ExercisesList(
 fun AddRemoveExerciseCard(
     exercise: ExerciseUiState,
     checked: Boolean,
-    yOffset: Float?,
+    yOffset: Float,
     clickFunction: (ExerciseUiState) -> Unit,
-    onPositioned: (Offset) -> Unit,
-    onDragStart: (ExerciseUiState, Int) -> Unit,
-    dragOffsetOnChange: (Offset) -> Unit,
+    onPositioned: (ExerciseUiState, Offset) -> Unit,
+    onDragStart: (ExerciseUiState, Int, Float) -> Unit,
+    dragOffsetOnChange: (Float) -> Unit,
     onDragFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val offsetX = remember { mutableFloatStateOf(0f) }
-    val offsetY = remember { mutableFloatStateOf(0f) }
     var cardHeight by remember { mutableIntStateOf(0) }
-    LaunchedEffect(exercise.name) {
-        offsetX.floatValue = 0f
-        offsetY.floatValue = 0f
+    var dragging by remember {
+        mutableStateOf(false)
     }
-    val offset = IntOffset(offsetX.floatValue.roundToInt(), offsetY.floatValue.roundToInt())
-    if (yOffset != null) {
-        offsetY.floatValue = yOffset
-    }
-    Log.i(exercise.name, "${exercise.name}: $offset")
     var cardModifier = if (checked) {
         modifier
             .pointerInput(exercise) {
                 detectDragGesturesAfterLongPress(
                     onDragStart = { offset ->
-                        onDragStart(exercise, cardHeight)
-                        dragOffsetOnChange(offset)
+                        dragging = true
+                        onDragStart(exercise, cardHeight, offset.y)
+                        dragOffsetOnChange(offset.y)
                     },
                     onDrag = { change, dragAmount ->
                         change.consume()
-                        offsetX.floatValue = (offsetX.floatValue + dragAmount.x)
-                        offsetY.floatValue = (offsetY.floatValue + dragAmount.y)
-                        dragOffsetOnChange(dragAmount)
+                        dragOffsetOnChange(dragAmount.y)
                     },
                     onDragEnd = {
-                        offsetX.floatValue = 0f
-                        offsetY.floatValue = 0f
+                        dragging = false
                         onDragFinished()
                     },
                     onDragCancel = {
-                        offsetX.floatValue = 0f
-                        offsetY.floatValue = 0f
+                        dragging = false
                         onDragFinished()
                     }
                 )
@@ -361,17 +366,17 @@ fun AddRemoveExerciseCard(
             .onGloballyPositioned { layoutCoordinates ->
                 val rect = layoutCoordinates.boundsInRoot()
                 cardHeight = layoutCoordinates.size.height
-                onPositioned(rect.topLeft)
+                onPositioned(exercise, rect.topLeft)
             }
     } else {
         modifier
     }
-    if (checked){
+    if (checked) {
         cardModifier = cardModifier.offset {
-            offset
+            IntOffset(0, yOffset.toInt())
         }
     }
-    if (offset != IntOffset.Zero) {
+    if (dragging) {
         cardModifier = cardModifier
             .zIndex(1f)
             .graphicsLayer { alpha = 0.6f }
@@ -468,7 +473,7 @@ fun AddExerciseScreenPreview() {
     GymTrackerTheme(darkTheme = false) {
         EditWorkoutExercisesScreen(
             chosenExercises = listOf(ExerciseUiState(0, "Curls", "Biceps", "Dumbbells")),
-            remainingExercises = listOf(
+            allExercises = listOf(
                 ExerciseUiState(
                     1,
                     "Dips",
@@ -480,9 +485,7 @@ fun AddExerciseScreenPreview() {
                     "Treadmill"
                 ),
             ),
-            selectFunction = { },
-            deselectFunction = {},
-            saveOrder = { },
+            saveWorkoutExercises = { },
             saveNewExercise = { },
             onDismiss = { }
         )

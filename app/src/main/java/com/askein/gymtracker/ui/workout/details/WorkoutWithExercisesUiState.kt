@@ -1,5 +1,6 @@
 package com.askein.gymtracker.ui.workout.details
 
+import com.askein.gymtracker.data.workout.Workout
 import com.askein.gymtracker.data.workoutWithExercises.WorkoutWithExercises
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.toExerciseUiState
@@ -29,6 +30,11 @@ fun WorkoutWithExercises.toWorkoutWithExercisesUiState(): WorkoutWithExercisesUi
     )
 
 fun WorkoutWithExercisesUiState.toWorkoutUiState(): WorkoutUiState = WorkoutUiState(
+    workoutId = workoutId,
+    name = name
+)
+
+fun WorkoutWithExercisesUiState.toWorkout(): Workout = Workout(
     workoutId = workoutId,
     name = name
 )
