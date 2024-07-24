@@ -8,7 +8,6 @@ import com.askein.gymtracker.rules.TestCoroutineRule
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.toExercise
 import com.askein.gymtracker.ui.exercise.toExerciseUiState
-import com.askein.gymtracker.ui.workout.toWorkoutUiState
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +29,6 @@ class WorkoutExerciseCrossRefViewModelTest {
     )
     private val exerciseUiState = exercise.toExerciseUiState()
     private val workout = Workout(workoutId = 1, name = WORKOUT_NAME)
-    private val workoutUiState = workout.toWorkoutUiState()
     private val workoutWithExercisesUiState = WorkoutWithExercisesUiState(
         workoutId = 1,
         name = WORKOUT_NAME,

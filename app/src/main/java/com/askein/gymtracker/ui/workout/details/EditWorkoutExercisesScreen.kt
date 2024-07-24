@@ -138,10 +138,11 @@ fun EditWorkoutExercisesScreen(
     }
     val dragOffsetOnChange = { yOffset: Float ->
         dragYOffset += yOffset
+        val exerciseAtDragLocation = cardYOffsets
+            .minBy { card -> abs(dragYOffset.minus(card.value) - draggedCardHeight / 2) }
+            .key
         dragIndex = draggableExercises.indexOfFirst { exercise ->
-            exercise.name == cardYOffsets
-                .minBy { card -> abs(dragYOffset.minus(card.value) - draggedCardHeight / 2) }
-                .key
+            exercise.name == exerciseAtDragLocation
         }
     }
     val onDragFinished = onDragFinished@{
@@ -207,6 +208,7 @@ fun EditWorkoutExercisesScreen(
                                 exercises = draggableExercises,
                                 clickFunction = { exercise ->
                                     draggableExercises.remove(exercise)
+                                    cardYOffsets.remove(exercise.name)
                                 },
                                 listTitle = R.string.workout_exercises,
                                 exercisesSelected = true,
