@@ -8,12 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -47,24 +41,22 @@ fun HomeScreen(
     workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var homeScreenVariables by remember { mutableStateOf(HomeScreenVariables()) }
+    var homeData by remember { mutableStateOf(HomeData(
+        workoutNavigationFunction = workoutNavigationFunction,
+        exerciseNavigationFunction = exerciseNavigationFunction
+    )) }
     val homeScreens = mapOf(
         R.string.workouts to WorkoutsScreenHomeView(),
         R.string.exercises to ExercisesScreenHomeView(),
         R.string.history to HistoryScreenHomeView()
     )
-    val floatingActionButton = homeScreens[homeScreenVariables.selectedScreen]!!.getFloatingActionButton(
-        homeScreenVariables = homeScreenVariables,
-        homeScreenVariablesOnChange = { newValue -> homeScreenVariables = newValue }
+    val floatingActionButton = homeScreens[homeData.selectedScreen]!!.getFloatingActionButton(
+        homeData = homeData,
+        homeDataOnChange = { newValue -> homeData = newValue }
     )
-    val content = getContent(
-        selected = homeScreenVariables.selectedScreen,
-        workoutNavigationFunction = workoutNavigationFunction,
-        exerciseNavigationFunction = exerciseNavigationFunction,
-        showCreateWorkout = homeScreenVariables.showCreateWorkout,
-        dismissCreateWorkout = { homeScreenVariables.showCreateWorkout = false },
-        showCreateExercise = homeScreenVariables.showCreateExercise,
-        dismissCreateExercise = { homeScreenVariables.showCreateExercise = false }
+    val content = homeScreens[homeData.selectedScreen]!!.getScreenContent(
+        homeData = homeData,
+        homeDataOnChange = { newValue -> homeData = newValue }
     )
     Scaffold(
         modifier = modifier,
@@ -93,8 +85,8 @@ fun HomeScreen(
             ) {
                 for (option in listOf(R.string.workouts, R.string.exercises, R.string.history)) {
                     Button(
-                        onClick = { homeScreenVariables = homeScreenVariables.copy(selectedScreen = option) },
-                        enabled = homeScreenVariables.selectedScreen != option
+                        onClick = { homeData = homeData.copy(selectedScreen = option) },
+                        enabled = homeData.selectedScreen != option
                     ) {
                         Text(text = stringResource(id = option))
                     }
@@ -102,50 +94,6 @@ fun HomeScreen(
             }
             content()
             Spacer(modifier = Modifier.height(72.dp))
-        }
-    }
-}
-
-private fun getFloatingActionButton(
-    selected: Int,
-    showCreateWorkout: () -> Unit,
-    showCreateExercise: () -> Unit
-): @Composable () -> Unit {
-    return when (selected) {
-        R.string.workouts -> {
-            {
-                FloatingActionButton(
-                    onClick = showCreateWorkout,
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        tint = Color.Black,
-                        contentDescription = stringResource(id = R.string.add_workout)
-                    )
-                }
-            }
-        }
-
-        R.string.exercises -> {
-            {
-                FloatingActionButton(
-                    onClick = showCreateExercise,
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        tint = Color.Black,
-                        contentDescription = stringResource(id = R.string.add_exercise)
-                    )
-                }
-            }
-        }
-
-        else -> {
-            { }
         }
     }
 }
@@ -195,8 +143,10 @@ fun getContent(
     }
 }
 
-data class HomeScreenVariables(
+data class HomeData(
     var selectedScreen: Int = R.string.workouts,
     var showCreateWorkout: Boolean = false,
-    var showCreateExercise: Boolean = false
+    var showCreateExercise: Boolean = false,
+    val workoutNavigationFunction: (Int, LocalDate?) -> Unit,
+    val exerciseNavigationFunction: (Int, LocalDate?) -> Unit
 )

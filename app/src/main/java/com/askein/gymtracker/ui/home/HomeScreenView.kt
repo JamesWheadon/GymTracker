@@ -4,7 +4,12 @@ import androidx.compose.runtime.Composable
 
 interface HomeScreenView {
     fun getFloatingActionButton(
-        homeScreenVariables: HomeScreenVariables,
-        homeScreenVariablesOnChange: (HomeScreenVariables) -> Unit
+        homeData: HomeData,
+        homeDataOnChange: (HomeData) -> Unit
+    ): @Composable () -> Unit
+
+    fun getScreenContent(
+        homeData: HomeData,
+        homeDataOnChange: (HomeData) -> Unit
     ): @Composable () -> Unit
 }

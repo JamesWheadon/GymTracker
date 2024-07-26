@@ -12,15 +12,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
+import com.askein.gymtracker.ui.exercise.ExercisesScreen
 
 class ExercisesScreenHomeView : HomeScreenView {
     override fun getFloatingActionButton(
-        homeScreenVariables: HomeScreenVariables,
-        homeScreenVariablesOnChange: (HomeScreenVariables) -> Unit
+        homeData: HomeData,
+        homeDataOnChange: (HomeData) -> Unit
     ): @Composable () -> Unit {
         return {
             FloatingActionButton(
-                onClick = { homeScreenVariablesOnChange(homeScreenVariables.copy(showCreateExercise = true)) },
+                onClick = { homeDataOnChange(homeData.copy(showCreateExercise = true)) },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(20.dp)
             ) {
@@ -30,6 +31,19 @@ class ExercisesScreenHomeView : HomeScreenView {
                     contentDescription = stringResource(id = R.string.add_exercise)
                 )
             }
+        }
+    }
+
+    override fun getScreenContent(
+        homeData: HomeData,
+        homeDataOnChange: (HomeData) -> Unit
+    ): @Composable () -> Unit {
+        return {
+            ExercisesScreen(
+                exerciseNavigationFunction = homeData.exerciseNavigationFunction,
+                showCreateExercise = homeData.showCreateExercise,
+                dismissCreateExercise = { homeDataOnChange(homeData.copy(showCreateExercise = false)) }
+            )
         }
     }
 }
