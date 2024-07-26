@@ -35,7 +35,7 @@ class OfflineExerciseWithHistoryDaoTest {
 
     private val exercise = Exercise(1, ExerciseType.WEIGHTS,"test exercise", "muscle", "kit")
     private val weightsExerciseHistory =
-        WeightsExerciseHistory(1, 1, listOf(1.0), 1, listOf(1), LocalDate.now(), 1, 1)
+        WeightsExerciseHistory(1, 1, listOf(1.0), 1, listOf(1), LocalDate.now(), 1, null, 1)
     private val cardioExerciseHistory =
         CardioExerciseHistory(1, 1, LocalDate.now(), distance = 1.0, workoutHistoryId = 1)
 

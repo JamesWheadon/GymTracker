@@ -1,5 +1,6 @@
 package com.askein.gymtracker.ui.exercise.details
 
+import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
@@ -12,8 +13,10 @@ import java.time.LocalDate
 class WeightsExerciseDetailsScreenKtTest {
 
     private val options = listOf(1, 2, 3, 4)
-    private val firstDate: LocalDate = LocalDate.now().minusDays(3)
-    private val secondDate: LocalDate = LocalDate.now().minusDays(5)
+    private val firstDate: LocalDate = LocalDate.now().minusDays(1)
+    private val secondDate: LocalDate = LocalDate.now().minusDays(2)
+    private val thirdDate: LocalDate = LocalDate.now().minusDays(3)
+    private val fourthDate: LocalDate = LocalDate.now().minusDays(4)
     private val exercise = ExerciseDetailsUiState(
         ExerciseUiState(
             name = "Curls",
@@ -36,73 +39,90 @@ class WeightsExerciseDetailsScreenKtTest {
                 reps = listOf(3, 3),
                 rest = 1,
                 date = secondDate
+            ),
+            WeightsExerciseHistoryUiState(
+                id = 1,
+                weight = listOf(4.0),
+                sets = 1,
+                seconds = listOf(50),
+                rest = 1,
+                date = thirdDate
+            ),
+            WeightsExerciseHistoryUiState(
+                id = 1,
+                weight = listOf(8.0, 10.0),
+                sets = 2,
+                seconds = listOf(30, 90),
+                rest = 1,
+                date = fourthDate
             )
         )
     )
 
     @Test
-    fun getGraphDetailsForFirstOption() {
-        val result = getWeightsGraphDetails(exercise, 1, options, UserPreferencesUiState())
+    fun getGraphDetailsForMaxWeight() {
+        val result = getWeightsGraphDetails(exercise, R.string.max_weight, UserPreferencesUiState())
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
+        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate, thirdDate, fourthDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0, 4.0, 10.0)))
     }
 
     @Test
-    fun getGraphDetailsForFirstOptionNonKilogramsUnit() {
+    fun getGraphDetailsForMaxWeightNonKilogramsUnit() {
         val result = getWeightsGraphDetails(
-            exercise,
-            5,
-            options,
+            exercise,R.string.max_weight,
             UserPreferencesUiState(defaultWeightUnit = WeightUnits.POUNDS)
         )
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(28.66, 26.46)))
+        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate, thirdDate, fourthDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(28.66, 26.46, 8.82, 22.05)))
     }
 
     @Test
-    fun getGraphDetailsForSecondOption() {
-        val result = getWeightsGraphDetails(exercise, 2, options, UserPreferencesUiState())
+    fun getGraphDetailsForMaxReps() {
+        val result = getWeightsGraphDetails(exercise, R.string.max_reps, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(2.0, 3.0)))
     }
 
     @Test
-    fun getGraphDetailsForThirdOption() {
-        val result = getWeightsGraphDetails(exercise, 3, options, UserPreferencesUiState())
+    fun getGraphDetailsForTotalReps() {
+        val result = getWeightsGraphDetails(exercise, R.string.total_reps, UserPreferencesUiState())
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(1.0, 2.0)))
+        assertThat(result.map { it.second }, equalTo(listOf(2.0, 6.0)))
     }
 
     @Test
-    fun getGraphDetailsForFourthOption() {
-        val result = getWeightsGraphDetails(exercise, 4, options, UserPreferencesUiState())
+    fun getGraphDetailsForMaxTime() {
+        val result = getWeightsGraphDetails(exercise, R.string.max_time, UserPreferencesUiState())
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(26.0, 72.0)))
+        assertThat(result.map { it.first }, equalTo(listOf(thirdDate, fourthDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(50.0, 90.0)))
     }
 
     @Test
-    fun getGraphDetailsForOtherOption() {
-        val result = getWeightsGraphDetails(exercise, 5, options, UserPreferencesUiState())
+    fun getGraphDetailsForTotalTime() {
+        val result = getWeightsGraphDetails(exercise, R.string.total_time, UserPreferencesUiState())
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
+        assertThat(result.map { it.first }, equalTo(listOf(thirdDate, fourthDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(50.0, 120.0)))
     }
 
     @Test
-    fun getGraphDetailsForOtherOptionNonKilogramsUnit() {
-        val result = getWeightsGraphDetails(
-            exercise,
-            5,
-            options,
-            UserPreferencesUiState(defaultWeightUnit = WeightUnits.POUNDS)
-        )
+    fun getGraphDetailsForMaxSets() {
+        val result = getWeightsGraphDetails(exercise, R.string.max_sets, UserPreferencesUiState())
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(28.66, 26.46)))
+        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate, thirdDate, fourthDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(1.0, 2.0, 1.0, 2.0)))
+    }
+
+    @Test
+    fun getGraphDetailsForInvalidOption() {
+        val result = getWeightsGraphDetails(exercise, 0, UserPreferencesUiState())
+
+        assertThat(result.map { it.first }, equalTo(listOf()))
+        assertThat(result.map { it.second }, equalTo(listOf()))
     }
 }

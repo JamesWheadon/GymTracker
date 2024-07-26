@@ -30,6 +30,7 @@ import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiSt
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
+import com.askein.gymtracker.util.getTimeStringResourceFromSeconds
 import java.time.LocalDate
 
 @Composable
@@ -157,27 +158,12 @@ private fun CardioExerciseDetailsBest(
             )
         }
         if (bestTime != 0) {
-            val bestTimeString = if (bestTime >= 3600) {
-                stringResource(
-                    id = R.string.display_hours,
-                    bestTime / 3600,
-                    String.format("%02d", (bestTime % 3600) / 60),
-                    String.format("%02d", bestTime % 60)
-                )
-            } else if (bestTime >= 60) {
-                stringResource(
-                    id = R.string.display_minutes,
-                    String.format("%02d", (bestTime % 3600) / 60),
-                    String.format("%02d", bestTime % 60)
-                )
-            } else {
-                stringResource(
-                    id = R.string.display_seconds,
-                    String.format("%02d", bestTime % 60)
-                )
-            }
+            val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(bestTime)
             ExerciseDetail(
-                exerciseInfo = bestTimeString,
+                exerciseInfo = stringResource(
+                    id = resourceId,
+                    *resourceArgs.toTypedArray<String>()
+                ),
                 iconId = R.drawable.trophy_48dp,
                 iconDescription = R.string.best_exercise_icon,
                 modifier = Modifier

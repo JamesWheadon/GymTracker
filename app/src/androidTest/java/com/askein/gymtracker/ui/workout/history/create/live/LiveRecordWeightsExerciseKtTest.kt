@@ -86,6 +86,7 @@ class LiveRecordWeightsExerciseKtTest {
                 setUnitState = { },
                 addSetInfo = {_, _ -> },
                 recordWeight = false,
+                recordReps = true,
                 unitState = WeightUnits.KILOGRAMS
             )
         }
@@ -110,6 +111,7 @@ class LiveRecordWeightsExerciseKtTest {
                 setUnitState = { },
                 addSetInfo = {_, _ -> },
                 recordWeight = false,
+                recordReps = true,
                 unitState = WeightUnits.KILOGRAMS
             )
         }
@@ -141,6 +143,7 @@ class LiveRecordWeightsExerciseKtTest {
                 setUnitState = { },
                 addSetInfo = {_, _ -> },
                 recordWeight = false,
+                recordReps = true,
                 unitState = WeightUnits.KILOGRAMS
             )
         }
@@ -170,7 +173,7 @@ class LiveRecordWeightsExerciseKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 LiveRecordWeightsExerciseInfo(
-                    onStart = { },
+                    onStart = { _, _ -> },
                     onCancel = {}
                 )
             }
@@ -188,7 +191,7 @@ class LiveRecordWeightsExerciseKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 LiveRecordWeightsExerciseInfo(
-                    onStart = { },
+                    onStart = { _, _ -> },
                     onCancel = { cancelled = true }
                 )
             }
@@ -206,7 +209,7 @@ class LiveRecordWeightsExerciseKtTest {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 LiveRecordWeightsExerciseInfo(
-                    onStart = { data -> restTime = data },
+                    onStart = { data, _ -> restTime = data },
                     onCancel = { }
                 )
             }

@@ -49,6 +49,7 @@ import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import com.askein.gymtracker.ui.visualisations.Calendar
 import com.askein.gymtracker.ui.visualisations.MonthPicker
+import com.askein.gymtracker.util.getTimeStringResourceFromSeconds
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -276,20 +277,35 @@ fun WeightsExerciseHistoryDetails(
             modifier = Modifier.weight(1F)
         ) {
             for (i in 0 until exerciseHistory.sets) {
-                val stringResource = if (exerciseHistory.reps[i] == 1) {
-                    R.string.display_set_weight_info_singular
-                } else {
-                    R.string.display_set_weight_info
-                }
-                Text(
-                    text = stringResource(
-                        id = stringResource,
-                        i + 1,
-                        exerciseHistory.reps[i],
-                        weights[i],
-                        stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
+                if (exerciseHistory.reps != null) {
+                    val stringResource = if (exerciseHistory.reps!![i] == 1) {
+                        R.string.display_set_rep_weight_info_singular
+                    } else {
+                        R.string.display_set_rep_weight_info
+                    }
+                    Text(
+                        text = stringResource(
+                            id = stringResource,
+                            i + 1,
+                            exerciseHistory.reps!![i],
+                            weights[i],
+                            stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
+                        )
                     )
-                )
+                } else {
+                    val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(
+                        exerciseHistory.seconds!![i]
+                    )
+                    Text(
+                        text = stringResource(
+                            id = R.string.display_set_time_weight_info,
+                            i + 1,
+                            stringResource(id = resourceId, *resourceArgs.toTypedArray()),
+                            weights[i],
+                            stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm)
+                        )
+                    )
+                }
             }
             if (exerciseHistory.rest != null) {
                 Text(text = stringResource(id = R.string.display_rest, exerciseHistory.rest!!))
@@ -315,25 +331,7 @@ fun CardioExerciseHistoryDetails(
     editEnabled: Boolean = true
 ) {
     val seconds = (exerciseHistory.minutes ?: 0) * 60 + (exerciseHistory.seconds ?: 0)
-    val time = if (seconds >= 3600) {
-        stringResource(
-            id = R.string.display_hours,
-            seconds / 3600,
-            String.format("%02d", (seconds % 3600) / 60),
-            String.format("%02d", seconds % 60)
-        )
-    } else if (seconds >= 60) {
-        stringResource(
-            id = R.string.display_minutes,
-            String.format("%02d", (seconds % 3600) / 60),
-            String.format("%02d", seconds % 60)
-        )
-    } else {
-        stringResource(
-            id = R.string.display_seconds,
-            String.format("%02d", seconds % 60)
-        )
-    }
+    val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(seconds)
     Row(
         modifier = modifier
             .padding(8.dp)
@@ -344,7 +342,14 @@ fun CardioExerciseHistoryDetails(
             modifier = Modifier.weight(1F)
         ) {
             if (seconds != 0) {
-                Text(text = stringResource(id = R.string.exercise_time, time))
+                Text(
+                    text = stringResource(
+                        id = R.string.exercise_time, stringResource(
+                            id = resourceId,
+                            *resourceArgs.toTypedArray<String>()
+                        )
+                    )
+                )
             }
             if (exerciseHistory.distance != null) {
                 val userPreferencesUiState = LocalUserPreferences.current
@@ -403,13 +408,26 @@ fun CalisthenicsExerciseHistoryDetails(
             modifier = Modifier.weight(1F)
         ) {
             for (i in 0 until exerciseHistory.sets) {
-                Text(
-                    text = stringResource(
-                        id = R.string.display_set_info,
-                        i + 1,
-                        exerciseHistory.reps[i]
+                if (exerciseHistory.reps != null) {
+                    Text(
+                        text = stringResource(
+                            id = R.string.display_set_reps_info,
+                            i + 1,
+                            exerciseHistory.reps!![i]
+                        )
                     )
-                )
+                } else {
+                    val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(
+                        exerciseHistory.seconds!![i]
+                    )
+                    Text(
+                        text = stringResource(
+                            id = R.string.display_set_time_info,
+                            i + 1,
+                            stringResource(id = resourceId, *resourceArgs.toTypedArray())
+                        )
+                    )
+                }
             }
             if (exerciseHistory.rest != null) {
                 Text(text = stringResource(id = R.string.display_rest, exerciseHistory.rest!!))

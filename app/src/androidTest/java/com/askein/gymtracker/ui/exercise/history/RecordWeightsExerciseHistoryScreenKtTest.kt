@@ -160,7 +160,7 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         setsField.performTextClearance()
         setsField.performTextInput(history.sets.toString())
         repsField.performTextClearance()
-        repsField.performTextInput(history.reps.first().toString())
+        repsField.performTextInput(history.reps!!.first().toString())
         weightField.performTextClearance()
         weightField.performTextInput(history.weight.first().toString())
 
@@ -186,7 +186,7 @@ class RecordWeightsExerciseHistoryScreenKtTest {
         }
 
         setsField.assertTextContains(history.sets.toString())
-        repsField.assertTextContains(history.reps.first().toString())
+        repsField.assertTextContains(history.reps!!.first().toString())
         weightField.assertTextContains(history.weight.first().toString())
     }
 

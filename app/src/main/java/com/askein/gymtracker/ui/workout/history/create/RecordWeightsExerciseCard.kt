@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -39,6 +40,8 @@ import com.askein.gymtracker.enums.convertToWeightUnit
 import com.askein.gymtracker.ui.DropdownBox
 import com.askein.gymtracker.ui.FormInformationField
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
+import com.askein.gymtracker.ui.exercise.history.RecordRepsWeightsExercise
+import com.askein.gymtracker.ui.exercise.history.RecordTimeWeightsExercise
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
@@ -82,15 +85,23 @@ fun RecordWeightsExerciseCard(
             }
             if (exerciseHistory != null) {
                 val userPreferencesUiState = LocalUserPreferences.current
+                var recordReps by remember { mutableStateOf(true) }
                 var setsState by remember { mutableStateOf(exerciseHistory.sets.toString()) }
-                val repsState =
-                    remember { exerciseHistory.reps.map { it.toString() }.toMutableStateList() }
+                val repsState = remember {
+                    exerciseHistory.reps?.map { it.toString() }?.toMutableStateList()
+                        ?: mutableListOf()
+                }
+                val minutesState = remember {
+                    exerciseHistory.seconds?.map { (it % 60).toString() }?.toMutableStateList()
+                        ?: mutableListOf()
+                }
+                val secondsState = remember {
+                    exerciseHistory.seconds?.map { (it / 60).toString() }?.toMutableStateList()
+                        ?: mutableListOf()
+                }
                 val weightsState = remember {
                     exerciseHistory.weight.map { value ->
-                        getWeightForUnit(
-                            value,
-                            userPreferencesUiState
-                        )
+                        getWeightForUnit(value, userPreferencesUiState)
                     }.toMutableStateList()
                 }
                 var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit) }
@@ -98,6 +109,8 @@ fun RecordWeightsExerciseCard(
                 val setsError = setsState == "" || setsState.toInt() < 1
                 val repsError = repsState.contains("")
                 val weightError = weightsState.contains("")
+                val minutesError = repsState.contains("")
+                val secondsError = weightsState.contains("")
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.Top,
@@ -143,6 +156,21 @@ fun RecordWeightsExerciseCard(
                         )
                     }
                 }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.Top,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 0.dp)
+                ) {
+                    Button(onClick = { recordReps = true }, enabled = !recordReps) {
+                        Text(text = stringResource(id = R.string.reps))
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Button(onClick = { recordReps = false }, enabled = recordReps) {
+                        Text(text = stringResource(id = R.string.time))
+                    }
+                }
                 if (setsState != "" && setsState.toInt() > 0) {
                     Row(
                         horizontalArrangement = Arrangement.End,
@@ -160,58 +188,21 @@ fun RecordWeightsExerciseCard(
                     AnimatedVisibility(visible = showRepsWeightVisibleState) {
                         Column {
                             for (i in 0 until setsState.toInt()) {
-                                if (repsState.size <= i) {
-                                    repsState.add("0")
-                                    weightsState.add("0.0")
-                                }
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceEvenly,
-                                    verticalAlignment = Alignment.Top,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 12.dp, vertical = 0.dp)
-                                ) {
-                                    FormInformationField(
-                                        label = R.string.reps,
-                                        value = repsState[i],
-                                        onChange = { reps ->
-                                            repsState[i] = reps
-                                            if (reps != "") {
-                                                exerciseHistory.reps =
-                                                    repsState.map { it.toInt() }.toList()
-                                            }
-                                        },
-                                        formType = FormTypes.INTEGER,
-                                        error = repsError,
-                                        errorMessage = R.string.positive_number_error,
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(0.dp)
+                                if (recordReps) {
+                                    RecordRepsWeightsExercise(
+                                        repsState = repsState,
+                                        set = i,
+                                        weightsState = weightsState,
+                                        recordWeight = recordWeight
                                     )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    if (recordWeight) {
-                                        FormInformationField(
-                                            label = R.string.weight,
-                                            value = weightsState[i],
-                                            onChange = { weight ->
-                                                weightsState[i] = weight
-                                                if (weight != "") {
-                                                    exerciseHistory.weight = weightsState.map {
-                                                        convertToKilograms(
-                                                            unitState,
-                                                            it.toDouble()
-                                                        )
-                                                    }.toList()
-                                                }
-                                            },
-                                            formType = FormTypes.DOUBLE,
-                                            error = weightError,
-                                            errorMessage = R.string.number_error,
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .padding(0.dp)
-                                        )
-                                    }
+                                } else {
+                                    RecordTimeWeightsExercise(
+                                        minutesState = minutesState,
+                                        secondsState = secondsState,
+                                        set = i,
+                                        weightsState = weightsState,
+                                        recordWeight = recordWeight
+                                    )
                                 }
                                 if (i == 0 && setsState.toInt() > 1) {
                                     Row(
@@ -244,7 +235,7 @@ fun RecordWeightsExerciseCard(
                         }
                     }
                 }
-                errorStateChange(exercise.id, setsError || repsError || weightError)
+                errorStateChange(exercise.id, setsError || repsError || weightError || minutesError || secondsError)
             } else {
                 errorStateChange(exercise.id, false)
             }
