@@ -18,10 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,23 +47,24 @@ fun HomeScreen(
     workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showCreateWorkout by remember { mutableStateOf(false) }
-    var showCreateExercise by remember { mutableStateOf(false) }
-    val options = listOf(R.string.workouts, R.string.exercises, R.string.history)
-    var selected by rememberSaveable { mutableIntStateOf(R.string.workouts) }
-    val floatingActionButton = getFloatingActionButton(
-        selected = selected,
-        showCreateWorkout = { showCreateWorkout = true },
-        showCreateExercise = { showCreateExercise = true }
+    var homeScreenVariables by remember { mutableStateOf(HomeScreenVariables()) }
+    val homeScreens = mapOf(
+        R.string.workouts to WorkoutsScreenHomeView(),
+        R.string.exercises to ExercisesScreenHomeView(),
+        R.string.history to HistoryScreenHomeView()
+    )
+    val floatingActionButton = homeScreens[homeScreenVariables.selectedScreen]!!.getFloatingActionButton(
+        homeScreenVariables = homeScreenVariables,
+        homeScreenVariablesOnChange = { newValue -> homeScreenVariables = newValue }
     )
     val content = getContent(
-        selected = selected,
+        selected = homeScreenVariables.selectedScreen,
         workoutNavigationFunction = workoutNavigationFunction,
         exerciseNavigationFunction = exerciseNavigationFunction,
-        showCreateWorkout = showCreateWorkout,
-        dismissCreateWorkout = { showCreateWorkout = false },
-        showCreateExercise = showCreateExercise,
-        dismissCreateExercise = { showCreateExercise = false }
+        showCreateWorkout = homeScreenVariables.showCreateWorkout,
+        dismissCreateWorkout = { homeScreenVariables.showCreateWorkout = false },
+        showCreateExercise = homeScreenVariables.showCreateExercise,
+        dismissCreateExercise = { homeScreenVariables.showCreateExercise = false }
     )
     Scaffold(
         modifier = modifier,
@@ -92,10 +91,10 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(top = 16.dp)
             ) {
-                for (option in options) {
+                for (option in listOf(R.string.workouts, R.string.exercises, R.string.history)) {
                     Button(
-                        onClick = { selected = option },
-                        enabled = selected != option
+                        onClick = { homeScreenVariables = homeScreenVariables.copy(selectedScreen = option) },
+                        enabled = homeScreenVariables.selectedScreen != option
                     ) {
                         Text(text = stringResource(id = option))
                     }
@@ -143,10 +142,6 @@ private fun getFloatingActionButton(
                     )
                 }
             }
-        }
-
-        R.string.history -> {
-            { }
         }
 
         else -> {
@@ -199,3 +194,9 @@ fun getContent(
         }
     }
 }
+
+data class HomeScreenVariables(
+    var selectedScreen: Int = R.string.workouts,
+    var showCreateWorkout: Boolean = false,
+    var showCreateExercise: Boolean = false
+)
