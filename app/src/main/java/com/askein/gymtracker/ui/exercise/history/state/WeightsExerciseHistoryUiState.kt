@@ -27,18 +27,6 @@ fun WeightsExerciseHistory.toWeightsExerciseHistoryUiState(): WeightsExerciseHis
     rest = rest
 )
 
-fun WeightsExerciseHistoryUiState.toWeightsExerciseHistory(exerciseId: Int): WeightsExerciseHistory = WeightsExerciseHistory(
-    id = id,
-    exerciseId = exerciseId,
-    workoutHistoryId = workoutHistoryId,
-    weight = weight,
-    sets = sets,
-    reps = reps,
-    seconds = seconds,
-    date = date,
-    rest = rest
-)
-
 fun WeightsExerciseHistoryUiState.toWeightsExerciseHistory(): WeightsExerciseHistory = WeightsExerciseHistory(
     id = id,
     exerciseId = exerciseId,

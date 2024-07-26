@@ -12,7 +12,6 @@ import java.time.LocalDate
 
 class WeightsExerciseDetailsScreenKtTest {
 
-    private val options = listOf(1, 2, 3, 4)
     private val firstDate: LocalDate = LocalDate.now().minusDays(1)
     private val secondDate: LocalDate = LocalDate.now().minusDays(2)
     private val thirdDate: LocalDate = LocalDate.now().minusDays(3)
