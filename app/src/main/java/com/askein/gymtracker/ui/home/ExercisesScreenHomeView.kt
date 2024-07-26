@@ -15,35 +15,33 @@ import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.exercise.ExercisesScreen
 
 class ExercisesScreenHomeView : HomeScreenView {
-    override fun getFloatingActionButton(
+    @Composable
+    override fun FloatingActionButton(
         homeData: HomeData,
         homeDataOnChange: (HomeData) -> Unit
-    ): @Composable () -> Unit {
-        return {
-            FloatingActionButton(
-                onClick = { homeDataOnChange(homeData.copy(showCreateExercise = true)) },
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    tint = Color.Black,
-                    contentDescription = stringResource(id = R.string.add_exercise)
-                )
-            }
+    ) {
+        FloatingActionButton(
+            onClick = { homeDataOnChange(homeData.copy(showCreateExercise = true)) },
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.padding(20.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                tint = Color.Black,
+                contentDescription = stringResource(id = R.string.add_exercise)
+            )
         }
     }
 
-    override fun getScreenContent(
+    @Composable
+    override fun ScreenContent(
         homeData: HomeData,
         homeDataOnChange: (HomeData) -> Unit
-    ): @Composable () -> Unit {
-        return {
-            ExercisesScreen(
-                exerciseNavigationFunction = homeData.exerciseNavigationFunction,
-                showCreateExercise = homeData.showCreateExercise,
-                dismissCreateExercise = { homeDataOnChange(homeData.copy(showCreateExercise = false)) }
-            )
-        }
+    ) {
+        ExercisesScreen(
+            exerciseNavigationFunction = homeData.exerciseNavigationFunction,
+            showCreateExercise = homeData.showCreateExercise,
+            dismissCreateExercise = { homeDataOnChange(homeData.copy(showCreateExercise = false)) }
+        )
     }
 }
