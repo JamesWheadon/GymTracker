@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.AppViewModelProvider
+import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.ExercisesScreenViewModel
 
@@ -92,17 +92,14 @@ fun ExerciseInformationForm(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val customCardElevation = CardDefaults.cardElevation(
-        defaultElevation = 16.dp
-    )
     var exerciseInfo by remember { mutableStateOf(exercise.toExerciseInfo()) }
-    val nameError = exerciseInfo.name != exercise.name && savedExerciseNames.map(String::lowercase)
-        .contains(exerciseInfo.name.lowercase())
+    val nameError = exerciseInfo.name != exercise.name &&
+            savedExerciseNames.map(String::lowercase).contains(exerciseInfo.name.lowercase())
     Box {
         Card(
             modifier = modifier
                 .padding(vertical = 10.dp, horizontal = 10.dp),
-            elevation = customCardElevation
+            elevation = customCardElevation()
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -126,37 +123,14 @@ fun ExerciseInformationForm(
                         }
                     )
                 }
-                when (exerciseInfo.exerciseType) {
-                    ExerciseType.WEIGHTS -> {
-                        WeightsExerciseForm(
-                            exerciseInfo = exerciseInfo,
-                            exerciseInfoOnChange = { newInfo ->
-                                exerciseInfo = newInfo
-                            },
-                            nameError = nameError,
-                            savedMuscleGroups = savedMuscleGroups
-                        )
-                    }
-                    ExerciseType.CARDIO -> {
-                        CardioExerciseForm(
-                            exerciseInfo = exerciseInfo,
-                            exerciseInfoOnChange = { newInfo ->
-                                exerciseInfo = newInfo
-                            },
-                            nameError = nameError
-                        )
-                    }
-                    ExerciseType.CALISTHENICS -> {
-                        CalisthenicsExerciseForm(
-                            exerciseInfo = exerciseInfo,
-                            exerciseInfoOnChange = { newInfo ->
-                                exerciseInfo = newInfo
-                            },
-                            nameError = nameError,
-                            savedMuscleGroups = savedMuscleGroups
-                        )
-                    }
-                }
+                ExerciseTypeForm(
+                    exerciseInfo = exerciseInfo,
+                    exerciseInfoOnChange = { newInfo ->
+                        exerciseInfo = newInfo
+                    },
+                    nameError = nameError,
+                    savedMuscleGroups = savedMuscleGroups
+                )
                 SaveExerciseFormButton(
                     exerciseInfo = exerciseInfo,
                     nameTaken = nameError,
@@ -181,7 +155,43 @@ fun ExerciseInformationForm(
 }
 
 @Composable
-fun ExerciseTypeSelection(
+private fun ExerciseTypeForm(
+    exerciseInfo: ExerciseInfo,
+    exerciseInfoOnChange: (ExerciseInfo) -> Unit,
+    nameError: Boolean,
+    savedMuscleGroups: List<String>
+) {
+    when (exerciseInfo.exerciseType) {
+        ExerciseType.WEIGHTS -> {
+            WeightsExerciseForm(
+                exerciseInfo = exerciseInfo,
+                exerciseInfoOnChange = exerciseInfoOnChange,
+                nameError = nameError,
+                savedMuscleGroups = savedMuscleGroups
+            )
+        }
+
+        ExerciseType.CARDIO -> {
+            CardioExerciseForm(
+                exerciseInfo = exerciseInfo,
+                exerciseInfoOnChange = exerciseInfoOnChange,
+                nameError = nameError
+            )
+        }
+
+        ExerciseType.CALISTHENICS -> {
+            CalisthenicsExerciseForm(
+                exerciseInfo = exerciseInfo,
+                exerciseInfoOnChange = exerciseInfoOnChange,
+                nameError = nameError,
+                savedMuscleGroups = savedMuscleGroups
+            )
+        }
+    }
+}
+
+@Composable
+private fun ExerciseTypeSelection(
     exerciseType: ExerciseType,
     exerciseTypeOnChange: (ExerciseType) -> Unit,
     modifier: Modifier = Modifier
