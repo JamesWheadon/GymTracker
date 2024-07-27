@@ -27,20 +27,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.data.exercise.ExerciseType
-import com.askein.gymtracker.enums.FormTypes
 import com.askein.gymtracker.ui.AppViewModelProvider
-import com.askein.gymtracker.ui.FormInformationField
-import com.askein.gymtracker.ui.FormInformationFieldWithSuggestions
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.ExercisesScreenViewModel
-import com.askein.gymtracker.ui.theme.GymTrackerTheme
 
 @Composable
 fun CreateExerciseScreen(
@@ -101,13 +95,9 @@ fun ExerciseInformationForm(
     val customCardElevation = CardDefaults.cardElevation(
         defaultElevation = 16.dp
     )
-    val exerciseId = exercise.id
-    var nameState by remember { mutableStateOf(exercise.name) }
-    var equipmentState by remember { mutableStateOf(exercise.equipment) }
-    var muscleState by remember { mutableStateOf(TextFieldValue(text = exercise.muscleGroup)) }
-    var exerciseType by remember { mutableStateOf(exercise.type) }
-    val nameError = nameState != exercise.name && savedExerciseNames.map(String::lowercase)
-        .contains(nameState.lowercase())
+    var exerciseInfo by remember { mutableStateOf(exercise.toExerciseInfo()) }
+    val nameError = exerciseInfo.name != exercise.name && savedExerciseNames.map(String::lowercase)
+        .contains(exerciseInfo.name.lowercase())
     Box {
         Card(
             modifier = modifier
@@ -130,59 +120,45 @@ fun ExerciseInformationForm(
                 )
                 if (exercise == ExerciseUiState()) {
                     ExerciseTypeSelection(
-                        exerciseType = exerciseType,
-                        exerciseTypeOnChange = { selected -> exerciseType = selected }
+                        exerciseType = exerciseInfo.exerciseType,
+                        exerciseTypeOnChange = { selected ->
+                            exerciseInfo = exerciseInfo.copy(exerciseType = selected)
+                        }
                     )
                 }
-                when (exerciseType) {
+                when (exerciseInfo.exerciseType) {
                     ExerciseType.WEIGHTS -> {
                         WeightsExerciseForm(
-                            nameState = nameState,
+                            exerciseInfo = exerciseInfo,
+                            exerciseInfoOnChange = { newInfo ->
+                                exerciseInfo = newInfo
+                            },
                             nameError = nameError,
-                            nameStateOnChange = { name ->
-                                nameState = name
-                            },
-                            equipmentState = equipmentState,
-                            equipmentStateOnChange = { equipment ->
-                                equipmentState = equipment
-                            },
-                            muscleState = muscleState,
-                            muscleStateOnChange = { muscle ->
-                                muscleState = muscle
-                            },
                             savedMuscleGroups = savedMuscleGroups
                         )
                     }
                     ExerciseType.CARDIO -> {
                         CardioExerciseForm(
-                            nameState = nameState,
-                            nameError = nameError,
-                            nameStateOnChange = { name ->
-                                nameState = name
-                            }
+                            exerciseInfo = exerciseInfo,
+                            exerciseInfoOnChange = { newInfo ->
+                                exerciseInfo = newInfo
+                            },
+                            nameError = nameError
                         )
                     }
                     ExerciseType.CALISTHENICS -> {
                         CalisthenicsExerciseForm(
-                            nameState = nameState,
+                            exerciseInfo = exerciseInfo,
+                            exerciseInfoOnChange = { newInfo ->
+                                exerciseInfo = newInfo
+                            },
                             nameError = nameError,
-                            nameStateOnChange = { name ->
-                                nameState = name
-                            },
-                            muscleState = muscleState,
-                            muscleStateOnChange = { muscle ->
-                                muscleState = muscle
-                            },
                             savedMuscleGroups = savedMuscleGroups
                         )
                     }
                 }
                 SaveExerciseFormButton(
-                    exerciseId = exerciseId,
-                    exerciseType = exerciseType,
-                    exerciseName = nameState,
-                    exerciseEquipment = equipmentState,
-                    exerciseMuscleGroup = muscleState.text,
+                    exerciseInfo = exerciseInfo,
                     nameTaken = nameError,
                     buttonText = buttonText,
                     saveFunction = createFunction,
@@ -205,7 +181,7 @@ fun ExerciseInformationForm(
 }
 
 @Composable
-private fun ExerciseTypeSelection(
+fun ExerciseTypeSelection(
     exerciseType: ExerciseType,
     exerciseTypeOnChange: (ExerciseType) -> Unit,
     modifier: Modifier = Modifier
@@ -240,121 +216,22 @@ private fun ExerciseTypeSelection(
 }
 
 @Composable
-private fun WeightsExerciseForm(
-    nameState: String,
-    nameStateOnChange: (String) -> Unit,
-    nameError: Boolean,
-    equipmentState: String,
-    equipmentStateOnChange: (String) -> Unit,
-    muscleState: TextFieldValue,
-    muscleStateOnChange: (TextFieldValue) -> Unit,
-    savedMuscleGroups: List<String>
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        FormInformationField(
-            label = R.string.exercise_name,
-            value = nameState,
-            onChange = nameStateOnChange,
-            formType = FormTypes.STRING,
-            error = nameError,
-            errorMessage = R.string.exercise_name_taken
-        )
-        FormInformationField(
-            label = R.string.equipment,
-            value = equipmentState,
-            onChange = equipmentStateOnChange,
-            formType = FormTypes.STRING,
-        )
-        FormInformationFieldWithSuggestions(
-            label = R.string.muscle_group,
-            value = muscleState,
-            onChange = muscleStateOnChange,
-            suggestions = savedMuscleGroups
-        )
-    }
-}
-
-@Composable
-private fun CardioExerciseForm(
-    nameState: String,
-    nameStateOnChange: (String) -> Unit,
-    nameError: Boolean
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        FormInformationField(
-            label = R.string.exercise_name,
-            value = nameState,
-            onChange = nameStateOnChange,
-            formType = FormTypes.STRING,
-            error = nameError,
-            errorMessage = R.string.exercise_name_taken
-        )
-    }
-}
-
-@Composable
-private fun CalisthenicsExerciseForm(
-    nameState: String,
-    nameStateOnChange: (String) -> Unit,
-    nameError: Boolean,
-    muscleState: TextFieldValue,
-    muscleStateOnChange: (TextFieldValue) -> Unit,
-    savedMuscleGroups: List<String>
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        FormInformationField(
-            label = R.string.exercise_name,
-            value = nameState,
-            onChange = nameStateOnChange,
-            formType = FormTypes.STRING,
-            error = nameError,
-            errorMessage = R.string.exercise_name_taken
-        )
-        FormInformationFieldWithSuggestions(
-            label = R.string.muscle_group,
-            value = muscleState,
-            onChange = muscleStateOnChange,
-            suggestions = savedMuscleGroups
-        )
-    }
-}
-
-@Composable
 private fun SaveExerciseFormButton(
-    exerciseId: Int,
-    exerciseType: ExerciseType,
-    exerciseName: String,
-    exerciseEquipment: String,
-    exerciseMuscleGroup: String,
+    exerciseInfo: ExerciseInfo,
     nameTaken: Boolean,
     @StringRes buttonText: Int,
     saveFunction: (ExerciseUiState) -> Unit,
     closeForm: () -> Unit
 ) {
-    val enabled = exerciseName != "" && !nameTaken
+    val enabled = exerciseInfo.name != "" && !nameTaken
     Button(onClick = {
         saveFunction(
             ExerciseUiState(
-                id = exerciseId,
-                type = exerciseType,
-                name = exerciseName,
-                muscleGroup = exerciseMuscleGroup,
-                equipment = exerciseEquipment
+                id = exerciseInfo.exerciseId,
+                type = exerciseInfo.exerciseType,
+                name = exerciseInfo.name,
+                muscleGroup = exerciseInfo.muscleGroup,
+                equipment = exerciseInfo.equipment
             )
         )
         closeForm()
@@ -363,34 +240,18 @@ private fun SaveExerciseFormButton(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun CreateExerciseDetailsScreenPreview() {
-    GymTrackerTheme(darkTheme = false) {
-        ExerciseInformationForm(
-            formTitle = R.string.create_exercise_title,
-            buttonText = R.string.create,
-            savedExerciseNames = listOf(),
-            savedMuscleGroups = listOf(),
-            exercise = ExerciseUiState(),
-            createFunction = {},
-            onDismiss = {}
-        )
-    }
-}
+data class ExerciseInfo(
+    val exerciseId: Int,
+    val exerciseType: ExerciseType,
+    val name: String,
+    val equipment: String,
+    val muscleGroup: String
+)
 
-@Preview(showBackground = true)
-@Composable
-fun UpdateExerciseDetailsScreenPreview() {
-    GymTrackerTheme(darkTheme = false) {
-        ExerciseInformationForm(
-            formTitle = R.string.create_exercise_title,
-            buttonText = R.string.create,
-            savedExerciseNames = listOf(),
-            savedMuscleGroups = listOf(),
-            exercise = ExerciseUiState(name = "Update exercise", equipment = "Dumbbells"),
-            createFunction = {},
-            onDismiss = {}
-        )
-    }
-}
+fun ExerciseUiState.toExerciseInfo(): ExerciseInfo = ExerciseInfo(
+    exerciseId = id,
+    exerciseType = type,
+    name = name,
+    equipment = equipment,
+    muscleGroup = muscleGroup
+)
