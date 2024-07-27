@@ -42,13 +42,15 @@ class CreateExerciseScreenKtTest {
     fun rendersEmptyCreateForm() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = {},
-                createFunction = {}
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = {},
+                    createFunction = {}
+                )
             )
         }
 
@@ -67,13 +69,15 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { dismissed = true },
-                createFunction = {}
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { dismissed = true },
+                    createFunction = {}
+                )
             )
         }
 
@@ -88,13 +92,15 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { dismissed = true },
-                createFunction = { created = it }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { dismissed = true },
+                    createFunction = { created = it }
+                )
             )
         }
 
@@ -113,13 +119,15 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { dismissed = true },
-                createFunction = { created = it }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { dismissed = true },
+                    createFunction = { created = it }
+                )
             )
         }
 
@@ -140,13 +148,15 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { dismissed = true },
-                createFunction = { created = it }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { dismissed = true },
+                    createFunction = { created = it }
+                )
             )
         }
 
@@ -167,13 +177,15 @@ class CreateExerciseScreenKtTest {
         var dismissed = false
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { dismissed = true },
-                createFunction = { created = it }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { dismissed = true },
+                    createFunction = { created = it }
+                )
             )
         }
         nameField.performTextInput(exercise.name)
@@ -190,13 +202,15 @@ class CreateExerciseScreenKtTest {
     fun fillsInFieldsWithInformationOfExercisePassedIn() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = exercise,
-                onDismiss = { },
-                createFunction = { }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = exercise,
+                    onDismiss = { },
+                    createFunction = { }
+                )
             )
         }
 
@@ -209,13 +223,15 @@ class CreateExerciseScreenKtTest {
     fun displaysErrorMessageWhenExerciseNameAlreadyTaken() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(savedExercise.name),
-                savedMuscleGroups = listOf(),
-                exercise = exercise,
-                onDismiss = { },
-                createFunction = { }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(savedExercise.name),
+                    savedMuscleGroups = listOf(),
+                    exercise = exercise,
+                    onDismiss = { },
+                    createFunction = { }
+                )
             )
         }
 
@@ -235,13 +251,15 @@ class CreateExerciseScreenKtTest {
 
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(savedExercise.name),
-                savedMuscleGroups = listOf(),
-                exercise = exercise,
-                onDismiss = { dismissed = true },
-                createFunction = { newExercise -> created = newExercise }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(savedExercise.name),
+                    savedMuscleGroups = listOf(),
+                    exercise = exercise,
+                    onDismiss = { dismissed = true },
+                    createFunction = { newExercise -> created = newExercise }
+                )
             )
         }
 
@@ -262,13 +280,15 @@ class CreateExerciseScreenKtTest {
     fun selectingCardioExerciseChangesAvailableInformationFields() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { },
-                createFunction = { }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { },
+                    createFunction = { }
+                )
             )
         }
 
@@ -292,13 +312,15 @@ class CreateExerciseScreenKtTest {
 
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { dismissed = true },
-                createFunction = { newExercise -> created = newExercise }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { dismissed = true },
+                    createFunction = { newExercise -> created = newExercise }
+                )
             )
         }
 
@@ -319,13 +341,15 @@ class CreateExerciseScreenKtTest {
 
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { dismissed = true },
-                createFunction = { newExercise -> created = newExercise }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { dismissed = true },
+                    createFunction = { newExercise -> created = newExercise }
+                )
             )
         }
 
@@ -341,13 +365,15 @@ class CreateExerciseScreenKtTest {
         var created: ExerciseUiState? = null
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(type = ExerciseType.CARDIO, name = "Cardio"),
-                onDismiss = { },
-                createFunction = { newExercise -> created = newExercise }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(type = ExerciseType.CARDIO, name = "Cardio"),
+                    onDismiss = { },
+                    createFunction = { newExercise -> created = newExercise }
+                )
             )
         }
 
@@ -366,13 +392,15 @@ class CreateExerciseScreenKtTest {
     fun selectingCalisthenicsExerciseChangesAvailableInformationFields() {
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { },
-                createFunction = { }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { },
+                    createFunction = { }
+                )
             )
         }
 
@@ -396,13 +424,15 @@ class CreateExerciseScreenKtTest {
 
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { dismissed = true },
-                createFunction = { newExercise -> created = newExercise }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { dismissed = true },
+                    createFunction = { newExercise -> created = newExercise }
+                )
             )
         }
 
@@ -424,13 +454,15 @@ class CreateExerciseScreenKtTest {
 
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(),
-                onDismiss = { dismissed = true },
-                createFunction = { newExercise -> created = newExercise }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(),
+                    onDismiss = { dismissed = true },
+                    createFunction = { newExercise -> created = newExercise }
+                )
             )
         }
 
@@ -446,13 +478,19 @@ class CreateExerciseScreenKtTest {
         var created: ExerciseUiState? = null
         rule.setContent {
             ExerciseInformationForm(
-                formTitle = createTitleResourceId,
-                buttonText = createResourceId,
-                savedExerciseNames = listOf(),
-                savedMuscleGroups = listOf(),
-                exercise = ExerciseUiState(type = ExerciseType.CALISTHENICS, name = "Calisthenics", muscleGroup = "Biceps"),
-                onDismiss = { },
-                createFunction = { newExercise -> created = newExercise }
+                CreateExerciseInfo(
+                    formTitle = createTitleResourceId,
+                    buttonText = createResourceId,
+                    savedExerciseNames = listOf(),
+                    savedMuscleGroups = listOf(),
+                    exercise = ExerciseUiState(
+                        type = ExerciseType.CALISTHENICS,
+                        name = "Calisthenics",
+                        muscleGroup = "Biceps"
+                    ),
+                    onDismiss = { },
+                    createFunction = { newExercise -> created = newExercise }
+                )
             )
         }
 

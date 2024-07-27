@@ -70,31 +70,27 @@ fun ExerciseInformationForm(
     val savedMuscleGroups = viewModel.muscleGroupUiState.collectAsState().value
     val savedExerciseNames = viewModel.exerciseNamesUiState.collectAsState().value
     ExerciseInformationForm(
-        formTitle = formTitle,
-        buttonText = buttonText,
-        savedExerciseNames = savedExerciseNames,
-        savedMuscleGroups = savedMuscleGroups,
-        exercise = exercise,
-        createFunction = createFunction,
-        onDismiss = onDismiss,
+        createExerciseInfo = CreateExerciseInfo(
+            formTitle = formTitle,
+            buttonText = buttonText,
+            savedExerciseNames = savedExerciseNames,
+            savedMuscleGroups = savedMuscleGroups,
+            exercise = exercise,
+            createFunction = createFunction,
+            onDismiss = onDismiss
+        ),
         modifier = modifier
     )
 }
 
 @Composable
 fun ExerciseInformationForm(
-    @StringRes formTitle: Int,
-    @StringRes buttonText: Int,
-    savedExerciseNames: List<String>,
-    savedMuscleGroups: List<String>,
-    exercise: ExerciseUiState,
-    createFunction: (ExerciseUiState) -> Unit,
-    onDismiss: () -> Unit,
+    createExerciseInfo: CreateExerciseInfo,
     modifier: Modifier = Modifier
 ) {
-    var exerciseInfo by remember { mutableStateOf(exercise.toExerciseInfo()) }
-    val nameError = exerciseInfo.name != exercise.name &&
-            savedExerciseNames.map(String::lowercase).contains(exerciseInfo.name.lowercase())
+    var exerciseInfo by remember { mutableStateOf(createExerciseInfo.exercise.toExerciseInfo()) }
+    val nameError = exerciseInfo.name != createExerciseInfo.exercise.name &&
+            createExerciseInfo.savedExerciseNames.map(String::lowercase).contains(exerciseInfo.name.lowercase())
     Box {
         Card(
             modifier = modifier
@@ -107,7 +103,7 @@ fun ExerciseInformationForm(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = stringResource(id = formTitle),
+                    text = stringResource(id = createExerciseInfo.formTitle),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier
@@ -115,7 +111,7 @@ fun ExerciseInformationForm(
                         .align(Alignment.CenterHorizontally)
                         .padding(vertical = 16.dp, horizontal = 16.dp)
                 )
-                if (exercise == ExerciseUiState()) {
+                if (createExerciseInfo.exercise == ExerciseUiState()) {
                     ExerciseTypeSelection(
                         exerciseType = exerciseInfo.exerciseType,
                         exerciseTypeOnChange = { selected ->
@@ -129,14 +125,14 @@ fun ExerciseInformationForm(
                         exerciseInfo = newInfo
                     },
                     nameError = nameError,
-                    savedMuscleGroups = savedMuscleGroups
+                    savedMuscleGroups = createExerciseInfo.savedMuscleGroups
                 )
                 SaveExerciseFormButton(
                     exerciseInfo = exerciseInfo,
                     nameTaken = nameError,
-                    buttonText = buttonText,
-                    saveFunction = createFunction,
-                    closeForm = onDismiss
+                    buttonText = createExerciseInfo.buttonText,
+                    saveFunction = createExerciseInfo.createFunction,
+                    closeForm = createExerciseInfo.onDismiss
                 )
             }
         }
@@ -144,7 +140,7 @@ fun ExerciseInformationForm(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .offset((-8).dp, 8.dp),
-            onClick = { onDismiss() }
+            onClick = { createExerciseInfo.onDismiss() }
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
@@ -249,6 +245,16 @@ private fun SaveExerciseFormButton(
         Text(text = stringResource(id = buttonText))
     }
 }
+
+data class CreateExerciseInfo(
+    val formTitle: Int,
+    val buttonText: Int,
+    val savedExerciseNames: List<String>,
+    val savedMuscleGroups: List<String>,
+    val exercise: ExerciseUiState,
+    val createFunction: (ExerciseUiState) -> Unit,
+    val onDismiss: () -> Unit
+)
 
 data class ExerciseInfo(
     val exerciseId: Int,
