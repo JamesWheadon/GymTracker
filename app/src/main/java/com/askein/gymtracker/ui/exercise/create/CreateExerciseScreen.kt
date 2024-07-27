@@ -2,19 +2,12 @@ package com.askein.gymtracker.ui.exercise.create
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.AppViewModelProvider
-import com.askein.gymtracker.ui.customCardElevation
+import com.askein.gymtracker.ui.DialogScreenWrapper
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.ExercisesScreenViewModel
 
@@ -69,18 +62,20 @@ fun ExerciseInformationForm(
 ) {
     val savedMuscleGroups = viewModel.muscleGroupUiState.collectAsState().value
     val savedExerciseNames = viewModel.exerciseNamesUiState.collectAsState().value
-    ExerciseInformationForm(
-        createExerciseInfo = CreateExerciseInfo(
-            formTitle = formTitle,
-            buttonText = buttonText,
-            savedExerciseNames = savedExerciseNames,
-            savedMuscleGroups = savedMuscleGroups,
-            exercise = exercise,
-            createFunction = createFunction,
-            onDismiss = onDismiss
-        ),
-        modifier = modifier
-    )
+    DialogScreenWrapper(onDismiss = onDismiss) {
+        ExerciseInformationForm(
+            createExerciseInfo = CreateExerciseInfo(
+                formTitle = formTitle,
+                buttonText = buttonText,
+                savedExerciseNames = savedExerciseNames,
+                savedMuscleGroups = savedMuscleGroups,
+                exercise = exercise,
+                createFunction = createFunction,
+                onDismiss = onDismiss
+            ),
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
@@ -90,63 +85,45 @@ fun ExerciseInformationForm(
 ) {
     var exerciseInfo by remember { mutableStateOf(createExerciseInfo.exercise.toExerciseInfo()) }
     val nameError = exerciseInfo.name != createExerciseInfo.exercise.name &&
-            createExerciseInfo.savedExerciseNames.map(String::lowercase).contains(exerciseInfo.name.lowercase())
-    Box {
-        Card(
-            modifier = modifier
-                .padding(vertical = 10.dp, horizontal = 10.dp),
-            elevation = customCardElevation()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(id = createExerciseInfo.formTitle),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = 16.dp, horizontal = 16.dp)
-                )
-                if (createExerciseInfo.exercise == ExerciseUiState()) {
-                    ExerciseTypeSelection(
-                        exerciseType = exerciseInfo.exerciseType,
-                        exerciseTypeOnChange = { selected ->
-                            exerciseInfo = exerciseInfo.copy(exerciseType = selected)
-                        }
-                    )
-                }
-                ExerciseTypeForm(
-                    exerciseInfo = exerciseInfo,
-                    exerciseInfoOnChange = { newInfo ->
-                        exerciseInfo = newInfo
-                    },
-                    nameError = nameError,
-                    savedMuscleGroups = createExerciseInfo.savedMuscleGroups
-                )
-                SaveExerciseFormButton(
-                    exerciseInfo = exerciseInfo,
-                    nameTaken = nameError,
-                    buttonText = createExerciseInfo.buttonText,
-                    saveFunction = createExerciseInfo.createFunction,
-                    closeForm = createExerciseInfo.onDismiss
-                )
-            }
-        }
-        IconButton(
+            createExerciseInfo.savedExerciseNames.map(String::lowercase)
+                .contains(exerciseInfo.name.lowercase())
+    Column(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = createExerciseInfo.formTitle),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .offset((-8).dp, 8.dp),
-            onClick = { createExerciseInfo.onDismiss() }
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(id = R.string.close)
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 16.dp, horizontal = 16.dp)
+        )
+        if (createExerciseInfo.exercise == ExerciseUiState()) {
+            ExerciseTypeSelection(
+                exerciseType = exerciseInfo.exerciseType,
+                exerciseTypeOnChange = { selected ->
+                    exerciseInfo = exerciseInfo.copy(exerciseType = selected)
+                }
             )
         }
+        ExerciseTypeForm(
+            exerciseInfo = exerciseInfo,
+            exerciseInfoOnChange = { newInfo ->
+                exerciseInfo = newInfo
+            },
+            nameError = nameError,
+            savedMuscleGroups = createExerciseInfo.savedMuscleGroups
+        )
+        SaveExerciseFormButton(
+            exerciseInfo = exerciseInfo,
+            nameTaken = nameError,
+            buttonText = createExerciseInfo.buttonText,
+            saveFunction = createExerciseInfo.createFunction,
+            closeForm = createExerciseInfo.onDismiss
+        )
     }
 }
 
