@@ -101,7 +101,7 @@ fun CardioExerciseHistoryDetails(
     if (dataPoints.isNotEmpty()) {
         Graph(
             points = dataPoints,
-            startDate = timeOptionToStartTime[time] ?: LocalDate.now(),
+            startDate = timeOptionToStartTime[time]!!,
             yLabel = stringResource(id = detail),
             yUnit = stringResource(id = yUnit[detail]!!)
         )

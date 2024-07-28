@@ -108,48 +108,21 @@ private fun WeightsExerciseInformation(
 fun WeightsExerciseHistoryDetails(
     uiState: ExerciseDetailsUiState
 ) {
-    val repsPresent = uiState.weightsHistory.any { history -> history.reps != null }
-    val timePresent = uiState.weightsHistory.any { history -> history.seconds != null }
-    val timeOptions =
-        listOf(R.string.seven_days, R.string.thirty_days, R.string.past_year, R.string.all_time)
-    val detailOptions = mutableListOf(
-        R.string.max_weight,
-        R.string.max_reps,
-        R.string.max_time,
-        R.string.max_sets,
-        R.string.total_reps,
-        R.string.total_time
-    )
-    val currentDate = LocalDate.now()
-    val timeOptionToStartTime = mapOf<Int, LocalDate>(
-        Pair(timeOptions[0], currentDate.minusDays(7)),
-        Pair(timeOptions[1], currentDate.minusDays(30)),
-        Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
-        Pair(
-            timeOptions[3],
-            uiState.weightsHistory.minBy { history -> history.date.toEpochDay() }.date
-        ),
-    )
-    if (!repsPresent) {
-        detailOptions.removeAll(listOf(R.string.max_reps, R.string.total_reps))
-    }
-    if (!timePresent) {
-        detailOptions.removeAll(listOf(R.string.max_time, R.string.total_time))
-    }
+    val (detailOptions, timeOptionToStartTime) = graphOptionsForWeightsExercise(uiState)
     var detail by remember { mutableIntStateOf(detailOptions[0]) }
-    var time by remember { mutableIntStateOf(timeOptions[0]) }
+    var time by remember { mutableIntStateOf(timeOptionToStartTime.keys.first()) }
     WeightsExerciseDetailsBestAndRecent(uiState)
     GraphOptions(
         detailOptions = detailOptions,
         detailOnChange = { newDetail -> detail = newDetail },
-        timeOptions = timeOptions,
+        timeOptions = timeOptionToStartTime.keys.toList(),
         timeOnChange = { newTime -> time = newTime }
     )
     val dataPoints = getWeightsGraphDetails(
         uiState,
         detail,
         LocalUserPreferences.current
-    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
+    ).filter { !it.first.isBefore(timeOptionToStartTime[time]!!) }
     if (dataPoints.isNotEmpty()) {
         val yUnit = when (detail) {
             R.string.max_weight, R.string.total_weight -> stringResource(
@@ -162,7 +135,7 @@ fun WeightsExerciseHistoryDetails(
         }
         Graph(
             points = dataPoints,
-            startDate = timeOptionToStartTime[time] ?: currentDate,
+            startDate = timeOptionToStartTime[time]!!,
             yLabel = stringResource(id = detail),
             yUnit = yUnit
         )

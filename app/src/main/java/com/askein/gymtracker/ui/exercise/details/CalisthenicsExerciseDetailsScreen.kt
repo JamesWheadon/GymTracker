@@ -96,7 +96,8 @@ fun CalisthenicsExerciseHistoryDetails(
     val dataPoints = calisthenicsGraphDataPoints(
         chosenDetail = detail,
         historyUiStates = uiState.weightsHistory
-    ).filter { !it.first.isBefore(timeOptionToStartTime[time]!!) }
+            .filter { !it.date.isBefore(timeOptionToStartTime[time]!!) }
+    )
     if (dataPoints.isNotEmpty()) {
         val yUnit = when (detail) {
             R.string.max_time, R.string.total_time -> stringResource(
@@ -107,7 +108,7 @@ fun CalisthenicsExerciseHistoryDetails(
         }
         Graph(
             points = dataPoints,
-            startDate = timeOptionToStartTime[time] ?: LocalDate.now(),
+            startDate = timeOptionToStartTime[time]!!,
             yLabel = stringResource(id = detail),
             yUnit = yUnit
         )
