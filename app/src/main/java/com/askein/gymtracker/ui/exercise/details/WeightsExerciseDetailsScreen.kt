@@ -129,9 +129,11 @@ fun WeightsExerciseHistoryDetails(
             R.string.max_weight, R.string.total_weight -> stringResource(
                 id = weightUnit.shortForm
             )
+
             R.string.max_time, R.string.total_time -> stringResource(
                 id = R.string.seconds_unit
             )
+
             else -> ""
         }
         Graph(
@@ -150,36 +152,14 @@ private fun WeightsExerciseDetailsBestAndRecent(
     uiState: ExerciseDetailsUiState
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
-    val bestReps = if (uiState.weightsHistory.any { history -> history.reps != null }) {
-        val flattenedHistoryRepsWeights = uiState.weightsHistory
-            .filter { history -> history.reps != null }
-            .map { history -> history.weight.zip(history.reps!!) }
-            .flatten()
-        if (userPreferencesUiState.displayHighestWeight) {
-            flattenedHistoryRepsWeights
-                .maxWith(compareBy({ it.first }, { it.second }))
-        } else {
-            flattenedHistoryRepsWeights
-                .maxBy { it.first * it.second }
-        }
-    } else {
-        null
-    }
-    val bestTime = if (uiState.weightsHistory.any { history -> history.seconds != null }) {
-        val flattenedHistoryRepsWeights = uiState.weightsHistory
-            .filter { history -> history.seconds != null }
-            .map { history -> history.weight.zip(history.seconds!!) }
-            .flatten()
-        if (userPreferencesUiState.displayHighestWeight) {
-            flattenedHistoryRepsWeights
-                .maxWith(compareBy({ it.first }, { it.second }))
-        } else {
-            flattenedHistoryRepsWeights
-                .maxBy { it.first * it.second }
-        }
-    } else {
-        null
-    }
+    val bestReps = bestRepsForWeightsExercise(
+        uiState.weightsHistory,
+        userPreferencesUiState.displayHighestWeight
+    )
+    val bestTime = bestTimeForWeightsExercise(
+        uiState.weightsHistory,
+        userPreferencesUiState.displayHighestWeight
+    )
     val recent = uiState.weightsHistory.maxBy { history -> history.date.toEpochDay() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -254,6 +234,44 @@ private fun WeightsExerciseDetailsBestAndRecent(
             )
         }
     }
+}
+
+fun bestRepsForWeightsExercise(
+    exerciseHistory: List<WeightsExerciseHistoryUiState>,
+    displayHighestWeight: Boolean
+) = if (exerciseHistory.any { history -> history.reps != null }) {
+    val flattenedHistoryRepsWeights = exerciseHistory
+        .filter { history -> history.reps != null }
+        .map { history -> history.weight.zip(history.reps!!) }
+        .flatten()
+    if (displayHighestWeight) {
+        flattenedHistoryRepsWeights
+            .maxWith(compareBy({ it.first }, { it.second }))
+    } else {
+        flattenedHistoryRepsWeights
+            .maxBy { it.first * it.second }
+    }
+} else {
+    null
+}
+
+fun bestTimeForWeightsExercise(
+    exerciseHistory: List<WeightsExerciseHistoryUiState>,
+    displayHighestWeight: Boolean
+) = if (exerciseHistory.any { history -> history.seconds != null }) {
+    val flattenedHistoryRepsWeights = exerciseHistory
+        .filter { history -> history.seconds != null }
+        .map { history -> history.weight.zip(history.seconds!!) }
+        .flatten()
+    if (displayHighestWeight) {
+        flattenedHistoryRepsWeights
+            .maxWith(compareBy({ it.first }, { it.second }))
+    } else {
+        flattenedHistoryRepsWeights
+            .maxBy { it.first * it.second }
+    }
+} else {
+    null
 }
 
 @Preview(showBackground = true)

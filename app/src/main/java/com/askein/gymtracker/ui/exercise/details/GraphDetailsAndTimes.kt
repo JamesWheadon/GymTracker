@@ -48,6 +48,9 @@ fun GraphOptions(
 
 fun graphOptionsForWeightsExercise(uiState: ExerciseDetailsUiState): GraphDetailsAndTimes {
     val weightsPresent = uiState.weightsHistory.any { history -> history.weight.isNotEmpty() }
+    val weightsAndRepsPresent = uiState.weightsHistory.any { history ->
+        history.weight.isNotEmpty() && history.reps != null
+    }
     val repsPresent = uiState.weightsHistory.any { history -> history.reps != null }
     val timePresent = uiState.weightsHistory.any { history -> history.seconds != null }
     val detailOptions = mutableListOf(
@@ -55,11 +58,15 @@ fun graphOptionsForWeightsExercise(uiState: ExerciseDetailsUiState): GraphDetail
         R.string.max_reps,
         R.string.max_time,
         R.string.max_sets,
+        R.string.total_weight,
         R.string.total_reps,
         R.string.total_time
     )
     if (!weightsPresent) {
-        detailOptions.removeAll(listOf(R.string.max_weight))
+        detailOptions.remove(R.string.max_weight)
+    }
+    if (!weightsAndRepsPresent) {
+        detailOptions.remove(R.string.total_weight)
     }
     if (!repsPresent) {
         detailOptions.removeAll(listOf(R.string.max_reps, R.string.total_reps))

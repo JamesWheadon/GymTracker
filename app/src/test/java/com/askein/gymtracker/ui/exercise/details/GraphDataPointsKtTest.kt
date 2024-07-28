@@ -165,6 +165,42 @@ class GraphDataPointsKtTest {
     }
 
     @Test
+    fun getGraphDetailsForTotalWeightInKilograms() {
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            R.string.total_weight,
+            weightsHistory,
+            WeightUnits.KILOGRAMS
+        )
+
+        assertThat(
+            result.map { it.first },
+            equalTo(listOf(firstDate, secondDate))
+        )
+        assertThat(
+            result.map { it.second },
+            equalTo(listOf(26.0, 72.0))
+        )
+    }
+
+    @Test
+    fun getGraphDetailsForTotalWeightInOtherWeightUnit() {
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            R.string.total_weight,
+            weightsHistory,
+            WeightUnits.POUNDS
+        )
+
+        assertThat(
+            result.map { it.first },
+            equalTo(listOf(firstDate, secondDate))
+        )
+        assertThat(
+            result.map { it.second },
+            equalTo(listOf(57.32, 158.76))
+        )
+    }
+
+    @Test
     fun getGraphDetailsForInvalidOption() {
         val result = calisthenicsAndWeightsGraphDataPoints(
             0,

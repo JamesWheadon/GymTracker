@@ -41,21 +41,47 @@ fun calisthenicsAndWeightsGraphDataPoints(
             }
         }
 
-        R.string.total_reps -> {
-            val reps = history.reps?.sum()?.toDouble()
-            if (reps == null) {
-                null
-            } else {
-                Pair(history.date, reps)
-            }
-        }
-
         R.string.max_time -> {
             val seconds = history.seconds?.max()?.toDouble()
             if (seconds == null) {
                 null
             } else {
                 Pair(history.date, seconds)
+            }
+        }
+
+        R.string.max_sets -> {
+            Pair(history.date, history.sets.toDouble())
+        }
+
+        R.string.total_weight -> {
+            if (history.reps == null) {
+                null
+            } else {
+                if (weightUnit == WeightUnits.KILOGRAMS) {
+                    Pair(
+                        history.date,
+                        history.weight.zip(history.reps!!).sumOf { it.first * it.second }
+                    )
+                } else {
+                    Pair(
+                        history.date,
+                        history.weight
+                            .map {
+                                convertToWeightUnit(weightUnit, it)
+                            }.zip(history.reps!!)
+                            .sumOf { it.first * it.second }
+                    )
+                }
+            }
+        }
+
+        R.string.total_reps -> {
+            val reps = history.reps?.sum()?.toDouble()
+            if (reps == null) {
+                null
+            } else {
+                Pair(history.date, reps)
             }
         }
 
@@ -66,10 +92,6 @@ fun calisthenicsAndWeightsGraphDataPoints(
             } else {
                 Pair(history.date, seconds)
             }
-        }
-
-        R.string.max_sets -> {
-            Pair(history.date, history.sets.toDouble())
         }
 
         else -> {
