@@ -1,7 +1,11 @@
 package com.askein.gymtracker.ui.exercise.details
 
 import com.askein.gymtracker.R
+import com.askein.gymtracker.enums.DistanceUnits
+import com.askein.gymtracker.enums.convertToDistanceUnit
+import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import java.time.LocalDate
 
 fun calisthenicsGraphDataPoints(
@@ -47,6 +51,53 @@ fun calisthenicsGraphDataPoints(
 
         R.string.max_sets -> {
             Pair(history.date, history.sets.toDouble())
+        }
+
+        else -> {
+            null
+        }
+    }
+}
+
+fun cardioGraphDataPoints(
+    detail: Int,
+    preferences: UserPreferencesUiState,
+    historyUiStates: List<CardioExerciseHistoryUiState>
+) = historyUiStates.mapNotNull { history ->
+    when (detail) {
+        R.string.distance -> {
+            if (history.distance == null) {
+                null
+            } else {
+                val distance = if (preferences.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
+                    history.distance!!
+                } else {
+                    convertToDistanceUnit(preferences.defaultDistanceUnit, history.distance!!)
+                }
+                Pair(history.date, distance)
+            }
+        }
+
+        R.string.time -> {
+            if (history.seconds == null) {
+                null
+            } else {
+                Pair(
+                    history.date,
+                    (history.minutes!! * 60 + history.seconds!!).toDouble()
+                )
+            }
+        }
+
+        R.string.calories -> {
+            if (history.calories == null) {
+                null
+            } else {
+                Pair(
+                    history.date,
+                    history.calories!!.toDouble()
+                )
+            }
         }
 
         else -> {

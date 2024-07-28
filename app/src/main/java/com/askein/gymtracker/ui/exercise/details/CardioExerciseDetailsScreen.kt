@@ -29,7 +29,6 @@ import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
-import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import com.askein.gymtracker.util.getTimeStringResourceFromSeconds
 import java.time.LocalDate
 
@@ -91,12 +90,11 @@ fun CardioExerciseHistoryDetails(
         timeOptions = timeOptionToStartTime.keys.toList(),
         timeOnChange = { newTime -> time = newTime }
     )
-    val dataPoints = getCardioGraphDetails(
-        uiState = uiState,
+    val dataPoints = cardioGraphDataPoints(
+        historyUiStates = uiState.cardioHistory,
         detail = detail,
-        detailOptions = detailOptions,
-        userPreferencesUiState = LocalUserPreferences.current
-    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: LocalDate.now()) }
+        preferences = LocalUserPreferences.current
+    ).filter { !it.first.isBefore(timeOptionToStartTime[time]!!) }
     if (dataPoints.isNotEmpty()) {
         Graph(
             points = dataPoints,
@@ -171,63 +169,6 @@ private fun CardioExerciseDetailsBest(
         }
     }
 }
-
-fun getCardioGraphDetails(
-    uiState: ExerciseDetailsUiState,
-    detail: Int,
-    detailOptions: List<Int>,
-    userPreferencesUiState: UserPreferencesUiState
-) = uiState.cardioHistory.map { history ->
-    when (detail) {
-        detailOptions[0] -> {
-            if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
-                Pair(
-                    history.date,
-                    history.distance ?: 0.0
-                )
-            } else {
-                Pair(
-                    history.date,
-                    convertToDistanceUnit(
-                        userPreferencesUiState.defaultDistanceUnit,
-                        history.distance ?: 0.0
-                    )
-                )
-            }
-        }
-
-        detailOptions[1] -> {
-            Pair(
-                history.date,
-                (history.minutes ?: 0) * 60 + (history.seconds ?: 0).toDouble()
-            )
-        }
-
-        detailOptions[2] -> {
-            Pair(
-                history.date,
-                (history.calories ?: 0).toDouble()
-            )
-        }
-
-        else -> {
-            if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
-                Pair(
-                    history.date,
-                    history.distance ?: 0.0
-                )
-            } else {
-                Pair(
-                    history.date,
-                    convertToDistanceUnit(
-                        userPreferencesUiState.defaultDistanceUnit,
-                        history.distance ?: 0.0
-                    )
-                )
-            }
-        }
-    }
-}.filter { pair -> pair.second != 0.0 }
 
 @Preview(showBackground = true)
 @Composable
