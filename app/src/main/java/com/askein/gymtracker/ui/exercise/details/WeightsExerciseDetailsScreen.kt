@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
-import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToWeightUnit
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
@@ -118,15 +117,17 @@ fun WeightsExerciseHistoryDetails(
         timeOptions = timeOptionToStartTime.keys.toList(),
         timeOnChange = { newTime -> time = newTime }
     )
-    val dataPoints = getWeightsGraphDetails(
-        uiState,
-        detail,
-        LocalUserPreferences.current
-    ).filter { !it.first.isBefore(timeOptionToStartTime[time]!!) }
+    val weightUnit = LocalUserPreferences.current.defaultWeightUnit
+    val dataPoints = calisthenicsAndWeightsGraphDataPoints(
+        chosenDetail = detail,
+        historyUiStates = uiState.weightsHistory
+            .filter { !it.date.isBefore(timeOptionToStartTime[time]!!) },
+        weightUnit = weightUnit
+    )
     if (dataPoints.isNotEmpty()) {
         val yUnit = when (detail) {
             R.string.max_weight, R.string.total_weight -> stringResource(
-                id = LocalUserPreferences.current.defaultWeightUnit.shortForm
+                id = weightUnit.shortForm
             )
             R.string.max_time, R.string.total_time -> stringResource(
                 id = R.string.seconds_unit
@@ -251,74 +252,6 @@ private fun WeightsExerciseDetailsBestAndRecent(
                     .fillMaxWidth()
                     .weight(1f)
             )
-        }
-    }
-}
-
-fun getWeightsGraphDetails(
-    uiState: ExerciseDetailsUiState,
-    detail: Int,
-    userPreferencesUiState: UserPreferencesUiState
-) = uiState.weightsHistory.mapNotNull { history ->
-    when (detail) {
-        R.string.max_weight -> {
-            if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
-                Pair(
-                    history.date,
-                    history.weight.max()
-                )
-            } else {
-                Pair(
-                    history.date,
-                    history.weight.maxOf {
-                        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, it)
-                    }
-                )
-            }
-        }
-
-        R.string.max_reps -> {
-            val reps = history.reps?.max()?.toDouble()
-            if (reps == null) {
-                null
-            } else {
-                Pair(history.date, reps)
-            }
-        }
-
-        R.string.total_reps -> {
-            val reps = history.reps?.sum()?.toDouble()
-            if (reps == null) {
-                null
-            } else {
-                Pair(history.date, reps)
-            }
-        }
-
-        R.string.max_time -> {
-            val seconds = history.seconds?.max()?.toDouble()
-            if (seconds == null) {
-                null
-            } else {
-                Pair(history.date, seconds)
-            }
-        }
-
-        R.string.total_time -> {
-            val seconds = history.seconds?.sum()?.toDouble()
-            if (seconds == null) {
-                null
-            } else {
-                Pair(history.date, seconds)
-            }
-        }
-
-        R.string.max_sets -> {
-            Pair(history.date, history.sets.toDouble())
-        }
-
-        else -> {
-            null
         }
     }
 }

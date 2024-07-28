@@ -2,6 +2,7 @@ package com.askein.gymtracker.ui.exercise.details
 
 import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.DistanceUnits
+import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
@@ -68,7 +69,10 @@ class GraphDataPointsKtTest {
 
     @Test
     fun getGraphDetailsForMaxReps() {
-        val result = calisthenicsGraphDataPoints(R.string.max_reps, weightsHistory)
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            R.string.max_reps,
+            weightsHistory
+        )
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(2.0, 3.0)))
@@ -76,7 +80,10 @@ class GraphDataPointsKtTest {
 
     @Test
     fun getGraphDetailsForTotalReps() {
-        val result = calisthenicsGraphDataPoints(R.string.total_reps, weightsHistory)
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            R.string.total_reps,
+            weightsHistory
+        )
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
         assertThat(result.map { it.second }, equalTo(listOf(2.0, 6.0)))
@@ -84,7 +91,10 @@ class GraphDataPointsKtTest {
 
     @Test
     fun getGraphDetailsForMaxTime() {
-        val result = calisthenicsGraphDataPoints(R.string.max_time, weightsHistory)
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            R.string.max_time,
+            weightsHistory
+        )
 
         assertThat(result.map { it.first }, equalTo(listOf(thirdDate, fourthDate)))
         assertThat(result.map { it.second }, equalTo(listOf(50.0, 90.0)))
@@ -92,7 +102,10 @@ class GraphDataPointsKtTest {
 
     @Test
     fun getGraphDetailsForTotalTime() {
-        val result = calisthenicsGraphDataPoints(R.string.total_time, weightsHistory)
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            R.string.total_time,
+            weightsHistory
+        )
 
         assertThat(result.map { it.first }, equalTo(listOf(thirdDate, fourthDate)))
         assertThat(result.map { it.second }, equalTo(listOf(50.0, 120.0)))
@@ -100,7 +113,10 @@ class GraphDataPointsKtTest {
 
     @Test
     fun getGraphDetailsForMaxSets() {
-        val result = calisthenicsGraphDataPoints(R.string.max_sets, weightsHistory)
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            R.string.max_sets,
+            weightsHistory
+        )
 
         assertThat(
             result.map { it.first },
@@ -113,8 +129,47 @@ class GraphDataPointsKtTest {
     }
 
     @Test
+    fun getGraphDetailsForMaxWeightInKilograms() {
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            R.string.max_weight,
+            weightsHistory,
+            WeightUnits.KILOGRAMS
+        )
+
+        assertThat(
+            result.map { it.first },
+            equalTo(listOf(firstDate, secondDate, thirdDate, fourthDate))
+        )
+        assertThat(
+            result.map { it.second },
+            equalTo(listOf(13.0, 12.0, 4.0, 10.0))
+        )
+    }
+
+    @Test
+    fun getGraphDetailsForMaxWeightInOtherWeightUnit() {
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            R.string.max_weight,
+            weightsHistory,
+            WeightUnits.POUNDS
+        )
+
+        assertThat(
+            result.map { it.first },
+            equalTo(listOf(firstDate, secondDate, thirdDate, fourthDate))
+        )
+        assertThat(
+            result.map { it.second },
+            equalTo(listOf(28.66, 26.46, 8.82, 22.05))
+        )
+    }
+
+    @Test
     fun getGraphDetailsForInvalidOption() {
-        val result = calisthenicsGraphDataPoints(0, weightsHistory)
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            0,
+            weightsHistory
+        )
 
         assertThat(result.map { it.first }, equalTo(listOf()))
         assertThat(result.map { it.second }, equalTo(listOf()))

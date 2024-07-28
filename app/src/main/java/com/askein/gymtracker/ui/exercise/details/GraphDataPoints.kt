@@ -2,17 +2,36 @@ package com.askein.gymtracker.ui.exercise.details
 
 import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.DistanceUnits
+import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToDistanceUnit
+import com.askein.gymtracker.enums.convertToWeightUnit
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import java.time.LocalDate
 
-fun calisthenicsGraphDataPoints(
+fun calisthenicsAndWeightsGraphDataPoints(
     chosenDetail: Int,
-    historyUiStates: List<WeightsExerciseHistoryUiState>
+    historyUiStates: List<WeightsExerciseHistoryUiState>,
+    weightUnit: WeightUnits = WeightUnits.KILOGRAMS
 ): List<Pair<LocalDate, Double>> = historyUiStates.mapNotNull { history ->
     when (chosenDetail) {
+        R.string.max_weight -> {
+            if (weightUnit == WeightUnits.KILOGRAMS) {
+                Pair(
+                    history.date,
+                    history.weight.max()
+                )
+            } else {
+                Pair(
+                    history.date,
+                    history.weight.maxOf {
+                        convertToWeightUnit(weightUnit, it)
+                    }
+                )
+            }
+        }
+
         R.string.max_reps -> {
             val reps = history.reps?.max()?.toDouble()
             if (reps == null) {

@@ -93,7 +93,7 @@ fun CalisthenicsExerciseHistoryDetails(
         timeOptions = timeOptionToStartTime.keys.toList(),
         timeOnChange = { newTime -> time = newTime }
     )
-    val dataPoints = calisthenicsGraphDataPoints(
+    val dataPoints = calisthenicsAndWeightsGraphDataPoints(
         chosenDetail = detail,
         historyUiStates = uiState.weightsHistory
             .filter { !it.date.isBefore(timeOptionToStartTime[time]!!) }
