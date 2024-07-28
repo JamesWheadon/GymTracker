@@ -120,8 +120,8 @@ fun CalisthenicsExerciseHistoryDetails(
 private fun CalisthenicsExerciseDetailsBestAndRecent(
     uiState: ExerciseDetailsUiState
 ) {
-    val bestReps = mostRepsForExercise(uiState.weightsHistory)
-    val bestTime = bestTimeForExercise(uiState.weightsHistory)
+    val bestReps = mostRepsForWeightsExercise(uiState.weightsHistory)
+    val bestTime = bestTimeForWeightsExercise(uiState.weightsHistory)
     val recent = uiState.weightsHistory.maxBy { history -> history.date.toEpochDay() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -184,13 +184,13 @@ private fun CalisthenicsExerciseDetailsBestAndRecent(
     }
 }
 
-fun mostRepsForExercise(
+fun mostRepsForWeightsExercise(
     exerciseHistory: List<WeightsExerciseHistoryUiState>
 ) =
     exerciseHistory.filter { history -> history.reps != null }
         .maxByOrNull { history -> history.reps!!.max() }?.reps?.max()
 
-fun bestTimeForExercise(
+fun bestTimeForWeightsExercise(
     exerciseHistory: List<WeightsExerciseHistoryUiState>
 ) =
     exerciseHistory.filter { history -> history.seconds != null }

@@ -16,7 +16,11 @@ class GraphDetailsAndTimesKtTest {
         val weightsGraphOptions = graphOptionsForWeightsExercise(
             ExerciseDetailsUiState(
                 weightsHistory = listOf(
-                    WeightsExerciseHistoryUiState(reps = listOf(1), seconds = listOf(1), date = LocalDate.now().minusDays(15))
+                    WeightsExerciseHistoryUiState(
+                        reps = listOf(1),
+                        seconds = listOf(1),
+                        date = LocalDate.now().minusDays(15)
+                    )
                 )
             )
         )
@@ -49,7 +53,10 @@ class GraphDetailsAndTimesKtTest {
         val weightsGraphOptions = graphOptionsForWeightsExercise(
             ExerciseDetailsUiState(
                 weightsHistory = listOf(
-                    WeightsExerciseHistoryUiState(reps = listOf(1), date = LocalDate.now().minusDays(15))
+                    WeightsExerciseHistoryUiState(
+                        reps = listOf(1),
+                        date = LocalDate.now().minusDays(15)
+                    )
                 )
             )
         )
@@ -80,7 +87,10 @@ class GraphDetailsAndTimesKtTest {
         val weightsGraphOptions = graphOptionsForWeightsExercise(
             ExerciseDetailsUiState(
                 weightsHistory = listOf(
-                    WeightsExerciseHistoryUiState(seconds = listOf(1), date = LocalDate.now().minusDays(15))
+                    WeightsExerciseHistoryUiState(
+                        seconds = listOf(1),
+                        date = LocalDate.now().minusDays(15)
+                    )
                 )
             )
         )

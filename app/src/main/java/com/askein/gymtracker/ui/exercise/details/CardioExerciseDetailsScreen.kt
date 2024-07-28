@@ -29,6 +29,7 @@ import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
+import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import com.askein.gymtracker.util.getTimeStringResourceFromSeconds
 import java.time.LocalDate
 
@@ -91,10 +92,12 @@ fun CardioExerciseHistoryDetails(
         timeOnChange = { newTime -> time = newTime }
     )
     val dataPoints = cardioGraphDataPoints(
-        historyUiStates = uiState.cardioHistory,
+        historyUiStates = uiState.cardioHistory.filter { history ->
+            !history.date.isBefore(timeOptionToStartTime[time]!!)
+        },
         detail = detail,
         preferences = LocalUserPreferences.current
-    ).filter { !it.first.isBefore(timeOptionToStartTime[time]!!) }
+    )
     if (dataPoints.isNotEmpty()) {
         Graph(
             points = dataPoints,
@@ -112,24 +115,15 @@ private fun CardioExerciseDetailsBest(
     uiState: ExerciseDetailsUiState
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
-    var bestDistance = uiState.cardioHistory.maxOf { it.distance ?: 0.0 }
-    if (userPreferencesUiState.defaultDistanceUnit != DistanceUnits.KILOMETERS) {
-        bestDistance =
-            convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, bestDistance)
-    }
-    val bestTime = if (userPreferencesUiState.displayShortestTime) {
-        uiState.cardioHistory.filter { it.minutes != null }
-            .minOfOrNull { (it.minutes?.times(60) ?: 0) + (it.seconds ?: 0) } ?: 0
-    } else {
-        uiState.cardioHistory.maxOf { (it.minutes?.times(60) ?: 0) + (it.seconds ?: 0) }
-    }
-    val bestCalories = uiState.cardioHistory.maxOf { it.calories ?: 0 }
+    val bestDistance = bestDistanceForCardioExercise(userPreferencesUiState, uiState.cardioHistory)
+    val bestTime = bestTimeForCardioExercise(userPreferencesUiState, uiState.cardioHistory)
+    val bestCalories = mostCaloriesForCardioExercise(uiState.cardioHistory)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxWidth()
     ) {
-        if (bestDistance != 0.0) {
+        if (bestDistance != null) {
             ExerciseDetail(
                 exerciseInfo = stringResource(
                     id = R.string.best_distance,
@@ -143,7 +137,7 @@ private fun CardioExerciseDetailsBest(
                     .weight(1f)
             )
         }
-        if (bestTime != 0) {
+        if (bestTime != null) {
             val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(bestTime)
             ExerciseDetail(
                 exerciseInfo = stringResource(
@@ -157,7 +151,7 @@ private fun CardioExerciseDetailsBest(
                     .weight(1f)
             )
         }
-        if (bestCalories != 0) {
+        if (bestCalories != null) {
             ExerciseDetail(
                 exerciseInfo = stringResource(id = R.string.best_calories, bestCalories),
                 iconId = R.drawable.trophy_48dp,
@@ -169,6 +163,34 @@ private fun CardioExerciseDetailsBest(
         }
     }
 }
+
+fun bestDistanceForCardioExercise(
+    userPreferencesUiState: UserPreferencesUiState,
+    exerciseHistory: List<CardioExerciseHistoryUiState>
+): Double? {
+    var bestDistance = exerciseHistory.filter { it.distance != null }.maxOfOrNull { it.distance!! }
+    if (userPreferencesUiState.defaultDistanceUnit != DistanceUnits.KILOMETERS && bestDistance != null) {
+        bestDistance =
+            convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, bestDistance)
+    }
+    return bestDistance
+}
+
+fun bestTimeForCardioExercise(
+    userPreferencesUiState: UserPreferencesUiState,
+    exerciseHistory: List<CardioExerciseHistoryUiState>
+) = if (userPreferencesUiState.displayShortestTime) {
+    exerciseHistory.filter { it.minutes != null }
+        .minOfOrNull { it.minutes!!.times(60) + it.seconds!! }
+} else {
+    exerciseHistory.filter { it.minutes != null }
+        .maxOfOrNull { it.minutes!!.times(60) + it.seconds!! }
+}
+
+
+fun mostCaloriesForCardioExercise(
+    exerciseHistory: List<CardioExerciseHistoryUiState>
+) = exerciseHistory.filter { it.calories != null }.maxOfOrNull { it.calories!! }
 
 @Preview(showBackground = true)
 @Composable

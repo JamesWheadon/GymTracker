@@ -10,14 +10,14 @@ class CalisthenicsExerciseDetailsScreenKtTest {
     @Test
     fun shouldReturnMostRepsFromHistory() {
         val mostReps =
-            mostRepsForExercise(listOf(WeightsExerciseHistoryUiState(reps = listOf(5, 10))))
+            mostRepsForWeightsExercise(listOf(WeightsExerciseHistoryUiState(reps = listOf(5, 10))))
 
         assertThat(mostReps, equalTo(10))
     }
 
     @Test
     fun shouldReturnNullWhenNoRepsInHistory() {
-        val mostReps = mostRepsForExercise(listOf())
+        val mostReps = mostRepsForWeightsExercise(listOf())
 
         assertThat(mostReps, equalTo(null))
     }
@@ -25,14 +25,14 @@ class CalisthenicsExerciseDetailsScreenKtTest {
     @Test
     fun shouldReturnMostSecondsFromHistory() {
         val bestTime =
-            bestTimeForExercise(listOf(WeightsExerciseHistoryUiState(seconds = listOf(5, 10))))
+            bestTimeForWeightsExercise(listOf(WeightsExerciseHistoryUiState(seconds = listOf(5, 10))))
 
         assertThat(bestTime, equalTo(10))
     }
 
     @Test
     fun shouldReturnNullWhenNoSecondsInHistory() {
-        val bestTime = bestTimeForExercise(listOf())
+        val bestTime = bestTimeForWeightsExercise(listOf())
 
         assertThat(bestTime, equalTo(null))
     }
