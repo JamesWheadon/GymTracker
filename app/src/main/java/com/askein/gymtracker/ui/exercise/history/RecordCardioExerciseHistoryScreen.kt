@@ -34,7 +34,6 @@ import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.askein.gymtracker.ui.user.LocalUserPreferences
-import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import java.time.LocalDate
 
 @Composable
@@ -47,19 +46,14 @@ fun RecordCardioExerciseHistoryCard(
     savedHistory: CardioExerciseHistoryUiState = CardioExerciseHistoryUiState()
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
-    var minutesState by remember { mutableStateOf(savedHistory.minutes?.toString() ?: "") }
-    var secondsState by remember { mutableStateOf(savedHistory.seconds?.toString() ?: "") }
-    var caloriesState by remember { mutableStateOf(savedHistory.calories?.toString() ?: "") }
-    var distanceState by remember {
+    var cardioHistoryState by remember {
         mutableStateOf(
-            getDistanceForUnit(
-                savedHistory,
-                userPreferencesUiState
+            savedHistory.toRecordCardioHistoryState(
+                exerciseId,
+                userPreferencesUiState.defaultDistanceUnit
             )
         )
     }
-    var date by remember { mutableStateOf(savedHistory.date) }
-    var unitState by remember { mutableStateOf(userPreferencesUiState.defaultDistanceUnit) }
     Card(
         modifier = modifier
             .padding(vertical = 10.dp, horizontal = 10.dp),
@@ -76,13 +70,13 @@ fun RecordCardioExerciseHistoryCard(
                 text = cardTitle
             )
             FormTimeField(
-                minutes = minutesState,
-                seconds = secondsState,
+                minutes = cardioHistoryState.minutesState,
+                seconds = cardioHistoryState.secondsState,
                 minutesOnChange = { minutes ->
-                    minutesState = minutes
+                    cardioHistoryState = cardioHistoryState.copy(minutesState = minutes)
                 },
                 secondsOnChange = { seconds ->
-                    secondsState = seconds
+                    cardioHistoryState = cardioHistoryState.copy(secondsState = seconds)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,9 +91,9 @@ fun RecordCardioExerciseHistoryCard(
             ) {
                 FormInformationField(
                     label = R.string.distance,
-                    value = distanceState,
+                    value = cardioHistoryState.distanceState,
                     onChange = { distance ->
-                        distanceState = distance
+                        cardioHistoryState = cardioHistoryState.copy(distanceState = distance)
                     },
                     formType = FormTypes.DOUBLE,
                     modifier = Modifier
@@ -110,22 +104,22 @@ fun RecordCardioExerciseHistoryCard(
                 val unitsContentDescription = stringResource(id = R.string.units)
                 DropdownBox(
                     options = DistanceUnits.values().associateWith { unit -> unit.shortForm },
-                    onChange = { value ->
-                        unitState = value
+                    onChange = { unit ->
+                        cardioHistoryState = cardioHistoryState.copy(unitState = unit)
                     },
                     modifier = Modifier
                         .weight(1f)
                         .padding(0.dp)
                         .height(intrinsicSize = IntrinsicSize.Max)
                         .semantics { contentDescription = unitsContentDescription },
-                    selected = unitState
+                    selected = cardioHistoryState.unitState
                 )
             }
             FormInformationField(
                 label = R.string.calories,
-                value = caloriesState,
+                value = cardioHistoryState.caloriesState,
                 onChange = { calories ->
-                    caloriesState = calories
+                    cardioHistoryState = cardioHistoryState.copy(caloriesState = calories)
                 },
                 formType = FormTypes.INTEGER,
                 modifier = Modifier
@@ -134,19 +128,14 @@ fun RecordCardioExerciseHistoryCard(
             )
             if (savedHistory.workoutHistoryId == null) {
                 DatePickerDialog(
-                    date = date,
-                    onDateChange = { newDate -> date = newDate }
+                    date = cardioHistoryState.dateState,
+                    onDateChange = { newDate ->
+                        cardioHistoryState = cardioHistoryState.copy(dateState = newDate)
+                    }
                 )
             }
             SaveCardioExerciseHistoryButton(
-                minutesState = minutesState,
-                secondsState = secondsState,
-                caloriesState = caloriesState,
-                distanceState = distanceState,
-                unitState = unitState,
-                dateState = date,
-                exerciseId = exerciseId,
-                savedHistory = savedHistory,
+                cardioHistoryState = cardioHistoryState,
                 saveFunction = saveFunction,
                 onDismiss = onDismiss
             )
@@ -156,86 +145,75 @@ fun RecordCardioExerciseHistoryCard(
 
 @Composable
 fun SaveCardioExerciseHistoryButton(
-    minutesState: String,
-    secondsState: String,
-    caloriesState: String,
-    distanceState: String,
-    unitState: DistanceUnits,
-    dateState: LocalDate,
-    exerciseId: Int,
-    savedHistory: CardioExerciseHistoryUiState,
+    cardioHistoryState: RecordCardioHistoryState,
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val enabled =
-        (minutesState != "" && secondsState != "" && secondsState.toInt() < 60) || caloriesState != "" || distanceState != ""
     Button(onClick = {
-        val history = createHistory(
-            distanceState = distanceState,
-            unitState = unitState,
-            minutesState = minutesState,
-            secondsState = secondsState,
-            dateState = dateState,
-            savedHistory = savedHistory,
-            exerciseId = exerciseId,
-            caloriesState = caloriesState
-        )
-        saveFunction(history)
+        saveFunction(cardioHistoryState.toCardioExerciseHistoryUiState())
         onDismiss()
-    }, enabled = enabled) {
+    }, enabled = cardioHistoryState.canSaveHistory()) {
         Text(stringResource(id = R.string.save))
     }
 }
 
-private fun createHistory(
-    distanceState: String,
-    unitState: DistanceUnits,
-    minutesState: String,
-    secondsState: String,
-    dateState: LocalDate,
-    savedHistory: CardioExerciseHistoryUiState,
+data class RecordCardioHistoryState(
+    val historyId: Int,
+    val exerciseId: Int,
+    val workoutHistoryId: Int?,
+    val minutesState: String,
+    val secondsState: String,
+    val caloriesState: String,
+    val distanceState: String,
+    val dateState: LocalDate,
+    val unitState: DistanceUnits
+)
+
+fun RecordCardioHistoryState.canSaveHistory() = validTime() || validCalories() || validDistance()
+
+fun RecordCardioHistoryState.validTime() = minutesState != "" && secondsState != "" && secondsState.toInt() < 60
+
+fun RecordCardioHistoryState.validCalories() = caloriesState != ""
+
+fun RecordCardioHistoryState.validDistance() = distanceState != ""
+
+fun RecordCardioHistoryState.toCardioExerciseHistoryUiState() = CardioExerciseHistoryUiState(
+    id = historyId,
+    exerciseId = exerciseId,
+    workoutHistoryId = workoutHistoryId,
+    date = dateState,
+    minutes = minutesState.toIntOrNull(),
+    seconds = secondsState.toIntOrNull(),
+    calories = caloriesState.toIntOrNull(),
+    distance =  if (distanceState != "") convertToKilometers(unitState, distanceState.toDouble()) else null
+)
+
+fun CardioExerciseHistoryUiState.toRecordCardioHistoryState(
     exerciseId: Int,
-    caloriesState: String
-): CardioExerciseHistoryUiState {
-    val distance = if (distanceState == "") {
-        null
-    } else {
-        convertToKilometers(unitState, distanceState.toDouble())
-    }
-    val minutes = minutesState.toIntOrNull()
-    val seconds = secondsState.toIntOrNull()
-    return if (savedHistory == CardioExerciseHistoryUiState()) {
-        CardioExerciseHistoryUiState(
-            exerciseId = exerciseId,
-            distance = distance,
-            minutes = minutes,
-            seconds = seconds,
-            calories = caloriesState.toIntOrNull(),
-            date = dateState
-        )
-    } else {
-        val tempHistory = savedHistory.copy(
-            distance = distance,
-            minutes = minutes,
-            seconds = seconds,
-            calories = caloriesState.toIntOrNull(),
-            date = dateState
-        )
-        tempHistory
-    }
-}
+    distanceUnit: DistanceUnits
+) = RecordCardioHistoryState(
+    historyId = id,
+    exerciseId = exerciseId,
+    workoutHistoryId = workoutHistoryId,
+    minutesState = minutes?.toString() ?: "",
+    secondsState = seconds?.toString() ?: "",
+    caloriesState = calories?.toString() ?: "",
+    distanceState = getDistanceForUnit(
+        distance = distance,
+        distanceUnit = distanceUnit
+    ),
+    dateState = date,
+    unitState = distanceUnit,
+)
 
 private fun getDistanceForUnit(
-    exerciseHistory: CardioExerciseHistoryUiState,
-    userPreferencesUiState: UserPreferencesUiState
-) = if (exerciseHistory.distance != null) {
-    if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
-        exerciseHistory.distance.toString()
+    distance: Double?,
+    distanceUnit: DistanceUnits
+) = if (distance != null) {
+    if (distanceUnit == DistanceUnits.KILOMETERS) {
+        distance.toString()
     } else {
-        convertToDistanceUnit(
-            userPreferencesUiState.defaultDistanceUnit,
-            exerciseHistory.distance!!
-        ).toString()
+        convertToDistanceUnit(distanceUnit, distance).toString()
     }
 } else {
     ""
