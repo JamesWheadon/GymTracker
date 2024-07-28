@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,8 +41,7 @@ fun CardioExerciseDetailsScreen(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxSize()
             .padding(vertical = 16.dp, horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -77,30 +76,19 @@ private fun CardioExerciseInformation(
 fun CardioExerciseHistoryDetails(
     uiState: ExerciseDetailsUiState
 ) {
-    val timeOptions = listOf(R.string.seven_days, R.string.thirty_days, R.string.past_year, R.string.all_time)
-    val detailOptions = listOf(R.string.distance, R.string.time, R.string.calories)
+    val (detailOptions, timeOptionToStartTime) = graphOptionsForCardioExercise(uiState)
     val yUnit = mapOf(
-        detailOptions[0] to LocalUserPreferences.current.defaultDistanceUnit.shortForm,
-        detailOptions[1] to R.string.second_unit,
-        detailOptions[2] to R.string.calories_unit
-    )
-    val currentDate = LocalDate.now()
-    val timeOptionToStartTime = mapOf<Int, LocalDate>(
-        Pair(timeOptions[0], currentDate.minusDays(7)),
-        Pair(timeOptions[1], currentDate.minusDays(30)),
-        Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
-        Pair(
-            timeOptions[3],
-            uiState.cardioHistory.minBy { history -> history.date.toEpochDay() }.date
-        ),
+        R.string.distance to LocalUserPreferences.current.defaultDistanceUnit.shortForm,
+        R.string.time to R.string.second_unit,
+        R.string.calories to R.string.calories_unit
     )
     var detail by remember { mutableIntStateOf(detailOptions[0]) }
-    var time by remember { mutableIntStateOf(timeOptions[0]) }
+    var time by remember { mutableIntStateOf(timeOptionToStartTime.keys.first()) }
     CardioExerciseDetailsBest(uiState = uiState)
     GraphOptions(
         detailOptions = detailOptions,
         detailOnChange = { newDetail -> detail = newDetail },
-        timeOptions = timeOptions,
+        timeOptions = timeOptionToStartTime.keys.toList(),
         timeOnChange = { newTime -> time = newTime }
     )
     val dataPoints = getCardioGraphDetails(
@@ -108,11 +96,11 @@ fun CardioExerciseHistoryDetails(
         detail = detail,
         detailOptions = detailOptions,
         userPreferencesUiState = LocalUserPreferences.current
-    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
+    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: LocalDate.now()) }
     if (dataPoints.isNotEmpty()) {
         Graph(
             points = dataPoints,
-            startDate = timeOptionToStartTime[time] ?: currentDate,
+            startDate = timeOptionToStartTime[time] ?: LocalDate.now(),
             yLabel = stringResource(id = detail),
             yUnit = stringResource(id = yUnit[detail]!!)
         )

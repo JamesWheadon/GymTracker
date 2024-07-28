@@ -16,7 +16,6 @@ import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import org.junit.Rule
 import org.junit.Test
 
-
 private const val NAME = "Treadmill"
 
 class CardioExerciseDetailsScreenKtTest {

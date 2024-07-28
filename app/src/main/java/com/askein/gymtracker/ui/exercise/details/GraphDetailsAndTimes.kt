@@ -75,6 +75,20 @@ fun graphOptionsForWeightsExercise(uiState: ExerciseDetailsUiState): GraphDetail
     )
 }
 
+fun graphOptionsForCardioExercise(uiState: ExerciseDetailsUiState): GraphDetailsAndTimes {
+    val detailOptions = listOf(R.string.distance, R.string.time, R.string.calories)
+    val timeOptionToStartTime = mapOf<Int, LocalDate>(
+        R.string.seven_days to LocalDate.now().minusDays(7),
+        R.string.thirty_days to LocalDate.now().minusDays(30),
+        R.string.past_year to LocalDate.of(LocalDate.now().year, 1, 1),
+        R.string.all_time to uiState.cardioHistory.minBy { history -> history.date.toEpochDay() }.date
+    )
+    return GraphDetailsAndTimes(
+        detailOptions = detailOptions,
+        timeOptionToStartTime = timeOptionToStartTime
+    )
+}
+
 data class GraphDetailsAndTimes(
     val detailOptions: List<Int>,
     val timeOptionToStartTime: Map<Int, LocalDate>
