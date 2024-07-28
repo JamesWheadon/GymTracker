@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
+import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.util.getTimeStringResourceFromSeconds
 import java.time.LocalDate
 
@@ -80,56 +81,33 @@ private fun CalisthenicsExerciseInformation(
 fun CalisthenicsExerciseHistoryDetails(
     uiState: ExerciseDetailsUiState
 ) {
-    val repsPresent = uiState.weightsHistory.any { history -> history.reps != null }
-    val timePresent = uiState.weightsHistory.any { history -> history.seconds != null }
-    val timeOptions =
-        listOf(R.string.seven_days, R.string.thirty_days, R.string.past_year, R.string.all_time)
-    val detailOptions = mutableListOf(
-        R.string.max_reps,
-        R.string.max_time,
-        R.string.max_sets,
-        R.string.total_reps,
-        R.string.total_time
-    )
-    if (!repsPresent) {
-        detailOptions.removeAll(listOf(R.string.max_reps, R.string.total_reps))
-    }
-    if (!timePresent) {
-        detailOptions.removeAll(listOf(R.string.max_time, R.string.total_time))
-    }
-    val currentDate = LocalDate.now()
-    val timeOptionToStartTime = mapOf<Int, LocalDate>(
-        Pair(timeOptions[0], currentDate.minusDays(7)),
-        Pair(timeOptions[1], currentDate.minusDays(30)),
-        Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
-        Pair(
-            timeOptions[3],
-            uiState.weightsHistory.minBy { history -> history.date.toEpochDay() }.date
-        ),
+    val (detailOptions, timeOptionToStartTime) = graphOptionsForWeightsExercise(
+        uiState
     )
     var detail by remember { mutableIntStateOf(detailOptions[0]) }
-    var time by remember { mutableIntStateOf(timeOptions[0]) }
+    var time by remember { mutableIntStateOf(timeOptionToStartTime.keys.first()) }
     CalisthenicsExerciseDetailsBestAndRecent(uiState)
     GraphOptions(
         detailOptions = detailOptions,
         detailOnChange = { newDetail -> detail = newDetail },
-        timeOptions = timeOptions,
+        timeOptions = timeOptionToStartTime.keys.toList(),
         timeOnChange = { newTime -> time = newTime }
     )
-    val dataPoints = getCalisthenicsGraphDetails(
-        uiState,
-        detail
-    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
+    val dataPoints = calisthenicsGraphDataPoints(
+        chosenDetail = detail,
+        historyUiStates = uiState.weightsHistory
+    ).filter { !it.first.isBefore(timeOptionToStartTime[time]!!) }
     if (dataPoints.isNotEmpty()) {
         val yUnit = when (detail) {
             R.string.max_time, R.string.total_time -> stringResource(
                 id = R.string.seconds_unit
             )
+
             else -> ""
         }
         Graph(
             points = dataPoints,
-            startDate = timeOptionToStartTime[time] ?: currentDate,
+            startDate = timeOptionToStartTime[time] ?: LocalDate.now(),
             yLabel = stringResource(id = detail),
             yUnit = yUnit
         )
@@ -142,10 +120,8 @@ fun CalisthenicsExerciseHistoryDetails(
 private fun CalisthenicsExerciseDetailsBestAndRecent(
     uiState: ExerciseDetailsUiState
 ) {
-    val bestReps = uiState.weightsHistory.filter { history -> history.reps != null }
-        .maxByOrNull { history -> history.reps!!.max() }
-    val bestTime = uiState.weightsHistory.filter { history -> history.seconds != null }
-        .maxByOrNull { history -> history.seconds!!.max() }
+    val bestReps = mostRepsForExercise(uiState.weightsHistory)
+    val bestTime = bestTimeForExercise(uiState.weightsHistory)
     val recent = uiState.weightsHistory.maxBy { history -> history.date.toEpochDay() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -156,7 +132,7 @@ private fun CalisthenicsExerciseDetailsBestAndRecent(
             ExerciseDetail(
                 exerciseInfo = stringResource(
                     id = R.string.calisthenics_exercise_reps,
-                    bestReps.reps!!.max()
+                    bestReps
                 ),
                 iconId = R.drawable.trophy_48dp,
                 iconDescription = R.string.best_exercise_icon,
@@ -166,7 +142,7 @@ private fun CalisthenicsExerciseDetailsBestAndRecent(
             )
         }
         if (bestTime != null) {
-            val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(bestTime.seconds!!.max())
+            val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(bestTime)
             ExerciseDetail(
                 exerciseInfo = stringResource(
                     id = resourceId,
@@ -208,53 +184,14 @@ private fun CalisthenicsExerciseDetailsBestAndRecent(
     }
 }
 
-fun getCalisthenicsGraphDetails(
-    uiState: ExerciseDetailsUiState,
-    detail: Int
-) = uiState.weightsHistory.mapNotNull { history ->
-    when (detail) {
-        R.string.max_reps -> {
-            val reps = history.reps?.max()?.toDouble()
-            if (reps == null) {
-                null
-            } else {
-                Pair(history.date, reps)
-            }
-        }
+fun mostRepsForExercise(
+    exerciseHistory: List<WeightsExerciseHistoryUiState>
+) =
+    exerciseHistory.filter { history -> history.reps != null }
+        .maxByOrNull { history -> history.reps!!.max() }?.reps?.max()
 
-        R.string.total_reps -> {
-            val reps = history.reps?.sum()?.toDouble()
-            if (reps == null) {
-                null
-            } else {
-                Pair(history.date, reps)
-            }
-        }
-
-        R.string.max_time -> {
-            val seconds = history.seconds?.max()?.toDouble()
-            if (seconds == null) {
-                null
-            } else {
-                Pair(history.date, seconds)
-            }
-        }
-
-        R.string.total_time -> {
-            val seconds = history.seconds?.sum()?.toDouble()
-            if (seconds == null) {
-                null
-            } else {
-                Pair(history.date, seconds)
-            }
-        }
-
-        R.string.max_sets -> {
-            Pair(history.date, history.sets.toDouble())
-        }
-
-        else -> {
-            null
-        }
-    }
-}
+fun bestTimeForExercise(
+    exerciseHistory: List<WeightsExerciseHistoryUiState>
+) =
+    exerciseHistory.filter { history -> history.seconds != null }
+        .maxByOrNull { history -> history.seconds!!.max() }?.seconds?.max()

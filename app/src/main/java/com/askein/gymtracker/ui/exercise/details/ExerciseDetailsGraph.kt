@@ -1,17 +1,12 @@
 package com.askein.gymtracker.ui.exercise.details
 
 import android.icu.text.DateFormat
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,7 +38,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.askein.gymtracker.R
-import com.askein.gymtracker.ui.DropdownBox
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 import java.time.ZoneId
@@ -164,38 +158,6 @@ fun Graph(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun GraphOptions(
-    @StringRes detailOptions: List<Int>,
-    detailOnChange: (Int) -> Unit,
-    @StringRes timeOptions: List<Int>,
-    timeOnChange: (Int) -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.Top,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        DropdownBox(
-            options = detailOptions,
-            onChange = { newDetail ->
-                detailOnChange(newDetail)
-            },
-            modifier = Modifier
-                .weight(1f)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        DropdownBox(
-            options = timeOptions,
-            onChange = { newTime ->
-                timeOnChange(newTime)
-            },
-            modifier = Modifier
-                .weight(1f)
-        )
     }
 }
 
