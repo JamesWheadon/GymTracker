@@ -19,7 +19,9 @@ class WorkoutScreenViewModel(
 
     val workoutListUiState: StateFlow<WorkoutListUiState> =
         workoutRepository.getAllWorkoutsStream()
-            .map { workoutList -> WorkoutListUiState(workoutList.map { it.toWorkoutUiState() }) }
+            .map { workoutList ->
+                WorkoutListUiState(workoutList.map { workout -> workout.toWorkoutUiState() }.sortedBy { workoutUiState -> workoutUiState.name })
+            }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),

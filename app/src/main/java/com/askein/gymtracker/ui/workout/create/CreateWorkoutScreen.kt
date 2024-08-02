@@ -62,7 +62,6 @@ fun CreateWorkoutForm(
                         .align(Alignment.CenterHorizontally)
                         .padding(vertical = 16.dp, horizontal = 16.dp)
                 )
-
                 Column(
                     modifier = modifier
                         .fillMaxWidth(),
