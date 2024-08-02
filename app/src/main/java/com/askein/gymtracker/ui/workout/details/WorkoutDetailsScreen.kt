@@ -265,8 +265,6 @@ private fun WorkoutDetailsScreen(
             yearMonthValueOnChange = { chosen -> selectedMonth = chosen }
         )
         Calendar(
-            month = selectedMonth.monthValue,
-            year = selectedMonth.year,
             activeDays = uiState.workoutHistory
                 .filter { history ->
                     history.date.year == selectedMonth.year &&
@@ -274,7 +272,8 @@ private fun WorkoutDetailsScreen(
                 }.map { history -> history.date.dayOfMonth },
             dayFunction = { day ->
                 showDate = LocalDate.of(selectedMonth.year, selectedMonth.monthValue, day)
-            }
+            },
+            yearMonth = selectedMonth
         )
         Spacer(modifier = Modifier.height(72.dp))
     }

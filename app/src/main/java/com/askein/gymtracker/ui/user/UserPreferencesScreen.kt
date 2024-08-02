@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -28,7 +29,6 @@ import com.askein.gymtracker.enums.DistanceUnits
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.DropdownBox
-import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes
 import com.askein.gymtracker.ui.navigation.TopBar
@@ -83,7 +83,9 @@ fun UserPreferencesScreen(
         }
     ) { innerPadding ->
         Card(
-            elevation = customCardElevation(),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 16.dp
+            ),
             modifier = Modifier.padding(innerPadding)
         ) {
             Column(
@@ -152,7 +154,8 @@ fun UserPreferencesScreen(
                         fontWeight = if (uiState.displayHighestWeight) null else FontWeight.Bold,
                         modifier = Modifier.weight(1f)
                     )
-                    val weightToggleContentDescription = stringResource(id = R.string.weight_display_toggle)
+                    val weightToggleContentDescription =
+                        stringResource(id = R.string.weight_display_toggle)
                     Switch(
                         checked = uiState.displayHighestWeight,
                         onCheckedChange = displayHighestWeightOnChange,
@@ -179,7 +182,8 @@ fun UserPreferencesScreen(
                         fontWeight = if (uiState.displayShortestTime) null else FontWeight.Bold,
                         modifier = Modifier.weight(1f)
                     )
-                    val timeToggleContentDescription = stringResource(id = R.string.time_display_toggle)
+                    val timeToggleContentDescription =
+                        stringResource(id = R.string.time_display_toggle)
                     Switch(
                         checked = uiState.displayShortestTime,
                         onCheckedChange = displayShortestTimeOnChange,

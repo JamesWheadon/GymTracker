@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
 import com.askein.gymtracker.data.exercise.ExerciseType
-import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 
@@ -44,7 +44,9 @@ fun ExerciseCard(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(0.dp),
-            elevation = customCardElevation()
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 16.dp
+            )
         ) {
             when (exercise.type) {
                 ExerciseType.WEIGHTS -> {
@@ -52,11 +54,13 @@ fun ExerciseCard(
                         exercise = exercise
                     )
                 }
+
                 ExerciseType.CARDIO -> {
                     CardioExerciseCard(
                         exercise = exercise
                     )
                 }
+
                 ExerciseType.CALISTHENICS -> {
                     CalisthenicsExerciseCard(
                         exercise = exercise

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -26,7 +27,9 @@ fun DialogScreenWrapper(
             modifier = Modifier
                 .padding(vertical = 10.dp, horizontal = 10.dp)
                 .defaultMinSize(minHeight = 30.dp),
-            elevation = customCardElevation()
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 16.dp
+            )
         ) {
             cardContent()
         }

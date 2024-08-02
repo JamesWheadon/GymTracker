@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +38,6 @@ import com.askein.gymtracker.enums.convertToDistanceUnit
 import com.askein.gymtracker.enums.convertToWeightUnit
 import com.askein.gymtracker.ui.ActionConfirmation
 import com.askein.gymtracker.ui.AppViewModelProvider
-import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
 import com.askein.gymtracker.ui.exercise.history.UpdateExerciseHistoryScreen
@@ -92,10 +92,9 @@ fun ExerciseHistoryCalendar(
             yearMonthValueOnChange = { chosen -> selectedMonth = chosen }
         )
         Calendar(
-            month = selectedMonth.monthValue,
-            year = selectedMonth.year,
             activeDays = activeDays,
-            dayFunction = { chosenDay -> showDay = chosenDay }
+            dayFunction = { chosenDay -> showDay = chosenDay },
+            yearMonth = selectedMonth
         )
     }
 }
@@ -156,7 +155,9 @@ fun ExerciseHistoryDetails(
     var editExercise by remember { mutableStateOf(false) }
     var deleteExercise by remember { mutableStateOf(false) }
     Card(
-        elevation = customCardElevation(),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 16.dp
+        ),
         onClick = { editExercise = true },
         modifier = modifier
     ) {

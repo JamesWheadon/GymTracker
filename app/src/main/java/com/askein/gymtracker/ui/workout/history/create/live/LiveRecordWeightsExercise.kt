@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +37,6 @@ import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.DropdownBox
 import com.askein.gymtracker.ui.FormInformationField
 import com.askein.gymtracker.ui.FormTimeField
-import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
@@ -54,7 +54,9 @@ fun LiveRecordWeightsExercise(
     var recording by rememberSaveable { mutableStateOf(false) }
     var recordReps by rememberSaveable { mutableStateOf(true) }
     Card(
-        elevation = customCardElevation(),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 16.dp
+        ),
         modifier = modifier
     ) {
         Column(
