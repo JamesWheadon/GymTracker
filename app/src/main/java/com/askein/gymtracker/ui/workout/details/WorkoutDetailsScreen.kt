@@ -328,18 +328,22 @@ fun WorkoutDetailsScreenPreview() {
                     ),
                     workoutHistory = listOf(
                         WorkoutHistoryWithExercisesUiState(
-                            1,
-                            1,
-                            LocalDate.now(),
-                            exercises = listOf(WeightsExerciseHistoryUiState(exerciseId = 0))
+                            workoutHistoryId = 1,
+                            workoutId = 1,
+                            date = LocalDate.now(),
+                            exerciseHistories = listOf(WeightsExerciseHistoryUiState(exerciseId = 0))
                         ),
                         WorkoutHistoryWithExercisesUiState(
-                            2,
-                            1,
-                            LocalDate.now(),
-                            exercises = listOf(WeightsExerciseHistoryUiState(exerciseId = 1))
+                            workoutHistoryId = 2,
+                            workoutId = 1,
+                            date = LocalDate.now(),
+                            exerciseHistories = listOf(WeightsExerciseHistoryUiState(exerciseId = 1))
                         ),
-                        WorkoutHistoryWithExercisesUiState(2, 1, LocalDate.now().minusDays(3))
+                        WorkoutHistoryWithExercisesUiState(
+                            workoutHistoryId = 2,
+                            workoutId = 1,
+                            date = LocalDate.now().minusDays(3)
+                        )
                     )
                 ),
                 exerciseNavigationFunction = { _, _ -> (Unit) },

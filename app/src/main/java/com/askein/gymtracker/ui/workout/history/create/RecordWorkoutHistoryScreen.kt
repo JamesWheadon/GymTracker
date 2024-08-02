@@ -101,7 +101,7 @@ fun RecordWorkoutHistoryScreen(
     workoutHistory: WorkoutHistoryWithExercisesUiState = WorkoutHistoryWithExercisesUiState()
 ) {
     val exerciseHistories: MutableList<ExerciseHistoryUiState> =
-        remember { workoutHistory.exercises.toMutableStateList() }
+        remember { workoutHistory.exerciseHistories.toMutableStateList() }
     val exerciseErrors: MutableMap<Int, Boolean> = remember { mutableStateMapOf() }
     val workoutHistoryUiState = if (workoutHistory == WorkoutHistoryWithExercisesUiState()) {
         WorkoutHistoryUiState(workoutId = uiState.workoutId)
@@ -192,7 +192,7 @@ fun RecordWorkoutHistoryScreen(
                             workoutId = workoutHistoryUiState.workoutId,
                             workoutHistoryId = workoutHistoryUiState.workoutHistoryId,
                             date = date,
-                            exercises = exerciseHistories
+                            exerciseHistories = exerciseHistories
                         )
                     )
                 }

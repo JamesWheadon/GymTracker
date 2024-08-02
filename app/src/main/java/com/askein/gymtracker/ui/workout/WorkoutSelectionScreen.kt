@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
@@ -63,7 +62,6 @@ fun LiveRecordChooseWorkoutsScreen(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 16.dp
         ),
-        shape = RoundedCornerShape(16.dp),
         modifier = modifier.padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         val columnContentDescription = stringResource(id = R.string.workout_column)

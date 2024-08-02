@@ -145,7 +145,7 @@ class RecordWorkoutHistoryScreenKtTest {
 
         saveButton.performClick()
 
-        assertThat(workout.exercises.size, equalTo(1))
+        assertThat(workout.exerciseHistories.size, equalTo(1))
         assertThat(dismissed, equalTo(true))
     }
 

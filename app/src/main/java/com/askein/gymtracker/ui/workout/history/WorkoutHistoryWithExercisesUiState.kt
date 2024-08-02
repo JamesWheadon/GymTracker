@@ -11,7 +11,7 @@ data class WorkoutHistoryWithExercisesUiState(
     val workoutHistoryId: Int = 0,
     val workoutId: Int = 0,
     var date: LocalDate = LocalDate.now(),
-    var exercises: List<ExerciseHistoryUiState> = listOf()
+    var exerciseHistories: List<ExerciseHistoryUiState> = listOf()
 )
 
 data class WorkoutHistoryUiState(
@@ -25,7 +25,7 @@ fun WorkoutHistoryWithExerciseHistory.toWorkoutHistoryWithExercisesUiState(): Wo
         workoutHistoryId = workoutHistory.workoutHistoryId,
         workoutId = workoutHistory.workoutId,
         date = workoutHistory.date,
-        exercises = listOf(weightsExercises.map { it.toWeightsExerciseHistoryUiState() }, cardioExercises.map { it.toCardioExerciseHistoryUiState() }).flatten()
+        exerciseHistories = listOf(weightsExercises.map { it.toWeightsExerciseHistoryUiState() }, cardioExercises.map { it.toCardioExerciseHistoryUiState() }).flatten()
     )
 
 fun WorkoutHistoryWithExercisesUiState.toWorkoutHistoryUiState(): WorkoutHistoryUiState =

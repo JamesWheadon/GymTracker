@@ -91,7 +91,7 @@ class WorkoutHistoryViewModelTest {
         workoutHistoryId = workoutHistory.workoutHistoryId,
         workoutId = workoutHistory.workoutId,
         date = workoutHistory.date,
-        exercises = listOf(
+        exerciseHistories = listOf(
             weightsExerciseHistoryUI,
             cardioExerciseHistoryUI,
             newWeightsExerciseHistoryUI,
@@ -103,7 +103,7 @@ class WorkoutHistoryViewModelTest {
         workoutHistoryId = workoutHistory.workoutHistoryId,
         workoutId = workoutHistory.workoutId,
         date = workoutHistory.date,
-        exercises = listOf(
+        exerciseHistories = listOf(
             weightsExerciseHistoryUI,
             cardioExerciseHistoryUI,
             oldWeightsExerciseHistoryUI,

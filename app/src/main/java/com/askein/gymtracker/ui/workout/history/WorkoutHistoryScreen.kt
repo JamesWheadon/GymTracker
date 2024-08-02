@@ -52,6 +52,8 @@ fun WorkoutHistoryScreen(
 ) {
     var showEditWorkoutHistory by remember { mutableStateOf(false) }
     var showDeleteWorkoutHistory by remember { mutableStateOf(false) }
+    val historyExerciseIds = workoutHistoryUiState.exerciseHistories
+        .map { exerciseHistory -> exerciseHistory.exerciseId }
     Box {
         Card(
             elevation = CardDefaults.cardElevation(
@@ -66,13 +68,11 @@ fun WorkoutHistoryScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 workoutUiState.exercises.filter { exercise ->
-                    workoutHistoryUiState.exercises
-                        .map { exerciseHistory -> exerciseHistory.exerciseId }
-                        .contains(exercise.id)
+                    historyExerciseIds.contains(exercise.id)
                 }.forEach { exercise ->
                     WorkoutHistoryExerciseCard(
                         exercise = exercise,
-                        exerciseHistory = workoutHistoryUiState.exercises.first { exerciseHistory -> exerciseHistory.exerciseId == exercise.id },
+                        exerciseHistory = workoutHistoryUiState.exerciseHistories.first { exerciseHistory -> exerciseHistory.exerciseId == exercise.id },
                         chosenDate = chosenDate,
                         exerciseNavigationFunction = exerciseNavigationFunction
                     )
