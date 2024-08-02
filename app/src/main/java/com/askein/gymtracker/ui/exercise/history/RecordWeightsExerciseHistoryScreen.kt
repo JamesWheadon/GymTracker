@@ -3,10 +3,8 @@ package com.askein.gymtracker.ui.exercise.history
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -45,6 +43,7 @@ import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import java.time.LocalDate
+import kotlin.math.max
 
 @Composable
 fun RecordWeightsExerciseHistoryCard(
@@ -57,24 +56,15 @@ fun RecordWeightsExerciseHistoryCard(
     recordWeight: Boolean = true
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
-    var setsState by remember { mutableStateOf(savedHistory.sets.toString()) }
-    var recordReps by remember { mutableStateOf(true) }
-    val repsState = remember {
-        savedHistory.reps?.map { it.toString() }?.toMutableStateList() ?: mutableStateListOf()
+    var recordState by remember {
+        mutableStateOf(
+            savedHistory.toRecordWeightsHistoryState(
+                exerciseId = exerciseId,
+                recordWeight = recordWeight,
+                weightUnit = userPreferencesUiState.defaultWeightUnit
+            )
+        )
     }
-    val minutesState = remember {
-        savedHistory.seconds?.map { (it % 60).toString() }?.toMutableStateList() ?: mutableStateListOf()
-    }
-    val secondsState = remember {
-        savedHistory.seconds?.map { (it / 60).toString() }?.toMutableStateList() ?: mutableStateListOf()
-    }
-    val weightsState = remember {
-        savedHistory.weight.map { value ->
-            getWeightForUnit(value, userPreferencesUiState)
-        }.toMutableStateList()
-    }
-    var date by remember { mutableStateOf(savedHistory.date) }
-    var unitState by remember { mutableStateOf(userPreferencesUiState.defaultWeightUnit) }
     Card(
         modifier = modifier
             .padding(vertical = 10.dp, horizontal = 10.dp),
@@ -100,28 +90,30 @@ fun RecordWeightsExerciseHistoryCard(
             ) {
                 FormInformationField(
                     label = R.string.sets,
-                    value = setsState,
-                    onChange = { entry ->
-                        setsState = entry
+                    value = recordState.setsState,
+                    onChange = { sets ->
+                        recordState = recordState.copy(setsState = sets)
+                        if (sets.isNotEmpty()) {
+                            recordState.updateState()
+                        }
                     },
                     formType = FormTypes.INTEGER,
                     modifier = Modifier
                         .weight(1f)
                         .padding(0.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
                 if (recordWeight) {
                     val unitsContentDescription = stringResource(id = R.string.units)
                     DropdownBox(
                         options = WeightUnits.values().associateWith { unit -> unit.shortForm },
-                        onChange = { value ->
-                            unitState = value
+                        onChange = { unit ->
+                            recordState = recordState.copy(unitState = unit)
                         },
                         modifier = Modifier
                             .weight(1f)
                             .padding(0.dp)
                             .semantics { contentDescription = unitsContentDescription },
-                        selected = unitState
+                        selected = recordState.unitState
                     )
                 }
             }
@@ -132,113 +124,82 @@ fun RecordWeightsExerciseHistoryCard(
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 0.dp)
             ) {
-                Button(onClick = { recordReps = true }, enabled = !recordReps) {
+                Button(
+                    onClick = {
+                        recordState = recordState.copy(recordReps = true)
+                        recordState.updateState()
+                    },
+                    enabled = !recordState.recordReps
+                ) {
                     Text(text = stringResource(id = R.string.reps))
                 }
-                Spacer(modifier = Modifier.width(12.dp))
-                Button(onClick = { recordReps = false }, enabled = recordReps) {
+                Button(
+                    onClick = {
+                        recordState = recordState.copy(recordReps = false)
+                        recordState.updateState()
+                    },
+                    enabled = recordState.recordReps
+                ) {
                     Text(text = stringResource(id = R.string.time))
                 }
             }
-            if (setsState != "") {
-                for (i in 0 until setsState.toInt()) {
-                    if (recordReps) {
-                        RecordRepsWeightsExercise(
-                            repsState = repsState,
-                            set = i,
-                            weightsState = weightsState,
-                            recordWeight = recordWeight
-                        )
-                    } else {
-                        RecordTimeWeightsExercise(
-                            minutesState = minutesState,
-                            secondsState = secondsState,
-                            set = i,
-                            weightsState = weightsState,
-                            recordWeight = recordWeight
-                        )
-                    }
-                    if (i == 0 && setsState.toInt() > 1) {
-                        Row(
-                            horizontalArrangement = Arrangement.Absolute.Right,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Text(text = stringResource(id = R.string.copy_sets))
-                            val equalFields = if (recordReps) {
-                                repsState.distinct().size == 1
-                            } else {
-                                secondsState.distinct().size == 1 && minutesState.distinct().size == 1
+            val numberOfSets =
+                max(recordState.repsState.size, recordState.minutesState.size)
+            for (set in 0 until numberOfSets) {
+                if (recordState.recordReps) {
+                    RecordRepsWeightsExercise(
+                        weightsHistoryState = recordState,
+                        set = set,
+                        recordWeight = recordWeight
+                    )
+                } else {
+                    RecordTimeWeightsExercise(
+                        weightsHistoryState = recordState,
+                        set = set,
+                        recordWeight = recordWeight
+                    )
+                }
+                if (set == 0 && numberOfSets > 1) {
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Right,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = stringResource(id = R.string.copy_sets))
+                        Checkbox(
+                            checked = recordState.allSetsEqual(),
+                            onCheckedChange = {
+                                recordState.allSetsSameAsFirst()
                             }
-                            Checkbox(
-                                checked = equalFields && weightsState.distinct().size == 1,
-                                onCheckedChange = {
-                                    for (j in 1 until setsState.toInt()) {
-                                        if (recordReps) {
-                                            repsState[j] = repsState[0]
-                                        } else {
-                                            minutesState[j] = minutesState[0]
-                                            secondsState[j] = secondsState[0]
-                                        }
-                                        weightsState[j] = weightsState[0]
-                                    }
-                                }
-                            )
-                        }
+                        )
                     }
                 }
             }
             if (savedHistory.workoutHistoryId == null) {
                 DatePickerDialog(
-                    date = date,
-                    onDateChange = { newDate -> date = newDate }
+                    date = recordState.dateState,
+                    onDateChange = { newDate ->
+                        recordState = recordState.copy(dateState = newDate)
+                    }
                 )
             }
-            if (recordReps) {
-                SaveRepsWeightsExerciseHistoryButton(
-                    setsState = setsState,
-                    repsState = repsState,
-                    weightsState = weightsState,
-                    unitState = unitState,
-                    dateState = date,
-                    recordWeight = recordWeight,
-                    exerciseId = exerciseId,
-                    savedHistory = savedHistory,
-                    saveFunction = saveFunction,
-                    onDismiss = onDismiss
-                )
-            } else {
-                SaveTimeWeightsExerciseHistoryButton(
-                    setsState = setsState,
-                    minutesState = minutesState,
-                    secondsState = secondsState,
-                    weightsState = weightsState,
-                    unitState = unitState,
-                    dateState = date,
-                    recordWeight = recordWeight,
-                    exerciseId = exerciseId,
-                    savedHistory = savedHistory,
-                    saveFunction = saveFunction,
-                    onDismiss = onDismiss
-                )
-            }
+            SaveWeightsExerciseHistoryButton(
+                weightsHistoryState = recordState,
+                saveFunction = saveFunction,
+                onDismiss = onDismiss
+            )
         }
     }
 }
 
 @Composable
 fun RecordRepsWeightsExercise(
-    repsState: MutableList<String>,
+    weightsHistoryState: RecordWeightsHistoryState,
     set: Int,
-    weightsState: SnapshotStateList<String>,
     recordWeight: Boolean,
     modifier: Modifier = Modifier
 ) {
-    if (repsState.size <= set) {
-        repsState.add("0")
-        weightsState.add("0.0")
-    }
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.Top,
@@ -248,9 +209,9 @@ fun RecordRepsWeightsExercise(
     ) {
         FormInformationField(
             label = R.string.reps,
-            value = repsState[set],
+            value = weightsHistoryState.repsState[set],
             onChange = { entry ->
-                repsState[set] = entry
+                weightsHistoryState.repsState[set] = entry
             },
             formType = FormTypes.INTEGER,
             modifier = Modifier
@@ -258,12 +219,11 @@ fun RecordRepsWeightsExercise(
                 .padding(0.dp)
         )
         if (recordWeight) {
-            Spacer(modifier = Modifier.width(12.dp))
             FormInformationField(
                 label = R.string.weight,
-                value = weightsState[set],
+                value = weightsHistoryState.weightsState[set],
                 onChange = { entry ->
-                    weightsState[set] = entry
+                    weightsHistoryState.weightsState[set] = entry
                 },
                 formType = FormTypes.DOUBLE,
                 modifier = Modifier
@@ -276,18 +236,11 @@ fun RecordRepsWeightsExercise(
 
 @Composable
 fun RecordTimeWeightsExercise(
-    minutesState: MutableList<String>,
-    secondsState: MutableList<String>,
+    weightsHistoryState: RecordWeightsHistoryState,
     set: Int,
-    weightsState: SnapshotStateList<String>,
     recordWeight: Boolean,
     modifier: Modifier = Modifier
 ) {
-    if (secondsState.size <= set) {
-        secondsState.add("0")
-        minutesState.add("0")
-        weightsState.add("0.0")
-    }
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.Top,
@@ -296,13 +249,13 @@ fun RecordTimeWeightsExercise(
             .padding(horizontal = 12.dp, vertical = 0.dp)
     ) {
         FormTimeField(
-            minutes = minutesState[set],
-            seconds = secondsState[set],
+            minutes = weightsHistoryState.minutesState[set],
+            seconds = weightsHistoryState.secondsState[set],
             minutesOnChange = { entry ->
-                minutesState[set] = entry
+                weightsHistoryState.minutesState[set] = entry
             },
             secondsOnChange = { entry ->
-                secondsState[set] = entry
+                weightsHistoryState.secondsState[set] = entry
             }
         )
     }
@@ -310,9 +263,9 @@ fun RecordTimeWeightsExercise(
         Row {
             FormInformationField(
                 label = R.string.weight,
-                value = weightsState[set],
+                value = weightsHistoryState.weightsState[set],
                 onChange = { entry ->
-                    weightsState[set] = entry
+                    weightsHistoryState.weightsState[set] = entry
                 },
                 formType = FormTypes.DOUBLE,
                 modifier = Modifier
@@ -324,181 +277,148 @@ fun RecordTimeWeightsExercise(
 }
 
 @Composable
-private fun SaveRepsWeightsExerciseHistoryButton(
-    setsState: String,
-    repsState: List<String>,
-    weightsState: List<String>,
-    unitState: WeightUnits,
-    dateState: LocalDate,
-    recordWeight: Boolean,
-    exerciseId: Int,
-    savedHistory: WeightsExerciseHistoryUiState,
+private fun SaveWeightsExerciseHistoryButton(
+    weightsHistoryState: RecordWeightsHistoryState,
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     onDismiss: () -> Unit
 ) {
-    if (
-        setsState != "" && setsState != "0"
-        && !repsState.contains("") && !repsState.contains("0")
-        && (!weightsState.contains("") || !recordWeight)
-    ) {
-        Button(onClick = {
-            saveFunction(createWeightsExerciseHistory(
-                recordWeight = recordWeight,
-                weightsState = weightsState,
-                unitState = unitState,
-                setsState = setsState,
-                repsState = repsState,
-                savedHistory = savedHistory,
-                exerciseId = exerciseId,
-                dateState = dateState
-            ))
+    Button(
+        onClick = {
+            saveFunction(weightsHistoryState.toWeightsExerciseHistoryUiState())
             onDismiss()
-        }) {
-            Text(text = stringResource(id = R.string.save))
-        }
-    } else {
-        Button(
-            onClick = { },
-            enabled = false
-        ) {
-            Text(text = stringResource(id = R.string.save))
-        }
-    }
-}
-
-@Composable
-private fun SaveTimeWeightsExerciseHistoryButton(
-    setsState: String,
-    minutesState: List<String>,
-    secondsState: List<String>,
-    weightsState: List<String>,
-    unitState: WeightUnits,
-    dateState: LocalDate,
-    recordWeight: Boolean,
-    exerciseId: Int,
-    savedHistory: WeightsExerciseHistoryUiState,
-    saveFunction: (ExerciseHistoryUiState) -> Unit,
-    onDismiss: () -> Unit
-) {
-    if (
-        setsState != "" && setsState != "0"
-        && !minutesState.contains("") && !minutesState.contains("0")
-        && !secondsState.contains("") && !secondsState.contains("0")
-        && (!weightsState.contains("") || !recordWeight)
+        },
+        enabled = weightsHistoryState.isValid()
     ) {
-        Button(onClick = {
-            saveFunction(createWeightsExerciseHistory(
-                recordWeight = recordWeight,
-                weightsState = weightsState,
-                unitState = unitState,
-                setsState = setsState,
-                minutesState = minutesState,
-                secondsState = secondsState,
-                savedHistory = savedHistory,
-                exerciseId = exerciseId,
-                dateState = dateState
-            ))
-            onDismiss()
-        }) {
-            Text(text = stringResource(id = R.string.save))
+        Text(text = stringResource(id = R.string.save))
+    }
+}
+
+data class RecordWeightsHistoryState(
+    val historyId: Int,
+    val exerciseId: Int,
+    val workoutHistoryId: Int?,
+    val rest: Int?,
+    val setsState: String,
+    val repsState: SnapshotStateList<String>,
+    val minutesState: SnapshotStateList<String>,
+    val secondsState: SnapshotStateList<String>,
+    val weightsState: SnapshotStateList<String>,
+    val dateState: LocalDate,
+    val unitState: WeightUnits,
+    val recordReps: Boolean,
+    val recordWeight: Boolean
+)
+
+fun RecordWeightsHistoryState.updateState() {
+    if (recordReps) {
+        minutesState.clear()
+        secondsState.clear()
+        while (repsState.size > setsState.toInt()) {
+            repsState.removeLast()
+            if (recordWeight) {
+                weightsState.removeLast()
+            }
+        }
+        while (repsState.size < setsState.toInt()) {
+            repsState.add("0")
+            if (recordWeight) {
+                weightsState.add("0.0")
+            }
         }
     } else {
-        Button(
-            onClick = { },
-            enabled = false
-        ) {
-            Text(text = stringResource(id = R.string.save))
+        repsState.clear()
+        while (minutesState.size > setsState.toInt()) {
+            minutesState.removeLast()
+            secondsState.removeLast()
+            if (recordWeight) {
+                weightsState.removeLast()
+            }
+        }
+        while (minutesState.size < setsState.toInt()) {
+            minutesState.add("0")
+            secondsState.add("0")
+            if (recordWeight) {
+                weightsState.add("0.0")
+            }
         }
     }
 }
 
-private fun createWeightsExerciseHistory(
-    recordWeight: Boolean,
-    weightsState: List<String>,
-    unitState: WeightUnits,
-    setsState: String,
-    repsState: List<String>,
-    savedHistory: WeightsExerciseHistoryUiState,
-    exerciseId: Int,
-    dateState: LocalDate
-): WeightsExerciseHistoryUiState {
-    val weight = if (recordWeight) {
-        weightsState
-            .map { convertToKilograms(unitState, it.toDouble()) }
-            .subList(0, setsState.toInt())
-    } else {
-        emptyList()
-    }
-    val reps = repsState.map { it.toInt() }.subList(0, setsState.toInt())
-    val history = if (savedHistory == WeightsExerciseHistoryUiState()) {
-        WeightsExerciseHistoryUiState(
-            exerciseId = exerciseId,
-            weight = weight,
-            sets = setsState.toInt(),
-            reps = reps,
-            date = dateState
-        )
-    } else {
-        savedHistory.copy(
-            sets = setsState.toInt(),
-            reps = reps,
-            weight = weight,
-            date = dateState
-        )
-    }
-    return history
+fun RecordWeightsHistoryState.isValid(): Boolean {
+    val validSets = setsState.isNotEmpty() && setsState != "0"
+    val validWeights = weightsState.none { it.isEmpty() }
+    val validReps = !recordReps || repsState.none { it.isEmpty() }
+    val validSeconds = recordReps ||
+            minutesState.none { it.isEmpty() } && secondsState.none { it.isEmpty() || it.toInt() >= 60 }
+    return validSets && validWeights && validReps && validSeconds
 }
 
-private fun createWeightsExerciseHistory(
-    recordWeight: Boolean,
-    weightsState: List<String>,
-    unitState: WeightUnits,
-    setsState: String,
-    minutesState: List<String>,
-    secondsState: List<String>,
-    savedHistory: WeightsExerciseHistoryUiState,
-    exerciseId: Int,
-    dateState: LocalDate
-): WeightsExerciseHistoryUiState {
-    val weight = if (recordWeight) {
-        weightsState
-            .map { convertToKilograms(unitState, it.toDouble()) }
-            .subList(0, setsState.toInt())
-    } else {
-        emptyList()
+fun RecordWeightsHistoryState.allSetsSameAsFirst() {
+    for (j in 1 until setsState.toInt()) {
+        if (recordReps) {
+            repsState[j] = repsState[0]
+        } else {
+            minutesState[j] = minutesState[0]
+            secondsState[j] = secondsState[0]
+        }
+        if (recordWeight) {
+            weightsState[j] = weightsState[0]
+        }
     }
-    val seconds = minutesState.map { it.toInt() * 60 }.subList(0, setsState.toInt()).zip(secondsState.map { it.toInt() }).map { it.first + it.second }
-    val history = if (savedHistory == WeightsExerciseHistoryUiState()) {
-        WeightsExerciseHistoryUiState(
-            exerciseId = exerciseId,
-            weight = weight,
-            sets = setsState.toInt(),
-            seconds = seconds,
-            date = dateState
-        )
-    } else {
-        savedHistory.copy(
-            sets = setsState.toInt(),
-            seconds = seconds,
-            weight = weight,
-            date = dateState
-        )
-    }
-    return history
 }
+
+fun RecordWeightsHistoryState.allSetsEqual(): Boolean {
+    val allWeightsSame = weightsState.isEmpty() || weightsState.distinct().size == 1
+    return if (recordReps) {
+        repsState.distinct().size == 1 && allWeightsSame
+    } else {
+        minutesState.distinct().size == 1 && secondsState.distinct().size == 1 && allWeightsSame
+    }
+}
+
+fun RecordWeightsHistoryState.toWeightsExerciseHistoryUiState() = WeightsExerciseHistoryUiState(
+    id = historyId,
+    exerciseId = exerciseId,
+    workoutHistoryId = workoutHistoryId,
+    date = dateState,
+    rest = rest,
+    sets = setsState.toInt(),
+    reps = if (recordReps) repsState.map { it.toInt() } else null,
+    seconds = if (recordReps) null else minutesState.zip(secondsState)
+        .map { it.first.toInt() * 60 + it.second.toInt() },
+    weight = weightsState.map { convertToKilograms(unitState, it.toDouble()) }
+)
+
+fun WeightsExerciseHistoryUiState.toRecordWeightsHistoryState(
+    exerciseId: Int,
+    recordWeight: Boolean,
+    weightUnit: WeightUnits
+) = RecordWeightsHistoryState(
+    historyId = id,
+    exerciseId = exerciseId,
+    workoutHistoryId = workoutHistoryId,
+    dateState = date,
+    rest = rest,
+    setsState = sets.toString(),
+    repsState = reps?.map { it.toString() }?.toMutableStateList() ?: mutableStateListOf(),
+    minutesState = seconds?.map { (it / 60).toString() }?.toMutableStateList()
+        ?: mutableStateListOf(),
+    secondsState = seconds?.map { (it % 60).toString() }?.toMutableStateList()
+        ?: mutableStateListOf(),
+    weightsState = weight.map { getWeightForUnit(it, weightUnit) }.toMutableStateList(),
+    unitState = weightUnit,
+    recordReps = seconds.isNullOrEmpty(),
+    recordWeight = recordWeight
+)
 
 private fun getWeightForUnit(
     weight: Double,
-    userPreferencesUiState: UserPreferencesUiState
-): String =
-    if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
-        weight.toString()
-    } else {
-        convertToWeightUnit(
-            userPreferencesUiState.defaultWeightUnit,
-            weight
-        ).toString()
-    }
+    weightUnit: WeightUnits
+): String = if (weightUnit == WeightUnits.KILOGRAMS) {
+    weight.toString()
+} else {
+    convertToWeightUnit(weightUnit, weight).toString()
+}
 
 @Preview(showBackground = true)
 @Composable

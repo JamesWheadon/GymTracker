@@ -106,6 +106,7 @@ class RecordWeightsExerciseHistoryScreenKtTest {
 
         setsField.performTextClearance()
         setsField.performTextInput(history.sets.toString())
+        repsField.performTextClearance()
 
         createButton.performClick()
 
