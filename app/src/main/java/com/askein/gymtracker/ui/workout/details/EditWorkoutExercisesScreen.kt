@@ -1,6 +1,5 @@
 package com.askein.gymtracker.ui.workout.details
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
@@ -27,16 +26,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
@@ -55,12 +52,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.data.exercise.ExerciseType
 import com.askein.gymtracker.ui.AppViewModelProvider
-import com.askein.gymtracker.ui.exercise.ExerciseDetail
+import com.askein.gymtracker.ui.exercise.CalisthenicsExerciseDetails
+import com.askein.gymtracker.ui.exercise.CardioExerciseDetails
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.ExercisesScreenViewModel
+import com.askein.gymtracker.ui.exercise.WeightsExerciseDetails
 import com.askein.gymtracker.ui.exercise.create.ExerciseInformationForm
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @Composable
@@ -102,73 +100,18 @@ fun EditWorkoutExercisesScreen(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scrollState = rememberScrollState()
-    val coroutineScope = rememberCoroutineScope()
-
-    var dragYOffset by remember { mutableFloatStateOf(0f) }
-    var dragStartYOffset by remember { mutableFloatStateOf(0f) }
-    var dragStartScrollState by remember { mutableFloatStateOf(0f) }
-    var dragIndex: Int? by remember { mutableStateOf(null) }
-    var draggedCardHeight by remember { mutableIntStateOf(0) }
-    var currentDraggedExercise: ExerciseUiState? by remember { mutableStateOf(null) }
-    var showCreateExercise by remember { mutableStateOf(false) }
-    val cardYOffsets = remember { mutableStateMapOf<String, Float>() }
     val draggableExercises = remember { chosenExercises.toMutableStateList() }
     var newExerciseName: String? by remember { mutableStateOf(null) }
-    var columnTop by remember { mutableFloatStateOf(0f) }
-    var columnBottom by remember { mutableFloatStateOf(0f) }
-    val unDraggableExercises =
-        allExercises.filter { exercise -> !draggableExercises.contains(exercise) }
-            .sortedBy { exercise -> exercise.name }
+    var showCreateExercise by remember { mutableStateOf(false) }
+    val unDraggableExercises = allExercises
+        .filter { exercise -> !draggableExercises.contains(exercise) }
+        .sortedBy { exercise -> exercise.name }
 
     if (newExerciseName != null) {
         val newExercise = unDraggableExercises.firstOrNull { it.name == newExerciseName }
         if (newExercise != null) {
             draggableExercises.add(newExercise)
             newExerciseName = null
-        }
-    }
-
-    val onDragStart = { exercise: ExerciseUiState, cardHeight: Int, startYOffset: Float ->
-        currentDraggedExercise = exercise
-        draggedCardHeight = cardHeight
-        dragYOffset = cardYOffsets[exercise.name] ?: 0f
-        dragStartYOffset = (cardYOffsets[exercise.name] ?: 0f) + startYOffset
-        dragStartScrollState = scrollState.value.toFloat()
-    }
-    val dragOffsetOnChange = { yOffset: Float ->
-        dragYOffset += yOffset
-        val exerciseAtDragLocation = cardYOffsets
-            .minBy { card -> abs(dragYOffset.minus(card.value) - draggedCardHeight / 2) }
-            .key
-        dragIndex = draggableExercises.indexOfFirst { exercise ->
-            exercise.name == exerciseAtDragLocation
-        }
-    }
-    val onDragFinished = onDragFinished@{
-        if (currentDraggedExercise == null) return@onDragFinished
-        draggableExercises.remove(currentDraggedExercise)
-        draggableExercises.add(dragIndex!!, currentDraggedExercise!!)
-        currentDraggedExercise = null
-    }
-
-    LaunchedEffect(dragYOffset) {
-        if (!scrollState.isScrollInProgress) {
-            val scrollBoundary = 150f
-            val topScrollBound = abs(columnTop) + scrollBoundary
-            val bottomScrollBound = columnBottom - scrollBoundary - (scrollState.maxValue - scrollState.value) - draggedCardHeight
-            val scrollAmount = if (dragYOffset < topScrollBound) {
-                maxOf(-scrollBoundary, -scrollState.value.toFloat())
-            } else if (dragYOffset > bottomScrollBound) {
-                minOf(scrollBoundary, (scrollState.maxValue - scrollState.value).toFloat())
-            } else {
-                0f
-            }
-            if (scrollAmount != 0f) {
-                coroutineScope.launch {
-                    scrollState.animateScrollBy(scrollAmount)
-                }
-            }
         }
     }
 
@@ -188,52 +131,11 @@ fun EditWorkoutExercisesScreen(
                             vertical = 40.dp
                         )
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(0.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(
-                                horizontal = 0.dp,
-                                vertical = 0.dp
-                            )
-                            .verticalScroll(scrollState)
-                            .onGloballyPositioned { location ->
-                                columnTop = location.positionInWindow().y
-                                columnBottom = location.positionInWindow().y + location.size.height
-                            }
-                    ) {
-                        if (draggableExercises.isNotEmpty()) {
-                            ExercisesList(
-                                exercises = draggableExercises,
-                                clickFunction = { exercise ->
-                                    draggableExercises.remove(exercise)
-                                    cardYOffsets.remove(exercise.name)
-                                },
-                                listTitle = R.string.workout_exercises,
-                                exercisesSelected = true,
-                                dragIndex = dragIndex,
-                                draggedCardHeight = draggedCardHeight,
-                                currentDraggedExercise = currentDraggedExercise,
-                                onDragStart = onDragStart,
-                                onPositioned = { exercise, offset ->
-                                    cardYOffsets[exercise.name] = offset.y
-                                },
-                                draggedCardYOffset = dragYOffset - dragStartYOffset + (scrollState.value.toFloat() - dragStartScrollState),
-                                dragOffsetOnChange = dragOffsetOnChange,
-                                onDragFinished = onDragFinished
-                            )
-                        }
-                        if (unDraggableExercises.isNotEmpty()) {
-                            ExercisesList(
-                                exercises = unDraggableExercises,
-                                clickFunction = { exercise ->
-                                    draggableExercises.add(exercise)
-                                },
-                                listTitle = R.string.available_exercises
-                            )
-                        }
-                    }
+                    SelectAndOrderWorkoutExercises(
+                        draggableExercises = draggableExercises,
+                        unDraggableExercises = unDraggableExercises,
+                        modifier = Modifier.weight(1f)
+                    )
                     Button(
                         onClick = { showCreateExercise = true }
                     ) {
@@ -280,22 +182,123 @@ fun EditWorkoutExercisesScreen(
 }
 
 @Composable
-fun ExercisesList(
+private fun SelectAndOrderWorkoutExercises(
+    draggableExercises: SnapshotStateList<ExerciseUiState>,
+    unDraggableExercises: List<ExerciseUiState>,
+    modifier: Modifier
+) {
+    val scrollState = rememberScrollState()
+
+    var dragYOffset by remember { mutableFloatStateOf(0f) }
+    var dragStartOffset by remember { mutableFloatStateOf(0f) }
+    var dragIndex: Int? by remember { mutableStateOf(null) }
+    var currentDraggedExercise: ExerciseUiState? by remember { mutableStateOf(null) }
+    val draggableCards = remember { mutableStateMapOf<String, DraggableCardData>() }
+    var columnBoundaries by remember { mutableStateOf(DraggableColumnBoundaries(0f, 0f)) }
+    val scrollBoundary = 150f
+
+    val onDragStart = { exercise: ExerciseUiState, startYOffset: Float ->
+        currentDraggedExercise = exercise
+        dragYOffset = draggableCards[exercise.name]?.topPosition ?: 0f
+        dragStartOffset = dragYOffset + startYOffset + scrollState.value.toFloat()
+    }
+    val dragOffsetOnChange = { yOffset: Float ->
+        dragYOffset += yOffset
+        val draggingCardHeight = draggableCards[currentDraggedExercise?.name]!!.height / 2
+        val exerciseAtDragLocation = draggableCards
+            .minBy { card -> abs(dragYOffset.minus(card.value.topPosition) - draggingCardHeight) }
+            .key
+        dragIndex = draggableExercises.indexOfFirst { exercise ->
+            exercise.name == exerciseAtDragLocation
+        }
+    }
+    val onDragFinished = onDragFinished@{
+        if (currentDraggedExercise == null) return@onDragFinished
+        draggableExercises.remove(currentDraggedExercise)
+        draggableExercises.add(dragIndex!!, currentDraggedExercise!!)
+        currentDraggedExercise = null
+    }
+
+    LaunchedEffect(dragYOffset) {
+        if (!scrollState.isScrollInProgress) {
+            val topScrollBound = abs(columnBoundaries.top) + scrollBoundary
+            val bottomScrollBound =
+                columnBoundaries.bottom - scrollBoundary - (scrollState.maxValue - scrollState.value) - draggableCards[currentDraggedExercise?.name]!!.height
+            val scrollAmount = if (dragYOffset < topScrollBound) {
+                maxOf(-scrollBoundary, -scrollState.value.toFloat())
+            } else if (dragYOffset > bottomScrollBound) {
+                minOf(scrollBoundary, (scrollState.maxValue - scrollState.value).toFloat())
+            } else {
+                0f
+            }
+            if (scrollAmount != 0f) {
+                scrollState.animateScrollBy(scrollAmount)
+            }
+        }
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(0.dp),
+        modifier = modifier
+            .padding(
+                horizontal = 0.dp,
+                vertical = 0.dp
+            )
+            .verticalScroll(scrollState)
+            .onGloballyPositioned { location ->
+                val top = location.positionInWindow().y
+                columnBoundaries = DraggableColumnBoundaries(
+                    top = top,
+                    bottom = top + location.size.height
+                )
+            }
+    ) {
+        if (draggableExercises.isNotEmpty()) {
+            DraggableExercisesList(
+                exercises = draggableExercises,
+                clickFunction = { exercise ->
+                    draggableExercises.remove(exercise)
+                    draggableCards.remove(exercise.name)
+                },
+                dragIndex = dragIndex,
+                draggedCardHeight = draggableCards[currentDraggedExercise?.name]?.height
+                    ?: 0,
+                currentDraggedExercise = currentDraggedExercise,
+                onDragStart = onDragStart,
+                onPositioned = { exercise, cardData ->
+                    draggableCards[exercise.name] = cardData
+                },
+                draggedCardYOffset = dragYOffset + scrollState.value.toFloat() - dragStartOffset,
+                dragOffsetOnChange = dragOffsetOnChange,
+                onDragFinished = onDragFinished
+            )
+        }
+        if (unDraggableExercises.isNotEmpty()) {
+            ExercisesList(
+                exercises = unDraggableExercises
+            ) { exercise ->
+                draggableExercises.add(exercise)
+            }
+        }
+    }
+}
+
+@Composable
+fun DraggableExercisesList(
     exercises: List<ExerciseUiState>,
     clickFunction: (ExerciseUiState) -> Unit,
-    @StringRes listTitle: Int,
-    exercisesSelected: Boolean = false,
-    dragIndex: Int? = null,
-    draggedCardHeight: Int = 0,
-    currentDraggedExercise: ExerciseUiState? = null,
-    onDragStart: (ExerciseUiState, Int, Float) -> Unit = { _, _, _ -> },
-    onPositioned: (ExerciseUiState, Offset) -> Unit = { _, _ -> },
-    draggedCardYOffset: Float = 0f,
-    dragOffsetOnChange: (Float) -> Unit = { },
-    onDragFinished: () -> Unit = { }
+    dragIndex: Int?,
+    draggedCardHeight: Int,
+    currentDraggedExercise: ExerciseUiState?,
+    onDragStart: (ExerciseUiState, Float) -> Unit,
+    onPositioned: (ExerciseUiState, DraggableCardData) -> Unit,
+    draggedCardYOffset: Float,
+    dragOffsetOnChange: (Float) -> Unit,
+    onDragFinished: () -> Unit
 ) {
     Text(
-        text = stringResource(id = listTitle),
+        text = stringResource(id = R.string.workout_exercises),
         style = MaterialTheme.typography.headlineLarge
     )
     val startIndex = exercises.indexOf(currentDraggedExercise)
@@ -312,79 +315,105 @@ fun ExercisesList(
             0f
         }
         key(exercise.name) {
-            AddRemoveExerciseCard(
+            DraggableAddRemoveExerciseCard(
                 exercise = exercise,
-                checked = exercisesSelected,
+                checked = true,
+                yOffset = exerciseYOffset,
                 clickFunction = clickFunction,
                 onPositioned = onPositioned,
-                yOffset = exerciseYOffset,
                 onDragStart = onDragStart,
                 dragOffsetOnChange = dragOffsetOnChange,
                 onDragFinished = onDragFinished,
+                currentlyDragging = true,
             )
         }
     }
 }
 
 @Composable
-fun AddRemoveExerciseCard(
+fun ExercisesList(
+    exercises: List<ExerciseUiState>,
+    clickFunction: (ExerciseUiState) -> Unit
+) {
+    Text(
+        text = stringResource(id = R.string.available_exercises),
+        style = MaterialTheme.typography.headlineLarge
+    )
+    exercises.forEach { exercise ->
+        key(exercise.name) {
+            AddRemoveExerciseCard(
+                exercise = exercise,
+                checked = false,
+                clickFunction = clickFunction,
+            )
+        }
+    }
+}
+
+@Composable
+fun DraggableAddRemoveExerciseCard(
     exercise: ExerciseUiState,
     checked: Boolean,
     yOffset: Float,
     clickFunction: (ExerciseUiState) -> Unit,
-    onPositioned: (ExerciseUiState, Offset) -> Unit,
-    onDragStart: (ExerciseUiState, Int, Float) -> Unit,
+    onPositioned: (ExerciseUiState, DraggableCardData) -> Unit,
+    onDragStart: (ExerciseUiState, Float) -> Unit,
     dragOffsetOnChange: (Float) -> Unit,
     onDragFinished: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currentlyDragging: Boolean
 ) {
-    var cardHeight by remember { mutableIntStateOf(0) }
-    var dragging by remember {
-        mutableStateOf(false)
-    }
-    var cardModifier = if (checked) {
-        modifier
-            .pointerInput(exercise) {
-                detectDragGesturesAfterLongPress(
-                    onDragStart = { offset ->
-                        dragging = true
-                        onDragStart(exercise, cardHeight, offset.y)
-                        dragOffsetOnChange(offset.y)
-                    },
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        dragOffsetOnChange(dragAmount.y)
-                    },
-                    onDragEnd = {
-                        dragging = false
-                        onDragFinished()
-                    },
-                    onDragCancel = {
-                        dragging = false
-                        onDragFinished()
-                    }
-                )
-            }
-            .onGloballyPositioned { layoutCoordinates ->
-                val rect = layoutCoordinates.boundsInRoot()
-                cardHeight = layoutCoordinates.size.height
-                onPositioned(exercise, rect.topLeft)
-            }
-    } else {
-        modifier
-    }
-    if (checked) {
-        cardModifier = cardModifier.offset {
+    var cardModifier = modifier
+        .onGloballyPositioned { layoutCoordinates ->
+            val cardHeight = layoutCoordinates.size.height
+            onPositioned(
+                exercise,
+                DraggableCardData(cardHeight, layoutCoordinates.boundsInRoot().top)
+            )
+        }
+        .pointerInput(exercise) {
+            detectDragGesturesAfterLongPress(
+                onDragStart = { offset ->
+                    onDragStart(exercise, offset.y)
+                    dragOffsetOnChange(offset.y)
+                },
+                onDrag = { change, dragAmount ->
+                    change.consume()
+                    dragOffsetOnChange(dragAmount.y)
+                },
+                onDragEnd = {
+                    onDragFinished()
+                },
+                onDragCancel = {
+                    onDragFinished()
+                }
+            )
+        }
+        .offset {
             IntOffset(0, yOffset.toInt())
         }
-    }
-    if (dragging) {
+    if (currentlyDragging) {
         cardModifier = cardModifier
             .zIndex(1f)
             .graphicsLayer { alpha = 0.6f }
     }
-    Card(
+    AddRemoveExerciseCard(
+        checked = checked,
+        exercise = exercise,
+        clickFunction = clickFunction,
         modifier = cardModifier
+    )
+}
+
+@Composable
+private fun AddRemoveExerciseCard(
+    checked: Boolean,
+    exercise: ExerciseUiState,
+    clickFunction: (ExerciseUiState) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -412,62 +441,18 @@ fun AddRemoveExerciseCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            if (exercise.type == ExerciseType.WEIGHTS) {
-                if (exercise.muscleGroup != "" || exercise.equipment != "") {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        if (exercise.muscleGroup != "") {
-                            ExerciseDetail(
-                                exerciseInfo = exercise.muscleGroup,
-                                iconId = R.drawable.info_48px,
-                                iconDescription = R.string.muscle_icon
-                            )
-                        }
-                        if (exercise.equipment != "") {
-                            ExerciseDetail(
-                                exerciseInfo = exercise.equipment,
-                                iconId = R.drawable.exercise_filled_48px,
-                                iconDescription = R.string.equipment_icon
-                            )
-                        }
-                    }
-                } else {
-                    ExerciseDetail(
-                        exerciseInfo = stringResource(id = R.string.weights),
-                        iconId = R.drawable.exercise_filled_48px,
-                        iconDescription = R.string.equipment_icon,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            } else if (exercise.type == ExerciseType.CARDIO) {
-                ExerciseDetail(
-                    exerciseInfo = stringResource(id = R.string.cardio),
-                    iconId = R.drawable.cardio_48dp,
-                    iconDescription = R.string.cardio_icon,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else if (exercise.type == ExerciseType.CALISTHENICS) {
-                if (exercise.muscleGroup != "") {
-                    ExerciseDetail(
-                        exerciseInfo = exercise.muscleGroup,
-                        iconId = R.drawable.info_48px,
-                        iconDescription = R.string.muscle_icon,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                } else {
-                    ExerciseDetail(
-                        exerciseInfo = stringResource(id = R.string.calisthenics),
-                        iconId = R.drawable.info_48px,
-                        iconDescription = R.string.calisthenics_icon,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+            when (exercise.type) {
+                ExerciseType.WEIGHTS -> WeightsExerciseDetails(exercise = exercise)
+                ExerciseType.CARDIO -> CardioExerciseDetails()
+                ExerciseType.CALISTHENICS -> CalisthenicsExerciseDetails(exercise = exercise)
             }
         }
     }
 }
+
+data class DraggableCardData(val height: Int, val topPosition: Float)
+
+data class DraggableColumnBoundaries(val top: Float, val bottom: Float)
 
 @Preview(showBackground = true)
 @Composable
