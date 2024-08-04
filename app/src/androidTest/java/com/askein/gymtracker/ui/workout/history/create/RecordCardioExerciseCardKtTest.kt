@@ -17,6 +17,8 @@ import androidx.compose.ui.test.performTextInput
 import com.askein.gymtracker.enums.DistanceUnits
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
+import com.askein.gymtracker.ui.exercise.history.state.record.RecordCardioHistoryState
+import com.askein.gymtracker.ui.exercise.history.state.record.toRecordCardioHistoryState
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers.equalTo
@@ -48,10 +50,10 @@ class RecordCardioExerciseCardKtTest {
         rule.setContent {
             RecordCardioExerciseCard(
                 exercise = treadmillExercise,
-                exerciseHistory = null,
+                recordCardioHistory = null,
+                recordCardioHistoryOnChange = { },
                 selectExerciseFunction = { },
                 deselectExerciseFunction = { },
-                errorStateChange = { _, _ -> }
             )
         }
 
@@ -71,18 +73,22 @@ class RecordCardioExerciseCardKtTest {
         rule.setContent {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-                var exerciseHistory: CardioExerciseHistoryUiState? by remember { mutableStateOf(null) }
+                var recordCardioHistory: RecordCardioHistoryState? by remember { mutableStateOf(null) }
                 RecordCardioExerciseCard(
                     exercise = treadmillExercise,
-                    exerciseHistory = exerciseHistory,
+                    recordCardioHistory = recordCardioHistory,
+                    recordCardioHistoryOnChange = { },
                     selectExerciseFunction = {
                         selected = true
-                        exerciseHistory = CardioExerciseHistoryUiState()
+                        recordCardioHistory =
+                            CardioExerciseHistoryUiState().toRecordCardioHistoryState(
+                                0,
+                                DistanceUnits.KILOMETERS
+                            )
                     },
                     deselectExerciseFunction = {
                         deselected = true
                     },
-                    errorStateChange = { _, _ -> }
                 )
             }
         }
@@ -105,49 +111,44 @@ class RecordCardioExerciseCardKtTest {
 
     @Test
     fun recordCardioExerciseCardClickingCheckboxRendersFormFieldsWithErrors() {
-        var error = false
-        var id = -1
-
         rule.setContent {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordCardioExerciseCard(
                     exercise = treadmillExercise,
-                    exerciseHistory = CardioExerciseHistoryUiState(),
+                    recordCardioHistory = CardioExerciseHistoryUiState().toRecordCardioHistoryState(
+                        0,
+                        DistanceUnits.KILOMETERS
+                    ),
+                    recordCardioHistoryOnChange = { },
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },
-                    errorStateChange = { exerciseId, exerciseError ->
-                        error = exerciseError
-                        id = exerciseId
-                    }
                 )
             }
         }
         treadmillCheckbox.performClick()
         cardioError.assertExists()
-
-        assertThat(error, equalTo(true))
-        assertThat(id, equalTo(3))
     }
 
     @Test
     fun returnsFalseErrorStateWhenNoErrorsInRecordCardioExerciseCard() {
-        var error = false
-        var id = -1
-        val exerciseHistory = CardioExerciseHistoryUiState()
-
         rule.setContent {
             val userPreferencesUiState = UserPreferencesUiState()
+            var recordCardioHistory by remember {
+                mutableStateOf(
+                    CardioExerciseHistoryUiState().toRecordCardioHistoryState(
+                        0,
+                        DistanceUnits.KILOMETERS
+                    )
+                )
+            }
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordCardioExerciseCard(
                     exercise = treadmillExercise,
-                    exerciseHistory = exerciseHistory,
+                    recordCardioHistory = recordCardioHistory,
+                    recordCardioHistoryOnChange = { newState -> recordCardioHistory = newState },
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },
-                    errorStateChange = { exerciseId, exerciseError ->
-                        error = exerciseError
-                        id = exerciseId
-                    }
                 )
             }
         }
@@ -155,9 +156,6 @@ class RecordCardioExerciseCardKtTest {
         distanceField.performTextInput("10.0")
 
         cardioError.assertDoesNotExist()
-        assertThat(exerciseHistory.distance, equalTo(10.0))
-        assertThat(error, equalTo(false))
-        assertThat(id, equalTo(3))
     }
 
     @Test
@@ -169,10 +167,13 @@ class RecordCardioExerciseCardKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordCardioExerciseCard(
                     exercise = treadmillExercise,
-                    exerciseHistory = CardioExerciseHistoryUiState(),
+                    recordCardioHistory = CardioExerciseHistoryUiState().toRecordCardioHistoryState(
+                        0,
+                        DistanceUnits.KILOMETERS
+                    ),
+                    recordCardioHistoryOnChange = { },
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },
-                    errorStateChange = { _, _ -> }
                 )
             }
         }
@@ -191,10 +192,13 @@ class RecordCardioExerciseCardKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordCardioExerciseCard(
                     exercise = treadmillExercise,
-                    exerciseHistory = CardioExerciseHistoryUiState(),
+                    recordCardioHistory = CardioExerciseHistoryUiState().toRecordCardioHistoryState(
+                        0,
+                        DistanceUnits.MILES
+                    ),
+                    recordCardioHistoryOnChange = { },
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },
-                    errorStateChange = { _, _ -> }
                 )
             }
         }
@@ -213,10 +217,13 @@ class RecordCardioExerciseCardKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordCardioExerciseCard(
                     exercise = treadmillExercise,
-                    exerciseHistory = CardioExerciseHistoryUiState(),
+                    recordCardioHistory = CardioExerciseHistoryUiState().toRecordCardioHistoryState(
+                        0,
+                        DistanceUnits.METERS
+                    ),
+                    recordCardioHistoryOnChange = { },
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },
-                    errorStateChange = { _, _ -> }
                 )
             }
         }
@@ -235,12 +242,12 @@ class RecordCardioExerciseCardKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordCardioExerciseCard(
                     exercise = treadmillExercise,
-                    exerciseHistory = CardioExerciseHistoryUiState(
+                    recordCardioHistory = CardioExerciseHistoryUiState(
                         distance = 10.0
-                    ),
+                    ).toRecordCardioHistoryState(0, DistanceUnits.MILES),
+                    recordCardioHistoryOnChange = { },
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },
-                    errorStateChange = { _, _ -> }
                 )
             }
         }

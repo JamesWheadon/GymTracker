@@ -55,10 +55,13 @@ class RecordWorkoutHistoryScreenKtTest {
     @Test
     fun rendersRecordWorkoutHistoryScreen() {
         rule.setContent {
-            RecordWorkoutHistoryScreen(
-                uiState = workoutWithExercises,
-                onDismiss = { }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWorkoutHistoryScreen(
+                    uiState = workoutWithExercises,
+                    onDismiss = { }
+                )
+            }
         }
 
         recordTitle.assertExists()
@@ -177,10 +180,13 @@ class RecordWorkoutHistoryScreenKtTest {
         var dismissed = false
 
         rule.setContent {
-            RecordWorkoutHistoryScreen(
-                uiState = workoutWithExercises,
-                onDismiss = { dismissed = true }
-            )
+            val userPreferencesUiState = UserPreferencesUiState()
+            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
+                RecordWorkoutHistoryScreen(
+                    uiState = workoutWithExercises,
+                    onDismiss = { dismissed = true }
+                )
+            }
         }
 
         closeButton.performClick()

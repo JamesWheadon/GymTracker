@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsNodeInteraction
-import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -20,6 +19,8 @@ import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.helper.hasRole
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.askein.gymtracker.ui.exercise.history.state.record.RecordWeightsHistoryState
+import com.askein.gymtracker.ui.exercise.history.state.record.toRecordWeightsHistoryState
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers
@@ -51,10 +52,10 @@ class RecordWeightsExerciseCardKtTest {
         rule.setContent {
             RecordWeightsExerciseCard(
                 exercise = curlsExercise,
-                exerciseHistory = null,
+                recordWeightsHistory = null,
+                recordWeightsHistoryOnChange = { },
                 selectExerciseFunction = { },
-                deselectExerciseFunction = { },
-                errorStateChange = { _, _ -> }
+                deselectExerciseFunction = { }
             )
         }
 
@@ -73,22 +74,27 @@ class RecordWeightsExerciseCardKtTest {
         rule.setContent {
             val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-                var exerciseHistory: WeightsExerciseHistoryUiState? by remember {
+                var recordWeightsHistory: RecordWeightsHistoryState? by remember {
                     mutableStateOf(
                         null
                     )
                 }
                 RecordWeightsExerciseCard(
                     exercise = curlsExercise,
-                    exerciseHistory = exerciseHistory,
+                    recordWeightsHistory = recordWeightsHistory,
+                    recordWeightsHistoryOnChange = { },
                     selectExerciseFunction = {
                         selected = true
-                        exerciseHistory = WeightsExerciseHistoryUiState()
+                        recordWeightsHistory =
+                            WeightsExerciseHistoryUiState().toRecordWeightsHistoryState(
+                                0,
+                                true,
+                                WeightUnits.KILOGRAMS
+                            )
                     },
                     deselectExerciseFunction = {
                         deselected = true
-                    },
-                    errorStateChange = { _, _ -> },
+                    }
                 )
             }
         }
@@ -107,49 +113,26 @@ class RecordWeightsExerciseCardKtTest {
     }
 
     @Test
-    fun recordWeightsExerciseCardClickingCheckboxRendersFormFieldsWithErrors() {
-        var error = false
-        var id = -1
-
+    fun rendersNoErrorsWhenNoErrorsInRecordWeightsExerciseCard() {
         rule.setContent {
             val userPreferencesUiState = UserPreferencesUiState()
-            CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
-                RecordWeightsExerciseCard(
-                    exercise = curlsExercise,
-                    exerciseHistory = WeightsExerciseHistoryUiState(),
-                    selectExerciseFunction = { },
-                    deselectExerciseFunction = { },
-                    errorStateChange = { exerciseId, exerciseError ->
-                        error = exerciseError
-                        id = exerciseId
-                    },
+
+            var recordWeightsHistory by remember {
+                mutableStateOf(
+                    WeightsExerciseHistoryUiState().toRecordWeightsHistoryState(
+                        0,
+                        true,
+                        WeightUnits.KILOGRAMS
+                    )
                 )
             }
-        }
-        curlsCheckbox.performClick()
-
-        setsField.assertTextContains(integerErrorText)
-        assertThat(error, equalTo(true))
-        assertThat(id, equalTo(1))
-    }
-
-    @Test
-    fun returnsFalseErrorStateWhenNoErrorsInRecordWeightsExerciseCard() {
-        var error = false
-        var id = -1
-
-        rule.setContent {
-            val userPreferencesUiState = UserPreferencesUiState()
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordWeightsExerciseCard(
                     exercise = curlsExercise,
-                    exerciseHistory = WeightsExerciseHistoryUiState(),
+                    recordWeightsHistory = recordWeightsHistory,
+                    recordWeightsHistoryOnChange = { newState -> recordWeightsHistory = newState },
                     selectExerciseFunction = { },
-                    deselectExerciseFunction = { },
-                    errorStateChange = { exerciseId, exerciseError ->
-                        error = exerciseError
-                        id = exerciseId
-                    },
+                    deselectExerciseFunction = { }
                 )
             }
         }
@@ -162,8 +145,6 @@ class RecordWeightsExerciseCardKtTest {
         assertTextDoesNotContain(setsField, integerErrorText)
         assertTextDoesNotContain(repsField, integerErrorText)
         assertTextDoesNotContain(weightField, decimalErrorText)
-        assertThat(error, equalTo(false))
-        assertThat(id, equalTo(1))
     }
 
     @Test
@@ -175,10 +156,14 @@ class RecordWeightsExerciseCardKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordWeightsExerciseCard(
                     exercise = curlsExercise,
-                    exerciseHistory = WeightsExerciseHistoryUiState(),
+                    recordWeightsHistory = WeightsExerciseHistoryUiState().toRecordWeightsHistoryState(
+                        0,
+                        true,
+                        WeightUnits.KILOGRAMS
+                    ),
+                    recordWeightsHistoryOnChange = { },
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },
-                    errorStateChange = { _, _ -> },
                 )
             }
         }
@@ -197,10 +182,14 @@ class RecordWeightsExerciseCardKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordWeightsExerciseCard(
                     exercise = curlsExercise,
-                    exerciseHistory = WeightsExerciseHistoryUiState(),
+                    recordWeightsHistory = WeightsExerciseHistoryUiState().toRecordWeightsHistoryState(
+                        0,
+                        true,
+                        WeightUnits.POUNDS
+                    ),
+                    recordWeightsHistoryOnChange = { },
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },
-                    errorStateChange = { _, _ -> },
                 )
             }
         }
@@ -219,14 +208,14 @@ class RecordWeightsExerciseCardKtTest {
             CompositionLocalProvider(LocalUserPreferences provides userPreferencesUiState) {
                 RecordWeightsExerciseCard(
                     exercise = curlsExercise,
-                    exerciseHistory = WeightsExerciseHistoryUiState(
+                    recordWeightsHistory = WeightsExerciseHistoryUiState(
                         sets = 1,
                         reps = listOf(1),
                         weight = listOf(10.0)
-                    ),
+                    ).toRecordWeightsHistoryState(0, true, WeightUnits.POUNDS),
+                    recordWeightsHistoryOnChange = { },
                     selectExerciseFunction = { },
                     deselectExerciseFunction = { },
-                    errorStateChange = { _, _ -> },
                 )
             }
         }

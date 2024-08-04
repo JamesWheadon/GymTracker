@@ -18,11 +18,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,13 +31,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.data.exercise.ExerciseType
+import com.askein.gymtracker.enums.DistanceUnits
+import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.DatePickerDialog
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
-import com.askein.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.askein.gymtracker.ui.exercise.history.state.record.RecordCardioHistoryState
+import com.askein.gymtracker.ui.exercise.history.state.record.RecordWeightsHistoryState
+import com.askein.gymtracker.ui.exercise.history.state.record.toRecordCardioHistoryState
+import com.askein.gymtracker.ui.exercise.history.state.record.toRecordWeightsHistoryState
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
+import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.workout.details.WorkoutWithExercisesUiState
 import com.askein.gymtracker.ui.workout.history.WorkoutHistoryUiState
 import com.askein.gymtracker.ui.workout.history.WorkoutHistoryViewModel
@@ -100,9 +106,28 @@ fun RecordWorkoutHistoryScreen(
     onDismiss: () -> Unit,
     workoutHistory: WorkoutHistoryWithExercisesUiState = WorkoutHistoryWithExercisesUiState()
 ) {
-    val exerciseHistories: MutableList<ExerciseHistoryUiState> =
-        remember { workoutHistory.exerciseHistories.toMutableStateList() }
-    val exerciseErrors: MutableMap<Int, Boolean> = remember { mutableStateMapOf() }
+    val userPreferences = LocalUserPreferences.current
+    val exerciseHistories =
+        remember {
+            workoutHistory.exerciseHistories.map { exerciseHistory ->
+                when (exerciseHistory) {
+                    is WeightsExerciseHistoryUiState -> {
+                        exerciseHistory.exerciseId to exerciseHistory.toRecordWeightsHistoryState(
+                            exerciseId = exerciseHistory.exerciseId,
+                            recordWeight = exerciseHistory.weight.isNotEmpty(),
+                            weightUnit = userPreferences.defaultWeightUnit
+                        )
+                    }
+
+                    is CardioExerciseHistoryUiState -> {
+                        exerciseHistory.exerciseId to exerciseHistory.toRecordCardioHistoryState(
+                            exerciseId = exerciseHistory.exerciseId,
+                            distanceUnit = userPreferences.defaultDistanceUnit
+                        )
+                    }
+                }
+            }.toMutableStateMap()
+        }
     val workoutHistoryUiState = if (workoutHistory == WorkoutHistoryWithExercisesUiState()) {
         WorkoutHistoryUiState(workoutId = uiState.workoutId)
     } else {
@@ -122,58 +147,45 @@ fun RecordWorkoutHistoryScreen(
         ) {
             items(uiState.exercises) { exercise ->
                 when (exercise.type) {
-                    ExerciseType.WEIGHTS -> {
+                    ExerciseType.WEIGHTS, ExerciseType.CALISTHENICS -> {
                         RecordWeightsExerciseCard(
                             exercise = exercise,
-                            exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState,
+                            recordWeightsHistory = exerciseHistories[exercise.id] as? RecordWeightsHistoryState,
+                            recordWeightsHistoryOnChange = { newState ->
+                                exerciseHistories[exercise.id] = newState
+                            },
                             selectExerciseFunction = {
-                                exerciseHistories.add(
-                                    WeightsExerciseHistoryUiState(
-                                        exerciseId = exercise.id
+                                exerciseHistories[exercise.id] =
+                                    createEmptyRecordWeightsHistoryState(
+                                        exerciseId = exercise.id,
+                                        workoutHistoryId = workoutHistory.workoutHistoryId,
+                                        date = workoutHistory.date,
+                                        units = userPreferences.defaultWeightUnit,
+                                        recordWeight = true
                                     )
-                                )
                             },
-                            deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
-                            errorStateChange = { exerciseId, exerciseError ->
-                                exerciseErrors[exerciseId] = exerciseError
-                            },
+                            deselectExerciseFunction = { exerciseHistories.remove(exercise.id) }
                         )
                     }
 
                     ExerciseType.CARDIO -> {
                         RecordCardioExerciseCard(
                             exercise = exercise,
-                            exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? CardioExerciseHistoryUiState,
-                            selectExerciseFunction = {
-                                exerciseHistories.add(
-                                    CardioExerciseHistoryUiState(
-                                        exerciseId = exercise.id
-                                    )
-                                )
+                            recordCardioHistory = exerciseHistories[exercise.id] as? RecordCardioHistoryState,
+                            recordCardioHistoryOnChange = { newState ->
+                                exerciseHistories[exercise.id] = newState
                             },
-                            deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
-                            errorStateChange = { exerciseId, exerciseError ->
-                                exerciseErrors[exerciseId] = exerciseError
-                            }
-                        )
-                    }
+                            selectExerciseFunction = {
+                                exerciseHistories[exercise.id] =
+                                    createEmptyRecordCardioHistoryState(
+                                        exerciseId = exercise.id,
+                                        workoutHistoryId = workoutHistory.workoutHistoryId,
+                                        date = workoutHistory.date,
+                                        units = userPreferences.defaultDistanceUnit,
+                                    )
 
-                    ExerciseType.CALISTHENICS -> {
-                        RecordWeightsExerciseCard(
-                            exercise = exercise,
-                            exerciseHistory = exerciseHistories.firstOrNull { history -> history.exerciseId == exercise.id } as? WeightsExerciseHistoryUiState,
-                            selectExerciseFunction = {
-                                exerciseHistories.add(
-                                    WeightsExerciseHistoryUiState(
-                                        exerciseId = exercise.id
-                                    )
-                                )
                             },
-                            deselectExerciseFunction = { exerciseHistories.removeIf { history -> history.exerciseId == exercise.id } },
-                            errorStateChange = { exerciseId, exerciseError ->
-                                exerciseErrors[exerciseId] = exerciseError
-                            },
-                            recordWeight = false
+                            deselectExerciseFunction = { exerciseHistories.remove(exercise.id) }
                         )
                     }
                 }
@@ -186,24 +198,66 @@ fun RecordWorkoutHistoryScreen(
         Button(
             onClick = {
                 if (exerciseHistories.size > 0) {
-                    exerciseHistories.map { exercise -> exercise.date = date }
+                    val historyUiStates =
+                        exerciseHistories.values.map { exercise -> exercise.toHistoryUiState(date) }
                     workoutSaveFunction(
                         WorkoutHistoryWithExercisesUiState(
                             workoutId = workoutHistoryUiState.workoutId,
                             workoutHistoryId = workoutHistoryUiState.workoutHistoryId,
                             date = date,
-                            exerciseHistories = exerciseHistories
+                            exerciseHistories = historyUiStates
                         )
                     )
                 }
                 onDismiss()
             },
-            enabled = !(exerciseErrors.values.reduceOrNull { acc, error -> acc || error } ?: true)
+            enabled = exerciseHistories.values
+                .map { recordHistoryState -> recordHistoryState.isValid() }
+                .none { valid -> !valid }
         ) {
             Text(text = stringResource(id = R.string.save))
         }
     }
 }
+
+fun createEmptyRecordWeightsHistoryState(
+    exerciseId: Int,
+    workoutHistoryId: Int,
+    date: LocalDate,
+    units: WeightUnits,
+    recordWeight: Boolean
+) = RecordWeightsHistoryState(
+    historyId = 0,
+    exerciseId = exerciseId,
+    workoutHistoryId = workoutHistoryId,
+    dateState = date,
+    rest = null,
+    setsState = "",
+    repsState = mutableStateListOf(),
+    minutesState = mutableStateListOf(),
+    secondsState = mutableStateListOf(),
+    weightsState = mutableStateListOf(),
+    unitState = units,
+    recordReps = true,
+    recordWeight = recordWeight
+)
+
+fun createEmptyRecordCardioHistoryState(
+    exerciseId: Int,
+    workoutHistoryId: Int,
+    date: LocalDate,
+    units: DistanceUnits
+) = RecordCardioHistoryState(
+    historyId = 0,
+    exerciseId = exerciseId,
+    workoutHistoryId = workoutHistoryId,
+    dateState = date,
+    minutesState = "",
+    secondsState = "",
+    caloriesState = "",
+    distanceState = "",
+    unitState = units
+)
 
 @Preview(showBackground = true)
 @Composable

@@ -1,13 +1,13 @@
-package com.askein.gymtracker.ui.exercise.history
+package com.askein.gymtracker.ui.exercise.history.state.record
 
 import com.askein.gymtracker.enums.DistanceUnits
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.CoreMatchers
+import org.hamcrest.MatcherAssert
 import org.junit.Test
 import java.time.LocalDate
 
-class RecordCardioExerciseHistoryScreenKtTest {
+class RecordCardioHistoryStateKtTest {
 
     @Test
     fun shouldConvertCardioExerciseHistoryToRecordHistoryState() {
@@ -21,17 +21,17 @@ class RecordCardioExerciseHistoryScreenKtTest {
             calories = 50
         ).toRecordCardioHistoryState(5, DistanceUnits.KILOMETERS)
 
-        assertThat(
-            recordCardioHistoryState, equalTo(
+        MatcherAssert.assertThat(
+            recordCardioHistoryState, CoreMatchers.equalTo(
                 RecordCardioHistoryState(
                     historyId = 1,
                     exerciseId = 5,
                     workoutHistoryId = 3,
+                    dateState = LocalDate.now().minusDays(3),
                     minutesState = "10",
                     secondsState = "30",
                     caloriesState = "50",
                     distanceState = "10.0",
-                    dateState = LocalDate.now().minusDays(3),
                     unitState = DistanceUnits.KILOMETERS
                 )
             )
@@ -50,17 +50,17 @@ class RecordCardioExerciseHistoryScreenKtTest {
             calories = null
         ).toRecordCardioHistoryState(5, DistanceUnits.METERS)
 
-        assertThat(
-            recordCardioHistoryState, equalTo(
+        MatcherAssert.assertThat(
+            recordCardioHistoryState, CoreMatchers.equalTo(
                 RecordCardioHistoryState(
                     historyId = 1,
                     exerciseId = 5,
                     workoutHistoryId = 3,
+                    dateState = LocalDate.now().minusDays(3),
                     minutesState = "",
                     secondsState = "",
                     caloriesState = "",
                     distanceState = "10000.0",
-                    dateState = LocalDate.now().minusDays(3),
                     unitState = DistanceUnits.METERS
                 )
             )
@@ -79,17 +79,17 @@ class RecordCardioExerciseHistoryScreenKtTest {
             calories = 30
         ).toRecordCardioHistoryState(5, DistanceUnits.METERS)
 
-        assertThat(
-            recordCardioHistoryState, equalTo(
+        MatcherAssert.assertThat(
+            recordCardioHistoryState, CoreMatchers.equalTo(
                 RecordCardioHistoryState(
                     historyId = 1,
                     exerciseId = 5,
                     workoutHistoryId = 3,
+                    dateState = LocalDate.now().minusDays(3),
                     minutesState = "",
                     secondsState = "",
                     caloriesState = "30",
                     distanceState = "",
-                    dateState = LocalDate.now().minusDays(3),
                     unitState = DistanceUnits.METERS
                 )
             )
@@ -102,18 +102,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "",
             secondsState = "",
             caloriesState = "",
             distanceState = "",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(false))
-        assertThat(cardioHistoryState.validDistance(), equalTo(false))
-        assertThat(cardioHistoryState.validTime(), equalTo(false))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(false))
     }
 
     @Test
@@ -122,18 +122,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "10",
             secondsState = "",
             caloriesState = "",
             distanceState = "",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(false))
-        assertThat(cardioHistoryState.validDistance(), equalTo(false))
-        assertThat(cardioHistoryState.validTime(), equalTo(false))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(false))
     }
 
     @Test
@@ -142,18 +142,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "10",
             secondsState = "80",
             caloriesState = "",
             distanceState = "",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(false))
-        assertThat(cardioHistoryState.validDistance(), equalTo(false))
-        assertThat(cardioHistoryState.validTime(), equalTo(false))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(false))
     }
 
     @Test
@@ -162,18 +162,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "10",
             secondsState = "50",
             caloriesState = "",
             distanceState = "",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(false))
-        assertThat(cardioHistoryState.validDistance(), equalTo(false))
-        assertThat(cardioHistoryState.validTime(), equalTo(true))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(true))
     }
 
     @Test
@@ -182,18 +182,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "",
             secondsState = "",
             caloriesState = "",
             distanceState = "10",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(false))
-        assertThat(cardioHistoryState.validDistance(), equalTo(true))
-        assertThat(cardioHistoryState.validTime(), equalTo(false))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(true))
     }
 
     @Test
@@ -202,18 +202,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "",
             secondsState = "",
             caloriesState = "5",
             distanceState = "",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(true))
-        assertThat(cardioHistoryState.validDistance(), equalTo(false))
-        assertThat(cardioHistoryState.validTime(), equalTo(false))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(true))
     }
 
     @Test
@@ -222,18 +222,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "5",
             secondsState = "5",
             caloriesState = "5",
             distanceState = "",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(true))
-        assertThat(cardioHistoryState.validDistance(), equalTo(false))
-        assertThat(cardioHistoryState.validTime(), equalTo(true))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(true))
     }
 
     @Test
@@ -242,18 +242,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "",
             secondsState = "",
             caloriesState = "5",
             distanceState = "1",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(true))
-        assertThat(cardioHistoryState.validDistance(), equalTo(true))
-        assertThat(cardioHistoryState.validTime(), equalTo(false))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(true))
     }
 
     @Test
@@ -262,18 +262,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "1",
             secondsState = "1",
             caloriesState = "5",
             distanceState = "",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(true))
-        assertThat(cardioHistoryState.validDistance(), equalTo(false))
-        assertThat(cardioHistoryState.validTime(), equalTo(true))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(false))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(true))
     }
 
     @Test
@@ -282,18 +282,18 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "1",
             secondsState = "1",
             caloriesState = "5",
             distanceState = "1",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
         )
 
-        assertThat(cardioHistoryState.validCalories(), equalTo(true))
-        assertThat(cardioHistoryState.validDistance(), equalTo(true))
-        assertThat(cardioHistoryState.validTime(), equalTo(true))
-        assertThat(cardioHistoryState.canSaveHistory(), equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validCalories(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validDistance(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.validTime(), CoreMatchers.equalTo(true))
+        MatcherAssert.assertThat(cardioHistoryState.isValid(), CoreMatchers.equalTo(true))
     }
 
     @Test
@@ -302,16 +302,16 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "10",
             secondsState = "30",
             caloriesState = "50",
             distanceState = "10.0",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.KILOMETERS
-        ).toCardioExerciseHistoryUiState()
+        ).toHistoryUiState()
 
-        assertThat(
-            cardioExerciseHistoryUiState, equalTo(
+        MatcherAssert.assertThat(
+            cardioExerciseHistoryUiState, CoreMatchers.equalTo(
                 CardioExerciseHistoryUiState(
                     id = 1,
                     exerciseId = 5,
@@ -332,16 +332,16 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "",
             secondsState = "",
             caloriesState = "",
             distanceState = "10000.0",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
-        ).toCardioExerciseHistoryUiState()
+        ).toHistoryUiState()
 
-        assertThat(
-            cardioExerciseHistoryUiState, equalTo(
+        MatcherAssert.assertThat(
+            cardioExerciseHistoryUiState, CoreMatchers.equalTo(
                 CardioExerciseHistoryUiState(
                     id = 1,
                     exerciseId = 5,
@@ -362,16 +362,16 @@ class RecordCardioExerciseHistoryScreenKtTest {
             historyId = 1,
             exerciseId = 5,
             workoutHistoryId = 3,
+            dateState = LocalDate.now().minusDays(3),
             minutesState = "",
             secondsState = "",
             caloriesState = "30",
             distanceState = "",
-            dateState = LocalDate.now().minusDays(3),
             unitState = DistanceUnits.METERS
-        ).toCardioExerciseHistoryUiState()
+        ).toHistoryUiState()
 
-        assertThat(
-            cardioExerciseHistoryUiState, equalTo(
+        MatcherAssert.assertThat(
+            cardioExerciseHistoryUiState, CoreMatchers.equalTo(
                 CardioExerciseHistoryUiState(
                     id = 1,
                     exerciseId = 5,

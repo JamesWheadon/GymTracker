@@ -15,12 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,18 +28,20 @@ import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.FormTypes
 import com.askein.gymtracker.enums.WeightUnits
-import com.askein.gymtracker.enums.convertToKilograms
-import com.askein.gymtracker.enums.convertToWeightUnit
 import com.askein.gymtracker.ui.DatePickerDialog
 import com.askein.gymtracker.ui.DropdownBox
 import com.askein.gymtracker.ui.FormInformationField
 import com.askein.gymtracker.ui.FormTimeField
 import com.askein.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
+import com.askein.gymtracker.ui.exercise.history.state.record.RecordWeightsHistoryState
+import com.askein.gymtracker.ui.exercise.history.state.record.allSetsEqual
+import com.askein.gymtracker.ui.exercise.history.state.record.allSetsSameAsFirst
+import com.askein.gymtracker.ui.exercise.history.state.record.toRecordWeightsHistoryState
+import com.askein.gymtracker.ui.exercise.history.state.record.updateState
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
-import java.time.LocalDate
 import kotlin.math.max
 
 @Composable
@@ -56,7 +55,8 @@ fun RecordWeightsExerciseHistoryCard(
     recordWeight: Boolean = true
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
-    var recordState by remember {
+
+    var recordWeightsHistory by remember {
         mutableStateOf(
             savedHistory.toRecordWeightsHistoryState(
                 exerciseId = exerciseId,
@@ -83,111 +83,25 @@ fun RecordWeightsExerciseHistoryCard(
             Text(
                 text = cardTitle
             )
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 0.dp)
-            ) {
-                FormInformationField(
-                    label = R.string.sets,
-                    value = recordState.setsState,
-                    onChange = { sets ->
-                        recordState = recordState.copy(setsState = sets)
-                        if (sets.isNotEmpty()) {
-                            recordState.updateState()
-                        }
-                    },
-                    formType = FormTypes.INTEGER,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(0.dp)
-                )
-                if (recordWeight) {
-                    val unitsContentDescription = stringResource(id = R.string.units)
-                    DropdownBox(
-                        options = WeightUnits.values().associateWith { unit -> unit.shortForm },
-                        onChange = { unit ->
-                            recordState = recordState.copy(unitState = unit)
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(0.dp)
-                            .semantics { contentDescription = unitsContentDescription },
-                        selected = recordState.unitState
-                    )
-                }
-            }
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 0.dp)
-            ) {
-                Button(
-                    onClick = {
-                        recordState = recordState.copy(recordReps = true)
-                        recordState.updateState()
-                    },
-                    enabled = !recordState.recordReps
-                ) {
-                    Text(text = stringResource(id = R.string.reps))
-                }
-                Button(
-                    onClick = {
-                        recordState = recordState.copy(recordReps = false)
-                        recordState.updateState()
-                    },
-                    enabled = recordState.recordReps
-                ) {
-                    Text(text = stringResource(id = R.string.time))
-                }
-            }
-            val numberOfSets =
-                max(recordState.repsState.size, recordState.minutesState.size)
-            for (set in 0 until numberOfSets) {
-                if (recordState.recordReps) {
-                    RecordRepsWeightsExercise(
-                        weightsHistoryState = recordState,
-                        set = set,
-                        recordWeight = recordWeight
-                    )
-                } else {
-                    RecordTimeWeightsExercise(
-                        weightsHistoryState = recordState,
-                        set = set,
-                        recordWeight = recordWeight
-                    )
-                }
-                if (set == 0 && numberOfSets > 1) {
-                    Row(
-                        horizontalArrangement = Arrangement.Absolute.Right,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(text = stringResource(id = R.string.copy_sets))
-                        Checkbox(
-                            checked = recordState.allSetsEqual(),
-                            onCheckedChange = {
-                                recordState.allSetsSameAsFirst()
-                            }
-                        )
-                    }
-                }
-            }
-            if (savedHistory.workoutHistoryId == null) {
+            SelectsSetsAndUnits(
+                recordWeightsHistory = recordWeightsHistory,
+                recordWeightsHistoryOnChange = { newState -> recordWeightsHistory = newState }
+            )
+            RepsOrTimeSelector(
+                recordWeightsHistory = recordWeightsHistory,
+                recordWeightsHistoryOnChange = { newState -> recordWeightsHistory = newState }
+            )
+            InputSetDetails(recordWeightsHistory = recordWeightsHistory)
+            if (recordWeightsHistory.workoutHistoryId == null) {
                 DatePickerDialog(
-                    date = recordState.dateState,
+                    date = recordWeightsHistory.dateState,
                     onDateChange = { newDate ->
-                        recordState = recordState.copy(dateState = newDate)
+                        recordWeightsHistory = recordWeightsHistory.copy(dateState = newDate)
                     }
                 )
             }
             SaveWeightsExerciseHistoryButton(
-                weightsHistoryState = recordState,
+                recordWeightsHistory = recordWeightsHistory,
                 saveFunction = saveFunction,
                 onDismiss = onDismiss
             )
@@ -196,10 +110,127 @@ fun RecordWeightsExerciseHistoryCard(
 }
 
 @Composable
+fun SelectsSetsAndUnits(
+    recordWeightsHistory: RecordWeightsHistoryState,
+    recordWeightsHistoryOnChange: (RecordWeightsHistoryState) -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 0.dp)
+    ) {
+        FormInformationField(
+            label = R.string.sets,
+            value = recordWeightsHistory.setsState,
+            onChange = { sets ->
+                val tempState = recordWeightsHistory.copy(setsState = sets)
+                if (sets.isNotEmpty()) {
+                    tempState.updateState()
+                }
+                recordWeightsHistoryOnChange(tempState)
+            },
+            formType = FormTypes.INTEGER,
+            modifier = Modifier
+                .weight(1f)
+                .padding(0.dp)
+        )
+        if (recordWeightsHistory.recordWeight) {
+            val unitsContentDescription = stringResource(id = R.string.units)
+            DropdownBox(
+                options = WeightUnits.values().associateWith { unit -> unit.shortForm },
+                onChange = { unit ->
+                    recordWeightsHistoryOnChange(recordWeightsHistory.copy(unitState = unit))
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(0.dp)
+                    .semantics { contentDescription = unitsContentDescription },
+                selected = recordWeightsHistory.unitState
+            )
+        }
+    }
+}
+
+@Composable
+fun InputSetDetails(
+    recordWeightsHistory: RecordWeightsHistoryState
+) {
+    val numberOfSets =
+        max(recordWeightsHistory.repsState.size, recordWeightsHistory.minutesState.size)
+    for (set in 0 until numberOfSets) {
+        if (recordWeightsHistory.recordReps) {
+            RecordRepsWeightsExercise(
+                recordWeightsHistory = recordWeightsHistory,
+                set = set
+            )
+        } else {
+            RecordTimeWeightsExercise(
+                recordWeightsHistory = recordWeightsHistory,
+                set = set
+            )
+        }
+        if (set == 0 && numberOfSets > 1) {
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Right,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(text = stringResource(id = R.string.copy_sets))
+                Checkbox(
+                    checked = recordWeightsHistory.allSetsEqual(),
+                    onCheckedChange = { checked ->
+                        if (checked) {
+                            recordWeightsHistory.allSetsSameAsFirst()
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RepsOrTimeSelector(
+    recordWeightsHistory: RecordWeightsHistoryState,
+    recordWeightsHistoryOnChange: (RecordWeightsHistoryState) -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 0.dp)
+    ) {
+        Button(
+            onClick = {
+                val tempState = recordWeightsHistory.copy(recordReps = true)
+                tempState.updateState()
+                recordWeightsHistoryOnChange(tempState)
+            },
+            enabled = !recordWeightsHistory.recordReps
+        ) {
+            Text(text = stringResource(id = R.string.reps))
+        }
+        Button(
+            onClick = {
+                val tempState = recordWeightsHistory.copy(recordReps = false)
+                tempState.updateState()
+                recordWeightsHistoryOnChange(tempState)
+            },
+            enabled = recordWeightsHistory.recordReps
+        ) {
+            Text(text = stringResource(id = R.string.time))
+        }
+    }
+}
+
+@Composable
 fun RecordRepsWeightsExercise(
-    weightsHistoryState: RecordWeightsHistoryState,
+    recordWeightsHistory: RecordWeightsHistoryState,
     set: Int,
-    recordWeight: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -211,21 +242,21 @@ fun RecordRepsWeightsExercise(
     ) {
         FormInformationField(
             label = R.string.reps,
-            value = weightsHistoryState.repsState[set],
+            value = recordWeightsHistory.repsState[set],
             onChange = { entry ->
-                weightsHistoryState.repsState[set] = entry
+                recordWeightsHistory.repsState[set] = entry
             },
             formType = FormTypes.INTEGER,
             modifier = Modifier
                 .weight(1f)
                 .padding(0.dp)
         )
-        if (recordWeight) {
+        if (recordWeightsHistory.recordWeight) {
             FormInformationField(
                 label = R.string.weight,
-                value = weightsHistoryState.weightsState[set],
+                value = recordWeightsHistory.weightsState[set],
                 onChange = { entry ->
-                    weightsHistoryState.weightsState[set] = entry
+                    recordWeightsHistory.weightsState[set] = entry
                 },
                 formType = FormTypes.DOUBLE,
                 modifier = Modifier
@@ -238,9 +269,8 @@ fun RecordRepsWeightsExercise(
 
 @Composable
 fun RecordTimeWeightsExercise(
-    weightsHistoryState: RecordWeightsHistoryState,
+    recordWeightsHistory: RecordWeightsHistoryState,
     set: Int,
-    recordWeight: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -251,23 +281,23 @@ fun RecordTimeWeightsExercise(
             .padding(horizontal = 12.dp, vertical = 0.dp)
     ) {
         FormTimeField(
-            minutes = weightsHistoryState.minutesState[set],
-            seconds = weightsHistoryState.secondsState[set],
+            minutes = recordWeightsHistory.minutesState[set],
+            seconds = recordWeightsHistory.secondsState[set],
             minutesOnChange = { entry ->
-                weightsHistoryState.minutesState[set] = entry
+                recordWeightsHistory.minutesState[set] = entry
             },
             secondsOnChange = { entry ->
-                weightsHistoryState.secondsState[set] = entry
+                recordWeightsHistory.secondsState[set] = entry
             }
         )
     }
-    if (recordWeight) {
+    if (recordWeightsHistory.recordWeight) {
         Row {
             FormInformationField(
                 label = R.string.weight,
-                value = weightsHistoryState.weightsState[set],
+                value = recordWeightsHistory.weightsState[set],
                 onChange = { entry ->
-                    weightsHistoryState.weightsState[set] = entry
+                    recordWeightsHistory.weightsState[set] = entry
                 },
                 formType = FormTypes.DOUBLE,
                 modifier = Modifier
@@ -280,146 +310,19 @@ fun RecordTimeWeightsExercise(
 
 @Composable
 private fun SaveWeightsExerciseHistoryButton(
-    weightsHistoryState: RecordWeightsHistoryState,
+    recordWeightsHistory: RecordWeightsHistoryState,
     saveFunction: (ExerciseHistoryUiState) -> Unit,
     onDismiss: () -> Unit
 ) {
     Button(
         onClick = {
-            saveFunction(weightsHistoryState.toWeightsExerciseHistoryUiState())
+            saveFunction(recordWeightsHistory.toHistoryUiState())
             onDismiss()
         },
-        enabled = weightsHistoryState.isValid()
+        enabled = recordWeightsHistory.isValid()
     ) {
         Text(text = stringResource(id = R.string.save))
     }
-}
-
-data class RecordWeightsHistoryState(
-    val historyId: Int,
-    val exerciseId: Int,
-    val workoutHistoryId: Int?,
-    val rest: Int?,
-    val setsState: String,
-    val repsState: SnapshotStateList<String>,
-    val minutesState: SnapshotStateList<String>,
-    val secondsState: SnapshotStateList<String>,
-    val weightsState: SnapshotStateList<String>,
-    val dateState: LocalDate,
-    val unitState: WeightUnits,
-    val recordReps: Boolean,
-    val recordWeight: Boolean
-)
-
-fun RecordWeightsHistoryState.updateState() {
-    if (recordReps) {
-        minutesState.clear()
-        secondsState.clear()
-        while (repsState.size > setsState.toInt()) {
-            repsState.removeLast()
-            if (recordWeight) {
-                weightsState.removeLast()
-            }
-        }
-        while (repsState.size < setsState.toInt()) {
-            repsState.add("0")
-            if (recordWeight) {
-                weightsState.add("0.0")
-            }
-        }
-    } else {
-        repsState.clear()
-        while (minutesState.size > setsState.toInt()) {
-            minutesState.removeLast()
-            secondsState.removeLast()
-            if (recordWeight) {
-                weightsState.removeLast()
-            }
-        }
-        while (minutesState.size < setsState.toInt()) {
-            minutesState.add("0")
-            secondsState.add("0")
-            if (recordWeight) {
-                weightsState.add("0.0")
-            }
-        }
-    }
-}
-
-fun RecordWeightsHistoryState.isValid(): Boolean {
-    val validSets = setsState.isNotEmpty() && setsState != "0"
-    val validWeights = weightsState.none { it.isEmpty() }
-    val validReps = !recordReps || repsState.none { it.isEmpty() }
-    val validSeconds = recordReps ||
-            minutesState.none { it.isEmpty() } && secondsState.none { it.isEmpty() || it.toInt() >= 60 }
-    return validSets && validWeights && validReps && validSeconds
-}
-
-fun RecordWeightsHistoryState.allSetsSameAsFirst() {
-    for (j in 1 until setsState.toInt()) {
-        if (recordReps) {
-            repsState[j] = repsState[0]
-        } else {
-            minutesState[j] = minutesState[0]
-            secondsState[j] = secondsState[0]
-        }
-        if (recordWeight) {
-            weightsState[j] = weightsState[0]
-        }
-    }
-}
-
-fun RecordWeightsHistoryState.allSetsEqual(): Boolean {
-    val allWeightsSame = weightsState.isEmpty() || weightsState.distinct().size == 1
-    return if (recordReps) {
-        repsState.distinct().size == 1 && allWeightsSame
-    } else {
-        minutesState.distinct().size == 1 && secondsState.distinct().size == 1 && allWeightsSame
-    }
-}
-
-fun RecordWeightsHistoryState.toWeightsExerciseHistoryUiState() = WeightsExerciseHistoryUiState(
-    id = historyId,
-    exerciseId = exerciseId,
-    workoutHistoryId = workoutHistoryId,
-    date = dateState,
-    rest = rest,
-    sets = setsState.toInt(),
-    reps = if (recordReps) repsState.map { it.toInt() } else null,
-    seconds = if (recordReps) null else minutesState.zip(secondsState)
-        .map { it.first.toInt() * 60 + it.second.toInt() },
-    weight = weightsState.map { convertToKilograms(unitState, it.toDouble()) }
-)
-
-fun WeightsExerciseHistoryUiState.toRecordWeightsHistoryState(
-    exerciseId: Int,
-    recordWeight: Boolean,
-    weightUnit: WeightUnits
-) = RecordWeightsHistoryState(
-    historyId = id,
-    exerciseId = exerciseId,
-    workoutHistoryId = workoutHistoryId,
-    dateState = date,
-    rest = rest,
-    setsState = sets.toString(),
-    repsState = reps?.map { it.toString() }?.toMutableStateList() ?: mutableStateListOf(),
-    minutesState = seconds?.map { (it / 60).toString() }?.toMutableStateList()
-        ?: mutableStateListOf(),
-    secondsState = seconds?.map { (it % 60).toString() }?.toMutableStateList()
-        ?: mutableStateListOf(),
-    weightsState = weight.map { getWeightForUnit(it, weightUnit) }.toMutableStateList(),
-    unitState = weightUnit,
-    recordReps = seconds.isNullOrEmpty(),
-    recordWeight = recordWeight
-)
-
-private fun getWeightForUnit(
-    weight: Double,
-    weightUnit: WeightUnits
-): String = if (weightUnit == WeightUnits.KILOGRAMS) {
-    weight.toString()
-} else {
-    convertToWeightUnit(weightUnit, weight).toString()
 }
 
 @Preview(showBackground = true)

@@ -1,4 +1,4 @@
-package com.askein.gymtracker.ui.exercise.history
+package com.askein.gymtracker.ui.exercise.history.state.record
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -13,7 +13,7 @@ import org.junit.runners.Parameterized
 import java.time.LocalDate
 
 @RunWith(Enclosed::class)
-class RecordWeightsExerciseHistoryScreenKtTest {
+class RecordWeightsHistoryStateKtTest {
 
     @RunWith(value = Parameterized::class)
     class RecordWeightsHistoryStateUpdateStateTests(
@@ -35,13 +35,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = setsState,
                 repsState = repsState,
                 minutesState = minutesState,
                 secondsState = secondsState,
                 weightsState = weightsState,
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = recordReps,
                 recordWeight = recordWeights
@@ -176,13 +176,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf("1", "3"),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf(),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = false
@@ -197,13 +197,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf("1", "3"),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf("0.0", "5.1"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = true
@@ -218,13 +218,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf("6", "50"),
                 secondsState = mutableStateListOf("5", "30"),
                 weightsState = mutableStateListOf(),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = false,
                 recordWeight = false
@@ -239,13 +239,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf("6", "50"),
                 secondsState = mutableStateListOf("5", "30"),
                 weightsState = mutableStateListOf("0.0", "5.1"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = true
@@ -260,13 +260,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf(),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = true
@@ -281,13 +281,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "0",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf(),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = true
@@ -302,13 +302,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf("3", "6"),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf("1.0", ""),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = true
@@ -323,13 +323,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf("3", ""),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf("1.0", "2.0"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = true
@@ -344,13 +344,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf("4", ""),
                 secondsState = mutableStateListOf("6", "4"),
                 weightsState = mutableStateListOf("1.0", "2.0"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = false,
                 recordWeight = true
@@ -365,13 +365,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf("4", "7"),
                 secondsState = mutableStateListOf("6", ""),
                 weightsState = mutableStateListOf("1.0", "2.0"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = false,
                 recordWeight = true
@@ -386,13 +386,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf("4", "7"),
                 secondsState = mutableStateListOf("6", "60"),
                 weightsState = mutableStateListOf("1.0", "2.0"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = false,
                 recordWeight = true
@@ -409,13 +409,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf("1", "3"),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf(),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = false
@@ -432,13 +432,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf("1", "3"),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf("3.5", "1.5"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = true
@@ -456,13 +456,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf("5", "60"),
                 secondsState = mutableStateListOf("20", "45"),
                 weightsState = mutableStateListOf("3.5", "1.5"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = false,
                 recordWeight = true
@@ -483,13 +483,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf("5", "5"),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf(),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = false
@@ -504,13 +504,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf("5", "5"),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf("1.0", "1.0"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = true,
                 recordWeight = true
@@ -525,13 +525,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf("5", "5"),
                 secondsState = mutableStateListOf("5", "5"),
                 weightsState = mutableStateListOf("1.0", "1.0"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = false,
                 recordWeight = true
@@ -548,13 +548,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf("3", "4"),
                 minutesState = mutableStateListOf(),
                 secondsState = mutableStateListOf(),
                 weightsState = mutableStateListOf("10.0", "0.0"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.POUNDS,
                 recordReps = true,
                 recordWeight = false
@@ -571,7 +571,7 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 weight = listOf(4.54, 0.0)
             )
 
-            assertThat(historyState.toWeightsExerciseHistoryUiState(), equalTo(uiState))
+            assertThat(historyState.toHistoryUiState(), equalTo(uiState))
         }
 
         @Test
@@ -580,13 +580,13 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 historyId = 0,
                 exerciseId = 0,
                 workoutHistoryId = null,
+                dateState = LocalDate.now(),
                 rest = null,
                 setsState = "2",
                 repsState = mutableStateListOf(),
                 minutesState = mutableStateListOf("5", "7"),
                 secondsState = mutableStateListOf("0", "30"),
                 weightsState = mutableStateListOf("4.0", "5.0"),
-                dateState = LocalDate.now(),
                 unitState = WeightUnits.KILOGRAMS,
                 recordReps = false,
                 recordWeight = false
@@ -603,7 +603,7 @@ class RecordWeightsExerciseHistoryScreenKtTest {
                 weight = listOf(4.0, 5.0)
             )
 
-            assertThat(historyState.toWeightsExerciseHistoryUiState(), equalTo(uiState))
+            assertThat(historyState.toHistoryUiState(), equalTo(uiState))
         }
 
         @Test
