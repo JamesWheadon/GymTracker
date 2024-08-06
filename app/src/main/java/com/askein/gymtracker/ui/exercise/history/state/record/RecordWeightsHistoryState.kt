@@ -8,6 +8,7 @@ import com.askein.gymtracker.enums.convertToKilograms
 import com.askein.gymtracker.enums.convertToWeightUnit
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import java.time.LocalDate
+import java.util.Collections
 
 data class RecordWeightsHistoryState(
     override val historyId: Int,
@@ -61,36 +62,33 @@ data class RecordWeightsHistoryState(
 }
 
 fun RecordWeightsHistoryState.updateState() {
+    val numSets = setsState.toIntOrNull() ?: return
     if (recordReps) {
         minutesState.clear()
         secondsState.clear()
-        while (repsState.size > setsState.toInt()) {
-            repsState.removeLast()
-            if (recordWeight) {
-                weightsState.removeLast()
-            }
-        }
-        while (repsState.size < setsState.toInt()) {
-            repsState.add("0")
-            if (recordWeight) {
-                weightsState.add("0.0")
-            }
+        val numRepsSets = repsState.size
+        if (numRepsSets > numSets) {
+            repsState.removeRange(numSets, numRepsSets)
+        } else if (numRepsSets < numSets) {
+            repsState.addAll(Collections.nCopies(numSets - numRepsSets, "0"))
         }
     } else {
         repsState.clear()
-        while (minutesState.size > setsState.toInt()) {
-            minutesState.removeLast()
-            secondsState.removeLast()
-            if (recordWeight) {
-                weightsState.removeLast()
-            }
+        val numTimeSets = minutesState.size
+        if (numTimeSets > numSets) {
+            secondsState.removeRange(numSets, numTimeSets)
+            minutesState.removeRange(numSets, numTimeSets)
+        } else if (numTimeSets < numSets) {
+            secondsState.addAll(Collections.nCopies(numSets - numTimeSets, "0"))
+            minutesState.addAll(Collections.nCopies(numSets - numTimeSets, "0"))
         }
-        while (minutesState.size < setsState.toInt()) {
-            minutesState.add("0")
-            secondsState.add("0")
-            if (recordWeight) {
-                weightsState.add("0.0")
-            }
+    }
+    if (recordWeight) {
+        val numWeightSets = weightsState.size
+        if (numWeightSets > numSets) {
+            weightsState.removeRange(numSets, numWeightSets)
+        } else if (numWeightSets < numSets) {
+            weightsState.addAll(Collections.nCopies(numSets - numWeightSets, "0.0"))
         }
     }
 }

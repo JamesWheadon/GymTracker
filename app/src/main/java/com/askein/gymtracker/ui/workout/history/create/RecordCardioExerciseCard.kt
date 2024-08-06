@@ -100,7 +100,8 @@ private fun RecordWorkoutCardioExerciseHistory(
     if (!recordCardioHistory.isValid()) {
         Text(
             text = stringResource(id = R.string.cardio_error),
-            color = MaterialTheme.colorScheme.error
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 0.dp)
         )
     }
 }

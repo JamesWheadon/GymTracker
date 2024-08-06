@@ -3,6 +3,7 @@ package com.askein.gymtracker.ui.exercise.history
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -115,7 +116,7 @@ fun SelectsSetsAndUnits(
     recordWeightsHistoryOnChange: (RecordWeightsHistoryState) -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top,
         modifier = Modifier
             .fillMaxWidth()
@@ -134,7 +135,7 @@ fun SelectsSetsAndUnits(
             formType = FormTypes.INTEGER,
             modifier = Modifier
                 .weight(1f)
-                .padding(0.dp)
+                .fillMaxHeight()
         )
         if (recordWeightsHistory.recordWeight) {
             val unitsContentDescription = stringResource(id = R.string.units)
@@ -145,10 +146,45 @@ fun SelectsSetsAndUnits(
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(0.dp)
+                    .fillMaxHeight()
                     .semantics { contentDescription = unitsContentDescription },
                 selected = recordWeightsHistory.unitState
             )
+        }
+    }
+}
+
+@Composable
+fun RepsOrTimeSelector(
+    recordWeightsHistory: RecordWeightsHistoryState,
+    recordWeightsHistoryOnChange: (RecordWeightsHistoryState) -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 0.dp)
+    ) {
+        Button(
+            onClick = {
+                val tempState = recordWeightsHistory.copy(recordReps = true)
+                tempState.updateState()
+                recordWeightsHistoryOnChange(tempState)
+            },
+            enabled = !recordWeightsHistory.recordReps
+        ) {
+            Text(text = stringResource(id = R.string.reps))
+        }
+        Button(
+            onClick = {
+                val tempState = recordWeightsHistory.copy(recordReps = false)
+                tempState.updateState()
+                recordWeightsHistoryOnChange(tempState)
+            },
+            enabled = recordWeightsHistory.recordReps
+        ) {
+            Text(text = stringResource(id = R.string.time))
         }
     }
 }
@@ -193,48 +229,13 @@ fun InputSetDetails(
 }
 
 @Composable
-fun RepsOrTimeSelector(
-    recordWeightsHistory: RecordWeightsHistoryState,
-    recordWeightsHistoryOnChange: (RecordWeightsHistoryState) -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.Top,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 0.dp)
-    ) {
-        Button(
-            onClick = {
-                val tempState = recordWeightsHistory.copy(recordReps = true)
-                tempState.updateState()
-                recordWeightsHistoryOnChange(tempState)
-            },
-            enabled = !recordWeightsHistory.recordReps
-        ) {
-            Text(text = stringResource(id = R.string.reps))
-        }
-        Button(
-            onClick = {
-                val tempState = recordWeightsHistory.copy(recordReps = false)
-                tempState.updateState()
-                recordWeightsHistoryOnChange(tempState)
-            },
-            enabled = recordWeightsHistory.recordReps
-        ) {
-            Text(text = stringResource(id = R.string.time))
-        }
-    }
-}
-
-@Composable
 fun RecordRepsWeightsExercise(
     recordWeightsHistory: RecordWeightsHistoryState,
     set: Int,
     modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top,
         modifier = modifier
             .fillMaxWidth()
@@ -249,7 +250,6 @@ fun RecordRepsWeightsExercise(
             formType = FormTypes.INTEGER,
             modifier = Modifier
                 .weight(1f)
-                .padding(0.dp)
         )
         if (recordWeightsHistory.recordWeight) {
             FormInformationField(
@@ -261,7 +261,6 @@ fun RecordRepsWeightsExercise(
                 formType = FormTypes.DOUBLE,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(0.dp)
             )
         }
     }
@@ -292,19 +291,16 @@ fun RecordTimeWeightsExercise(
         )
     }
     if (recordWeightsHistory.recordWeight) {
-        Row {
-            FormInformationField(
-                label = R.string.weight,
-                value = recordWeightsHistory.weightsState[set],
-                onChange = { entry ->
-                    recordWeightsHistory.weightsState[set] = entry
-                },
-                formType = FormTypes.DOUBLE,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(0.dp)
-            )
-        }
+        FormInformationField(
+            label = R.string.weight,
+            value = recordWeightsHistory.weightsState[set],
+            onChange = { entry ->
+                recordWeightsHistory.weightsState[set] = entry
+            },
+            formType = FormTypes.DOUBLE,
+            modifier = Modifier
+                .padding(horizontal = 12.dp, vertical = 0.dp)
+        )
     }
 }
 

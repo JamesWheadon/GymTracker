@@ -203,7 +203,6 @@ fun FormTimeField(
             formType = FormTypes.INTEGER,
             modifier = Modifier
                 .weight(1f)
-                .padding(0.dp)
         )
         FormInformationField(
             label = R.string.seconds,
@@ -214,7 +213,6 @@ fun FormTimeField(
             errorMessage = R.string.seconds_error,
             modifier = Modifier
                 .weight(1f)
-                .padding(0.dp)
         )
     }
 }
