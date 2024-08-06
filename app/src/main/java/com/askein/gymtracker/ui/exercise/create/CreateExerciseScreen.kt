@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -213,7 +214,7 @@ private fun SaveExerciseFormButton(
                 id = exerciseInfo.exerciseId,
                 type = exerciseInfo.exerciseType,
                 name = exerciseInfo.name,
-                muscleGroup = exerciseInfo.muscleGroup,
+                muscleGroup = exerciseInfo.muscleGroup.text,
                 equipment = exerciseInfo.equipment
             )
         )
@@ -238,7 +239,7 @@ data class ExerciseInfo(
     val exerciseType: ExerciseType,
     val name: String,
     val equipment: String,
-    val muscleGroup: String
+    val muscleGroup: TextFieldValue
 )
 
 fun ExerciseUiState.toExerciseInfo(): ExerciseInfo = ExerciseInfo(
@@ -246,5 +247,5 @@ fun ExerciseUiState.toExerciseInfo(): ExerciseInfo = ExerciseInfo(
     exerciseType = type,
     name = name,
     equipment = equipment,
-    muscleGroup = muscleGroup
+    muscleGroup = TextFieldValue(muscleGroup)
 )

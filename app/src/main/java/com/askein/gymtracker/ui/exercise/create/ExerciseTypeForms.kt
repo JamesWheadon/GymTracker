@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.FormTypes
@@ -115,8 +114,8 @@ private fun ExerciseMuscleGroupFormField(
 ) {
     FormInformationFieldWithSuggestions(
         label = R.string.muscle_group,
-        value = TextFieldValue(exerciseInfo.muscleGroup),
-        onChange = { newMuscle -> exerciseInfoOnChange(exerciseInfo.copy(muscleGroup = newMuscle.text)) },
+        value = exerciseInfo.muscleGroup,
+        onChange = { newMuscle -> exerciseInfoOnChange(exerciseInfo.copy(muscleGroup = newMuscle)) },
         suggestions = savedMuscleGroups
     )
 }

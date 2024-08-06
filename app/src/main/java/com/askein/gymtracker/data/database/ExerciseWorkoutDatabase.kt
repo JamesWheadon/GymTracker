@@ -70,29 +70,9 @@ abstract class ExerciseWorkoutDatabase : RoomDatabase() {
 
 val MIGRATION_6_7 = object : Migration(6, 7) {
     override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL(
-            """
-            "CREATE TABLE IF NOT EXISTS `weights_exercise_history_new`(
-            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-            `exerciseId` INTEGER NOT NULL,
-            `weight` TEXT NOT NULL,
-            `sets` INTEGER NOT NULL,
-            `reps` TEXT,
-            `date` INTEGER NOT NULL,
-            `rest` INTEGER,
-            `seconds` TEXT,
-            `workoutHistoryId` INTEGER
-            )"
-        """.trimIndent()
-        )
+        database.execSQL("CREATE TABLE IF NOT EXISTS `weights_exercise_history_new`(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,`exerciseId` INTEGER NOT NULL,`weight` TEXT NOT NULL,`sets` INTEGER NOT NULL,`reps` TEXT,`date` INTEGER NOT NULL,`rest` INTEGER,`seconds` TEXT,`workoutHistoryId` INTEGER)")
 
-        database.execSQL(
-            """
-            INSERT INTO `weights_exercise_history_new` (`id`, `exerciseId`, `weight`, `sets`, `reps`, `date`, `rest`, `workoutHistoryId`)
-            SELECT `id`, `exerciseId`, `weight`, `sets`, `reps`, `date`, `rest`, `workoutHistoryId`
-            FROM `weights_exercise_history`
-        """.trimIndent()
-        )
+        database.execSQL("INSERT INTO `weights_exercise_history_new` (`id`, `exerciseId`, `weight`, `sets`, `reps`, `date`, `rest`, `workoutHistoryId`) SELECT `id`, `exerciseId`, `weight`, `sets`, `reps`, `date`, `rest`, `workoutHistoryId` FROM `weights_exercise_history`")
 
         database.execSQL("DROP TABLE `weights_exercise_history`")
 

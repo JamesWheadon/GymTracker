@@ -223,7 +223,7 @@ private fun SelectAndOrderWorkoutExercises(
         if (!scrollState.isScrollInProgress) {
             val topScrollBound = abs(columnBoundaries.top) + scrollBoundary
             val bottomScrollBound =
-                columnBoundaries.bottom - scrollBoundary - (scrollState.maxValue - scrollState.value) - draggableCards[currentDraggedExercise?.name]!!.height
+                columnBoundaries.bottom - scrollBoundary - (scrollState.maxValue - scrollState.value) - (draggableCards[currentDraggedExercise?.name]?.height ?: 0)
             val scrollAmount = if (dragYOffset < topScrollBound) {
                 maxOf(-scrollBoundary, -scrollState.value.toFloat())
             } else if (dragYOffset > bottomScrollBound) {
@@ -324,7 +324,7 @@ fun DraggableExercisesList(
                 onDragStart = onDragStart,
                 dragOffsetOnChange = dragOffsetOnChange,
                 onDragFinished = onDragFinished,
-                currentlyDragging = true,
+                currentlyDragging = exercise == currentDraggedExercise,
             )
         }
     }
