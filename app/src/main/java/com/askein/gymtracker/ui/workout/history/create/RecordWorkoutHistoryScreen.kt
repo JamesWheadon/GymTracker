@@ -232,7 +232,7 @@ fun createEmptyRecordWeightsHistoryState(
     workoutHistoryId = workoutHistoryId,
     dateState = date,
     rest = null,
-    setsState = "",
+    setsState = "0",
     repsState = mutableStateListOf(),
     minutesState = mutableStateListOf(),
     secondsState = mutableStateListOf(),

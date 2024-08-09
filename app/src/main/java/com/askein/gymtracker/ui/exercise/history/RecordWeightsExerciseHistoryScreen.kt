@@ -299,6 +299,7 @@ fun RecordTimeWeightsExercise(
             },
             formType = FormTypes.DOUBLE,
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 0.dp)
         )
     }

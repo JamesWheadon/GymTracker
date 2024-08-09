@@ -6,6 +6,8 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import com.askein.gymtracker.data.exercise.ExerciseType
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -22,7 +24,7 @@ class ExerciseTypeFormsKtTest {
         exerciseType = ExerciseType.WEIGHTS,
         name = "",
         equipment = "",
-        muscleGroup = ""
+        muscleGroup = TextFieldValue("")
     )
 
     private val populatedExerciseInfo = ExerciseInfo(
@@ -30,7 +32,7 @@ class ExerciseTypeFormsKtTest {
         exerciseType = ExerciseType.WEIGHTS,
         name = "Name",
         equipment = "Kit",
-        muscleGroup = "Muscle"
+        muscleGroup = TextFieldValue("Muscle")
     )
 
     private val nameField = rule.onNode(hasContentDescription("Exercise Name"))
@@ -85,7 +87,7 @@ class ExerciseTypeFormsKtTest {
 
         nameField.assertTextContains(populatedExerciseInfo.name)
         equipmentField.assertTextContains(populatedExerciseInfo.equipment)
-        muscleField.assertTextContains(populatedExerciseInfo.muscleGroup)
+        muscleField.assertTextContains(populatedExerciseInfo.muscleGroup.text)
     }
 
     @Test
@@ -133,7 +135,7 @@ class ExerciseTypeFormsKtTest {
         }
 
         muscleField.performTextInput("Muscle")
-        assertThat(updateExerciseInfo, equalTo(emptyExerciseInfo.copy(muscleGroup = "Muscle")))
+        assertThat(updateExerciseInfo, equalTo(emptyExerciseInfo.copy(muscleGroup = TextFieldValue("Muscle", TextRange(6, 6)))))
     }
 
 
@@ -242,7 +244,7 @@ class ExerciseTypeFormsKtTest {
         }
 
         nameField.assertTextContains(populatedExerciseInfo.name)
-        muscleField.assertTextContains(populatedExerciseInfo.muscleGroup)
+        muscleField.assertTextContains(populatedExerciseInfo.muscleGroup.text)
     }
 
     @Test
@@ -274,6 +276,6 @@ class ExerciseTypeFormsKtTest {
         }
 
         muscleField.performTextInput("Muscle")
-        assertThat(updateExerciseInfo, equalTo(emptyExerciseInfo.copy(muscleGroup = "Muscle")))
+        assertThat(updateExerciseInfo, equalTo(emptyExerciseInfo.copy(muscleGroup = TextFieldValue("Muscle", TextRange(6, 6)))))
     }
 }
