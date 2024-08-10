@@ -67,15 +67,15 @@ fun LiveRecordWeightsExercise(
             if (!recording) {
                 val defaultWeightUnit = LocalUserPreferences.current.defaultWeightUnit
                 LiveRecordWeightsExerciseInfo(
-                    onStart = { rest, recordingType ->
+                    onStart = { rest, recordingReps ->
+                        recordReps = recordingReps
                         viewModel.setExerciseData(
                             exerciseId = uiState.id,
                             rest = rest,
-                            recordReps = recordReps
+                            recordReps = recordingReps
                         )
                         viewModel.setUnitState(defaultWeightUnit)
                         recording = true
-                        recordReps = recordingType
                     },
                     onCancel = { exerciseCancel() },
                 )
@@ -213,7 +213,7 @@ fun LiveRecordExerciseSetsAndTimer(
             }
             resting = !timerFinishedState || showSetInfoForm
             if (showSetInfoForm) {
-                AddSetRepsAndWeight(
+                AddSetInfo(
                     exerciseData = exerciseData,
                     recordReps = recordReps,
                     recordWeight = recordWeight,
@@ -240,7 +240,7 @@ fun LiveRecordExerciseSetsAndTimer(
 }
 
 @Composable
-fun AddSetRepsAndWeight(
+fun AddSetInfo(
     exerciseData: WeightsExerciseHistoryUiState,
     recordReps: Boolean,
     recordWeight: Boolean,
