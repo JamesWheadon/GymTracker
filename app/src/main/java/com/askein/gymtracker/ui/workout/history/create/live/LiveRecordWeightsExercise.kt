@@ -3,10 +3,8 @@ package com.askein.gymtracker.ui.workout.history.create.live
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
@@ -39,7 +36,6 @@ import com.askein.gymtracker.ui.FormInformationField
 import com.askein.gymtracker.ui.FormTimeField
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 
 @Composable
@@ -135,37 +131,45 @@ fun LiveRecordWeightsExerciseInfo(
             )
         }
         Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 0.dp)
         ) {
-            Button(onClick = { recordReps = true }, enabled = !recordReps) {
-                Text(text = stringResource(id = R.string.reps))
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = { recordReps = false }, enabled = recordReps) {
-                Text(text = stringResource(id = R.string.time))
-            }
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(onClick = {
-                onStart(restState.toInt(), recordReps)
-            }) {
-                Text(text = stringResource(id = R.string.start))
-            }
-            Button(
-                onClick = {
-                    onCancel()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
             ) {
-                Text(text = stringResource(id = R.string.cancel))
+                Button(
+                    onClick = { recordReps = true },
+                    enabled = !recordReps
+                ) {
+                    Text(text = stringResource(id = R.string.reps))
+                }
+                Button(onClick = {
+                    onStart(restState.toInt(), recordReps)
+                }) {
+                    Text(text = stringResource(id = R.string.start))
+                }
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
+            ) {
+                Button(
+                    onClick = { recordReps = false },
+                    enabled = recordReps
+                ) {
+                    Text(text = stringResource(id = R.string.time))
+                }
+                Button(
+                    onClick = {
+                        onCancel()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
             }
         }
     }
@@ -325,7 +329,8 @@ fun AddSetRepsAndWeight(
                 )
             }
         }
-        val saveEnabled = (recordReps && repsState != "") || (!recordReps && minutesState != "" && secondsState != "") && (weightsState != "" || !recordWeight)
+        val saveEnabled =
+            (recordReps && repsState != "") || (!recordReps && minutesState != "" && secondsState != "") && (weightsState != "" || !recordWeight)
         Button(enabled = saveEnabled, onClick = {
             val repsOrSeconds = if (recordReps) {
                 repsState.toInt()
@@ -355,17 +360,5 @@ fun Timer(
     )
     Button(enabled = buttonEnabled, onClick = finished) {
         Text(text = stringResource(id = R.string.stop))
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LiveRecordWeightsExercisePreview() {
-    GymTrackerTheme(darkTheme = false) {
-        LiveRecordWeightsExercise(
-            uiState = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells"),
-            exerciseComplete = { },
-            exerciseCancel = { }
-        )
     }
 }
