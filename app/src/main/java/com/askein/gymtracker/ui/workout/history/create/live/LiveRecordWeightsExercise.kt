@@ -233,7 +233,10 @@ fun LiveRecordExerciseSetsAndTimer(
                 Text(text = stringResource(id = R.string.finish_set))
             }
         }
-        Button(onClick = { exerciseFinished() }) {
+        Button(
+            enabled = !showSetInfoForm,
+            onClick = { exerciseFinished() }
+        ) {
             Text(text = stringResource(id = R.string.finish_exercise))
         }
     }
@@ -267,6 +270,7 @@ fun AddSetInfo(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 0.dp)
     ) {
         if (recordReps) {
             Row(
@@ -274,7 +278,6 @@ fun AddSetInfo(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 0.dp)
             ) {
                 FormInformationField(
                     label = R.string.reps,
@@ -285,7 +288,6 @@ fun AddSetInfo(
                     formType = FormTypes.INTEGER,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(0.dp)
                 )
             }
         } else {
@@ -302,7 +304,6 @@ fun AddSetInfo(
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 0.dp)
             ) {
                 FormInformationField(
                     label = R.string.weight,
@@ -313,7 +314,6 @@ fun AddSetInfo(
                     formType = FormTypes.DOUBLE,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(0.dp)
                 )
                 val unitsContentDescription = stringResource(id = R.string.units)
                 DropdownBox(
@@ -323,7 +323,6 @@ fun AddSetInfo(
                     },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(0.dp)
                         .semantics { contentDescription = unitsContentDescription },
                     selected = unitState
                 )
