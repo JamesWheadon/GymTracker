@@ -92,12 +92,12 @@ class CardioExerciseDetailsScreenKtTest {
 
     private val cardioIcon = rule.onNode(hasContentDescription("cardio icon"))
     private val bestExerciseIcon = rule.onAllNodes(hasContentDescription("best exercise icon"))
-    private val bestDistance = rule.onNode(hasText("20.00 km"))
+    private val bestDistance = rule.onNode(hasText("20.0 km"))
     private val bestSecondsTime = rule.onNode(hasText("30 s"))
     private val bestMinutesTime = rule.onNode(hasText("20:00"))
     private val bestHoursTime = rule.onNode(hasText("1:30:00"))
     private val bestCalories = rule.onNode(hasText("450 kcal"))
-    private val bestDistanceMiles = rule.onNode(hasText("12.43 mi"))
+    private val bestDistanceMiles = rule.onNode(hasText("12.4 mi"))
     private val quickestHoursTime = rule.onNode(hasText("10:00"))
 
     @Test

@@ -58,12 +58,12 @@ class ExerciseDetailsCalendarKtTest {
             }"
         )
     )
-    private val set1Kilograms = rule.onNode(hasText("Set 1: 2 Reps of 13.00 kg"))
-    private val set1Pounds = rule.onNode(hasText("Set 1: 2 Reps of 28.66 lb"))
+    private val set1Kilograms = rule.onNode(hasText("Set 1: 2 Reps of 13.0 kg"))
+    private val set1Pounds = rule.onNode(hasText("Set 1: 2 Reps of 28.7 lb"))
     private val rest = rule.onNode(hasText("Rest time: 1 s"))
     private val time = rule.onNode(hasText("Time: 10:00"))
-    private val distance = rule.onNode(hasText("Distance: 100.00 km"))
-    private val distanceMeters = rule.onNode(hasText("Distance: 100000.00 m"))
+    private val distance = rule.onNode(hasText("Distance: 100.0 km"))
+    private val distanceMeters = rule.onNode(hasText("Distance: 100000.0 m"))
     private val calories = rule.onNode(hasText("Calories: 2500 kcal"))
     private val deleteButton = rule.onNode(hasContentDescription("Delete history"))
 

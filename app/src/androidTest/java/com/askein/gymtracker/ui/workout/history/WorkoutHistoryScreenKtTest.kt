@@ -48,7 +48,7 @@ class WorkoutHistoryScreenKtTest {
     private val curlsExerciseName = rule.onNode(hasText("Curls"))
     private val dipsExerciseName = rule.onNode(hasText("Dips"))
     private val benchExerciseName = rule.onNode(hasText("Bench"))
-    private val setInfo = rule.onNode(hasText("Set 1: 1 Rep of 1.00 kg"))
+    private val setInfo = rule.onNode(hasText("Set 1: 1 Rep of 1.0 kg"))
     private val rest = rule.onNode(hasText("Rest time: 1 s"))
     private val deleteHistoryButton = rule.onNode(hasContentDescription("Delete history"))
     private val editButton = rule.onNode(hasContentDescription("edit"))

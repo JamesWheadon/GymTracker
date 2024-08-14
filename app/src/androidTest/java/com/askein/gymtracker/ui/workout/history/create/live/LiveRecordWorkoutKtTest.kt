@@ -178,6 +178,7 @@ class LiveRecordWorkoutKtTest {
         repsField.performTextInput("5")
         weightField.performClick()
         weightField.performTextInput("13.0")
+        save.performClick()
 
         finishExercise.performClick()
 
@@ -309,6 +310,9 @@ class LiveRecordWorkoutKtTest {
         restField.performTextInput("15")
         rule.onNode(hasText("Start") and isEnabled()).performClick()
 
+        finishSet.performClick()
+        repsField.performTextInput("10")
+        save.performClick()
         finishExercise.performClick()
 
         startButtons[1].performClick()
