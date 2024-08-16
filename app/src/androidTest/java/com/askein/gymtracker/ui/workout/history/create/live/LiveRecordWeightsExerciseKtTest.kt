@@ -77,23 +77,24 @@ class LiveRecordWeightsExerciseKtTest {
         rule.setContent {
             LiveRecordExerciseSetsAndTimer(
                 exerciseData = WeightsExerciseHistoryUiState(rest = 15),
+                recordReps = true,
                 timerState = TimerState(),
                 timerFinishedState = false,
+                recordWeight = false,
+                unitState = WeightUnits.KILOGRAMS,
                 timerStart = { },
+                addSetInfo = {_, _ -> },
                 finishSet = { },
                 resetTimer = { },
-                exerciseFinished = { },
                 setUnitState = { },
-                addSetInfo = {_, _ -> },
-                recordWeight = false,
-                recordReps = true,
-                unitState = WeightUnits.KILOGRAMS
+                exerciseFinished = { },
+                onCancel = { }
             )
         }
 
         rule.onNode(hasText("Sets Completed: 0")).assertExists()
         finishSetButton.assertExists()
-        finishExerciseButton.assertExists()
+        cancelButton.assertExists()
     }
 
     @Test
@@ -102,23 +103,24 @@ class LiveRecordWeightsExerciseKtTest {
             var sets by remember { mutableIntStateOf(0) }
             LiveRecordExerciseSetsAndTimer(
                 exerciseData = WeightsExerciseHistoryUiState(rest = 15, sets = sets),
+                recordReps = true,
                 timerState = TimerState(currentTime = 15),
                 timerFinishedState = false,
+                recordWeight = false,
+                unitState = WeightUnits.KILOGRAMS,
                 timerStart = { },
+                addSetInfo = {_, _ -> },
                 finishSet = { sets += 1 },
                 resetTimer = { },
-                exerciseFinished = { },
                 setUnitState = { },
-                addSetInfo = {_, _ -> },
-                recordWeight = false,
-                recordReps = true,
-                unitState = WeightUnits.KILOGRAMS
+                exerciseFinished = { },
+                onCancel = { }
             )
         }
 
         rule.onNode(hasText("Sets Completed: 0")).assertExists()
         finishSetButton.assertExists()
-        finishExerciseButton.assertExists()
+        cancelButton.assertExists()
 
         finishSetButton.performClick()
 
@@ -126,6 +128,11 @@ class LiveRecordWeightsExerciseKtTest {
         rule.onNode(hasText("Sets Completed: 0")).assertDoesNotExist()
         finishSetButton.assertDoesNotExist()
         rule.onNode(hasText("00:15")).assertExists()
+        cancelButton.assertExists()
+
+        repsField.performTextInput("1")
+        saveButton.performClick()
+        finishExerciseButton.assertExists()
     }
 
     @Test
@@ -134,23 +141,24 @@ class LiveRecordWeightsExerciseKtTest {
             var sets by remember { mutableIntStateOf(0) }
             LiveRecordExerciseSetsAndTimer(
                 exerciseData = WeightsExerciseHistoryUiState(rest = 15, sets = sets),
+                recordReps = true,
                 timerState = TimerState(),
                 timerFinishedState = false,
+                recordWeight = false,
+                unitState = WeightUnits.KILOGRAMS,
                 timerStart = { },
+                addSetInfo = {_, _ -> },
                 finishSet = { sets += 1 },
                 resetTimer = { },
-                exerciseFinished = { },
                 setUnitState = { },
-                addSetInfo = {_, _ -> },
-                recordWeight = false,
-                recordReps = true,
-                unitState = WeightUnits.KILOGRAMS
+                exerciseFinished = { },
+                onCancel = { }
             )
         }
 
         rule.onNode(hasText("Sets Completed: 0")).assertExists()
         finishSetButton.assertExists()
-        finishExerciseButton.assertExists()
+        cancelButton.assertExists()
 
         finishSetButton.performClick()
         repsField.performTextInput("1")

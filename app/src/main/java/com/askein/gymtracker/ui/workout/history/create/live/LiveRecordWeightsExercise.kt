@@ -77,7 +77,7 @@ fun LiveRecordWeightsExercise(
                         viewModel.setUnitState(defaultWeightUnit)
                         recording = true
                     },
-                    onCancel = { exerciseCancel() },
+                    onCancel = exerciseCancel,
                 )
             } else {
                 val exerciseData = viewModel.exerciseState.collectAsState().value
@@ -96,7 +96,8 @@ fun LiveRecordWeightsExercise(
                     finishSet = { viewModel.finishSet() },
                     resetTimer = { viewModel.reset() },
                     setUnitState = { unit -> viewModel.setUnitState(unit) },
-                    exerciseFinished = { exerciseComplete(exerciseData) }
+                    exerciseFinished = { exerciseComplete(exerciseData) },
+                    onCancel = exerciseCancel
                 )
             }
         }
@@ -163,9 +164,7 @@ fun LiveRecordWeightsExerciseInfo(
                     Text(text = stringResource(id = R.string.time))
                 }
                 Button(
-                    onClick = {
-                        onCancel()
-                    },
+                    onClick = onCancel,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
                     Text(text = stringResource(id = R.string.cancel))
@@ -188,14 +187,15 @@ fun LiveRecordExerciseSetsAndTimer(
     finishSet: () -> Unit,
     resetTimer: () -> Unit,
     setUnitState: (WeightUnits) -> Unit,
-    exerciseFinished: () -> Unit
+    exerciseFinished: () -> Unit,
+    onCancel: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         var resting by rememberSaveable { mutableStateOf(false) }
-        var showSetInfoForm by rememberSaveable { mutableStateOf(true) }
+        var showSetInfoForm by rememberSaveable { mutableStateOf(false) }
         Text(text = stringResource(id = R.string.sets_completed, exerciseData.sets))
         if (resting) {
             LaunchedEffect(Unit) {
@@ -233,11 +233,20 @@ fun LiveRecordExerciseSetsAndTimer(
                 Text(text = stringResource(id = R.string.finish_set))
             }
         }
-        Button(
-            enabled = !showSetInfoForm,
-            onClick = { exerciseFinished() }
-        ) {
-            Text(text = stringResource(id = R.string.finish_exercise))
+        if (exerciseData.sets == 0 || (exerciseData.sets == 1 && showSetInfoForm)) {
+            Button(
+                onClick = onCancel,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(text = stringResource(id = R.string.cancel))
+            }
+        } else {
+            Button(
+                enabled = !showSetInfoForm,
+                onClick = exerciseFinished
+            ) {
+                Text(text = stringResource(id = R.string.finish_exercise))
+            }
         }
     }
 }
