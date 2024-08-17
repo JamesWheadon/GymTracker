@@ -338,7 +338,7 @@ fun AddSetInfo(
             }
         }
         val saveEnabled =
-            (recordReps && repsState != "") || (!recordReps && minutesState != "" && secondsState != "") && (weightsState != "" || !recordWeight)
+            (recordReps && repsState != "" && repsState != "0") || (!recordReps && minutesState != "" && secondsState != "" && (minutesState != "0" || secondsState != "0")) && (weightsState != "" || !recordWeight)
         Button(enabled = saveEnabled, onClick = {
             val repsOrSeconds = if (recordReps) {
                 repsState.toInt()

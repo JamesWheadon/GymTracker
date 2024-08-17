@@ -568,7 +568,7 @@ class RecordWeightsHistoryStateKtTest {
                 sets = 2,
                 reps = listOf(3, 4),
                 seconds = null,
-                weight = listOf(4.54, 0.0)
+                weight = listOf(4.5, 0.0)
             )
 
             assertThat(historyState.toHistoryUiState(), equalTo(uiState))
@@ -617,14 +617,14 @@ class RecordWeightsHistoryStateKtTest {
                 sets = 2,
                 reps = listOf(3, 4),
                 seconds = listOf(),
-                weight = listOf(4.54, 0.0)
+                weight = listOf(4.5, 0.0)
             )
 
             val actual = uiState.toRecordWeightsHistoryState(0, false, WeightUnits.POUNDS)
             assertThat(actual.repsState.toList(), equalTo(listOf("3", "4")))
             assertThat(actual.minutesState.toList(), equalTo(listOf()))
             assertThat(actual.secondsState.toList(), equalTo(listOf()))
-            assertThat(actual.weightsState.toList(), equalTo(listOf("10.01", "0.0")))
+            assertThat(actual.weightsState.toList(), equalTo(listOf("9.9", "0.0")))
         }
 
         @Test

@@ -250,6 +250,6 @@ class RecordWeightsExerciseHistoryScreenKtTest {
             }
         }
 
-        rule.onNode(hasText("22.05")).assertExists()
+        rule.onNode(hasText("22.0")).assertExists()
     }
 }

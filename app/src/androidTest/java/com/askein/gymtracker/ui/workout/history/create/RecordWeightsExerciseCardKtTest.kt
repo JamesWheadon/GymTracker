@@ -222,7 +222,7 @@ class RecordWeightsExerciseCardKtTest {
 
         curlsCheckbox.performClick()
 
-        rule.onNode(hasText("22.05")).assertExists()
+        rule.onNode(hasText("22.0")).assertExists()
     }
 
     private fun assertTextDoesNotContain(

@@ -160,7 +160,7 @@ class GraphDataPointsKtTest {
         )
         assertThat(
             result.map { it.second },
-            equalTo(listOf(28.66, 26.46, 8.82, 22.05))
+            equalTo(listOf(28.7, 26.5, 8.8, 22.0))
         )
     }
 
@@ -196,7 +196,7 @@ class GraphDataPointsKtTest {
         )
         assertThat(
             result.map { it.second },
-            equalTo(listOf(57.32, 158.76))
+            equalTo(listOf(57.3, 158.7))
         )
     }
 
@@ -232,7 +232,7 @@ class GraphDataPointsKtTest {
         )
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(3.11, 2.49)))
+        assertThat(result.map { it.second }, equalTo(listOf(3.1, 2.5)))
     }
 
     @Test

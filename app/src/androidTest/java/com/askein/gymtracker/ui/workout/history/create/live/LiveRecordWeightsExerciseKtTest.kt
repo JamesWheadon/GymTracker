@@ -165,9 +165,11 @@ class LiveRecordWeightsExerciseKtTest {
         saveButton.performClick()
         timerStopButton.performClick()
         finishSetButton.performClick()
+        repsField.performTextInput("1")
         saveButton.performClick()
         timerStopButton.performClick()
         finishSetButton.performClick()
+        repsField.performTextInput("1")
         saveButton.performClick()
         finishExerciseButton.performClick()
 

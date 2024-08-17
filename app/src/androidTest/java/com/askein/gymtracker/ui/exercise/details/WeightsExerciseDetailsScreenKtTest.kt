@@ -77,7 +77,7 @@ class WeightsExerciseDetailsScreenKtTest {
     private val bestExerciseMostWeight = rule.onNode(hasText("26.5 lb for 5 reps"))
     private val recentExerciseIcon = rule.onNode(hasContentDescription("recent exercise icon"))
     private val recentExercise = rule.onNode(hasText("10.0 kg for 5 reps"))
-    private val recentExercisePounds = rule.onNode(hasText("22.1 lb for 5 reps"))
+    private val recentExercisePounds = rule.onNode(hasText("22.0 lb for 5 reps"))
 
 
     @Test

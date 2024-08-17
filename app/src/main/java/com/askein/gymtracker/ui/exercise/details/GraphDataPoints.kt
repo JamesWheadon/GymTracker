@@ -66,11 +66,12 @@ fun calisthenicsAndWeightsGraphDataPoints(
                 } else {
                     Pair(
                         history.date,
-                        history.weight
-                            .map {
-                                convertToWeightUnit(weightUnit, it)
-                            }.zip(history.reps!!)
-                            .sumOf { it.first * it.second }
+                        convertToWeightUnit(
+                            weightUnit,
+                            history.weight
+                                .zip(history.reps!!)
+                                .sumOf { it.first * it.second }
+                        )
                     )
                 }
             }

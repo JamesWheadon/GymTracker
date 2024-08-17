@@ -9,9 +9,9 @@ enum class WeightUnits(@StringRes val displayName: Int, @StringRes val shortForm
     POUNDS(R.string.pounds_display_name, R.string.pounds_short_form, 2.20462f)
 }
 
-fun convertToKilograms(unit: WeightUnits, weight: Double): Double = round((weight / unit.kiloConversion) * 100) / 100
+fun convertToKilograms(unit: WeightUnits, weight: Double): Double = round((weight / unit.kiloConversion) * 10) / 10
 
-fun convertToWeightUnit(unit: WeightUnits, weight: Double): Double = round((weight * unit.kiloConversion) * 100) / 100
+fun convertToWeightUnit(unit: WeightUnits, weight: Double): Double = round((weight * unit.kiloConversion) * 10) / 10
 
 fun getWeightUnitFromShortForm(shortForm: Int): WeightUnits {
     return WeightUnits.values().first { it.shortForm == shortForm }
