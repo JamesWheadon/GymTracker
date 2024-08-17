@@ -77,7 +77,10 @@ class WorkoutExerciseCrossRefDaoTest {
             )
         )
 
-        var query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises WHERE workoutId = 1 AND exerciseId = 1", 0)
+        var query = RoomSQLiteQuery.acquire(
+            "SELECT * FROM workouts_exercises WHERE workoutId = 1 AND exerciseId = 1",
+            0
+        )
         var saved = exercise.query(query)
         saved.moveToFirst()
         var orderIndex = saved.getColumnIndex("order")
@@ -86,7 +89,10 @@ class WorkoutExerciseCrossRefDaoTest {
         assertThat(saved.getInt(orderIndex), equalTo(1))
         saved.close()
 
-        query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises WHERE workoutId = 1 AND exerciseId = 2", 0)
+        query = RoomSQLiteQuery.acquire(
+            "SELECT * FROM workouts_exercises WHERE workoutId = 1 AND exerciseId = 2",
+            0
+        )
         saved = exercise.query(query)
         saved.moveToFirst()
         orderIndex = saved.getColumnIndex("order")
@@ -114,6 +120,44 @@ class WorkoutExerciseCrossRefDaoTest {
         workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(1, 1, 0))
         workoutExerciseCrossRefDao.insert(WorkoutExerciseCrossRef(2, 1, 1))
         workoutExerciseCrossRefDao.deleteAllCrossRefForExercise(1)
+
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
+        val saved = exercise.query(query)
+
+        assertThat(saved.count, equalTo(0))
+        saved.close()
+    }
+
+    @Test
+    fun daoInsertList_InsertsAllCrossRefIntoDB() = runBlocking {
+        workoutExerciseCrossRefDao.insert(
+            listOf(
+                WorkoutExerciseCrossRef(1, 1, 0),
+                WorkoutExerciseCrossRef(2, 1, 1)
+            )
+        )
+
+        val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
+        val saved = exercise.query(query)
+
+        assertThat(saved.count, equalTo(2))
+        saved.close()
+    }
+
+    @Test
+    fun daoDeleteList_DeletesAllCrossRefIntoDB() = runBlocking {
+        workoutExerciseCrossRefDao.insert(
+            listOf(
+                WorkoutExerciseCrossRef(1, 1, 0),
+                WorkoutExerciseCrossRef(2, 1, 1)
+            )
+        )
+        workoutExerciseCrossRefDao.delete(
+            listOf(
+                WorkoutExerciseCrossRef(1, 1, 0),
+                WorkoutExerciseCrossRef(2, 1, 1)
+            )
+        )
 
         val query = RoomSQLiteQuery.acquire("SELECT * FROM workouts_exercises", 0)
         val saved = exercise.query(query)

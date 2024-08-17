@@ -31,8 +31,8 @@
     <string name="minute_unit">min</string>
     <string name="second_unit">s</string>
     <string name="calories_unit">kcal</string>
-    <string name="best_distance">%1$.2f %2$s</string>
-    <string name="display_hours">%1$d:%2$s:%3$s</string>
+    <string name="best_distance">%1$.1f %2$s</string>
+    <string name="display_hours">%1$s:%2$s:%3$s</string>
     <string name="display_minutes">%1$s:%2$s</string>
     <string name="display_seconds">%1$s s</string>
     <string name="best_calories">%1$d kcal</string>
@@ -48,13 +48,15 @@
     <string name="rest">Rest</string>
     <string name="display_sets">Sets: %1$d</string>
     <string name="display_reps">Reps: %1$d</string>
-    <string name="display_weight">Weight: %1$.2f %2$s</string>
-    <string name="display_set_info">Set %1$d: %2$d Reps</string>
-    <string name="display_set_weight_info">Set %1$d: %2$d Reps of %3$.2f %4$s</string>
-    <string name="display_set_weight_info_singular">Set %1$d: %2$d Rep of %3$.2f %4$s</string>
+    <string name="display_weight">Weight: %1$.1f %2$s</string>
+    <string name="display_set_reps_info">Set %1$d: %2$d Reps</string>
+    <string name="display_set_time_info">Set %1$d: %2$s</string>
+    <string name="display_set_rep_weight_info">Set %1$d: %2$d Reps of %3$.1f %4$s</string>
+    <string name="display_set_rep_weight_info_singular">Set %1$d: %2$d Rep of %3$.1f %4$s</string>
+    <string name="display_set_time_weight_info">Set %1$d: %2$s of %3$.1f %4$s</string>
     <string name="display_rest">Rest time: %1$d s</string>
     <string name="exercise_time">Time: %1$s</string>
-    <string name="exercise_distance">Distance: %1$.2f %2$s</string>
+    <string name="exercise_distance">Distance: %1$.1f %2$s</string>
     <string name="exercise_calories">Calories: %1$d kcal</string>
     <string name="delete_history">Delete history</string>
     <string name="default_error">Error</string>
@@ -67,9 +69,11 @@
     <string name="calisthenics_icon">calisthenics icon</string>
     <string name="max_weight">Max Weight</string>
     <string name="max_reps">Max Reps</string>
+    <string name="max_time">Max Time</string>
     <string name="max_sets">Max Sets</string>
     <string name="total_weight">Total Weight</string>
     <string name="total_reps">Total Reps</string>
+    <string name="total_time">Total Time</string>
     <string name="recent_exercise_icon">recent exercise icon</string>
     <string name="units">units</string>
     <string name="new_workout">New %1$s Workout</string>
@@ -128,7 +132,8 @@
     <string name="minutes">Minutes</string>
     <string name="seconds">Seconds</string>
     <string name="seconds_error">Value must be between 0 and 59</string>
-    <string name="weights_exercise_reps">%1$.2f %2$s for %3$s reps</string>
+    <string name="weights_exercise_reps">%1$.1f %2$s for %3$s reps</string>
+    <string name="weights_exercise_time">%1$.1f %2$s for %3$s</string>
     <string name="calisthenics_exercise_reps">%1$s reps</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -138,4 +143,6 @@
     <string name="live_record_cancel">Do you want to cancel this workout? All data will be deleted</string>
     <string name="done">Done</string>
     <string name="copy_sets">Copy to all sets</string>
+    <string name="seconds_unit">s</string>
+    <string name="show_hide_sets">Show/Hide sets</string>
 </resources>

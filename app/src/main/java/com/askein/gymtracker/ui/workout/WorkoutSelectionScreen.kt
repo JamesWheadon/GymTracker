@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,7 +20,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.AppViewModelProvider
-import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.navigation.NavigationRoute
 import com.askein.gymtracker.ui.navigation.NavigationRoutes.WORKOUT_SELECTION_SCREEN
 import com.askein.gymtracker.ui.navigation.TopBar
@@ -60,8 +59,9 @@ fun LiveRecordChooseWorkoutsScreen(
     modifier: Modifier = Modifier
 ) {
     Card(
-        elevation = customCardElevation(),
-        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 16.dp
+        ),
         modifier = modifier.padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         val columnContentDescription = stringResource(id = R.string.workout_column)

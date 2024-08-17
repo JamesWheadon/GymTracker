@@ -11,8 +11,9 @@ data class WeightsExerciseHistory(
     val exerciseId: Int,
     val weight: List<Double>,
     val sets: Int,
-    val reps: List<Int>,
+    val reps: List<Int>? = null,
     val date: LocalDate,
     val rest: Int? = null,
+    val seconds: List<Int>? = null,
     var workoutHistoryId: Int? = null
 )

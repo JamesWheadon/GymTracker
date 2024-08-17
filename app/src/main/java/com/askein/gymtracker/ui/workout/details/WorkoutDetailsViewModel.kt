@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 
 class WorkoutDetailsViewModel(
     private val workoutRepository: WorkoutRepository,
-    workoutWithExercisesRepository: WorkoutWithExercisesRepository,
     private val workoutExerciseCrossRefRepository: WorkoutExerciseCrossRefRepository,
+    workoutWithExercisesRepository: WorkoutWithExercisesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

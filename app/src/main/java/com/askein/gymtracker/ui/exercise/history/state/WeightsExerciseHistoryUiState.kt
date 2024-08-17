@@ -10,7 +10,8 @@ data class WeightsExerciseHistoryUiState(
     override var workoutHistoryId: Int? = null,
     var weight: List<Double> = emptyList(),
     var sets: Int = 0,
-    var reps: List<Int> = emptyList(),
+    var reps: List<Int>? = null,
+    var seconds: List<Int>? = null,
     var rest: Int? = null
 ) : ExerciseHistoryUiState
 
@@ -21,17 +22,7 @@ fun WeightsExerciseHistory.toWeightsExerciseHistoryUiState(): WeightsExerciseHis
     weight = weight,
     sets = sets,
     reps = reps,
-    date = date,
-    rest = rest
-)
-
-fun WeightsExerciseHistoryUiState.toWeightsExerciseHistory(exerciseId: Int): WeightsExerciseHistory = WeightsExerciseHistory(
-    id = id,
-    exerciseId = exerciseId,
-    workoutHistoryId = workoutHistoryId,
-    weight = weight,
-    sets = sets,
-    reps = reps,
+    seconds = seconds,
     date = date,
     rest = rest
 )
@@ -43,6 +34,7 @@ fun WeightsExerciseHistoryUiState.toWeightsExerciseHistory(): WeightsExerciseHis
     weight = weight,
     sets = sets,
     reps = reps,
+    seconds = seconds,
     date = date,
     rest = rest
 )

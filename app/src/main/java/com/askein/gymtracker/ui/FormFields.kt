@@ -16,7 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -204,7 +203,6 @@ fun FormTimeField(
             formType = FormTypes.INTEGER,
             modifier = Modifier
                 .weight(1f)
-                .padding(0.dp)
         )
         FormInformationField(
             label = R.string.seconds,
@@ -215,7 +213,6 @@ fun FormTimeField(
             errorMessage = R.string.seconds_error,
             modifier = Modifier
                 .weight(1f)
-                .padding(0.dp)
         )
     }
 }
@@ -420,7 +417,9 @@ fun ActionConfirmation(
         Card(
             modifier = modifier
                 .padding(vertical = 10.dp, horizontal = 10.dp),
-            elevation = customCardElevation()
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 16.dp
+            )
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -535,13 +534,6 @@ fun DatePickerDialog(
             state = datePickerState
         )
     }
-}
-
-@Composable
-fun customCardElevation(): CardElevation {
-    return CardDefaults.cardElevation(
-        defaultElevation = 16.dp
-    )
 }
 
 fun LocalDate.toEpochMillis(): Long {

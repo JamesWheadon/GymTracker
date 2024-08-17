@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.AppViewModelProvider
-import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.ExerciseCard
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
@@ -51,14 +53,12 @@ fun OverallHistoryScreen(
     )
 ) {
     val datesUiState = viewModel.datesUiState.collectAsState().value
-    val workoutsOnDateUiState = viewModel.workoutsOnDateUiState.collectAsState().value
-    val exercisesOnDateUiState = viewModel.exercisesOnDateUiState.collectAsState().value
+    val historyUiState = viewModel.historyUiState.collectAsState().value
     OverallHistoryScreen(
         exerciseNavigationFunction = exerciseNavigationFunction,
         workoutNavigationFunction = workoutNavigationFunction,
         datesUiState = datesUiState,
-        workoutsOnDateUiState = workoutsOnDateUiState,
-        exercisesOnDateUiState = exercisesOnDateUiState,
+        historyUiState = historyUiState,
         dateSelector = { date -> viewModel.selectDate(date) },
         modifier = modifier
     )
@@ -69,29 +69,28 @@ fun OverallHistoryScreen(
     exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
     workoutNavigationFunction: (Int, LocalDate?) -> Unit,
     datesUiState: List<LocalDate>,
-    workoutsOnDateUiState: List<WorkoutUiState>,
-    exercisesOnDateUiState: List<ExerciseUiState>,
-    dateSelector: (LocalDate) -> Unit,
+    historyUiState: HistoryUiState,
+    dateSelector: (LocalDate?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
-    var showHistory by remember { mutableStateOf(false) }
-    var selectedDate: LocalDate? by remember { mutableStateOf(null) }
-    val activeDays =
-        datesUiState.filter { date -> date.month == selectedMonth.month && date.year == selectedMonth.year }
-            .map { date -> date.dayOfMonth }
+    val activeDays = datesUiState
+        .filter { date -> date.month == selectedMonth.month && date.year == selectedMonth.year }
+        .map { date -> date.dayOfMonth }
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier.padding(vertical = 16.dp, horizontal = 16.dp)
+        modifier = modifier
+            .padding(vertical = 16.dp, horizontal = 16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        if (showHistory) {
+        if (historyUiState.date != null) {
             HistoryOnDay(
-                date = selectedDate!!,
+                date = historyUiState.date,
                 exerciseNavigationFunction = exerciseNavigationFunction,
                 workoutNavigationFunction = workoutNavigationFunction,
-                workoutsOnDateUiState = workoutsOnDateUiState,
-                exercisesOnDateUiState = exercisesOnDateUiState,
-                onDismiss = { showHistory = false }
+                workoutsOnDateUiState = historyUiState.workouts,
+                exercisesOnDateUiState = historyUiState.exercises,
+                onDismiss = { dateSelector(null) }
             )
         }
         MonthPicker(
@@ -99,15 +98,12 @@ fun OverallHistoryScreen(
             yearMonthValueOnChange = { chosen -> selectedMonth = chosen }
         )
         Calendar(
-            month = selectedMonth.monthValue,
-            year = selectedMonth.year,
             activeDays = activeDays,
             dayFunction = { chosenDay ->
                 val chosenDate = LocalDate.of(selectedMonth.year, selectedMonth.month, chosenDay)
                 dateSelector(chosenDate)
-                selectedDate = chosenDate
-                showHistory = true
-            }
+            },
+            yearMonth = selectedMonth
         )
     }
 }
@@ -124,7 +120,9 @@ fun HistoryOnDay(
 ) {
     Box {
         Card(
-            elevation = customCardElevation(),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 16.dp
+            ),
             modifier = Modifier.padding(top = 16.dp)
         ) {
             Column(
@@ -198,8 +196,13 @@ fun OverallHistoryScreenPreview() {
             workoutNavigationFunction = { _, _ -> (Unit) },
             exerciseNavigationFunction = { _, _ -> (Unit) },
             datesUiState = listOf(LocalDate.now(), LocalDate.now().minusDays(2)),
-            workoutsOnDateUiState = listOf(WorkoutUiState(name = "Arms"), WorkoutUiState(name = "Legs")),
-            exercisesOnDateUiState = listOf(ExerciseUiState(name = "Treadmill"), ExerciseUiState(name = "Bench", muscleGroup = "Chest", equipment = "Bench")),
+            historyUiState = HistoryUiState(
+                workouts = listOf(WorkoutUiState(name = "Arms"), WorkoutUiState(name = "Legs")),
+                exercises = listOf(
+                    ExerciseUiState(name = "Treadmill"),
+                    ExerciseUiState(name = "Bench", muscleGroup = "Chest", equipment = "Bench")
+                )
+            ),
             dateSelector = { }
         )
     }
@@ -213,8 +216,14 @@ fun HistoryOnDayPreview() {
             date = LocalDate.now(),
             workoutNavigationFunction = { _, _ -> (Unit) },
             exerciseNavigationFunction = { _, _ -> (Unit) },
-            workoutsOnDateUiState = listOf(WorkoutUiState(name = "Arms"), WorkoutUiState(name = "Legs")),
-            exercisesOnDateUiState = listOf(ExerciseUiState(name = "Treadmill"), ExerciseUiState(name = "Bench", muscleGroup = "Chest", equipment = "Bench")),
+            workoutsOnDateUiState = listOf(
+                WorkoutUiState(name = "Arms"),
+                WorkoutUiState(name = "Legs")
+            ),
+            exercisesOnDateUiState = listOf(
+                ExerciseUiState(name = "Treadmill"),
+                ExerciseUiState(name = "Bench", muscleGroup = "Chest", equipment = "Bench")
+            ),
             onDismiss = { }
         )
     }

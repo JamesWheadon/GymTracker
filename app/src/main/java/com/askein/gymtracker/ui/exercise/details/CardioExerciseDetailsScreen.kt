@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,6 +30,7 @@ import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiSt
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
+import com.askein.gymtracker.util.getTimeStringResourceFromSeconds
 import java.time.LocalDate
 
 @Composable
@@ -40,8 +41,7 @@ fun CardioExerciseDetailsScreen(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxSize()
             .padding(vertical = 16.dp, horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -76,42 +76,32 @@ private fun CardioExerciseInformation(
 fun CardioExerciseHistoryDetails(
     uiState: ExerciseDetailsUiState
 ) {
-    val timeOptions = listOf(R.string.seven_days, R.string.thirty_days, R.string.past_year, R.string.all_time)
-    val detailOptions = listOf(R.string.distance, R.string.time, R.string.calories)
+    val (detailOptions, timeOptionToStartTime) = graphOptionsForCardioExercise(uiState)
     val yUnit = mapOf(
-        detailOptions[0] to LocalUserPreferences.current.defaultDistanceUnit.shortForm,
-        detailOptions[1] to R.string.second_unit,
-        detailOptions[2] to R.string.calories_unit
-    )
-    val currentDate = LocalDate.now()
-    val timeOptionToStartTime = mapOf<Int, LocalDate>(
-        Pair(timeOptions[0], currentDate.minusDays(7)),
-        Pair(timeOptions[1], currentDate.minusDays(30)),
-        Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
-        Pair(
-            timeOptions[3],
-            uiState.cardioHistory.minBy { history -> history.date.toEpochDay() }.date
-        ),
+        R.string.distance to LocalUserPreferences.current.defaultDistanceUnit.shortForm,
+        R.string.time to R.string.second_unit,
+        R.string.calories to R.string.calories_unit
     )
     var detail by remember { mutableIntStateOf(detailOptions[0]) }
-    var time by remember { mutableIntStateOf(timeOptions[0]) }
+    var time by remember { mutableIntStateOf(timeOptionToStartTime.keys.first()) }
     CardioExerciseDetailsBest(uiState = uiState)
     GraphOptions(
         detailOptions = detailOptions,
         detailOnChange = { newDetail -> detail = newDetail },
-        timeOptions = timeOptions,
+        timeOptions = timeOptionToStartTime.keys.toList(),
         timeOnChange = { newTime -> time = newTime }
     )
-    val dataPoints = getCardioGraphDetails(
-        uiState = uiState,
+    val dataPoints = cardioGraphDataPoints(
+        historyUiStates = uiState.cardioHistory.filter { history ->
+            !history.date.isBefore(timeOptionToStartTime[time]!!)
+        },
         detail = detail,
-        detailOptions = detailOptions,
-        userPreferencesUiState = LocalUserPreferences.current
-    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
+        preferences = LocalUserPreferences.current
+    )
     if (dataPoints.isNotEmpty()) {
         Graph(
             points = dataPoints,
-            startDate = timeOptionToStartTime[time] ?: currentDate,
+            startDate = timeOptionToStartTime[time]!!,
             yLabel = stringResource(id = detail),
             yUnit = stringResource(id = yUnit[detail]!!)
         )
@@ -125,24 +115,15 @@ private fun CardioExerciseDetailsBest(
     uiState: ExerciseDetailsUiState
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
-    var bestDistance = uiState.cardioHistory.maxOf { it.distance ?: 0.0 }
-    if (userPreferencesUiState.defaultDistanceUnit != DistanceUnits.KILOMETERS) {
-        bestDistance =
-            convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, bestDistance)
-    }
-    val bestTime = if (userPreferencesUiState.displayShortestTime) {
-        uiState.cardioHistory.filter { it.minutes != null }
-            .minOfOrNull { (it.minutes?.times(60) ?: 0) + (it.seconds ?: 0) } ?: 0
-    } else {
-        uiState.cardioHistory.maxOf { (it.minutes?.times(60) ?: 0) + (it.seconds ?: 0) }
-    }
-    val bestCalories = uiState.cardioHistory.maxOf { it.calories ?: 0 }
+    val bestDistance = bestDistanceForCardioExercise(userPreferencesUiState, uiState.cardioHistory)
+    val bestTime = bestTimeForCardioExercise(userPreferencesUiState, uiState.cardioHistory)
+    val bestCalories = mostCaloriesForCardioExercise(uiState.cardioHistory)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxWidth()
     ) {
-        if (bestDistance != 0.0) {
+        if (bestDistance != null) {
             ExerciseDetail(
                 exerciseInfo = stringResource(
                     id = R.string.best_distance,
@@ -156,28 +137,13 @@ private fun CardioExerciseDetailsBest(
                     .weight(1f)
             )
         }
-        if (bestTime != 0) {
-            val bestTimeString = if (bestTime >= 3600) {
-                stringResource(
-                    id = R.string.display_hours,
-                    bestTime / 3600,
-                    String.format("%02d", (bestTime % 3600) / 60),
-                    String.format("%02d", bestTime % 60)
-                )
-            } else if (bestTime >= 60) {
-                stringResource(
-                    id = R.string.display_minutes,
-                    String.format("%02d", (bestTime % 3600) / 60),
-                    String.format("%02d", bestTime % 60)
-                )
-            } else {
-                stringResource(
-                    id = R.string.display_seconds,
-                    String.format("%02d", bestTime % 60)
-                )
-            }
+        if (bestTime != null) {
+            val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(bestTime)
             ExerciseDetail(
-                exerciseInfo = bestTimeString,
+                exerciseInfo = stringResource(
+                    id = resourceId,
+                    *resourceArgs.toTypedArray<String>()
+                ),
                 iconId = R.drawable.trophy_48dp,
                 iconDescription = R.string.best_exercise_icon,
                 modifier = Modifier
@@ -185,7 +151,7 @@ private fun CardioExerciseDetailsBest(
                     .weight(1f)
             )
         }
-        if (bestCalories != 0) {
+        if (bestCalories != null) {
             ExerciseDetail(
                 exerciseInfo = stringResource(id = R.string.best_calories, bestCalories),
                 iconId = R.drawable.trophy_48dp,
@@ -198,62 +164,33 @@ private fun CardioExerciseDetailsBest(
     }
 }
 
-fun getCardioGraphDetails(
-    uiState: ExerciseDetailsUiState,
-    detail: Int,
-    detailOptions: List<Int>,
-    userPreferencesUiState: UserPreferencesUiState
-) = uiState.cardioHistory.map { history ->
-    when (detail) {
-        detailOptions[0] -> {
-            if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
-                Pair(
-                    history.date,
-                    history.distance ?: 0.0
-                )
-            } else {
-                Pair(
-                    history.date,
-                    convertToDistanceUnit(
-                        userPreferencesUiState.defaultDistanceUnit,
-                        history.distance ?: 0.0
-                    )
-                )
-            }
-        }
-
-        detailOptions[1] -> {
-            Pair(
-                history.date,
-                (history.minutes ?: 0) * 60 + (history.seconds ?: 0).toDouble()
-            )
-        }
-
-        detailOptions[2] -> {
-            Pair(
-                history.date,
-                (history.calories ?: 0).toDouble()
-            )
-        }
-
-        else -> {
-            if (userPreferencesUiState.defaultDistanceUnit == DistanceUnits.KILOMETERS) {
-                Pair(
-                    history.date,
-                    history.distance ?: 0.0
-                )
-            } else {
-                Pair(
-                    history.date,
-                    convertToDistanceUnit(
-                        userPreferencesUiState.defaultDistanceUnit,
-                        history.distance ?: 0.0
-                    )
-                )
-            }
-        }
+fun bestDistanceForCardioExercise(
+    userPreferencesUiState: UserPreferencesUiState,
+    exerciseHistory: List<CardioExerciseHistoryUiState>
+): Double? {
+    var bestDistance = exerciseHistory.filter { it.distance != null }.maxOfOrNull { it.distance!! }
+    if (userPreferencesUiState.defaultDistanceUnit != DistanceUnits.KILOMETERS && bestDistance != null) {
+        bestDistance =
+            convertToDistanceUnit(userPreferencesUiState.defaultDistanceUnit, bestDistance)
     }
-}.filter { pair -> pair.second != 0.0 }
+    return bestDistance
+}
+
+fun bestTimeForCardioExercise(
+    userPreferencesUiState: UserPreferencesUiState,
+    exerciseHistory: List<CardioExerciseHistoryUiState>
+) = if (userPreferencesUiState.displayShortestTime) {
+    exerciseHistory.filter { it.minutes != null }
+        .minOfOrNull { it.minutes!!.times(60) + it.seconds!! }
+} else {
+    exerciseHistory.filter { it.minutes != null }
+        .maxOfOrNull { it.minutes!!.times(60) + it.seconds!! }
+}
+
+
+fun mostCaloriesForCardioExercise(
+    exerciseHistory: List<CardioExerciseHistoryUiState>
+) = exerciseHistory.filter { it.calories != null }.maxOfOrNull { it.calories!! }
 
 @Preview(showBackground = true)
 @Composable

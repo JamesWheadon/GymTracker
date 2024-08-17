@@ -44,7 +44,7 @@ class WorkoutWithExercisesDaoTest {
     private val workout = Workout(1, "test workout")
     private val weightsExercise = Exercise(1, ExerciseType.WEIGHTS,"test exercise", "muscle", "kit")
     private val cardioExercise = Exercise(2, ExerciseType.CARDIO, "Treadmill", "", "")
-    private val weightsExerciseHistory = WeightsExerciseHistory(1, 1, listOf(1.0), 1, listOf(1), LocalDate.now(), 1, 1)
+    private val weightsExerciseHistory = WeightsExerciseHistory(1, 1, listOf(1.0), 1, listOf(1), LocalDate.now(), 1, null, 1)
     private val cardioExerciseHistory = CardioExerciseHistory(1, 2, LocalDate.now(), 1, 1, 1, 1.0, 1)
     private val workoutHistory = WorkoutHistory(1, 1, LocalDate.now())
     private val weightsCrossRef = WorkoutExerciseCrossRef(1, 1, 0)

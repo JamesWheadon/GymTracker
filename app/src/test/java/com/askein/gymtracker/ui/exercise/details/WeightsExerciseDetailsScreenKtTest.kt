@@ -1,9 +1,6 @@
 package com.askein.gymtracker.ui.exercise.details
 
-import com.askein.gymtracker.enums.WeightUnits
-import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -11,98 +8,88 @@ import java.time.LocalDate
 
 class WeightsExerciseDetailsScreenKtTest {
 
-    private val options = listOf(1, 2, 3, 4)
-    private val firstDate: LocalDate = LocalDate.now().minusDays(3)
-    private val secondDate: LocalDate = LocalDate.now().minusDays(5)
-    private val exercise = ExerciseDetailsUiState(
-        ExerciseUiState(
-            name = "Curls",
-            muscleGroup = "Biceps",
-            equipment = "Dumbbells"
+    private val firstDate: LocalDate = LocalDate.now().minusDays(1)
+    private val secondDate: LocalDate = LocalDate.now().minusDays(2)
+    private val thirdDate: LocalDate = LocalDate.now().minusDays(3)
+    private val fourthDate: LocalDate = LocalDate.now().minusDays(4)
+    private val weightsHistory = listOf(
+        WeightsExerciseHistoryUiState(
+            id = 1,
+            weight = listOf(13.0),
+            sets = 1,
+            reps = listOf(2),
+            rest = 1,
+            date = firstDate
         ),
-        weightsHistory = listOf(
-            WeightsExerciseHistoryUiState(
-                id = 1,
-                weight = listOf(13.0),
-                sets = 1,
-                reps = listOf(2),
-                rest = 1,
-                date = firstDate
-            ),
-            WeightsExerciseHistoryUiState(
-                id = 1,
-                weight = listOf(12.0, 12.0),
-                sets = 2,
-                reps = listOf(3, 3),
-                rest = 1,
-                date = secondDate
-            )
+        WeightsExerciseHistoryUiState(
+            id = 1,
+            weight = listOf(12.0, 12.0),
+            sets = 2,
+            reps = listOf(3, 3),
+            rest = 1,
+            date = secondDate
+        ),
+        WeightsExerciseHistoryUiState(
+            id = 1,
+            weight = listOf(4.0),
+            sets = 1,
+            seconds = listOf(50),
+            rest = 1,
+            date = thirdDate
+        ),
+        WeightsExerciseHistoryUiState(
+            id = 1,
+            weight = listOf(18.0, 10.0),
+            sets = 2,
+            seconds = listOf(30, 90),
+            rest = 1,
+            date = fourthDate
         )
     )
 
     @Test
-    fun getGraphDetailsForFirstOption() {
-        val result = getWeightsGraphDetails(exercise, 1, options, UserPreferencesUiState())
+    fun shouldGetBestRepsForExerciseForHighestWeight() {
+        val bestReps = bestRepsForWeightsExercise(weightsHistory, true)
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
+        assertThat(bestReps!!.first, equalTo(13.0))
+        assertThat(bestReps.second, equalTo(2))
     }
 
     @Test
-    fun getGraphDetailsForFirstOptionNonKilogramsUnit() {
-        val result = getWeightsGraphDetails(
-            exercise,
-            5,
-            options,
-            UserPreferencesUiState(defaultWeightUnit = WeightUnits.POUNDS)
-        )
+    fun shouldGetBestRepsForExerciseForHighestWeightOverSet() {
+        val bestReps = bestRepsForWeightsExercise(weightsHistory, false)
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(28.66, 26.46)))
+        assertThat(bestReps!!.first, equalTo(12.0))
+        assertThat(bestReps.second, equalTo(3))
     }
 
     @Test
-    fun getGraphDetailsForSecondOption() {
-        val result = getWeightsGraphDetails(exercise, 2, options, UserPreferencesUiState())
+    fun shouldReturnNullIfNoRepsInHistory() {
+        val bestReps = bestRepsForWeightsExercise(listOf(), true)
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(2.0, 3.0)))
+        assertThat(bestReps, equalTo(null))
     }
 
     @Test
-    fun getGraphDetailsForThirdOption() {
-        val result = getWeightsGraphDetails(exercise, 3, options, UserPreferencesUiState())
+    fun shouldGetBestTimeForExerciseForHighestWeight() {
+        val bestTime = bestTimeForWeightsExercise(weightsHistory, true)
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(1.0, 2.0)))
+        assertThat(bestTime!!.first, equalTo(18.0))
+        assertThat(bestTime.second, equalTo(30))
     }
 
     @Test
-    fun getGraphDetailsForFourthOption() {
-        val result = getWeightsGraphDetails(exercise, 4, options, UserPreferencesUiState())
+    fun shouldGetBestTimeForExerciseForHighestWeightOverSet() {
+        val bestTime = bestTimeForWeightsExercise(weightsHistory, false)
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(26.0, 72.0)))
+        assertThat(bestTime!!.first, equalTo(10.0))
+        assertThat(bestTime.second, equalTo(90))
     }
 
     @Test
-    fun getGraphDetailsForOtherOption() {
-        val result = getWeightsGraphDetails(exercise, 5, options, UserPreferencesUiState())
+    fun shouldReturnNullIfNoTimeInHistory() {
+        val bestTime = bestTimeForWeightsExercise(listOf(), true)
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(13.0, 12.0)))
-    }
-
-    @Test
-    fun getGraphDetailsForOtherOptionNonKilogramsUnit() {
-        val result = getWeightsGraphDetails(
-            exercise,
-            5,
-            options,
-            UserPreferencesUiState(defaultWeightUnit = WeightUnits.POUNDS)
-        )
-
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(28.66, 26.46)))
+        assertThat(bestTime, equalTo(null))
     }
 }

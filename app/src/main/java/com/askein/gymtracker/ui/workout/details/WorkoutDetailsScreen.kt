@@ -210,63 +210,27 @@ private fun WorkoutDetailsScreen(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.padding(innerPadding)
         ) {
-            Column {
-                uiState.exercises.forEach { exercise ->
-                    ExerciseCard(
-                        exercise = exercise,
-                        navigationFunction = exerciseNavigationFunction
-                    )
-                }
-            }
+            ExercisesForWorkout(
+                uiState = uiState,
+                exerciseNavigationFunction = exerciseNavigationFunction
+            )
         }
         Button(onClick = editExercises) {
             Text(text = stringResource(id = R.string.edit_exercises))
         }
         if (showDate != null) {
-            Box {
-                Column(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(
-                            id = R.string.workouts_on,
-                            showDate!!.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
-                        ),
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    uiState.workoutHistory.filter { it.date == showDate }.forEach { workoutHistory ->
-                        WorkoutHistoryScreen(
-                            workoutHistoryUiState = workoutHistory,
-                            workoutUiState = uiState,
-                            chosenDate = showDate!!,
-                            exerciseNavigationFunction = exerciseNavigationFunction
-                        )
-                    }
-                }
-                IconButton(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset((-8).dp, (-12).dp),
-                    onClick = { showDate = null }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(id = R.string.close)
-                    )
-                }
-            }
+            WorkoutHistoryOnChosenDate(
+                showDate = showDate!!,
+                uiState = uiState,
+                exerciseNavigationFunction = exerciseNavigationFunction,
+                closeFunction = { showDate = null }
+            )
         }
         MonthPicker(
             yearMonthValue = selectedMonth,
             yearMonthValueOnChange = { chosen -> selectedMonth = chosen }
         )
         Calendar(
-            month = selectedMonth.monthValue,
-            year = selectedMonth.year,
             activeDays = uiState.workoutHistory
                 .filter { history ->
                     history.date.year == selectedMonth.year &&
@@ -274,9 +238,71 @@ private fun WorkoutDetailsScreen(
                 }.map { history -> history.date.dayOfMonth },
             dayFunction = { day ->
                 showDate = LocalDate.of(selectedMonth.year, selectedMonth.monthValue, day)
-            }
+            },
+            yearMonth = selectedMonth
         )
         Spacer(modifier = Modifier.height(72.dp))
+    }
+}
+
+@Composable
+private fun ExercisesForWorkout(
+    uiState: WorkoutWithExercisesUiState,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit
+) {
+    Column {
+        uiState.exercises.forEach { exercise ->
+            ExerciseCard(
+                exercise = exercise,
+                navigationFunction = exerciseNavigationFunction
+            )
+        }
+    }
+}
+
+@Composable
+private fun WorkoutHistoryOnChosenDate(
+    showDate: LocalDate,
+    uiState: WorkoutWithExercisesUiState,
+    exerciseNavigationFunction: (Int, LocalDate?) -> Unit,
+    closeFunction: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(
+                    id = R.string.workouts_on,
+                    showDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+                ),
+                style = MaterialTheme.typography.headlineMedium
+            )
+            uiState.workoutHistory.filter { it.date == showDate }.forEach { workoutHistory ->
+                WorkoutHistoryScreen(
+                    workoutHistoryUiState = workoutHistory,
+                    workoutUiState = uiState,
+                    chosenDate = showDate,
+                    exerciseNavigationFunction = exerciseNavigationFunction
+                )
+            }
+        }
+        IconButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset((-8).dp, (-12).dp),
+            onClick = closeFunction
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = stringResource(id = R.string.close)
+            )
+        }
     }
 }
 
@@ -302,18 +328,22 @@ fun WorkoutDetailsScreenPreview() {
                     ),
                     workoutHistory = listOf(
                         WorkoutHistoryWithExercisesUiState(
-                            1,
-                            1,
-                            LocalDate.now(),
-                            exercises = listOf(WeightsExerciseHistoryUiState(exerciseId = 0))
+                            workoutHistoryId = 1,
+                            workoutId = 1,
+                            date = LocalDate.now(),
+                            exerciseHistories = listOf(WeightsExerciseHistoryUiState(exerciseId = 0))
                         ),
                         WorkoutHistoryWithExercisesUiState(
-                            2,
-                            1,
-                            LocalDate.now(),
-                            exercises = listOf(WeightsExerciseHistoryUiState(exerciseId = 1))
+                            workoutHistoryId = 2,
+                            workoutId = 1,
+                            date = LocalDate.now(),
+                            exerciseHistories = listOf(WeightsExerciseHistoryUiState(exerciseId = 1))
                         ),
-                        WorkoutHistoryWithExercisesUiState(2, 1, LocalDate.now().minusDays(3))
+                        WorkoutHistoryWithExercisesUiState(
+                            workoutHistoryId = 2,
+                            workoutId = 1,
+                            date = LocalDate.now().minusDays(3)
+                        )
                     )
                 ),
                 exerciseNavigationFunction = { _, _ -> (Unit) },

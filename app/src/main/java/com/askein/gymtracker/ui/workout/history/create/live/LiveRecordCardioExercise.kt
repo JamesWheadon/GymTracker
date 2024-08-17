@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +32,6 @@ import com.askein.gymtracker.enums.convertToKilometers
 import com.askein.gymtracker.ui.DropdownBox
 import com.askein.gymtracker.ui.FormInformationField
 import com.askein.gymtracker.ui.FormTimeField
-import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
@@ -53,7 +53,9 @@ fun LiveRecordCardioExercise(
     val saveEnabled = (minutesState != "" && secondsState != "") ||
             caloriesState != "" || distanceState != ""
     Card(
-        elevation = customCardElevation(),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 16.dp
+        ),
         modifier = modifier
     ) {
         Column(

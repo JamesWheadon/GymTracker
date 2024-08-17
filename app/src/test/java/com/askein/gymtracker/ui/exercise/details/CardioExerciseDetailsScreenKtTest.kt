@@ -1,101 +1,114 @@
 package com.askein.gymtracker.ui.exercise.details
 
 import com.askein.gymtracker.enums.DistanceUnits
-import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.CardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
-import java.time.LocalDate
 
 class CardioExerciseDetailsScreenKtTest {
 
-    private val options = listOf(1, 2, 3)
-    private val firstDate: LocalDate = LocalDate.now().minusDays(3)
-    private val secondDate: LocalDate = LocalDate.now().minusDays(5)
-    private val thirdDate: LocalDate = LocalDate.now().minusDays(7)
-    private val exercise = ExerciseDetailsUiState(
-        ExerciseUiState(
-            name = "Curls"
-        ),
-        cardioHistory = listOf(
-            CardioExerciseHistoryUiState(
-                minutes = 30,
-                seconds = 0,
-                distance = 5.0,
-                calories = 1000,
-                date = firstDate
-            ),
-            CardioExerciseHistoryUiState(
-                minutes = 20,
-                seconds = 30,
-                calories = 1200,
-                date = secondDate
-            ),
-            CardioExerciseHistoryUiState(
-                distance = 4.0,
-                calories = 600,
-                date = thirdDate
+    @Test
+    fun shouldReturnTheBestDistanceFromHistory() {
+        val bestDistance = bestDistanceForCardioExercise(
+            UserPreferencesUiState(),
+            listOf(
+                CardioExerciseHistoryUiState(distance = 10.0),
+                CardioExerciseHistoryUiState(distance = 5.0)
             )
         )
-    )
 
-    @Test
-    fun getGraphDetailsForFirstOption() {
-        val result = getCardioGraphDetails(exercise, 1, options, UserPreferencesUiState())
-
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(5.0, 4.0)))
+        assertThat(bestDistance, equalTo(10.0))
     }
 
     @Test
-    fun getGraphDetailsForFirstOptionNonKilometersUnit() {
-        val result = getCardioGraphDetails(
-            exercise,
-            4,
-            options,
-            UserPreferencesUiState(defaultDistanceUnit = DistanceUnits.MILES)
+    fun shouldReturnTheBestDistanceForPreferredDistanceUnitFromHistory() {
+        val bestDistance = bestDistanceForCardioExercise(
+            UserPreferencesUiState(defaultDistanceUnit = DistanceUnits.METERS),
+            listOf(
+                CardioExerciseHistoryUiState(distance = 10.0),
+                CardioExerciseHistoryUiState(distance = 5.0)
+            )
         )
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(3.11, 2.49)))
+        assertThat(bestDistance, equalTo(10000.0))
     }
 
     @Test
-    fun getGraphDetailsForSecondOption() {
-        val result = getCardioGraphDetails(exercise, 2, options, UserPreferencesUiState())
-
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(1800.0, 1230.0)))
-    }
-
-    @Test
-    fun getGraphDetailsForThirdOption() {
-        val result = getCardioGraphDetails(exercise, 3, options, UserPreferencesUiState())
-
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate, thirdDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(1000.0, 1200.0, 600.0)))
-    }
-
-    @Test
-    fun getGraphDetailsForOtherOption() {
-        val result = getCardioGraphDetails(exercise, 4, options, UserPreferencesUiState())
-
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(5.0, 4.0)))
-    }
-
-    @Test
-    fun getGraphDetailsForOtherOptionNonKilometersUnit() {
-        val result = getCardioGraphDetails(
-            exercise,
-            4,
-            options,
-            UserPreferencesUiState(defaultDistanceUnit = DistanceUnits.MILES)
+    fun shouldReturnNullWhenNoDistanceInHistory() {
+        val bestDistance = bestDistanceForCardioExercise(
+            UserPreferencesUiState(),
+            listOf(CardioExerciseHistoryUiState())
         )
 
-        assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
-        assertThat(result.map { it.second }, equalTo(listOf(3.11, 2.49)))
+        assertThat(bestDistance, equalTo(null))
+    }
+
+    @Test
+    fun shouldReturnShortestExerciseTime() {
+        val shortestTime = bestTimeForCardioExercise(
+            UserPreferencesUiState(displayShortestTime = true),
+            listOf(
+                CardioExerciseHistoryUiState(minutes = 10, seconds = 0),
+                CardioExerciseHistoryUiState(minutes = 1, seconds = 0)
+            )
+        )
+
+        assertThat(shortestTime, equalTo(60))
+    }
+
+    @Test
+    fun shouldReturnNullWhenNoTimeHistory() {
+        val shortestTime = bestTimeForCardioExercise(
+            UserPreferencesUiState(displayShortestTime = true),
+            listOf(CardioExerciseHistoryUiState())
+        )
+
+        assertThat(shortestTime, equalTo(null))
+    }
+
+    @Test
+    fun shouldReturnLongestExerciseTime() {
+        val shortestTime = bestTimeForCardioExercise(
+            UserPreferencesUiState(displayShortestTime = false),
+            listOf(
+                CardioExerciseHistoryUiState(minutes = 10, seconds = 0),
+                CardioExerciseHistoryUiState(minutes = 1, seconds = 0)
+            )
+        )
+
+        assertThat(shortestTime, equalTo(600))
+    }
+
+    @Test
+    fun shouldReturnNullWhenNoTimeHistoryForLongestTime() {
+        val shortestTime = bestTimeForCardioExercise(
+            UserPreferencesUiState(displayShortestTime = false),
+            listOf(CardioExerciseHistoryUiState())
+        )
+
+        assertThat(shortestTime, equalTo(null))
+    }
+
+    @Test
+    fun shouldReturnMostCalories() {
+        val mostCalories = mostCaloriesForCardioExercise(
+            listOf(
+                CardioExerciseHistoryUiState(calories = 100),
+                CardioExerciseHistoryUiState(calories = 50)
+            )
+        )
+
+        assertThat(mostCalories, equalTo(100))
+    }
+
+    @Test
+    fun shouldReturnNullWhenNoCaloriesHistory() {
+        val mostCalories = mostCaloriesForCardioExercise(
+            listOf(CardioExerciseHistoryUiState())
+        )
+
+        assertThat(mostCalories, equalTo(null))
     }
 }

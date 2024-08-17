@@ -6,7 +6,11 @@ import com.askein.gymtracker.data.workout.Workout
 interface WorkoutExerciseCrossRefRepository {
     suspend fun saveExerciseToWorkout(exercise: Exercise, workout: Workout)
 
+    suspend fun saveExercisesToWorkout(exercises: List<Exercise>, workout: Workout)
+
     suspend fun deleteExerciseFromWorkout(exercise: Exercise, workout: Workout)
+
+    suspend fun deleteExercisesFromWorkout(exercises: List<Exercise>, workout: Workout)
 
     suspend fun updateOrderForWorkout(exerciseOrders: List<WorkoutExerciseCrossRef>)
 

@@ -50,8 +50,7 @@ import java.util.Date
 
 @Composable
 fun Calendar(
-    month: Int,
-    year: Int,
+    yearMonth: YearMonth,
     activeDays: List<Int>,
     dayFunction: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -63,8 +62,8 @@ fun Calendar(
     ) {
         DaysOfWeek()
         CalendarMonth(
-            month = month,
-            year = year,
+            month = yearMonth.monthValue,
+            year = yearMonth.year,
             activeDays = activeDays,
             dayFunction = dayFunction
         )
@@ -308,10 +307,9 @@ fun YearMonthOptions(
 fun CalendarPreview() {
     GymTrackerTheme(darkTheme = false) {
         Calendar(
-            month = 10,
-            year = 2023,
             activeDays = listOf(),
-            dayFunction = { }
+            dayFunction = { },
+            yearMonth = YearMonth.of(2023, 10)
         )
     }
 }
@@ -321,10 +319,9 @@ fun CalendarPreview() {
 fun CalendarPreviewSpanish() {
     GymTrackerTheme(darkTheme = false) {
         Calendar(
-            month = 10,
-            year = 2023,
             activeDays = listOf(),
-            dayFunction = { }
+            dayFunction = { },
+            yearMonth = YearMonth.of(2023, 10)
         )
     }
 }

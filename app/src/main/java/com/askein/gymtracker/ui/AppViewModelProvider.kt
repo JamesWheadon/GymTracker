@@ -48,8 +48,8 @@ object AppViewModelProvider {
         initializer {
             WorkoutDetailsViewModel(
                 workoutRepository = gymTrackerApplication().container.workoutRepository,
-                workoutWithExercisesRepository = gymTrackerApplication().container.workoutWithExerciseRepository,
                 workoutExerciseCrossRefRepository = gymTrackerApplication().container.workoutExerciseCrossRefRepository,
+                workoutWithExercisesRepository = gymTrackerApplication().container.workoutWithExerciseRepository,
                 savedStateHandle = this.createSavedStateHandle()
             )
         }

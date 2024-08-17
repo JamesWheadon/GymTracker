@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
 import com.askein.gymtracker.data.exercise.ExerciseType
-import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import java.time.LocalDate
 
@@ -44,7 +44,9 @@ fun ExerciseCard(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(0.dp),
-            elevation = customCardElevation()
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 16.dp
+            )
         ) {
             when (exercise.type) {
                 ExerciseType.WEIGHTS -> {
@@ -52,11 +54,13 @@ fun ExerciseCard(
                         exercise = exercise
                     )
                 }
+
                 ExerciseType.CARDIO -> {
                     CardioExerciseCard(
                         exercise = exercise
                     )
                 }
+
                 ExerciseType.CALISTHENICS -> {
                     CalisthenicsExerciseCard(
                         exercise = exercise
@@ -86,34 +90,39 @@ fun WeightsExerciseCard(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        if (exercise.muscleGroup != "" || exercise.equipment != "") {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (exercise.muscleGroup != "") {
-                    ExerciseDetail(
-                        exerciseInfo = exercise.muscleGroup,
-                        iconId = R.drawable.info_48px,
-                        iconDescription = R.string.muscle_icon
-                    )
-                }
-                if (exercise.equipment != "") {
-                    ExerciseDetail(
-                        exerciseInfo = exercise.equipment,
-                        iconId = R.drawable.exercise_filled_48px,
-                        iconDescription = R.string.equipment_icon
-                    )
-                }
+        WeightsExerciseDetails(exercise = exercise)
+    }
+}
+
+@Composable
+fun WeightsExerciseDetails(exercise: ExerciseUiState) {
+    if (exercise.muscleGroup != "" || exercise.equipment != "") {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (exercise.muscleGroup != "") {
+                ExerciseDetail(
+                    exerciseInfo = exercise.muscleGroup,
+                    iconId = R.drawable.info_48px,
+                    iconDescription = R.string.muscle_icon
+                )
             }
-        } else {
-            ExerciseDetail(
-                exerciseInfo = stringResource(id = R.string.weights),
-                iconId = R.drawable.exercise_filled_48px,
-                iconDescription = R.string.equipment_icon,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (exercise.equipment != "") {
+                ExerciseDetail(
+                    exerciseInfo = exercise.equipment,
+                    iconId = R.drawable.exercise_filled_48px,
+                    iconDescription = R.string.equipment_icon
+                )
+            }
         }
+    } else {
+        ExerciseDetail(
+            exerciseInfo = stringResource(id = R.string.weights),
+            iconId = R.drawable.exercise_filled_48px,
+            iconDescription = R.string.equipment_icon,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -136,13 +145,18 @@ fun CardioExerciseCard(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        ExerciseDetail(
-            exerciseInfo = stringResource(id = R.string.cardio),
-            iconId = R.drawable.cardio_48dp,
-            iconDescription = R.string.cardio_icon,
-            modifier = Modifier.fillMaxWidth()
-        )
+        CardioExerciseDetails()
     }
+}
+
+@Composable
+fun CardioExerciseDetails() {
+    ExerciseDetail(
+        exerciseInfo = stringResource(id = R.string.cardio),
+        iconId = R.drawable.cardio_48dp,
+        iconDescription = R.string.cardio_icon,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
@@ -164,21 +178,26 @@ fun CalisthenicsExerciseCard(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        if (exercise.muscleGroup != "") {
-            ExerciseDetail(
-                exerciseInfo = exercise.muscleGroup,
-                iconId = R.drawable.info_48px,
-                iconDescription = R.string.muscle_icon,
-                modifier = Modifier.fillMaxWidth()
-            )
-        } else {
-            ExerciseDetail(
-                exerciseInfo = stringResource(id = R.string.calisthenics),
-                iconId = R.drawable.info_48px,
-                iconDescription = R.string.calisthenics_icon,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        CalisthenicsExerciseDetails(exercise)
+    }
+}
+
+@Composable
+fun CalisthenicsExerciseDetails(exercise: ExerciseUiState) {
+    if (exercise.muscleGroup != "") {
+        ExerciseDetail(
+            exerciseInfo = exercise.muscleGroup,
+            iconId = R.drawable.info_48px,
+            iconDescription = R.string.muscle_icon,
+            modifier = Modifier.fillMaxWidth()
+        )
+    } else {
+        ExerciseDetail(
+            exerciseInfo = stringResource(id = R.string.calisthenics),
+            iconId = R.drawable.info_48px,
+            iconDescription = R.string.calisthenics_icon,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 

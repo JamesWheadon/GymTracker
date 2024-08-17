@@ -1,11 +1,10 @@
-package com.askein.gymtracker.ui.history
+package com.askein.gymtracker.ui.exercise.history
 
 import com.askein.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistory
 import com.askein.gymtracker.data.exerciseHistory.cardio.CardioExerciseHistoryRepository
 import com.askein.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistory
 import com.askein.gymtracker.data.exerciseHistory.weights.WeightsExerciseHistoryRepository
 import com.askein.gymtracker.rules.TestCoroutineRule
-import com.askein.gymtracker.ui.exercise.history.RecordExerciseHistoryViewModel
 import com.askein.gymtracker.ui.exercise.history.state.toCardioExerciseHistoryUiState
 import com.askein.gymtracker.ui.exercise.history.state.toWeightsExerciseHistoryUiState
 import kotlinx.coroutines.test.runTest

@@ -24,13 +24,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.askein.gymtracker.R
-import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToWeightUnit
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
 import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 import com.askein.gymtracker.ui.user.UserPreferencesUiState
+import com.askein.gymtracker.util.getTimeStringResourceFromSeconds
 import java.time.LocalDate
 
 @Composable
@@ -107,41 +107,40 @@ private fun WeightsExerciseInformation(
 fun WeightsExerciseHistoryDetails(
     uiState: ExerciseDetailsUiState
 ) {
-    val timeOptions =
-        listOf(R.string.seven_days, R.string.thirty_days, R.string.past_year, R.string.all_time)
-    val detailOptions =
-        listOf(R.string.max_weight, R.string.max_reps, R.string.max_sets, R.string.total_weight)
-    val currentDate = LocalDate.now()
-    val timeOptionToStartTime = mapOf<Int, LocalDate>(
-        Pair(timeOptions[0], currentDate.minusDays(7)),
-        Pair(timeOptions[1], currentDate.minusDays(30)),
-        Pair(timeOptions[2], LocalDate.of(currentDate.year, 1, 1)),
-        Pair(
-            timeOptions[3],
-            uiState.weightsHistory.minBy { history -> history.date.toEpochDay() }.date
-        ),
-    )
+    val (detailOptions, timeOptionToStartTime) = graphOptionsForWeightsExercise(uiState)
     var detail by remember { mutableIntStateOf(detailOptions[0]) }
-    var time by remember { mutableIntStateOf(timeOptions[0]) }
+    var time by remember { mutableIntStateOf(timeOptionToStartTime.keys.first()) }
     WeightsExerciseDetailsBestAndRecent(uiState)
     GraphOptions(
         detailOptions = detailOptions,
         detailOnChange = { newDetail -> detail = newDetail },
-        timeOptions = timeOptions,
+        timeOptions = timeOptionToStartTime.keys.toList(),
         timeOnChange = { newTime -> time = newTime }
     )
-    val dataPoints = getWeightsGraphDetails(
-        uiState,
-        detail,
-        detailOptions,
-        LocalUserPreferences.current
-    ).filter { !it.first.isBefore(timeOptionToStartTime[time] ?: currentDate) }
+    val weightUnit = LocalUserPreferences.current.defaultWeightUnit
+    val dataPoints = calisthenicsAndWeightsGraphDataPoints(
+        chosenDetail = detail,
+        historyUiStates = uiState.weightsHistory
+            .filter { !it.date.isBefore(timeOptionToStartTime[time]!!) },
+        weightUnit = weightUnit
+    )
     if (dataPoints.isNotEmpty()) {
+        val yUnit = when (detail) {
+            R.string.max_weight, R.string.total_weight -> stringResource(
+                id = weightUnit.shortForm
+            )
+
+            R.string.max_time, R.string.total_time -> stringResource(
+                id = R.string.seconds_unit
+            )
+
+            else -> ""
+        }
         Graph(
             points = dataPoints,
-            startDate = timeOptionToStartTime[time] ?: currentDate,
+            startDate = timeOptionToStartTime[time]!!,
             yLabel = stringResource(id = detail),
-            yUnit = if (detail == detailOptions[0] || detail == detailOptions[3]) stringResource(id = LocalUserPreferences.current.defaultWeightUnit.shortForm) else ""
+            yUnit = yUnit
         )
     } else {
         Text(text = stringResource(id = R.string.no_data_error))
@@ -153,108 +152,126 @@ private fun WeightsExerciseDetailsBestAndRecent(
     uiState: ExerciseDetailsUiState
 ) {
     val userPreferencesUiState = LocalUserPreferences.current
-    val best = if (userPreferencesUiState.displayHighestWeight) {
-        uiState.weightsHistory.map { history -> history.weight.zip(history.reps) }.flatten()
-            .maxWith(compareBy({ it.first }, { it.second }))
-    } else {
-        uiState.weightsHistory.map { history -> history.weight.zip(history.reps) }.flatten()
-            .maxBy { it.first * it.second }
-    }
+    val bestReps = bestRepsForWeightsExercise(
+        uiState.weightsHistory,
+        userPreferencesUiState.displayHighestWeight
+    )
+    val bestTime = bestTimeForWeightsExercise(
+        uiState.weightsHistory,
+        userPreferencesUiState.displayHighestWeight
+    )
     val recent = uiState.weightsHistory.maxBy { history -> history.date.toEpochDay() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxWidth()
     ) {
-        ExerciseDetail(
-            exerciseInfo = stringResource(
-                id = R.string.weights_exercise_reps,
-                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, best.first),
-                stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
-                best.second
-            ),
-            iconId = R.drawable.trophy_48dp,
-            iconDescription = R.string.best_exercise_icon,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        )
-        ExerciseDetail(
-            exerciseInfo = stringResource(
-                id = R.string.weights_exercise_reps,
-                convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, recent.weight.last()),
-                stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
-                recent.reps.last()
-            ),
-            iconId = R.drawable.history_48px,
-            iconDescription = R.string.recent_exercise_icon,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        )
+        if (bestReps != null) {
+            ExerciseDetail(
+                exerciseInfo = stringResource(
+                    id = R.string.weights_exercise_reps,
+                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, bestReps.first),
+                    stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
+                    bestReps.second
+                ),
+                iconId = R.drawable.trophy_48dp,
+                iconDescription = R.string.best_exercise_icon,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+        }
+        if (bestTime != null) {
+            val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(bestTime.second)
+            ExerciseDetail(
+                exerciseInfo = stringResource(
+                    id = R.string.weights_exercise_time,
+                    convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, bestTime.first),
+                    stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
+                    stringResource(id = resourceId, *resourceArgs.toTypedArray())
+                ),
+                iconId = R.drawable.trophy_48dp,
+                iconDescription = R.string.best_exercise_icon,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+        }
+        if (recent.reps == null) {
+            val (resourceId, resourceArgs) = getTimeStringResourceFromSeconds(recent.seconds!!.last())
+            ExerciseDetail(
+                exerciseInfo = stringResource(
+                    id = R.string.weights_exercise_time,
+                    convertToWeightUnit(
+                        userPreferencesUiState.defaultWeightUnit,
+                        recent.weight.last()
+                    ),
+                    stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
+                    stringResource(id = resourceId, *resourceArgs.toTypedArray())
+                ),
+                iconId = R.drawable.history_48px,
+                iconDescription = R.string.recent_exercise_icon,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+        } else {
+            ExerciseDetail(
+                exerciseInfo = stringResource(
+                    id = R.string.weights_exercise_reps,
+                    convertToWeightUnit(
+                        userPreferencesUiState.defaultWeightUnit,
+                        recent.weight.last()
+                    ),
+                    stringResource(id = userPreferencesUiState.defaultWeightUnit.shortForm),
+                    recent.reps!!.last()
+                ),
+                iconId = R.drawable.history_48px,
+                iconDescription = R.string.recent_exercise_icon,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+        }
     }
 }
 
-fun getWeightsGraphDetails(
-    uiState: ExerciseDetailsUiState,
-    detail: Int,
-    detailOptions: List<Int>,
-    userPreferencesUiState: UserPreferencesUiState
-) = uiState.weightsHistory.map { history ->
-    when (detail) {
-        detailOptions[0] -> {
-            if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
-                Pair(
-                    history.date,
-                    history.weight.max()
-                )
-            } else {
-                Pair(
-                    history.date,
-                    history.weight.maxOf {
-                        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, it)
-                    }
-                )
-            }
-        }
-
-        detailOptions[1] -> {
-            Pair(
-                history.date,
-                history.reps.max().toDouble()
-            )
-        }
-
-        detailOptions[2] -> {
-            Pair(
-                history.date,
-                history.sets.toDouble()
-            )
-        }
-
-        detailOptions[3] -> {
-            Pair(
-                history.date,
-                history.weight.zip(history.reps).sumOf { it.first * it.second }
-            )
-        }
-
-        else -> {
-            if (userPreferencesUiState.defaultWeightUnit == WeightUnits.KILOGRAMS) {
-                Pair(
-                    history.date,
-                    history.weight.max()
-                )
-            } else {
-                Pair(
-                    history.date,
-                    history.weight.maxOf {
-                        convertToWeightUnit(userPreferencesUiState.defaultWeightUnit, it)
-                    }
-                )
-            }
-        }
+fun bestRepsForWeightsExercise(
+    exerciseHistory: List<WeightsExerciseHistoryUiState>,
+    displayHighestWeight: Boolean
+) = if (exerciseHistory.any { history -> history.reps != null }) {
+    val flattenedHistoryRepsWeights = exerciseHistory
+        .filter { history -> history.reps != null }
+        .map { history -> history.weight.zip(history.reps!!) }
+        .flatten()
+    if (displayHighestWeight) {
+        flattenedHistoryRepsWeights
+            .maxWith(compareBy({ it.first }, { it.second }))
+    } else {
+        flattenedHistoryRepsWeights
+            .maxBy { it.first * it.second }
     }
+} else {
+    null
+}
+
+fun bestTimeForWeightsExercise(
+    exerciseHistory: List<WeightsExerciseHistoryUiState>,
+    displayHighestWeight: Boolean
+) = if (exerciseHistory.any { history -> history.seconds != null }) {
+    val flattenedHistoryRepsWeights = exerciseHistory
+        .filter { history -> history.seconds != null }
+        .map { history -> history.weight.zip(history.seconds!!) }
+        .flatten()
+    if (displayHighestWeight) {
+        flattenedHistoryRepsWeights
+            .maxWith(compareBy({ it.first }, { it.second }))
+    } else {
+        flattenedHistoryRepsWeights
+            .maxBy { it.first * it.second }
+    }
+} else {
+    null
 }
 
 @Preview(showBackground = true)

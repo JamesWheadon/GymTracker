@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,20 +23,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.enums.FormTypes
 import com.askein.gymtracker.enums.WeightUnits
 import com.askein.gymtracker.enums.convertToKilograms
+import com.askein.gymtracker.enums.convertToWeightUnit
 import com.askein.gymtracker.ui.AppViewModelProvider
 import com.askein.gymtracker.ui.DropdownBox
 import com.askein.gymtracker.ui.FormInformationField
-import com.askein.gymtracker.ui.customCardElevation
+import com.askein.gymtracker.ui.FormTimeField
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.history.state.WeightsExerciseHistoryUiState
-import com.askein.gymtracker.ui.theme.GymTrackerTheme
 import com.askein.gymtracker.ui.user.LocalUserPreferences
 
 @Composable
@@ -48,8 +48,11 @@ fun LiveRecordWeightsExercise(
     viewModel: LiveRecordWeightsExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     var recording by rememberSaveable { mutableStateOf(false) }
+    var recordReps by rememberSaveable { mutableStateOf(true) }
     Card(
-        elevation = customCardElevation(),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 16.dp
+        ),
         modifier = modifier
     ) {
         Column(
@@ -64,15 +67,17 @@ fun LiveRecordWeightsExercise(
             if (!recording) {
                 val defaultWeightUnit = LocalUserPreferences.current.defaultWeightUnit
                 LiveRecordWeightsExerciseInfo(
-                    onStart = { rest ->
+                    onStart = { rest, recordingReps ->
+                        recordReps = recordingReps
                         viewModel.setExerciseData(
                             exerciseId = uiState.id,
-                            rest = rest
+                            rest = rest,
+                            recordReps = recordingReps
                         )
                         viewModel.setUnitState(defaultWeightUnit)
                         recording = true
                     },
-                    onCancel = { exerciseCancel() },
+                    onCancel = exerciseCancel,
                 )
             } else {
                 val exerciseData = viewModel.exerciseState.collectAsState().value
@@ -81,6 +86,7 @@ fun LiveRecordWeightsExercise(
                 val unitState = viewModel.unitState.collectAsState().value
                 LiveRecordExerciseSetsAndTimer(
                     exerciseData = exerciseData,
+                    recordReps = recordReps,
                     timerState = timerState,
                     timerFinishedState = completedState,
                     recordWeight = recordWeight,
@@ -90,7 +96,8 @@ fun LiveRecordWeightsExercise(
                     finishSet = { viewModel.finishSet() },
                     resetTimer = { viewModel.reset() },
                     setUnitState = { unit -> viewModel.setUnitState(unit) },
-                    exerciseFinished = { exerciseComplete(exerciseData) }
+                    exerciseFinished = { exerciseComplete(exerciseData) },
+                    onCancel = exerciseCancel
                 )
             }
         }
@@ -99,10 +106,11 @@ fun LiveRecordWeightsExercise(
 
 @Composable
 fun LiveRecordWeightsExerciseInfo(
-    onStart: (Int) -> Unit,
+    onStart: (Int, Boolean) -> Unit,
     onCancel: () -> Unit
 ) {
     var restState by rememberSaveable { mutableStateOf("") }
+    var recordReps by rememberSaveable { mutableStateOf(true) }
     Column {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -124,22 +132,43 @@ fun LiveRecordWeightsExerciseInfo(
             )
         }
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.fillMaxWidth()
+            verticalAlignment = Alignment.Top,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 0.dp)
         ) {
-            Button(onClick = {
-                onStart(restState.toInt())
-            }) {
-                Text(text = stringResource(id = R.string.start))
-            }
-            Button(
-                onClick = {
-                    onCancel()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
             ) {
-                Text(text = stringResource(id = R.string.cancel))
+                Button(
+                    onClick = { recordReps = true },
+                    enabled = !recordReps
+                ) {
+                    Text(text = stringResource(id = R.string.reps))
+                }
+                Button(onClick = {
+                    onStart(restState.toInt(), recordReps)
+                }) {
+                    Text(text = stringResource(id = R.string.start))
+                }
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
+            ) {
+                Button(
+                    onClick = { recordReps = false },
+                    enabled = recordReps
+                ) {
+                    Text(text = stringResource(id = R.string.time))
+                }
+                Button(
+                    onClick = onCancel,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
             }
         }
     }
@@ -148,6 +177,7 @@ fun LiveRecordWeightsExerciseInfo(
 @Composable
 fun LiveRecordExerciseSetsAndTimer(
     exerciseData: WeightsExerciseHistoryUiState,
+    recordReps: Boolean,
     timerState: TimerState,
     timerFinishedState: Boolean,
     recordWeight: Boolean,
@@ -157,14 +187,15 @@ fun LiveRecordExerciseSetsAndTimer(
     finishSet: () -> Unit,
     resetTimer: () -> Unit,
     setUnitState: (WeightUnits) -> Unit,
-    exerciseFinished: () -> Unit
+    exerciseFinished: () -> Unit,
+    onCancel: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         var resting by rememberSaveable { mutableStateOf(false) }
-        var showSetInfoForm by rememberSaveable { mutableStateOf(true) }
+        var showSetInfoForm by rememberSaveable { mutableStateOf(false) }
         Text(text = stringResource(id = R.string.sets_completed, exerciseData.sets))
         if (resting) {
             LaunchedEffect(Unit) {
@@ -172,16 +203,19 @@ fun LiveRecordExerciseSetsAndTimer(
                     timerStart(exerciseData.rest!!)
                 }
             }
-            Timer(
-                timerState = timerState.currentTime,
-                buttonEnabled = !showSetInfoForm
-            ) {
-                resting = false
+            if (timerState.currentTime >= 0) {
+                Timer(
+                    timerState = timerState.currentTime,
+                    buttonEnabled = !showSetInfoForm
+                ) {
+                    resting = false
+                }
             }
             resting = !timerFinishedState || showSetInfoForm
             if (showSetInfoForm) {
-                AddSetRepsAndWeight(
+                AddSetInfo(
                     exerciseData = exerciseData,
+                    recordReps = recordReps,
                     recordWeight = recordWeight,
                     unitState = unitState,
                     addSetInfo = addSetInfo,
@@ -199,15 +233,28 @@ fun LiveRecordExerciseSetsAndTimer(
                 Text(text = stringResource(id = R.string.finish_set))
             }
         }
-        Button(onClick = { exerciseFinished() }) {
-            Text(text = stringResource(id = R.string.finish_exercise))
+        if (exerciseData.sets == 0 || (exerciseData.sets == 1 && showSetInfoForm)) {
+            Button(
+                onClick = onCancel,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(text = stringResource(id = R.string.cancel))
+            }
+        } else {
+            Button(
+                enabled = !showSetInfoForm,
+                onClick = exerciseFinished
+            ) {
+                Text(text = stringResource(id = R.string.finish_exercise))
+            }
         }
     }
 }
 
 @Composable
-fun AddSetRepsAndWeight(
+fun AddSetInfo(
     exerciseData: WeightsExerciseHistoryUiState,
+    recordReps: Boolean,
     recordWeight: Boolean,
     unitState: WeightUnits,
     addSetInfo: (Int, Double) -> Unit,
@@ -215,37 +262,49 @@ fun AddSetRepsAndWeight(
     onComplete: () -> Unit
 ) {
     var repsState by rememberSaveable {
-        mutableStateOf(
-            (exerciseData.reps.lastOrNull() ?: 0).toString()
-        )
+        mutableStateOf((exerciseData.reps?.lastOrNull() ?: 0).toString())
+    }
+    var minutesState by rememberSaveable {
+        mutableStateOf((exerciseData.seconds?.lastOrNull()?.div(60) ?: 0).toString())
+    }
+    var secondsState by rememberSaveable {
+        mutableStateOf((exerciseData.seconds?.lastOrNull()?.mod(60) ?: 0).toString())
     }
     var weightsState by rememberSaveable {
         mutableStateOf(
-            (exerciseData.weight.lastOrNull() ?: 0.0).toString()
+            convertToWeightUnit(unitState, (exerciseData.weight.lastOrNull() ?: 0.0)).toString()
         )
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 0.dp)
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 0.dp)
-        ) {
-            FormInformationField(
-                label = R.string.reps,
-                value = repsState,
-                onChange = { entry ->
-                    repsState = entry
-                },
-                formType = FormTypes.INTEGER,
+        if (recordReps) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(0.dp)
+                    .fillMaxWidth()
+            ) {
+                FormInformationField(
+                    label = R.string.reps,
+                    value = repsState,
+                    onChange = { entry ->
+                        repsState = entry
+                    },
+                    formType = FormTypes.INTEGER,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+        } else {
+            FormTimeField(
+                minutes = minutesState,
+                seconds = secondsState,
+                minutesOnChange = { entry -> minutesState = entry },
+                secondsOnChange = { entry -> secondsState = entry }
             )
         }
         if (recordWeight) {
@@ -254,7 +313,6 @@ fun AddSetRepsAndWeight(
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 0.dp)
             ) {
                 FormInformationField(
                     label = R.string.weight,
@@ -265,7 +323,6 @@ fun AddSetRepsAndWeight(
                     formType = FormTypes.DOUBLE,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(0.dp)
                 )
                 val unitsContentDescription = stringResource(id = R.string.units)
                 DropdownBox(
@@ -275,15 +332,20 @@ fun AddSetRepsAndWeight(
                     },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(0.dp)
                         .semantics { contentDescription = unitsContentDescription },
                     selected = unitState
                 )
             }
         }
-        val saveEnabled = repsState != "" && (weightsState != "" || !recordWeight)
+        val saveEnabled =
+            (recordReps && repsState != "" && repsState != "0") || (!recordReps && minutesState != "" && secondsState != "" && (minutesState != "0" || secondsState != "0")) && (weightsState != "" || !recordWeight)
         Button(enabled = saveEnabled, onClick = {
-            addSetInfo(repsState.toInt(), convertToKilograms(unitState, weightsState.toDouble()))
+            val repsOrSeconds = if (recordReps) {
+                repsState.toInt()
+            } else {
+                minutesState.toInt() * 60 + secondsState.toInt()
+            }
+            addSetInfo(repsOrSeconds, convertToKilograms(unitState, weightsState.toDouble()))
             onComplete()
         }) {
             Text(text = stringResource(id = R.string.save))
@@ -306,17 +368,5 @@ fun Timer(
     )
     Button(enabled = buttonEnabled, onClick = finished) {
         Text(text = stringResource(id = R.string.stop))
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LiveRecordWeightsExercisePreview() {
-    GymTrackerTheme(darkTheme = false) {
-        LiveRecordWeightsExercise(
-            uiState = ExerciseUiState(1, "Curls", "Biceps", "Dumbbells"),
-            exerciseComplete = { },
-            exerciseCancel = { }
-        )
     }
 }

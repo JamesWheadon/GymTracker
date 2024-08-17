@@ -22,7 +22,7 @@ class LiveRecordWeightsExerciseViewModelTest {
 
         assertThat(viewModel.exerciseState.value, equalTo(WeightsExerciseHistoryUiState()))
 
-        viewModel.setExerciseData(1, 15)
+        viewModel.setExerciseData(1, 15, true)
 
         assertThat(viewModel.exerciseState.value.exerciseId, equalTo(1))
         assertThat(viewModel.exerciseState.value.rest, equalTo(15))
@@ -135,14 +135,13 @@ class LiveRecordWeightsExerciseViewModelTest {
     @Test
     fun shouldAddSetInfo() {
         val viewModel = LiveRecordWeightsExerciseViewModel()
-
-        assertThat(viewModel.exerciseState.value, equalTo(WeightsExerciseHistoryUiState()))
+        viewModel.setExerciseData(0, 0, true)
 
         viewModel.addSetInfo(5, 10.0)
 
         assertThat(
             viewModel.exerciseState.value,
-            equalTo(WeightsExerciseHistoryUiState(reps = listOf(5), weight = listOf(10.0)))
+            equalTo(WeightsExerciseHistoryUiState(reps = listOf(5), weight = listOf(10.0), rest = 0))
         )
     }
 }

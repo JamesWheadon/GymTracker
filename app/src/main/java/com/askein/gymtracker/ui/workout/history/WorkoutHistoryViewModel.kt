@@ -32,7 +32,7 @@ class WorkoutHistoryViewModel(
         viewModelScope.launch {
             if (save) {
                 val workoutHistoryId = workoutHistoryRepository.insert(workoutHistory.toWorkoutHistoryUiState().toWorkoutHistory()).toInt()
-                workoutHistory.exercises.forEach { exerciseHistory ->
+                workoutHistory.exerciseHistories.forEach { exerciseHistory ->
                     when (exerciseHistory) {
                         is WeightsExerciseHistoryUiState -> {
                             exerciseHistory.workoutHistoryId = workoutHistoryId
@@ -45,7 +45,7 @@ class WorkoutHistoryViewModel(
                     }
                 }
             } else {
-                workoutHistory.exercises.forEach { exerciseHistory ->
+                workoutHistory.exerciseHistories.forEach { exerciseHistory ->
                     when (exerciseHistory) {
                         is WeightsExerciseHistoryUiState -> {
                             if (exerciseHistory.id == 0) {
@@ -65,8 +65,8 @@ class WorkoutHistoryViewModel(
                         }
                     }
                 }
-                existingWorkoutHistory.exercises.forEach { exerciseHistory ->
-                    if (!workoutHistory.exercises.map { it.exerciseId }.contains(exerciseHistory.exerciseId)) {
+                existingWorkoutHistory.exerciseHistories.forEach { exerciseHistory ->
+                    if (!workoutHistory.exerciseHistories.map { it.exerciseId }.contains(exerciseHistory.exerciseId)) {
                         when (exerciseHistory) {
                             is WeightsExerciseHistoryUiState -> {
                                 weightsExerciseHistoryRepository.delete(exerciseHistory.toWeightsExerciseHistory())
@@ -112,7 +112,7 @@ class WorkoutHistoryViewModel(
     ) {
         viewModelScope.launch {
             workoutHistoryRepository.delete(workoutHistory.toWorkoutHistoryUiState().toWorkoutHistory())
-            workoutHistory.exercises.forEach { workoutExercise ->
+            workoutHistory.exerciseHistories.forEach { workoutExercise ->
                 when (workoutExercise) {
                     is WeightsExerciseHistoryUiState -> {
                         weightsExerciseHistoryRepository.delete(workoutExercise.toWeightsExerciseHistory())

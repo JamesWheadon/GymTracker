@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +34,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.askein.gymtracker.R
 import com.askein.gymtracker.ui.ActionConfirmation
 import com.askein.gymtracker.ui.AppViewModelProvider
-import com.askein.gymtracker.ui.customCardElevation
 import com.askein.gymtracker.ui.exercise.ExerciseUiState
 import com.askein.gymtracker.ui.exercise.details.ExerciseHistoryDetails
 import com.askein.gymtracker.ui.exercise.history.state.ExerciseHistoryUiState
@@ -52,9 +52,13 @@ fun WorkoutHistoryScreen(
 ) {
     var showEditWorkoutHistory by remember { mutableStateOf(false) }
     var showDeleteWorkoutHistory by remember { mutableStateOf(false) }
+    val historyExerciseIds = workoutHistoryUiState.exerciseHistories
+        .map { exerciseHistory -> exerciseHistory.exerciseId }
     Box {
         Card(
-            elevation = customCardElevation(),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 16.dp
+            ),
             modifier = modifier.defaultMinSize(minHeight = 30.dp)
         ) {
             Column(
@@ -64,13 +68,11 @@ fun WorkoutHistoryScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 workoutUiState.exercises.filter { exercise ->
-                    workoutHistoryUiState.exercises
-                        .map { exerciseHistory -> exerciseHistory.exerciseId }
-                        .contains(exercise.id)
+                    historyExerciseIds.contains(exercise.id)
                 }.forEach { exercise ->
                     WorkoutHistoryExerciseCard(
                         exercise = exercise,
-                        exerciseHistory = workoutHistoryUiState.exercises.first { exerciseHistory -> exerciseHistory.exerciseId == exercise.id },
+                        exerciseHistory = workoutHistoryUiState.exerciseHistories.first { exerciseHistory -> exerciseHistory.exerciseId == exercise.id },
                         chosenDate = chosenDate,
                         exerciseNavigationFunction = exerciseNavigationFunction
                     )

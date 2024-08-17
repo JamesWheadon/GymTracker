@@ -48,8 +48,8 @@ class WorkoutDetailsViewModelTest {
     fun getWorkoutWithExercisesFromRepository() = runTest {
         val viewModel = WorkoutDetailsViewModel(
             workoutRepository = mockWorkoutRepository,
-            workoutWithExercisesRepository = fakeWorkoutWithExercisesRepository,
             workoutExerciseCrossRefRepository = mockWorkoutExerciseRepository,
+            workoutWithExercisesRepository = fakeWorkoutWithExercisesRepository,
             savedStateHandle = savedState
         )
 
@@ -62,8 +62,8 @@ class WorkoutDetailsViewModelTest {
     fun updateWorkoutInRepository() = runTest {
         val viewModel = WorkoutDetailsViewModel(
             workoutRepository = mockWorkoutRepository,
-            workoutWithExercisesRepository = fakeWorkoutWithExercisesRepository,
             workoutExerciseCrossRefRepository = mockWorkoutExerciseRepository,
+            workoutWithExercisesRepository = fakeWorkoutWithExercisesRepository,
             savedStateHandle = savedState
         )
 
@@ -76,8 +76,8 @@ class WorkoutDetailsViewModelTest {
     fun deleteWorkoutInRepository() = runTest {
         val viewModel = WorkoutDetailsViewModel(
             workoutRepository = mockWorkoutRepository,
-            workoutWithExercisesRepository = fakeWorkoutWithExercisesRepository,
             workoutExerciseCrossRefRepository = mockWorkoutExerciseRepository,
+            workoutWithExercisesRepository = fakeWorkoutWithExercisesRepository,
             savedStateHandle = savedState
         )
 

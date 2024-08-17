@@ -21,7 +21,9 @@ class ExercisesScreenViewModel(
         exerciseRepository.getAllExercisesStream()
             .map { exerciseList ->
                 ExerciseListUiState(
-                    exerciseList.map { exercise -> exercise.toExerciseUiState() }
+                    exerciseList
+                        .map { exercise -> exercise.toExerciseUiState() }
+                        .sortedBy { exerciseUiState -> exerciseUiState.name }
                 )
             }
             .stateIn(

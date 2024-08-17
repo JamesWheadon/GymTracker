@@ -159,8 +159,7 @@ class OverallHistoryScreenKtTest {
                 workoutNavigationFunction = { _, _ -> (Unit) },
                 exerciseNavigationFunction = { _, _ -> (Unit) },
                 datesUiState = listOf(LocalDate.now()),
-                workoutsOnDateUiState = workouts,
-                exercisesOnDateUiState = exercises,
+                historyUiState = HistoryUiState(LocalDate.now(), workouts, exercises),
                 dateSelector = {
                     workouts = listOf(armsWorkout, legsWorkout)
                     exercises = listOf(treadmillExercise, benchExercise)
@@ -185,8 +184,7 @@ class OverallHistoryScreenKtTest {
                 workoutNavigationFunction = { _, _ -> (Unit) },
                 exerciseNavigationFunction = { _, _ -> (Unit) },
                 datesUiState = listOf(LocalDate.now()),
-                workoutsOnDateUiState = workouts,
-                exercisesOnDateUiState = exercises,
+                historyUiState = HistoryUiState(LocalDate.now(), workouts, exercises),
                 dateSelector = {
                     workouts = listOf(armsWorkout, legsWorkout)
                     exercises = listOf(treadmillExercise, benchExercise)
