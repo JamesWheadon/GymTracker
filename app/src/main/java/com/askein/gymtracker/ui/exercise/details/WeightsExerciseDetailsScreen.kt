@@ -119,9 +119,9 @@ fun WeightsExerciseHistoryDetails(
     )
     val weightUnit = LocalUserPreferences.current.defaultWeightUnit
     val dataPoints = calisthenicsAndWeightsGraphDataPoints(
+        historyUiStates = uiState.weightsHistory,
+        startDate = timeOptionToStartTime[time]!!,
         chosenDetail = detail,
-        historyUiStates = uiState.weightsHistory
-            .filter { !it.date.isBefore(timeOptionToStartTime[time]!!) },
         weightUnit = weightUnit
     )
     if (dataPoints.isNotEmpty()) {
