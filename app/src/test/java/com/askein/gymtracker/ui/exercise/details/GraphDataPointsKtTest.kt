@@ -13,10 +13,10 @@ import java.time.LocalDate
 
 class GraphDataPointsKtTest {
 
-    private val firstDate: LocalDate = LocalDate.now().minusDays(1)
-    private val secondDate: LocalDate = LocalDate.now().minusDays(2)
-    private val thirdDate: LocalDate = LocalDate.now().minusDays(3)
-    private val fourthDate: LocalDate = LocalDate.now().minusDays(4)
+    private val firstDate: LocalDate = LocalDate.now().minusDays(4)
+    private val secondDate: LocalDate = LocalDate.now().minusDays(3)
+    private val thirdDate: LocalDate = LocalDate.now().minusDays(2)
+    private val fourthDate: LocalDate = LocalDate.now().minusDays(1)
     private val weightsHistory = listOf(
         WeightsExerciseHistoryUiState(
             weight = listOf(13.0),
@@ -70,8 +70,9 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForMaxReps() {
         val result = calisthenicsAndWeightsGraphDataPoints(
+            weightsHistory,
+            LocalDate.EPOCH,
             R.string.max_reps,
-            weightsHistory
         )
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
@@ -81,8 +82,9 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForTotalReps() {
         val result = calisthenicsAndWeightsGraphDataPoints(
-            R.string.total_reps,
-            weightsHistory
+            weightsHistory,
+            LocalDate.EPOCH,
+            R.string.total_reps
         )
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
@@ -92,8 +94,9 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForMaxTime() {
         val result = calisthenicsAndWeightsGraphDataPoints(
-            R.string.max_time,
-            weightsHistory
+            weightsHistory,
+            LocalDate.EPOCH,
+            R.string.max_time
         )
 
         assertThat(result.map { it.first }, equalTo(listOf(thirdDate, fourthDate)))
@@ -103,8 +106,9 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForTotalTime() {
         val result = calisthenicsAndWeightsGraphDataPoints(
-            R.string.total_time,
-            weightsHistory
+            weightsHistory,
+            LocalDate.EPOCH,
+            R.string.total_time
         )
 
         assertThat(result.map { it.first }, equalTo(listOf(thirdDate, fourthDate)))
@@ -114,8 +118,9 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForMaxSets() {
         val result = calisthenicsAndWeightsGraphDataPoints(
-            R.string.max_sets,
-            weightsHistory
+            weightsHistory,
+            LocalDate.EPOCH,
+            R.string.max_sets
         )
 
         assertThat(
@@ -131,8 +136,9 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForMaxWeightInKilograms() {
         val result = calisthenicsAndWeightsGraphDataPoints(
-            R.string.max_weight,
             weightsHistory,
+            LocalDate.EPOCH,
+            R.string.max_weight,
             WeightUnits.KILOGRAMS
         )
 
@@ -149,8 +155,9 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForMaxWeightInOtherWeightUnit() {
         val result = calisthenicsAndWeightsGraphDataPoints(
-            R.string.max_weight,
             weightsHistory,
+            LocalDate.EPOCH,
+            R.string.max_weight,
             WeightUnits.POUNDS
         )
 
@@ -167,8 +174,9 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForTotalWeightInKilograms() {
         val result = calisthenicsAndWeightsGraphDataPoints(
-            R.string.total_weight,
             weightsHistory,
+            LocalDate.EPOCH,
+            R.string.total_weight,
             WeightUnits.KILOGRAMS
         )
 
@@ -185,8 +193,9 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForTotalWeightInOtherWeightUnit() {
         val result = calisthenicsAndWeightsGraphDataPoints(
-            R.string.total_weight,
             weightsHistory,
+            LocalDate.EPOCH,
+            R.string.total_weight,
             WeightUnits.POUNDS
         )
 
@@ -201,10 +210,59 @@ class GraphDataPointsKtTest {
     }
 
     @Test
+    fun getGraphDetailsAfterStartDateInCorrectOrderForWeights() {
+        val unorderedWeightsHistory = listOf(
+            WeightsExerciseHistoryUiState(
+                weight = listOf(12.0, 12.0),
+                sets = 2,
+                reps = listOf(3, 3),
+                rest = 1,
+                date = secondDate
+            ),
+            WeightsExerciseHistoryUiState(
+                weight = listOf(13.0),
+                sets = 1,
+                reps = listOf(2),
+                rest = 1,
+                date = firstDate
+            ),
+            WeightsExerciseHistoryUiState(
+                weight = listOf(8.0, 10.0),
+                sets = 2,
+                seconds = listOf(30, 90),
+                rest = 1,
+                date = fourthDate
+            ),
+            WeightsExerciseHistoryUiState(
+                weight = listOf(4.0),
+                sets = 1,
+                seconds = listOf(50),
+                rest = 1,
+                date = thirdDate
+            )
+        )
+        val result = calisthenicsAndWeightsGraphDataPoints(
+            unorderedWeightsHistory,
+            secondDate,
+            R.string.max_sets
+        )
+
+        assertThat(
+            result.map { it.first },
+            equalTo(listOf(secondDate, thirdDate, fourthDate))
+        )
+        assertThat(
+            result.map { it.second },
+            equalTo(listOf(2.0, 1.0, 2.0))
+        )
+    }
+
+    @Test
     fun getGraphDetailsForInvalidOption() {
         val result = calisthenicsAndWeightsGraphDataPoints(
-            0,
-            weightsHistory
+            weightsHistory,
+            LocalDate.EPOCH,
+            0
         )
 
         assertThat(result.map { it.first }, equalTo(listOf()))
@@ -214,9 +272,10 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForDefaultDistance() {
         val result = cardioGraphDataPoints(
+            cardioHistory,
+            LocalDate.EPOCH,
             R.string.distance,
-            UserPreferencesUiState(),
-            cardioHistory
+            UserPreferencesUiState()
         )
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
@@ -226,9 +285,10 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForPreferredDistance() {
         val result = cardioGraphDataPoints(
-            R.string.distance,
-            UserPreferencesUiState(defaultDistanceUnit = DistanceUnits.MILES),
-            cardioHistory
+
+      cardioHistory,
+            LocalDate.EPOCH,R.string.distance,
+            UserPreferencesUiState(defaultDistanceUnit = DistanceUnits.MILES)
         )
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, thirdDate)))
@@ -238,9 +298,10 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForTime() {
         val result = cardioGraphDataPoints(
+            cardioHistory,
+            LocalDate.EPOCH,
             R.string.time,
-            UserPreferencesUiState(),
-            cardioHistory
+            UserPreferencesUiState()
         )
 
         assertThat(result.map { it.first }, equalTo(listOf(firstDate, secondDate)))
@@ -250,12 +311,46 @@ class GraphDataPointsKtTest {
     @Test
     fun getGraphDetailsForCalories() {
         val result = cardioGraphDataPoints(
+            cardioHistory,
+            LocalDate.EPOCH,
             R.string.calories,
-            UserPreferencesUiState(),
-            cardioHistory
+            UserPreferencesUiState()
         )
 
         assertThat(result.map { it.first }, equalTo(listOf(secondDate, thirdDate)))
         assertThat(result.map { it.second }, equalTo(listOf(1200.0, 600.0)))
+    }
+
+    @Test
+    fun getGraphDetailsAfterStartDateInCorrectOrderForCardio() {
+        val unorderedCardioHistory = listOf(
+            CardioExerciseHistoryUiState(
+                minutes = 20,
+                seconds = 30,
+                calories = 1200,
+                distance = 2.0,
+                date = secondDate
+            ),
+            CardioExerciseHistoryUiState(
+                minutes = 30,
+                seconds = 0,
+                distance = 5.0,
+                date = firstDate
+            ),
+            CardioExerciseHistoryUiState(
+                distance = 4.0,
+                calories = 600,
+                date = thirdDate
+            )
+        )
+        val result = cardioGraphDataPoints(
+            unorderedCardioHistory,
+            secondDate,
+            R.string.distance,
+            UserPreferencesUiState()
+        )
+
+        assertThat(result.map { it.first }, equalTo(listOf(secondDate, thirdDate)))
+        assertThat(result.map { it.second }, equalTo(listOf(2.0, 4.0)))
     }
 }

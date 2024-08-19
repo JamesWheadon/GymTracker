@@ -92,9 +92,8 @@ fun CardioExerciseHistoryDetails(
         timeOnChange = { newTime -> time = newTime }
     )
     val dataPoints = cardioGraphDataPoints(
-        historyUiStates = uiState.cardioHistory.filter { history ->
-            !history.date.isBefore(timeOptionToStartTime[time]!!)
-        },
+        historyUiStates = uiState.cardioHistory,
+        startDate = timeOptionToStartTime[time]!!,
         detail = detail,
         preferences = LocalUserPreferences.current
     )
