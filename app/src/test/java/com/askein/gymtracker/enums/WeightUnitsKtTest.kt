@@ -12,7 +12,6 @@ import org.junit.runners.Parameterized.Parameters
 
 @RunWith(Enclosed::class)
 class WeightUnitsKtTest {
-
     @RunWith(value = Parameterized::class)
     class ConvertToKilogramsTest(
         private val unit: WeightUnits,
