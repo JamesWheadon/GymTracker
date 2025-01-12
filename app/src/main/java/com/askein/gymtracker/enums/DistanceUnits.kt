@@ -10,7 +10,7 @@ enum class DistanceUnits(@StringRes val displayName: Int, @StringRes val shortFo
     MILES(R.string.miles_display_name, R.string.miles_short_form, 0.62137f)
 }
 
-fun convertToKilometers(unit: DistanceUnits, distance: Double): Double = round((distance / unit.kilometerConversion) * 10) / 10
+fun convertToKilometers(unit: DistanceUnits, distance: Double): Double = round((distance / unit.kilometerConversion) * 10000) / 10000
 
 fun convertToDistanceUnit(unit: DistanceUnits, distance: Double): Double = round((distance * unit.kilometerConversion) * 10) / 10
 

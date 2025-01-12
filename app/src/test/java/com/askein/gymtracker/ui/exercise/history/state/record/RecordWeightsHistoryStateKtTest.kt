@@ -10,6 +10,7 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 import java.time.LocalDate
 
 @RunWith(Enclosed::class)
@@ -57,7 +58,7 @@ class RecordWeightsHistoryStateKtTest {
 
         companion object {
             @JvmStatic
-            @Parameterized.Parameters(name = "{index}: recordReps: {5}, recordWeights: {6}")
+            @Parameters(name = "{index}: recordReps: {5}, recordWeights: {6}")
             fun data(): List<Array<Any?>> {
                 return listOf(
                     arrayOf(
@@ -568,7 +569,7 @@ class RecordWeightsHistoryStateKtTest {
                 sets = 2,
                 reps = listOf(3, 4),
                 seconds = null,
-                weight = listOf(4.5, 0.0)
+                weight = listOf(4.54, 0.0)
             )
 
             assertThat(historyState.toHistoryUiState(), equalTo(uiState))

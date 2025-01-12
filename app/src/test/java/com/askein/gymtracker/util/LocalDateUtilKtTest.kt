@@ -6,6 +6,7 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 import java.time.LocalDate
 
 @RunWith(Enclosed::class)
@@ -25,7 +26,7 @@ class LocalDateUtilKtTest {
 
         companion object {
             @JvmStatic
-            @Parameterized.Parameters(name = "{index}: isValid({0})={1}")
+            @Parameters(name = "{index}: isValid({0})={1}")
             fun data(): List<Array<Any?>> {
                 return listOf(
                     arrayOf(LocalDate.of(2024, 1, 1), "20240101"),
@@ -52,7 +53,7 @@ class LocalDateUtilKtTest {
 
         companion object {
             @JvmStatic
-            @Parameterized.Parameters(name = "{index}: isValid({0})={1}")
+            @Parameters(name = "{index}: isValid({0})={1}")
             fun data(): List<Array<Any?>> {
                 return listOf(
                     arrayOf("20240101", LocalDate.of(2024, 1, 1)),
